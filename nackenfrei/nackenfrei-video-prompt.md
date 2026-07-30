@@ -227,6 +227,7 @@ Standbild zum Video nahtlos ist.
 
 | Datei | Rolle |
 |---|---|
+| `index.html` | Die Seite. **Läuft allein** — das Hero-Bild steckt als WebP-Data-URI drin, genau wie die Schriften |
 | `produktfoto.png` | Original, weißer Hintergrund. **Startframe für ElevenLabs** |
-| `produkt-freigestellt.png` | Freigestellt mit Alphakanal. Steckt im Hero |
+| `produkt-freigestellt.png` | Freigestellt mit Alphakanal. Quelle des eingebetteten Bildes, wird zum Anzeigen nicht gebraucht |
 | `nackenfrei-hero-poster.jpg` | 16:9-Standbild, als Poster für ein späteres Video |
