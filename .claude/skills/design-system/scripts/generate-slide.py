@@ -45,9 +45,9 @@ SLIDE_TEMPLATE = '''<!DOCTYPE html>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{title}</title>
 
-    <!-- Brand Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+    <!-- Brand Fonts: self-hosted. Drop .woff2 files next to this deck and
+         declare them here with @font-face, or fall back to the system stack
+         below. Do not load fonts from a third-party CDN. -->
 
     <!-- Design Tokens - SINGLE SOURCE OF TRUTH -->
     <link rel="stylesheet" href="{tokens_css_path}">
@@ -70,7 +70,7 @@ SLIDE_TEMPLATE = '''<!DOCTYPE html>
         }}
 
         body {{
-            font-family: var(--typography-font-body);
+            font-family: var(--typography-font-body, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif);
             background: var(--color-background);
             color: var(--color-foreground);
             line-height: var(--primitive-lineHeight-relaxed);
@@ -121,7 +121,7 @@ SLIDE_TEMPLATE = '''<!DOCTYPE html>
 
         /* Typography - MUST use token fonts and sizes */
         h1, h2, h3, h4, h5, h6 {{
-            font-family: var(--typography-font-heading);
+            font-family: var(--typography-font-heading, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif);
             font-weight: var(--primitive-fontWeight-bold);
             line-height: var(--primitive-lineHeight-tight);
         }}
@@ -185,7 +185,7 @@ SLIDE_TEMPLATE = '''<!DOCTYPE html>
             border-radius: var(--button-primary-radius);
             font-size: var(--button-primary-font-size);
             font-weight: var(--button-primary-font-weight);
-            font-family: var(--typography-font-body);
+            font-family: var(--typography-font-body, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif);
             text-decoration: none;
             cursor: pointer;
             border: none;
@@ -236,7 +236,7 @@ SLIDE_TEMPLATE = '''<!DOCTYPE html>
         }}
 
         .metric-value {{
-            font-family: var(--typography-font-heading);
+            font-family: var(--typography-font-heading, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif);
             font-size: var(--primitive-fontSize-6xl);
             font-weight: var(--primitive-fontWeight-bold);
             background: var(--primitive-gradient-primary);
@@ -331,7 +331,7 @@ SLIDE_TEMPLATE = '''<!DOCTYPE html>
         }}
 
         .chart-title {{
-            font-family: var(--typography-font-heading);
+            font-family: var(--typography-font-heading, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif);
             font-size: var(--primitive-fontSize-xl);
             color: var(--color-foreground);
             margin-bottom: var(--primitive-spacing-4);

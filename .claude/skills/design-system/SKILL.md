@@ -1,6 +1,6 @@
 ---
 name: design-system
-description: Token architecture, component specifications, and slide generation. Three-layer tokens (primitive→semantic→component), CSS variables, spacing/typography scales, component specs, strategic slide creation. Use for design tokens, systematic design, brand-compliant presentations.
+description: "Design token architecture and HTML presentations. Three-layer tokens (primitive to semantic to component), CSS variable generation and validation, component specs and states, plus strategic slide decks built on those tokens. Use for token systems and for building presentations. For component implementation use ui-styling; for brand voice and identity rules use brand."
 argument-hint: "[component or token]"
 license: MIT
 metadata:
@@ -71,6 +71,20 @@ node scripts/validate-tokens.cjs --dir src/
 | Component Specs | `references/component-specs.md` |
 | States & Variants | `references/states-and-variants.md` |
 | Tailwind Integration | `references/tailwind-integration.md` |
+
+### Slides
+
+Presentation guidance lives in this skill too (merged from the former `slides` skill):
+
+| Topic | File |
+|-------|------|
+| Building a deck | `references/slide-create.md` |
+| Slide strategies | `references/slide-strategies.md` |
+| Layout patterns | `references/slide-layout-patterns.md` |
+| HTML template | `references/slide-html-template.md` |
+| Copywriting formulas | `references/slide-copywriting-formulas.md` |
+
+Slides use the same tokens as the rest of the system — generate tokens first, then build the deck against them.
 
 ## Component Spec Pattern
 
@@ -231,7 +245,7 @@ assets/designs/slides/claudekit-pitch-251223.html
 ### Command
 
 ```bash
-/slides:create "10-slide investor pitch for ClaudeKit Marketing"
+python scripts/search-slides.py "10-slide investor pitch" --context --total 10
 ```
 
 ## Best Practices

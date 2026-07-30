@@ -55,7 +55,6 @@ ALLOWED_RGBA_PATTERNS = [
 # Allowed exceptions (external images, etc.)
 ALLOWED_EXCEPTIONS = [
     'pexels.com', 'unsplash.com', 'youtube.com', 'ytimg.com',
-    'googlefonts', 'fonts.googleapis.com', 'fonts.gstatic.com',
 ]
 
 

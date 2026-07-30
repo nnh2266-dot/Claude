@@ -309,7 +309,7 @@ class DesignSystemGenerator:
                 "body": best_typography.get("Body Font", "Inter"),
                 "mood": best_typography.get("Mood/Style Keywords", reasoning.get("typography_mood", "")),
                 "best_for": best_typography.get("Best For", ""),
-                "google_fonts_url": best_typography.get("Google Fonts URL", ""),
+                "font_source": best_typography.get("Font Source", ""),
                 "css_import": best_typography.get("CSS Import", "")
             },
             "key_effects": combined_effects,
@@ -478,8 +478,8 @@ def format_ascii_box(design_system: dict) -> str:
     if typography.get("best_for"):
         for line in wrap_text(f"Best For: {typography.get('best_for', '')}", "│     ", BOX_WIDTH):
             lines.append(line.ljust(BOX_WIDTH) + "│")
-    if typography.get("google_fonts_url"):
-        lines.append(f"│     Google Fonts: {typography.get('google_fonts_url', '')}".ljust(BOX_WIDTH) + "│")
+    if typography.get("font_source"):
+        lines.append(f"│     Font Source: {typography.get('font_source', '')}".ljust(BOX_WIDTH) + "│")
     if typography.get("css_import"):
         lines.append(f"│     CSS Import: {typography.get('css_import', '')[:70]}...".ljust(BOX_WIDTH) + "│")
 
@@ -611,8 +611,8 @@ def format_markdown(design_system: dict) -> str:
         lines.append(f"- **Mood:** {typography.get('mood', '')}")
     if typography.get("best_for"):
         lines.append(f"- **Best For:** {typography.get('best_for', '')}")
-    if typography.get("google_fonts_url"):
-        lines.append(f"- **Google Fonts:** {typography.get('google_fonts_url', '')}")
+    if typography.get("font_source"):
+        lines.append(f"- **Font Source:** {typography.get('font_source', '')}")
     if typography.get("css_import"):
         lines.append(f"- **CSS Import:**")
         lines.append(f"```css")
@@ -868,8 +868,8 @@ def format_master_md(design_system: dict) -> str:
     lines.append(f"- **Body Font:** {typography.get('body', 'Inter')}")
     if typography.get("mood"):
         lines.append(f"- **Mood:** {typography.get('mood', '')}")
-    if typography.get("google_fonts_url"):
-        lines.append(f"- **Google Fonts:** [{typography.get('heading', '')} + {typography.get('body', '')}]({typography.get('google_fonts_url', '')})")
+    if typography.get("font_source"):
+        lines.append(f"- **Font Source:** {typography.get('heading', '')} + {typography.get('body', '')} — {typography.get('font_source', '')}")
     lines.append("")
     if typography.get("css_import"):
         lines.append("**CSS Import:**")

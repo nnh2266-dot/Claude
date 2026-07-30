@@ -7,7 +7,7 @@ Usage: python search.py "<query>" [--domain <domain>] [--stack <stack>] [--max-r
        python search.py "<query>" --design-system --persist [-p "Project Name"] --output-dir "<project-root>" [--page "dashboard"]
        python search.py "<query>" --design-system --variance 8 --motion 9 --density 7
 
-Domains: style, color, chart, landing, product, ux, typography, google-fonts, icons, gsap, react, web
+Domains: style, color, chart, landing, product, ux, typography, fonts, icons, gsap, react, web
 Stacks: react, nextjs, vue, svelte, astro, swiftui, react-native, flutter, nuxtjs, nuxt-ui,
         html-tailwind, shadcn, jetpack-compose, threejs, angular, laravel
 

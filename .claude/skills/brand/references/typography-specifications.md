@@ -17,10 +17,23 @@ Guidelines for defining and implementing brand typography.
 ```
 
 ### Font Loading
+
+Self-host the font files. Download the family once, convert to `.woff2`, commit
+it with the project, and declare it locally — no third-party font CDN. This
+keeps rendering deterministic, avoids a request to an external host on every
+page load, and is what the GDPR-safe option looks like.
+
 ```html
-<!-- Google Fonts (recommended) -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="/fonts" crossorigin>
+```
+
+```css
+@font-face {
+  font-family: 'Inter';
+  src: url('/fonts/inter-variable.woff2') format('woff2-variations');
+  font-weight: 400 700;
+  font-display: swap;
+}
 ```
 
 ## Type Scale

@@ -1,6 +1,6 @@
 ---
 name: ui-ux-pro-max
-description: "UI/UX design intelligence for web and mobile. Searchable local database with 84 styles, 192 color palettes, 74 font pairings, 192 product types, 98 UX guidelines, 104 icon entries, 16 GSAP motion presets, and 25 chart types across 22 stacks (React, Next.js, Vue, Nuxt, Svelte, Astro, SwiftUI, React Native, Flutter, Tailwind, shadcn/ui, Jetpack Compose, Angular, Laravel, JavaFX, WPF, WinUI, Avalonia, Uno Platform, UWP, Three.js, and HTML/CSS). Use when designing, building, or reviewing UI: pages, components, color schemes, typography, layout, accessibility, animation, or data visualization."
+description: "Searchable offline database of UI/UX design decisions: 84 styles, 192 palettes, 74 font pairings, 192 product patterns, 98 UX guidelines, motion presets, chart types, and conventions for 22 stacks. Use to look up a concrete recommendation (which palette, which font pairing, which layout for this product type) and to review an interface against UX and accessibility rules. For open-ended aesthetic direction use frontend-design; for Tailwind/shadcn implementation use ui-styling. Fonts are self-hosted; emits no font-CDN URLs."
 ---
 
 # UI/UX Pro Max - Design Intelligence
@@ -30,7 +30,9 @@ Skip it for pure backend logic, API/database design, non-visual performance work
 | 9 | Navigation Patterns | HIGH | `ux` | Predictable back, Bottom nav ≤5, Deep linking | Overloaded nav, Broken back behavior, No deep links |
 | 10 | Charts & Data | LOW | `chart` | Legends, Tooltips, Accessible colors | Relying on color alone to convey meaning |
 
-For the full rule list per category (all ~98 UX guidelines with rationale), read `references/quick-reference.md`. For app-specific polish rules (icons, touch feedback, dark mode contrast, safe areas) and the canonical pre-delivery checklist, read `references/pro-rules.md`.
+For the full rule list per category (all ~98 UX guidelines with rationale), read `references/quick-reference.md`. For app-specific polish rules (icons, touch feedback, dark mode contrast, safe areas) and the canonical pre-delivery checklist, read `references/pro-rules.md`. For banner and social-image dimensions per platform, read `references/banner-sizes-and-styles.md`.
+
+**Fonts are self-hosted here.** The typeface names in `typography.csv` and `fonts.csv` are open-source families, but this skill deliberately emits no font-CDN URLs. Ship `.woff2` files with the project and declare them with `@font-face` — the `CSS Import` column gives you the exact snippet. Never add a third-party font link to generated markup.
 
 ---
 
@@ -125,7 +127,7 @@ python ".claude/skills/ui-ux-pro-max/scripts/search.py" "<keyword>" --domain <do
 | More style options | `style` | `--domain style "glassmorphism dark"` |
 | Color palettes | `color` | `--domain color "entertainment vibrant"` |
 | Font pairings | `typography` | `--domain typography "playful modern"` |
-| Individual Google Fonts | `google-fonts` | `--domain google-fonts "sans serif popular variable"` |
+| Individual typefaces | `fonts` | `--domain fonts "sans serif popular variable"` |
 | Chart recommendations | `chart` | `--domain chart "real-time dashboard"` |
 | UX best practices | `ux` | `--domain ux "animation accessibility"` |
 | Landing page structure | `landing` | `--domain landing "hero social-proof"` |
@@ -134,7 +136,7 @@ python ".claude/skills/ui-ux-pro-max/scripts/search.py" "<keyword>" --domain <do
 | React/Next.js performance | `react` | `--domain react "rerender memo list"` |
 | App/native interface guidelines | `web` | `--domain web "accessibilityLabel touch safe-areas"` |
 
-Domain is auto-detected from the query if `--domain` is omitted — but auto-detection can misroute overlapping terms (e.g. "font" matches both `typography` and `google-fonts`). If results look off-topic, pass `--domain` explicitly.
+Domain is auto-detected from the query if `--domain` is omitted — but auto-detection can misroute overlapping terms (e.g. "font" matches both `typography` and `fonts`). If results look off-topic, pass `--domain` explicitly.
 
 ### Step 4: Stack Guidelines
 

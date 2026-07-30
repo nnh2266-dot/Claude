@@ -1,6 +1,6 @@
 ---
 name: brand
-description: Brand voice, visual identity, messaging frameworks, asset management, brand consistency. Activate for branded content, tone of voice, marketing assets, brand compliance, style guides.
+description: "Brand identity governance: voice and tone, messaging frameworks, logo usage rules, visual identity, asset organisation, and consistency checks against existing brand guidelines. Use when work must comply with a brand or when establishing one. For design tokens use design-system; for UI implementation use ui-styling."
 argument-hint: "[update|review|create] [args]"
 metadata:
   author: claudekit

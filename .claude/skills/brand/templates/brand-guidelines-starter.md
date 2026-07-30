@@ -82,9 +82,15 @@
 
 ### Font Loading
 
-```html
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+Self-hosted — font files ship with the project, no third-party CDN.
+
+```css
+@font-face {
+  font-family: 'Inter';
+  src: url('/fonts/inter-variable.woff2') format('woff2-variations');
+  font-weight: 400 700;
+  font-display: swap;
+}
 ```
 
 ---
