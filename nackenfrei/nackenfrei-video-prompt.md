@@ -233,6 +233,14 @@ Der Claim gehört bewusst **nicht** ins Video: Videomodelle rendern Schrift
 unzuverlässig, und die Headline steht auf der Seite ohnehin als HTML neben
 dem Gerät.
 
+**Beim Orbit zusätzlich anhängen**, weil beides die Bildfolge unbrauchbar
+macht — ein wanderndes Gerät lässt sich nicht sauber drehen:
+
+```
+zoom, dolly in, dolly out, change of camera height, change of camera
+distance, easing, acceleration, deceleration
+```
+
 ---
 
 ## Kurzfassung, falls das Modell fragmentiert
