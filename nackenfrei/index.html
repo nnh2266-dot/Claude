@@ -145,7 +145,12 @@ body{
   font-size:var(--step-0);
   line-height:1.65;
   -webkit-font-smoothing:antialiased;
-  overflow-x:hidden;
+  /* clip statt hidden: hidden macht den berechneten overflow-y zu auto und
+     body damit zum Scrollcontainer — das hebelt position:sticky in Safari
+     und Firefox aus, wovon die Gerätebühne oben abhängt. clip unterbindet
+     das seitliche Überlaufen genauso, ohne einen Scrollcontainer zu
+     erzeugen. Bitte nicht zurückdrehen. */
+  overflow-x:clip;
 }
 img,svg,canvas{display:block;max-width:100%}
 a{color:inherit;text-decoration:none}
@@ -590,11 +595,19 @@ tbody tr:last-child th,tbody tr:last-child td{border-bottom:0}
 @media (max-width:999px){
   .pin__art{order:-1}
   .pin__specs{display:grid;grid-template-columns:repeat(2,1fr);border-top:1px solid var(--line)}
-  /* Hier steht das Gerät ganz oben und ist beim Laden schon im Bild — es
-     gibt keinen Anlauf, an dem eine Einfahrt hängen könnte. Also läuft
-     sie einmal beim Seitenaufruf, wie die Headline daneben auch. */
-  .pin__art img{animation:spinIn 1.2s cubic-bezier(.19,.9,.22,1) .15s both}
 }
+
+/* Die Einfahrt hängt bewusst NICHT am Scrollen, sondern läuft beim Laden —
+   auf jeder Breite und in jeder Umgebung. In einer Dateivorschau steckt die
+   Seite in einem Rahmen, der oft auf volle Inhaltshöhe gestreckt wird; das
+   innere Dokument scrollt dann nie, und eine scrollgesteuerte Einfahrt bliebe
+   für immer im Startzustand stehen. Was der Scroll danach macht, ist Zugabe.
+
+   is-armed setzt das Skript, sobald die Animation durch ist: erst dann darf
+   es die Custom Properties schreiben, sonst blockiert der stehengebliebene
+   Endzustand der Animation jede weitere Bewegung. */
+.pin__art img{animation:spinIn 1.25s cubic-bezier(.19,.9,.22,1) .15s both}
+.pin.is-armed .pin__art img{animation:none}
 @keyframes spinIn{
   from{
     transform:translate3d(0,30vh,0) rotateX(-11deg) rotateY(46deg) rotateZ(-13deg) scale(.72);
@@ -602,6 +615,7 @@ tbody tr:last-child th,tbody tr:last-child td{border-bottom:0}
   }
   to{transform:none;opacity:1}
 }
+@keyframes softIn{from{opacity:0}to{opacity:1}}
 @media (min-width:600px) and (max-width:999px){
   .pin__specs{grid-template-columns:repeat(4,1fr)}
 }
@@ -618,8 +632,11 @@ tbody tr:last-child th,tbody tr:last-child td{border-bottom:0}
   .pin{height:auto}
   .pin__vp{position:static;height:auto}
   .pin__art{perspective:none}
-  .pin__art img{animation:none}
-  .pin__copy,.pin__art img,.pin__specs .gauge{transform:none;opacity:1}
+  .pin__copy,.pin__specs .gauge{transform:none;opacity:1}
+  /* Leiser statt stumm: die Einstellung richtet sich gegen große
+     Bewegungen, nicht gegen jede Zustandsänderung. Also nur überblenden,
+     ohne Drehung und ohne Verschiebung. */
+  .pin__art img{transform:none;animation:softIn .45s ease both !important}
 }
 </style>
 </head>
@@ -1213,6 +1230,7 @@ tbody tr:last-child th,tbody tr:last-child td{border-bottom:0}
      der Lage der Section. */
   var pin = document.getElementById("buehne");
   if (pin && !reduce.matches) {
+    var pinImg   = pin.querySelector(".pin__art img");
     var pinSpecs = pin.querySelectorAll(".pin__specs .gauge");
     var wideMQ   = window.matchMedia("(min-width: 1000px)");
     var pinQueued = false;
@@ -1233,30 +1251,32 @@ tbody tr:last-child th,tbody tr:last-child td{border-bottom:0}
       for (var i = 0; i < pinSpecs.length; i++) pinSpecs[i].removeAttribute("style");
     };
 
-    /* Die Einfahrt: klein, schräg und weit unten beginnend, dann dreht
-       sich das Gerät um alle drei Achsen in die Frontale. Der große
-       rotateY-Startwert ist unkritisch, weil das Bild in dem Moment bei
-       0,72 Maßstab und 10 % Deckkraft steht — dass es eine flache Ebene
-       ist, wird da noch gar nicht lesbar. */
-    var enter = function(In, extraY, extraRy, fade){
-      pin.style.setProperty("--art-y",  (34 - 34 * In + extraY).toFixed(2) + "vh");
-      pin.style.setProperty("--art-s",  (.72 + .28 * In).toFixed(4));
-      pin.style.setProperty("--art-ry", (46 - 46 * In + extraRy).toFixed(2) + "deg");
-      pin.style.setProperty("--art-rx", (-11 + 11 * In).toFixed(2) + "deg");
-      pin.style.setProperty("--art-rz", (-13 + 13 * In).toFixed(2) + "deg");
-      pin.style.setProperty("--art-o",  ((.25 + .75 * In) * fade).toFixed(3));
+    /* Die Einfahrt selbst liegt in der CSS-Animation spinIn und läuft beim
+       Laden, in jeder Umgebung, ohne Scrollen. Das Skript übernimmt erst
+       danach und steuert nur noch die leise Weiterbewegung und den Abgang.
+
+       Solange spinIn läuft, darf hier nichts geschrieben werden: die
+       Animation gewinnt zwar gegen die Custom Properties, aber ihr
+       Endzustand bliebe wegen fill-mode stehen und würde die Scrollwerte
+       blockieren. Deshalb erst scharfschalten, dann malen. */
+    var armed = false;
+    var arm = function(){
+      if (armed) return;
+      armed = true;
+      pin.classList.add("is-armed");   // schaltet spinIn ab, Basiswerte greifen
+      queuePin();
     };
 
     var paintPin = function(){
       pinQueued = false;
+      if (!armed) return;
+
       var vh = window.innerHeight || document.documentElement.clientHeight;
       var wide = wideMQ.matches;
       if (wide !== lastWide) { clearPin(); lastWide = wide; }
 
-      /* Ohne Anheftung übernimmt die CSS-Animation spinIn die Einfahrt
-         einmalig beim Laden. Scrollgesteuert ginge es dort nicht: das
-         Gerät steht ganz oben und ist von Anfang an im Bild, es gibt also
-         keinen Weg, über den sich etwas aufbauen könnte. */
+      /* Ohne Anheftung gibt es keinen Fortschritt, an dem etwas hängen
+         könnte — dort ist die Ladeanimation bereits die ganze Vorstellung. */
       if (!wide) return;
 
       var r = pin.getBoundingClientRect();
@@ -1264,16 +1284,19 @@ tbody tr:last-child th,tbody tr:last-child td{border-bottom:0}
       var p = span > 0 ? -r.top / span : 0;
       if (p < 0) p = 0; else if (p > 1) p = 1;
 
-      var In   = ease(sub(p, 0, .45));   // Einfahrt des Geräts
-      var hold = sub(p, .45, .74);       // langsame Gegenbewegung
-      var out  = ease(sub(p, .78, 1));   // Abgang
+      var drift = sub(p, .05, .7);       // leise Weiterbewegung
+      var out   = ease(sub(p, .78, 1));  // Abgang
 
-      enter(In, -2 * hold - 12 * out, 3 * hold - 8 * out, 1 - out);
+      /* Alle Anteile sind bei p = 0 null, deshalb gibt es keinen Sprung,
+         wenn das Skript nach der Ladeanimation übernimmt. */
+      pin.style.setProperty("--art-y",  (-2.5 * drift - 12 * out).toFixed(2) + "vh");
+      pin.style.setProperty("--art-ry", (3 * drift - 8 * out).toFixed(2) + "deg");
+      pin.style.setProperty("--art-o",  (1 - out).toFixed(3));
       pin.style.setProperty("--copy-y", (-6 * out).toFixed(2) + "vh");
       pin.style.setProperty("--copy-o", (1 - out).toFixed(3));
 
       for (var i = 0; i < pinSpecs.length; i++) {
-        var t = ease(sub(p, .14 + i * .06, .5 + i * .06));
+        var t = ease(sub(p, .06 + i * .07, .42 + i * .07));
         /* Deckkraft startet nicht bei null: eine leere Spalte beim Laden
            wäre der schlechteste erste Eindruck. */
         pinSpecs[i].style.opacity = ((.12 + .88 * t) * (1 - out)).toFixed(3);
@@ -1288,10 +1311,37 @@ tbody tr:last-child th,tbody tr:last-child td{border-bottom:0}
       requestAnimationFrame(paintPin);
     };
 
-    paintPin();
+    /* Scharfschalten, sobald die Einfahrt durch ist. Der Timer fängt den
+       Fall ab, dass die Animation gar nicht erst anläuft. */
+    pinImg.addEventListener("animationend", arm);
+    setTimeout(arm, 1800);
+
+    /* Zuhören an der richtigen Stelle. In einer Dateivorschau steckt die
+       Seite in einem Rahmen und gescrollt wird in einem inneren Container;
+       dessen scroll-Ereignisse steigen nicht zu window auf. In der
+       Erfassungsphase am document werden sie dagegen gesehen. */
+    document.addEventListener("scroll", queuePin, { passive:true, capture:true });
     window.addEventListener("scroll", queuePin, { passive:true });
     window.addEventListener("resize", queuePin, { passive:true });
     if (wideMQ.addEventListener) wideMQ.addEventListener("change", queuePin);
+    if (window.ResizeObserver) new ResizeObserver(queuePin).observe(pin);
+
+    /* Letzte Absicherung für Umgebungen, die überhaupt kein Ereignis
+       schicken: eine Schleife, die ausschließlich läuft, solange die Bühne
+       im Bild ist. Ohne diese Bedingung wäre sie unnötige Dauerlast. */
+    if (window.IntersectionObserver) {
+      var ticking = false;
+      var tick = function(){
+        if (!ticking) return;
+        paintPin();
+        requestAnimationFrame(tick);
+      };
+      new IntersectionObserver(function(entries){
+        var vis = entries[0].isIntersecting;
+        if (vis && !ticking) { ticking = true; requestAnimationFrame(tick); }
+        else if (!vis) { ticking = false; }
+      }).observe(pin);
+    }
   }
 
   /* ---------- Zählerwerte ---------- */
