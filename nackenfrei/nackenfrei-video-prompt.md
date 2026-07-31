@@ -135,8 +135,9 @@ Themes. Also den hellen Hintergrundabsatz anhängen.
    `background-image` tauschen und beim Scrollen nur `background-position`
    stufen: `Math.floor(p * 24)` bestimmt das Feld.
 
-Die Fortschrittsrechnung der Bühne bleibt dabei unverändert — es tauscht
-sich nur aus, was mit `p` geschieht. Die Seite ist dafür vorbereitet.
+Die Seite hat dafür derzeit **keine** Mechanik: der Hero ist bewusst
+statisch, alle scrollgesteuerte Bewegung wurde wieder entfernt. Für diesen
+Weg müsste sie neu aufgebaut werden.
 
 ---
 

@@ -145,12 +145,7 @@ body{
   font-size:var(--step-0);
   line-height:1.65;
   -webkit-font-smoothing:antialiased;
-  /* clip statt hidden: hidden macht den berechneten overflow-y zu auto und
-     body damit zum Scrollcontainer — das hebelt position:sticky in Safari
-     und Firefox aus, wovon die Gerätebühne oben abhängt. clip unterbindet
-     das seitliche Überlaufen genauso, ohne einen Scrollcontainer zu
-     erzeugen. Bitte nicht zurückdrehen. */
-  overflow-x:clip;
+  overflow-x:hidden;
 }
 img,svg,canvas{display:block;max-width:100%}
 a{color:inherit;text-decoration:none}
@@ -552,76 +547,27 @@ tbody tr:last-child th,tbody tr:last-child td{border-bottom:0}
 .pin__grid{
   width:100%;max-width:1380px;
   display:grid;gap:clamp(1.75rem,3.5vw,2.75rem);
-  padding-block:clamp(2rem,5vw,3.5rem);
+  padding-block:clamp(3rem,7vw,6rem) clamp(2.5rem,5vw,4rem);
 }
 .pin__copy{
   display:flex;flex-direction:column;gap:clamp(.85rem,1.7vh,1.35rem);
   align-items:flex-start;max-width:40rem;
-  transform:translate3d(0,var(--copy-y,0),0);opacity:var(--copy-o,1);
 }
-/* Anders als im freien Fluss muss die Spalte hier in eine Bildschirmhöhe
-   passen — sonst rutschen Zeile eins und der zweite Knopf aus dem
-   angehefteten Ausschnitt. Deshalb deckelt min() die Schriftgröße
-   zusätzlich an der Viewport-Höhe, nicht nur an der Breite. */
-.pin__h1{font-size:min(clamp(1.9rem,.85rem + 2.75vw,3.5rem),6.9vh);letter-spacing:-.005em}
-/* Die Perspektive sitzt am Rahmen, nicht am Bild: nur so wirken die
-   Rotationen des Kindes räumlich statt flach abgebildet. */
-.pin__art{margin:0;display:flex;justify-content:center;align-items:center;perspective:1400px}
-.pin__art img{
-  display:block;width:100%;max-width:min(36rem,64vh);height:auto;
-  /* Reihenfolge ist nicht beliebig: die Verschiebung muss vor den
-     Rotationen stehen, sonst läuft das Bild auf einer Kreisbahn, statt
-     gerade hochzufahren. */
-  transform:
-    translate3d(0,var(--art-y,0),0)
-    rotateX(var(--art-rx,0deg)) rotateY(var(--art-ry,0deg)) rotateZ(var(--art-rz,0deg))
-    scale(var(--art-s,1));
-  opacity:var(--art-o,1);
-  will-change:transform,opacity;
-}
-.pin__specs .gauge{will-change:transform,opacity}
-
-/* Notausgang für eingebettete Umgebungen, vom Skript gesetzt: ohne
-   scrollbares Dokument sind Überhöhe und Anheften nicht nur nutzlos,
-   sondern schädlich — vh bezieht sich dort auf die gesamte Seitenhöhe. */
-.pin.is-flat{height:auto !important}
-.pin.is-flat .pin__vp{position:static !important;height:auto !important;padding-top:0}
+.pin__h1{font-size:clamp(1.9rem,.85rem + 2.75vw,3.5rem);letter-spacing:-.005em}
+.pin__art{margin:0;display:flex;justify-content:center;align-items:center}
+.pin__art img{display:block;width:100%;max-width:36rem;height:auto}
 
 @media (min-width:1000px){
-  .pin{height:200vh}
-  .pin__vp{position:sticky;top:0;height:100svh;padding-top:64px}
   .pin__grid{grid-template-columns:minmax(0,1fr) minmax(0,1.15fr) minmax(0,.78fr);align-items:center}
   .pin__specs{border-top:1px solid var(--line)}
   /* Untereinander statt als Leiste: die Trennlinie läuft quer, nicht längs. */
   .pin__specs .gauge + .gauge{border-left:0;padding-left:0}
 }
-/* Unterhalb davon kein Anheften: drei Spalten nebeneinander plus eine
-   Zone, in der Scrollen die Animation steuert, ist auf einem Telefon
-   unbedienbar. Dort übernimmt der normale .rise-Mechanismus. */
 @media (max-width:999px){
   .pin__art{order:-1}
   .pin__specs{display:grid;grid-template-columns:repeat(2,1fr);border-top:1px solid var(--line)}
 }
 
-/* Die Einfahrt hängt bewusst NICHT am Scrollen, sondern läuft beim Laden —
-   auf jeder Breite und in jeder Umgebung. In einer Dateivorschau steckt die
-   Seite in einem Rahmen, der oft auf volle Inhaltshöhe gestreckt wird; das
-   innere Dokument scrollt dann nie, und eine scrollgesteuerte Einfahrt bliebe
-   für immer im Startzustand stehen. Was der Scroll danach macht, ist Zugabe.
-
-   is-armed setzt das Skript, sobald die Animation durch ist: erst dann darf
-   es die Custom Properties schreiben, sonst blockiert der stehengebliebene
-   Endzustand der Animation jede weitere Bewegung. */
-.pin__art img{animation:spinIn 1.25s cubic-bezier(.19,.9,.22,1) .15s both}
-.pin.is-armed .pin__art img{animation:none}
-@keyframes spinIn{
-  from{
-    transform:translate3d(0,30vh,0) rotateX(-11deg) rotateY(46deg) rotateZ(-13deg) scale(.72);
-    opacity:.25;
-  }
-  to{transform:none;opacity:1}
-}
-@keyframes softIn{from{opacity:0}to{opacity:1}}
 @media (min-width:600px) and (max-width:999px){
   .pin__specs{grid-template-columns:repeat(4,1fr)}
 }
@@ -635,14 +581,6 @@ tbody tr:last-child th,tbody tr:last-child td{border-bottom:0}
   .hero__h1 i{transform:none}
   .spec::after{transform:scaleX(1)}
   .cut .c-part{opacity:1;transform:none}
-  .pin{height:auto}
-  .pin__vp{position:static;height:auto}
-  .pin__art{perspective:none}
-  .pin__copy,.pin__specs .gauge{transform:none;opacity:1}
-  /* Leiser statt stumm: die Einstellung richtet sich gegen große
-     Bewegungen, nicht gegen jede Zustandsänderung. Also nur überblenden,
-     ohne Drehung und ohne Verschiebung. */
-  .pin__art img{transform:none;animation:softIn .45s ease both !important}
 }
 </style>
 </head>
@@ -707,19 +645,19 @@ tbody tr:last-child th,tbody tr:last-child td{border-bottom:0}
         </figure>
 
         <div class="pin__specs">
-          <div class="gauge">
+          <div class="gauge rise" style="--d:0ms">
             <div class="gauge__v">48<small>cm</small></div>
             <div class="gauge__k">Max. Reichweite</div>
           </div>
-          <div class="gauge">
+          <div class="gauge rise" style="--d:80ms">
             <div class="gauge__v">14<small>mm</small></div>
             <div class="gauge__k">Amplitude</div>
           </div>
-          <div class="gauge">
+          <div class="gauge rise" style="--d:160ms">
             <div class="gauge__v">42<small>dB</small></div>
             <div class="gauge__k">Betriebsgeräusch</div>
           </div>
-          <div class="gauge">
+          <div class="gauge rise" style="--d:240ms">
             <div class="gauge__v">1,1<small>kg</small></div>
             <div class="gauge__k">Gewicht komplett</div>
           </div>
@@ -1218,180 +1156,6 @@ tbody tr:last-child th,tbody tr:last-child td{border-bottom:0}
     document.querySelectorAll(".rise, .cut").forEach(function(el){ io.observe(el); });
   } else {
     document.querySelectorAll(".rise, .cut").forEach(function(el){ el.classList.add("is-in"); });
-  }
-
-  /* ---------- Gerätebühne ----------
-     Solange die überhohe Section durchs Bild läuft, klebt ihr Inhalt oben
-     fest. Der Fortschritt darüber steuert die Einfahrt: das Gerät kommt
-     von unten in die Mitte, die Kennzahlen versetzt von rechts, am Ende
-     zieht alles nach oben weg und übergibt an die Reichweiten-Demo.
-
-     Pro Frame fällt genau ein getBoundingClientRect(), danach nur noch
-     Schreibzugriffe.
-
-     Unterhalb des Breakpoints wird nicht angeheftet — drei Spalten plus
-     eine Zone, in der Scrollen die Animation steuert, wäre auf einem
-     Telefon unbedienbar. Animiert wird dort aber sehr wohl: der
-     Fortschritt kommt dann aus der Lage des Bildes im Viewport statt aus
-     der Lage der Section. */
-  var pin = document.getElementById("buehne");
-  if (pin && !reduce.matches) {
-    var pinImg   = pin.querySelector(".pin__art img");
-    var pinSpecs = pin.querySelectorAll(".pin__specs .gauge");
-    var wideMQ   = window.matchMedia("(min-width: 1000px)");
-    var pinQueued = false;
-
-    /* Teilstrecke von `a` bis `b` auf 0…1 abgebildet. */
-    var sub = function(p, a, b){
-      var v = (p - a) / (b - a);
-      return v < 0 ? 0 : v > 1 ? 1 : v;
-    };
-    var ease = function(t){ return t < .5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2; };
-
-    /* Beim Wechsel über den Breakpoint müssen die Inline-Werte der jeweils
-       anderen Fassung weg, sonst bleibt etwa eine halb eingeblendete
-       Kennzahl in der schmalen Ansicht stehen. */
-    var lastWide = null;
-    var clearPin = function(){
-      pin.removeAttribute("style");
-      for (var i = 0; i < pinSpecs.length; i++) pinSpecs[i].removeAttribute("style");
-    };
-
-    /* Die Einfahrt selbst liegt in der CSS-Animation spinIn und läuft beim
-       Laden, in jeder Umgebung, ohne Scrollen. Das Skript übernimmt erst
-       danach und steuert nur noch die leise Weiterbewegung und den Abgang.
-
-       Solange spinIn läuft, darf hier nichts geschrieben werden: die
-       Animation gewinnt zwar gegen die Custom Properties, aber ihr
-       Endzustand bliebe wegen fill-mode stehen und würde die Scrollwerte
-       blockieren. Deshalb erst scharfschalten, dann malen. */
-    var armed = false;
-    /* Manche Dateivorschauen strecken den Rahmen auf die volle Inhaltshöhe
-       und scrollen im äußeren Dokument. Innen ist dann nichts scrollbar,
-       vh entspricht der gesamten Seitenhöhe — die 200vh der Bühne würden
-       zu einem fünfstelligen Pixelloch, und der Fortschritt stünde für
-       immer bei null. In dem Fall wird flach gerendert: kein Anheften,
-       keine Überhöhe, und die Kennzahlen erscheinen über denselben
-       Sichtbarkeits-Mechanismus wie der Rest der Seite. */
-    /* Erkennung über die tatsächlich sichtbare Fläche. Der Bezugsrahmen
-       eines IntersectionObserver ohne root ist das oberste Fenster, nicht
-       der Rahmen — dadurch verrät intersectionRect, wie viel wirklich zu
-       sehen ist. Behauptet innerHeight sehr viel mehr, ist die Seite in
-       einen gestreckten Rahmen gespannt. Die Seitenhöhe taugt als Signal
-       nicht: mit der 200vh hohen Bühne ist das Dokument immer höher als
-       der Viewport, auch im gestreckten Fall. */
-    var flat = false;
-    var visibleH = -1;
-    var flatten = function(){
-      if (flat) return true;
-      if (visibleH < 0) return false;                       // noch keine Messung
-      if (visibleH >= window.innerHeight * .7) return false; // echtes Fenster
-      /* Einwegschalter: einmal flach, immer flach. Sonst würde die Prüfung
-         pendeln, weil das Flachlegen die Seitenhöhe selbst verändert. */
-      flat = true;
-      pin.classList.add("is-flat");
-      for (var i = 0; i < pinSpecs.length; i++) {
-        pinSpecs[i].removeAttribute("style");
-        pinSpecs[i].classList.add("rise");
-        pinSpecs[i].style.setProperty("--d", (i * 70) + "ms");
-        if (io) io.observe(pinSpecs[i]); else pinSpecs[i].classList.add("is-in");
-      }
-      return true;
-    };
-
-    var arm = function(){
-      if (armed) return;
-      armed = true;
-      pin.classList.add("is-armed");   // schaltet spinIn ab, Basiswerte greifen
-      queuePin();
-    };
-
-    var paintPin = function(){
-      pinQueued = false;
-      /* Die Prüfung läuft mit, nicht nur einmal: eine Vorschau kann den
-         Rahmen auch erst nach dem Laden auf volle Höhe ziehen. */
-      if (!armed || flatten()) return;
-
-      var vh = window.innerHeight || document.documentElement.clientHeight;
-      var wide = wideMQ.matches;
-      if (wide !== lastWide) { clearPin(); lastWide = wide; }
-
-      /* Ohne Anheftung gibt es keinen Fortschritt, an dem etwas hängen
-         könnte — dort ist die Ladeanimation bereits die ganze Vorstellung. */
-      if (!wide) return;
-
-      var r = pin.getBoundingClientRect();
-      var span = r.height - vh;
-      var p = span > 0 ? -r.top / span : 0;
-      if (p < 0) p = 0; else if (p > 1) p = 1;
-
-      /* Die Ladeanimation hat das Gerät hereingedreht; von hier an dreht
-         das Scrollen in derselben Richtung weiter, hebt es an und lässt es
-         näher kommen. Alle Anteile sind bei p = 0 exakt null, deshalb gibt
-         es keinen Sprung, wenn das Skript nach der Animation übernimmt. */
-      var turn = ease(sub(p, 0, .75));
-      var out  = ease(sub(p, .8, 1));    // Abgang
-
-      pin.style.setProperty("--art-y",  (-7 * turn - 12 * out).toFixed(2) + "vh");
-      pin.style.setProperty("--art-ry", (-26 * turn - 10 * out).toFixed(2) + "deg");
-      pin.style.setProperty("--art-rx", (5 * turn).toFixed(2) + "deg");
-      pin.style.setProperty("--art-s",  (1 + .1 * turn).toFixed(4));
-      pin.style.setProperty("--art-o",  (1 - out).toFixed(3));
-      pin.style.setProperty("--copy-y", (-6 * out).toFixed(2) + "vh");
-      pin.style.setProperty("--copy-o", (1 - out).toFixed(3));
-
-      for (var i = 0; i < pinSpecs.length; i++) {
-        var t = ease(sub(p, .04 + i * .06, .36 + i * .06));
-        /* Deckkraft startet nicht bei null: eine leere Spalte beim Laden
-           wäre der schlechteste erste Eindruck. */
-        pinSpecs[i].style.opacity = ((.12 + .88 * t) * (1 - out)).toFixed(3);
-        pinSpecs[i].style.transform =
-          "translate3d(" + ((1 - t) * 34).toFixed(1) + "px," + (-6 * out).toFixed(2) + "vh,0)";
-      }
-    };
-
-    var queuePin = function(){
-      if (pinQueued) return;
-      pinQueued = true;
-      requestAnimationFrame(paintPin);
-    };
-
-    /* Scharfschalten, sobald die Einfahrt durch ist. Der Timer fängt den
-       Fall ab, dass die Animation gar nicht erst anläuft. */
-    pinImg.addEventListener("animationend", arm);
-    setTimeout(arm, 1800);
-
-    /* Zuhören an der richtigen Stelle. In einer Dateivorschau steckt die
-       Seite in einem Rahmen und gescrollt wird in einem inneren Container;
-       dessen scroll-Ereignisse steigen nicht zu window auf. In der
-       Erfassungsphase am document werden sie dagegen gesehen. */
-    document.addEventListener("scroll", queuePin, { passive:true, capture:true });
-    window.addEventListener("scroll", queuePin, { passive:true });
-    window.addEventListener("resize", queuePin, { passive:true });
-    if (wideMQ.addEventListener) wideMQ.addEventListener("change", queuePin);
-    if (window.ResizeObserver) new ResizeObserver(queuePin).observe(pin);
-
-    /* Letzte Absicherung für Umgebungen, die überhaupt kein Ereignis
-       schicken: eine Schleife, die ausschließlich läuft, solange die Bühne
-       im Bild ist. Ohne diese Bedingung wäre sie unnötige Dauerlast. */
-    if (window.IntersectionObserver) {
-      var ticking = false;
-      var tick = function(){
-        if (!ticking) return;
-        paintPin();
-        requestAnimationFrame(tick);
-      };
-      new IntersectionObserver(function(entries){
-        var en = entries[0];
-        /* Nur das Maximum zählt: wird die Seite tief verlinkt geöffnet, ist
-           die Bühne anfangs nur angeschnitten sichtbar — das wäre sonst
-           nicht von einem gestreckten Rahmen zu unterscheiden. */
-        if (en.isIntersecting && en.intersectionRect.height > visibleH)
-          visibleH = en.intersectionRect.height;
-        if (en.isIntersecting && !ticking) { ticking = true; requestAnimationFrame(tick); }
-        else if (!en.isIntersecting) { ticking = false; }
-      }, { threshold: [0, .01, .25, .5, .75, 1] }).observe(pin);
-    }
   }
 
   /* ---------- Zählerwerte ---------- */
