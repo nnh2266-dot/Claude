@@ -5,31 +5,26 @@ Startframe ist `produktfoto.png`, das Originalfoto mit weißem Hintergrund.
 
 ---
 
-## Zuerst: das Video gehört nicht in den Hero
+## Womit anfangen
 
-Die Bühne oben auf der Seite zeigt das Gerät **freigestellt** — es schwebt
-ohne Rahmen zwischen den Textspalten, und die Bewegung liefert der Scroll.
-Dafür ist `produkt-freigestellt.png` die richtige Datei, nicht ein Video:
+**Wenn sich das Gerät im Hero drehen lassen soll, ist Konzept C das
+Wichtigste — der Rest kann warten.** Nur der Orbit liefert die Ansichten aus
+allen Winkeln, ohne die eine Drehung nicht möglich ist. Die Bedienung dafür
+steckt bereits in der Seite und wartet auf das Material.
 
-- **Ein Video hat immer einen rechteckigen Rahmen.** Unsichtbar wird der nur,
-  wenn seine Hintergrundfarbe exakt der Seitenfarbe entspricht. Die Seite hat
-  aber einen Theme-Umschalter zwischen `#0A0D13` und `#F1F3F7` — eine Fassung
-  passt, die andere sitzt als Kasten in der Seite.
-- **Blendmodi lösen das nicht.** `multiply` schluckt Weiß, `screen` schluckt
-  Schwarz — das Gerät ist selbst schwarz und würde auf dunklem Grund mit
-  verschwinden.
-- Ein zweites, dauerhaft laufendes Bewegungsangebot würde ohnehin mit der
-  Scroll-Choreografie konkurrieren.
+Ein Video als laufendes Bild im Hero ist dagegen heikel: es trägt immer einen
+rechteckigen Rahmen mit sich, und unsichtbar wird der nur bei exakt passender
+Hintergrundfarbe. Die Seite hat aber einen Umschalter zwischen `#0A0D13` und
+`#F1F3F7` — eine Fassung passt, die andere sitzt als Kasten in der Seite.
+Blendmodi helfen nicht: `multiply` schluckt Weiß, `screen` schluckt Schwarz,
+und das Gerät ist selbst schwarz.
 
-Es gibt drei sinnvolle Verwendungen für das Video, und die Prompts unten
-decken alle ab:
-
-| Verwendung | Was zu tun ist |
-|---|---|
-| Eigener Abschnitt weiter unten, gerahmt | Eine Fassung genügt, Hintergrund frei wählbar |
-| Doch im Hero, freischwebend | Zwei Fassungen rendern, dunkel und hell, per `matchMedia` umschalten |
-| Sauber freigestellt bewegt | Auf sattem Grün rendern und im Schnittprogramm als WebM mit VP9-Alphakanal keyen — Chrome und Firefox stellen das dar, Safari nicht zuverlässig |
-| Social Ads | 9:16 statt 16:9, sonst identisch |
+| Verwendung | Konzept | Was zu tun ist |
+|---|---|---|
+| **Drehbares Produkt im Hero** | **C** | **Auf Weiß rendern, dann `werkzeug/orbit-zu-kachel.js`** |
+| Eigener Abschnitt weiter unten, gerahmt | A oder B | Eine Fassung genügt, Hintergrund frei wählbar |
+| Freischwebendes Video | A oder B | Zwei Fassungen, dunkel und hell, per `matchMedia` umschalten — oder auf Grün rendern und als WebM mit VP9-Alphakanal keyen |
+| Social Ads | A oder B | 9:16 statt 16:9, sonst identisch |
 
 ---
 
@@ -121,23 +116,39 @@ lässt sich jedes einzelne Frame mit demselben Flood-Fill freistellen, der
 schon das Standbild freigestellt hat, und die Bildfolge sitzt in beiden
 Themes. Also den hellen Hintergrundabsatz anhängen.
 
+### Was am Orbit zwingend ist
+
+Die Bilder werden später auf die Ziehstrecke abgebildet. Deshalb zählt hier
+Gleichmäßigkeit mehr als Wirkung:
+
+- **Konstante Winkelgeschwindigkeit, ausdrücklich ohne Ease-in und Ease-out.**
+  Jede Beschleunigung im Video wird beim Ziehen zu einem Ruckeln.
+- **Konstante Höhe und konstanter Abstand** der Kamera. Wandert sie, wächst
+  und schrumpft das Gerät beim Drehen.
+- **Beleuchtung fest zur Kamera**, nicht zum Objekt. Sonst flackert das
+  Gerät zwischen den Einzelbildern.
+- **Letztes Bild gleich erstem**, sonst springt es bei jeder Umdrehung.
+- **Auf Weiß rendern** — nur so greift der erprobte Flood Fill beim
+  Freistellen.
+
 ### Vom Video zur Bildfolge
 
-1. Video in Chromium laden, auf 24 gleichmäßig verteilte Zeitpunkte springen
-   und jedes Frame ins Canvas zeichnen.
-2. Jedes Frame freistellen: Flood Fill von den Bildrändern, Schwellwert 168,
-   was der Fill erreicht wird voll transparent, anschließend 1 px federn.
-   Genau dieses Verfahren steckt hinter `produkt-freigestellt.png`.
-3. Die 24 Frames à 600 px in ein 6×4-Raster zu **einer** WebP-Kachel
-   zusammensetzen. Einzeln eingebettet wären sie als Data-URIs zu schwer,
-   eine Kachel bleibt vertretbar.
-4. Im Hero das `<img>` gegen ein Element mit dieser Kachel als
-   `background-image` tauschen und beim Scrollen nur `background-position`
-   stufen: `Math.floor(p * 24)` bestimmt das Feld.
+Dafür liegt ein fertiges Werkzeug bereit. Sobald das Video da ist, genügt:
 
-Die Seite hat dafür derzeit **keine** Mechanik: der Hero ist bewusst
-statisch, alle scrollgesteuerte Bewegung wurde wieder entfernt. Für diesen
-Weg müsste sie neu aufgebaut werden.
+```bash
+node werkzeug/orbit-zu-kachel.js nackenfrei-orbit.mp4
+```
+
+Es springt in Chromium auf 24 gleichmäßig verteilte Zeitpunkte, stellt jedes
+Bild mit demselben Flood Fill frei, der schon `produkt-freigestellt.png`
+erzeugt hat, fügt die 24 Bilder zu einer WebP-Kachel im 6×4-Raster und setzt
+sie als Data-URI in `index.html` ein. Kein ffmpeg nötig.
+
+**Die Bedienung dafür steckt bereits in der Seite** und schaltet sich in dem
+Moment ein, in dem die Kachel gesetzt ist: Ziehen mit Maus und Finger,
+Nachlauf mit Reibung, Pfeiltasten, und der Hinweis „Ziehen zum Drehen"
+erscheint erst dann. Ohne Kachel bleibt das Standbild stehen und die Seite
+sieht aus wie jetzt.
 
 ---
 
