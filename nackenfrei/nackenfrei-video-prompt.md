@@ -7,24 +7,26 @@ Startframe ist `produktfoto.png`, das Originalfoto mit weißem Hintergrund.
 
 ## Womit anfangen
 
-**Wenn sich das Gerät im Hero drehen lassen soll, ist Konzept C das
-Wichtigste — der Rest kann warten.** Nur der Orbit liefert die Ansichten aus
-allen Winkeln, ohne die eine Drehung nicht möglich ist. Die Bedienung dafür
-steckt bereits in der Seite und wartet auf das Material.
+Die Prompts hier erzeugen ein **Werbevideo** — eine Aufnahme, die abläuft.
+Konzept A ist der stärkste Kandidat, Konzept B die sichere Rückfallebene.
 
-Ein Video als laufendes Bild im Hero ist dagegen heikel: es trägt immer einen
-rechteckigen Rahmen mit sich, und unsichtbar wird der nur bei exakt passender
-Hintergrundfarbe. Die Seite hat aber einen Umschalter zwischen `#0A0D13` und
-`#F1F3F7` — eine Fassung passt, die andere sitzt als Kasten in der Seite.
-Blendmodi helfen nicht: `multiply` schluckt Weiß, `screen` schluckt Schwarz,
-und das Gerät ist selbst schwarz.
+**Was hier nicht funktioniert hat: das Produkt drehbar machen.** Der Versuch
+und seine Messwerte stehen unter Konzept C, samt der beiden Wege, die dafür
+tatsächlich taugen. Kurzfassung: ein Videomodell liefert keine Umrundung.
+
+Ein Video als laufendes Bild im Hero ist ebenfalls heikel: es trägt immer
+einen rechteckigen Rahmen mit sich, und unsichtbar wird der nur bei exakt
+passender Hintergrundfarbe. Die Seite hat aber einen Umschalter zwischen
+`#0A0D13` und `#F1F3F7` — eine Fassung passt, die andere sitzt als Kasten in
+der Seite. Blendmodi helfen nicht: `multiply` schluckt Weiß, `screen`
+schluckt Schwarz, und das Gerät ist selbst schwarz.
 
 | Verwendung | Konzept | Was zu tun ist |
 |---|---|---|
-| **Drehbares Produkt im Hero** | **C** | **Auf Weiß rendern, dann `werkzeug/orbit-zu-kachel.js`** |
 | Eigener Abschnitt weiter unten, gerahmt | A oder B | Eine Fassung genügt, Hintergrund frei wählbar |
 | Freischwebendes Video | A oder B | Zwei Fassungen, dunkel und hell, per `matchMedia` umschalten — oder auf Grün rendern und als WebM mit VP9-Alphakanal keyen |
 | Social Ads | A oder B | 9:16 statt 16:9, sonst identisch |
+| Drehbares Produkt | — | Nicht per Video. Siehe Konzept C |
 
 ---
 
@@ -84,71 +86,43 @@ Silhouette kippt: Konzept B nehmen.
 
 ---
 
-## Konzept C — „Orbit" (für die echte Umdrehung im Hero)
+## Konzept C — „Orbit": einmal versucht, gescheitert
 
-Das ist der Weg, wenn sich das Gerät im Hero **wirklich** um sich selbst
-drehen soll statt als Ebene im Raum zu schwenken. Aus einem einzelnen Foto
-geht das nicht — Seiten- und Rückansicht existieren nirgends. Ein
-gleichmäßiger Umlauf liefert sie.
+Die Idee war, das Gerät im Hero mit Maus und Finger drehbar zu machen. Dafür
+braucht es Ansichten aus allen Winkeln; ein Foto hat genau eine. Ein
+gleichmäßiger 360°-Umlauf hätte sie geliefert.
 
-```
-Start frame: the provided studio product photo. Continue it exactly — same
-product, same proportions, same lighting. One continuous shot, no cuts.
+**Sora 2 Pro hat den Auftrag nicht ausgeführt.** Statt zu umrunden, ist die
+Kamera hineingefahren. Gemessen an 24 gleichmäßig abgetasteten Bildern:
 
-The camera orbits a full 360 degrees around the device at a constant angular
-speed, staying at the same height and the same distance throughout. The
-device itself does not move, does not vibrate and does not change shape. The
-lighting stays fixed relative to the camera, so the product is lit
-identically from every angle. The final frame is identical to the first.
+| Prüfung | Ergebnis | Nötig |
+|---|---|---|
+| Größenabweichung der Silhouette | 14 % | unter 12 % |
+| Wanderung des Schwerpunkts | 6,1 % | unter 5 % |
+| Gerät oben angeschnitten | 24 von 24 Bildern | 0 |
+| Flächenanteil im Bild | wächst 14,2 % → 20,8 % | konstant |
 
-Cinematography: 50mm, f/5.6 with the whole device sharp, 24 fps, locked
-height, no easing at the start or the end — perfectly even rotation.
-Framing: 16:9 landscape, product centered, generous margin, nothing cropped
-at any point of the orbit.
-```
+Entscheidend ist nicht einmal der Zoom, sondern: **es entsteht keine
+Seiten- und keine Rückansicht.** Genau die fehlten ja. Videomodelle weichen
+einer echten Umrundung aus, weil sie dafür nie gesehene Geometrie erfinden
+müssten — und das ist keine Frage besserer Formulierung im Prompt.
 
-**Gleichmäßigkeit ist hier wichtiger als Dramatik.** Die Frames werden später
-auf den Scrollweg abgebildet; jede Beschleunigung im Video wird zu einem
-Ruckler beim Scrollen. Deshalb ausdrücklich kein Ease-in oder -out.
+### Was für eine echte Drehung nötig wäre
 
-**Auf Weiß rendern lassen**, nicht auf dem dunklen Seitenhintergrund — dann
-lässt sich jedes einzelne Frame mit demselben Flood-Fill freistellen, der
-schon das Standbild freigestellt hat, und die Bildfolge sitzt in beiden
-Themes. Also den hellen Hintergrundabsatz anhängen.
+Nicht mehr über ein Videomodell, sondern über eines von beiden:
 
-### Was am Orbit zwingend ist
+- **Drehteller-Aufnahme.** Das Gerät auf einen Drehteller, Kamera fest,
+  24 bis 36 Fotos in gleichen Winkelschritten. Der klassische Weg im
+  E-Commerce und der zuverlässigste.
+- **3D-Modell**, etwa in spline.design gebaut und als `<spline-viewer>`
+  eingebunden. Das Drehen bringt Spline mit, kostet aber Modellierungsarbeit
+  und lädt von externen Servern nach — die Seite wäre dann nicht mehr
+  eigenständig.
 
-Die Bilder werden später auf die Ziehstrecke abgebildet. Deshalb zählt hier
-Gleichmäßigkeit mehr als Wirkung:
-
-- **Konstante Winkelgeschwindigkeit, ausdrücklich ohne Ease-in und Ease-out.**
-  Jede Beschleunigung im Video wird beim Ziehen zu einem Ruckeln.
-- **Konstante Höhe und konstanter Abstand** der Kamera. Wandert sie, wächst
-  und schrumpft das Gerät beim Drehen.
-- **Beleuchtung fest zur Kamera**, nicht zum Objekt. Sonst flackert das
-  Gerät zwischen den Einzelbildern.
-- **Letztes Bild gleich erstem**, sonst springt es bei jeder Umdrehung.
-- **Auf Weiß rendern** — nur so greift der erprobte Flood Fill beim
-  Freistellen.
-
-### Vom Video zur Bildfolge
-
-Dafür liegt ein fertiges Werkzeug bereit. Sobald das Video da ist, genügt:
-
-```bash
-node werkzeug/orbit-zu-kachel.js nackenfrei-orbit.mp4
-```
-
-Es springt in Chromium auf 24 gleichmäßig verteilte Zeitpunkte, stellt jedes
-Bild mit demselben Flood Fill frei, der schon `produkt-freigestellt.png`
-erzeugt hat, fügt die 24 Bilder zu einer WebP-Kachel im 6×4-Raster und setzt
-sie als Data-URI in `index.html` ein. Kein ffmpeg nötig.
-
-**Die Bedienung dafür steckt bereits in der Seite** und schaltet sich in dem
-Moment ein, in dem die Kachel gesetzt ist: Ziehen mit Maus und Finger,
-Nachlauf mit Reibung, Pfeiltasten, und der Hinweis „Ziehen zum Drehen"
-erscheint erst dann. Ohne Kachel bleibt das Standbild stehen und die Seite
-sieht aus wie jetzt.
+Liegen 24 freigestellte Ansichten vor, ist der Rest überschaubar: sie werden
+zu einer Bildkachel gefügt, und ein Ziehen wählt aus, welches Feld gezeigt
+wird. Die Seite hat dafür aktuell **keine** Mechanik mehr — sie wurde
+zusammen mit dem Versuch wieder ausgebaut.
 
 ---
 
@@ -232,14 +206,6 @@ camera cuts
 Der Claim gehört bewusst **nicht** ins Video: Videomodelle rendern Schrift
 unzuverlässig, und die Headline steht auf der Seite ohnehin als HTML neben
 dem Gerät.
-
-**Beim Orbit zusätzlich anhängen**, weil beides die Bildfolge unbrauchbar
-macht — ein wanderndes Gerät lässt sich nicht sauber drehen:
-
-```
-zoom, dolly in, dolly out, change of camera height, change of camera
-distance, easing, acceleration, deceleration
-```
 
 ---
 
