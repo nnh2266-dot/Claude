@@ -581,6 +581,12 @@ tbody tr:last-child th,tbody tr:last-child td{border-bottom:0}
 }
 .pin__specs .gauge{will-change:transform,opacity}
 
+/* Notausgang für eingebettete Umgebungen, vom Skript gesetzt: ohne
+   scrollbares Dokument sind Überhöhe und Anheften nicht nur nutzlos,
+   sondern schädlich — vh bezieht sich dort auf die gesamte Seitenhöhe. */
+.pin.is-flat{height:auto !important}
+.pin.is-flat .pin__vp{position:static !important;height:auto !important;padding-top:0}
+
 @media (min-width:1000px){
   .pin{height:200vh}
   .pin__vp{position:sticky;top:0;height:100svh;padding-top:64px}
@@ -1260,6 +1266,39 @@ tbody tr:last-child th,tbody tr:last-child td{border-bottom:0}
        Endzustand bliebe wegen fill-mode stehen und würde die Scrollwerte
        blockieren. Deshalb erst scharfschalten, dann malen. */
     var armed = false;
+    /* Manche Dateivorschauen strecken den Rahmen auf die volle Inhaltshöhe
+       und scrollen im äußeren Dokument. Innen ist dann nichts scrollbar,
+       vh entspricht der gesamten Seitenhöhe — die 200vh der Bühne würden
+       zu einem fünfstelligen Pixelloch, und der Fortschritt stünde für
+       immer bei null. In dem Fall wird flach gerendert: kein Anheften,
+       keine Überhöhe, und die Kennzahlen erscheinen über denselben
+       Sichtbarkeits-Mechanismus wie der Rest der Seite. */
+    /* Erkennung über die tatsächlich sichtbare Fläche. Der Bezugsrahmen
+       eines IntersectionObserver ohne root ist das oberste Fenster, nicht
+       der Rahmen — dadurch verrät intersectionRect, wie viel wirklich zu
+       sehen ist. Behauptet innerHeight sehr viel mehr, ist die Seite in
+       einen gestreckten Rahmen gespannt. Die Seitenhöhe taugt als Signal
+       nicht: mit der 200vh hohen Bühne ist das Dokument immer höher als
+       der Viewport, auch im gestreckten Fall. */
+    var flat = false;
+    var visibleH = -1;
+    var flatten = function(){
+      if (flat) return true;
+      if (visibleH < 0) return false;                       // noch keine Messung
+      if (visibleH >= window.innerHeight * .7) return false; // echtes Fenster
+      /* Einwegschalter: einmal flach, immer flach. Sonst würde die Prüfung
+         pendeln, weil das Flachlegen die Seitenhöhe selbst verändert. */
+      flat = true;
+      pin.classList.add("is-flat");
+      for (var i = 0; i < pinSpecs.length; i++) {
+        pinSpecs[i].removeAttribute("style");
+        pinSpecs[i].classList.add("rise");
+        pinSpecs[i].style.setProperty("--d", (i * 70) + "ms");
+        if (io) io.observe(pinSpecs[i]); else pinSpecs[i].classList.add("is-in");
+      }
+      return true;
+    };
+
     var arm = function(){
       if (armed) return;
       armed = true;
@@ -1269,7 +1308,9 @@ tbody tr:last-child th,tbody tr:last-child td{border-bottom:0}
 
     var paintPin = function(){
       pinQueued = false;
-      if (!armed) return;
+      /* Die Prüfung läuft mit, nicht nur einmal: eine Vorschau kann den
+         Rahmen auch erst nach dem Laden auf volle Höhe ziehen. */
+      if (!armed || flatten()) return;
 
       var vh = window.innerHeight || document.documentElement.clientHeight;
       var wide = wideMQ.matches;
@@ -1284,19 +1325,23 @@ tbody tr:last-child th,tbody tr:last-child td{border-bottom:0}
       var p = span > 0 ? -r.top / span : 0;
       if (p < 0) p = 0; else if (p > 1) p = 1;
 
-      var drift = sub(p, .05, .7);       // leise Weiterbewegung
-      var out   = ease(sub(p, .78, 1));  // Abgang
+      /* Die Ladeanimation hat das Gerät hereingedreht; von hier an dreht
+         das Scrollen in derselben Richtung weiter, hebt es an und lässt es
+         näher kommen. Alle Anteile sind bei p = 0 exakt null, deshalb gibt
+         es keinen Sprung, wenn das Skript nach der Animation übernimmt. */
+      var turn = ease(sub(p, 0, .75));
+      var out  = ease(sub(p, .8, 1));    // Abgang
 
-      /* Alle Anteile sind bei p = 0 null, deshalb gibt es keinen Sprung,
-         wenn das Skript nach der Ladeanimation übernimmt. */
-      pin.style.setProperty("--art-y",  (-2.5 * drift - 12 * out).toFixed(2) + "vh");
-      pin.style.setProperty("--art-ry", (3 * drift - 8 * out).toFixed(2) + "deg");
+      pin.style.setProperty("--art-y",  (-7 * turn - 12 * out).toFixed(2) + "vh");
+      pin.style.setProperty("--art-ry", (-26 * turn - 10 * out).toFixed(2) + "deg");
+      pin.style.setProperty("--art-rx", (5 * turn).toFixed(2) + "deg");
+      pin.style.setProperty("--art-s",  (1 + .1 * turn).toFixed(4));
       pin.style.setProperty("--art-o",  (1 - out).toFixed(3));
       pin.style.setProperty("--copy-y", (-6 * out).toFixed(2) + "vh");
       pin.style.setProperty("--copy-o", (1 - out).toFixed(3));
 
       for (var i = 0; i < pinSpecs.length; i++) {
-        var t = ease(sub(p, .06 + i * .07, .42 + i * .07));
+        var t = ease(sub(p, .04 + i * .06, .36 + i * .06));
         /* Deckkraft startet nicht bei null: eine leere Spalte beim Laden
            wäre der schlechteste erste Eindruck. */
         pinSpecs[i].style.opacity = ((.12 + .88 * t) * (1 - out)).toFixed(3);
@@ -1337,10 +1382,15 @@ tbody tr:last-child th,tbody tr:last-child td{border-bottom:0}
         requestAnimationFrame(tick);
       };
       new IntersectionObserver(function(entries){
-        var vis = entries[0].isIntersecting;
-        if (vis && !ticking) { ticking = true; requestAnimationFrame(tick); }
-        else if (!vis) { ticking = false; }
-      }).observe(pin);
+        var en = entries[0];
+        /* Nur das Maximum zählt: wird die Seite tief verlinkt geöffnet, ist
+           die Bühne anfangs nur angeschnitten sichtbar — das wäre sonst
+           nicht von einem gestreckten Rahmen zu unterscheiden. */
+        if (en.isIntersecting && en.intersectionRect.height > visibleH)
+          visibleH = en.intersectionRect.height;
+        if (en.isIntersecting && !ticking) { ticking = true; requestAnimationFrame(tick); }
+        else if (!en.isIntersecting) { ticking = false; }
+      }, { threshold: [0, .01, .25, .5, .75, 1] }).observe(pin);
     }
   }
 
