@@ -559,17 +559,25 @@ tbody tr:last-child th,tbody tr:last-child td{border-bottom:0}
    angehefteten Ausschnitt. Deshalb deckelt min() die Schriftgröße
    zusätzlich an der Viewport-Höhe, nicht nur an der Breite. */
 .pin__h1{font-size:min(clamp(1.9rem,.85rem + 2.75vw,3.5rem),6.9vh);letter-spacing:-.005em}
-.pin__art{margin:0;display:flex;justify-content:center;align-items:center}
+/* Die Perspektive sitzt am Rahmen, nicht am Bild: nur so wirken die
+   Rotationen des Kindes räumlich statt flach abgebildet. */
+.pin__art{margin:0;display:flex;justify-content:center;align-items:center;perspective:1400px}
 .pin__art img{
   display:block;width:100%;max-width:min(36rem,64vh);height:auto;
-  transform:translate3d(0,var(--art-y,0),0) scale(var(--art-s,1));
+  /* Reihenfolge ist nicht beliebig: die Verschiebung muss vor den
+     Rotationen stehen, sonst läuft das Bild auf einer Kreisbahn, statt
+     gerade hochzufahren. */
+  transform:
+    translate3d(0,var(--art-y,0),0)
+    rotateX(var(--art-rx,0deg)) rotateY(var(--art-ry,0deg)) rotateZ(var(--art-rz,0deg))
+    scale(var(--art-s,1));
   opacity:var(--art-o,1);
   will-change:transform,opacity;
 }
 .pin__specs .gauge{will-change:transform,opacity}
 
 @media (min-width:1000px){
-  .pin{height:260vh}
+  .pin{height:200vh}
   .pin__vp{position:sticky;top:0;height:100svh;padding-top:64px}
   .pin__grid{grid-template-columns:minmax(0,1fr) minmax(0,1.15fr) minmax(0,.78fr);align-items:center}
   .pin__specs{border-top:1px solid var(--line)}
@@ -582,6 +590,17 @@ tbody tr:last-child th,tbody tr:last-child td{border-bottom:0}
 @media (max-width:999px){
   .pin__art{order:-1}
   .pin__specs{display:grid;grid-template-columns:repeat(2,1fr);border-top:1px solid var(--line)}
+  /* Hier steht das Gerät ganz oben und ist beim Laden schon im Bild — es
+     gibt keinen Anlauf, an dem eine Einfahrt hängen könnte. Also läuft
+     sie einmal beim Seitenaufruf, wie die Headline daneben auch. */
+  .pin__art img{animation:spinIn 1.2s cubic-bezier(.19,.9,.22,1) .15s both}
+}
+@keyframes spinIn{
+  from{
+    transform:translate3d(0,30vh,0) rotateX(-11deg) rotateY(46deg) rotateZ(-13deg) scale(.72);
+    opacity:.25;
+  }
+  to{transform:none;opacity:1}
 }
 @media (min-width:600px) and (max-width:999px){
   .pin__specs{grid-template-columns:repeat(4,1fr)}
@@ -598,6 +617,8 @@ tbody tr:last-child th,tbody tr:last-child td{border-bottom:0}
   .cut .c-part{opacity:1;transform:none}
   .pin{height:auto}
   .pin__vp{position:static;height:auto}
+  .pin__art{perspective:none}
+  .pin__art img{animation:none}
   .pin__copy,.pin__art img,.pin__specs .gauge{transform:none;opacity:1}
 }
 </style>
@@ -1183,11 +1204,15 @@ tbody tr:last-child th,tbody tr:last-child td{border-bottom:0}
      zieht alles nach oben weg und übergibt an die Reichweiten-Demo.
 
      Pro Frame fällt genau ein getBoundingClientRect(), danach nur noch
-     Schreibzugriffe. Unterhalb des Breakpoints wird nichts angeheftet,
-     also läuft dort auch keine Mechanik. */
+     Schreibzugriffe.
+
+     Unterhalb des Breakpoints wird nicht angeheftet — drei Spalten plus
+     eine Zone, in der Scrollen die Animation steuert, wäre auf einem
+     Telefon unbedienbar. Animiert wird dort aber sehr wohl: der
+     Fortschritt kommt dann aus der Lage des Bildes im Viewport statt aus
+     der Lage der Section. */
   var pin = document.getElementById("buehne");
   if (pin && !reduce.matches) {
-    var pinArt   = pin.querySelector(".pin__art img");
     var pinSpecs = pin.querySelectorAll(".pin__specs .gauge");
     var wideMQ   = window.matchMedia("(min-width: 1000px)");
     var pinQueued = false;
@@ -1199,34 +1224,56 @@ tbody tr:last-child th,tbody tr:last-child td{border-bottom:0}
     };
     var ease = function(t){ return t < .5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2; };
 
+    /* Beim Wechsel über den Breakpoint müssen die Inline-Werte der jeweils
+       anderen Fassung weg, sonst bleibt etwa eine halb eingeblendete
+       Kennzahl in der schmalen Ansicht stehen. */
+    var lastWide = null;
     var clearPin = function(){
       pin.removeAttribute("style");
-      pinArt.removeAttribute("style");
       for (var i = 0; i < pinSpecs.length; i++) pinSpecs[i].removeAttribute("style");
+    };
+
+    /* Die Einfahrt: klein, schräg und weit unten beginnend, dann dreht
+       sich das Gerät um alle drei Achsen in die Frontale. Der große
+       rotateY-Startwert ist unkritisch, weil das Bild in dem Moment bei
+       0,72 Maßstab und 10 % Deckkraft steht — dass es eine flache Ebene
+       ist, wird da noch gar nicht lesbar. */
+    var enter = function(In, extraY, extraRy, fade){
+      pin.style.setProperty("--art-y",  (34 - 34 * In + extraY).toFixed(2) + "vh");
+      pin.style.setProperty("--art-s",  (.72 + .28 * In).toFixed(4));
+      pin.style.setProperty("--art-ry", (46 - 46 * In + extraRy).toFixed(2) + "deg");
+      pin.style.setProperty("--art-rx", (-11 + 11 * In).toFixed(2) + "deg");
+      pin.style.setProperty("--art-rz", (-13 + 13 * In).toFixed(2) + "deg");
+      pin.style.setProperty("--art-o",  ((.25 + .75 * In) * fade).toFixed(3));
     };
 
     var paintPin = function(){
       pinQueued = false;
-      if (!wideMQ.matches) { clearPin(); return; }
+      var vh = window.innerHeight || document.documentElement.clientHeight;
+      var wide = wideMQ.matches;
+      if (wide !== lastWide) { clearPin(); lastWide = wide; }
+
+      /* Ohne Anheftung übernimmt die CSS-Animation spinIn die Einfahrt
+         einmalig beim Laden. Scrollgesteuert ginge es dort nicht: das
+         Gerät steht ganz oben und ist von Anfang an im Bild, es gibt also
+         keinen Weg, über den sich etwas aufbauen könnte. */
+      if (!wide) return;
 
       var r = pin.getBoundingClientRect();
-      var vh = window.innerHeight || document.documentElement.clientHeight;
       var span = r.height - vh;
       var p = span > 0 ? -r.top / span : 0;
       if (p < 0) p = 0; else if (p > 1) p = 1;
 
-      var In   = ease(sub(p, 0, .35));    // Einfahrt des Geräts
-      var hold = sub(p, .48, .78);        // langsame Gegenbewegung
-      var out  = ease(sub(p, .82, 1));    // Abgang
+      var In   = ease(sub(p, 0, .45));   // Einfahrt des Geräts
+      var hold = sub(p, .45, .74);       // langsame Gegenbewegung
+      var out  = ease(sub(p, .78, 1));   // Abgang
 
-      pin.style.setProperty("--art-y", (26 - 26 * In - 2 * hold - 12 * out).toFixed(2) + "vh");
-      pin.style.setProperty("--art-s", (.9 + .1 * In).toFixed(4));
-      pin.style.setProperty("--art-o", ((.5 + .5 * In) * (1 - out)).toFixed(3));
+      enter(In, -2 * hold - 12 * out, 3 * hold - 8 * out, 1 - out);
       pin.style.setProperty("--copy-y", (-6 * out).toFixed(2) + "vh");
       pin.style.setProperty("--copy-o", (1 - out).toFixed(3));
 
       for (var i = 0; i < pinSpecs.length; i++) {
-        var t = ease(sub(p, .12 + i * .05, .46 + i * .05));
+        var t = ease(sub(p, .14 + i * .06, .5 + i * .06));
         /* Deckkraft startet nicht bei null: eine leere Spalte beim Laden
            wäre der schlechteste erste Eindruck. */
         pinSpecs[i].style.opacity = ((.12 + .88 * t) * (1 - out)).toFixed(3);

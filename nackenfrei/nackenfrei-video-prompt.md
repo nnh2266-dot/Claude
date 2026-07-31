@@ -89,6 +89,57 @@ Silhouette kippt: Konzept B nehmen.
 
 ---
 
+## Konzept C — „Orbit" (für die echte Umdrehung im Hero)
+
+Das ist der Weg, wenn sich das Gerät im Hero **wirklich** um sich selbst
+drehen soll statt als Ebene im Raum zu schwenken. Aus einem einzelnen Foto
+geht das nicht — Seiten- und Rückansicht existieren nirgends. Ein
+gleichmäßiger Umlauf liefert sie.
+
+```
+Start frame: the provided studio product photo. Continue it exactly — same
+product, same proportions, same lighting. One continuous shot, no cuts.
+
+The camera orbits a full 360 degrees around the device at a constant angular
+speed, staying at the same height and the same distance throughout. The
+device itself does not move, does not vibrate and does not change shape. The
+lighting stays fixed relative to the camera, so the product is lit
+identically from every angle. The final frame is identical to the first.
+
+Cinematography: 50mm, f/5.6 with the whole device sharp, 24 fps, locked
+height, no easing at the start or the end — perfectly even rotation.
+Framing: 16:9 landscape, product centered, generous margin, nothing cropped
+at any point of the orbit.
+```
+
+**Gleichmäßigkeit ist hier wichtiger als Dramatik.** Die Frames werden später
+auf den Scrollweg abgebildet; jede Beschleunigung im Video wird zu einem
+Ruckler beim Scrollen. Deshalb ausdrücklich kein Ease-in oder -out.
+
+**Auf Weiß rendern lassen**, nicht auf dem dunklen Seitenhintergrund — dann
+lässt sich jedes einzelne Frame mit demselben Flood-Fill freistellen, der
+schon das Standbild freigestellt hat, und die Bildfolge sitzt in beiden
+Themes. Also den hellen Hintergrundabsatz anhängen.
+
+### Vom Video zur Bildfolge
+
+1. Video in Chromium laden, auf 24 gleichmäßig verteilte Zeitpunkte springen
+   und jedes Frame ins Canvas zeichnen.
+2. Jedes Frame freistellen: Flood Fill von den Bildrändern, Schwellwert 168,
+   was der Fill erreicht wird voll transparent, anschließend 1 px federn.
+   Genau dieses Verfahren steckt hinter `produkt-freigestellt.png`.
+3. Die 24 Frames à 600 px in ein 6×4-Raster zu **einer** WebP-Kachel
+   zusammensetzen. Einzeln eingebettet wären sie als Data-URIs zu schwer,
+   eine Kachel bleibt vertretbar.
+4. Im Hero das `<img>` gegen ein Element mit dieser Kachel als
+   `background-image` tauschen und beim Scrollen nur `background-position`
+   stufen: `Math.floor(p * 24)` bestimmt das Feld.
+
+Die Fortschrittsrechnung der Bühne bleibt dabei unverändert — es tauscht
+sich nur aus, was mit `p` geschieht. Die Seite ist dafür vorbereitet.
+
+---
+
 ## Konzept B — „Aufsätze" (sicher)
 
 Keine Formveränderung am Gerät, nur Kamera und schwebende Teile — deutlich
