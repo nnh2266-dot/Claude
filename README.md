@@ -8,10 +8,17 @@ Alle Daten bleiben im Browser des Geräts (`localStorage`). Es wird nichts hochg
 
 ## Benutzen
 
-Datei `index.html` im Browser öffnen — fertig.
+**Im Netz:** https://nnh2266-dot.github.io/Claude/
 
-Am Handy lohnt sich der Homescreen: Seite öffnen → Teilen/Menü → **Zum Home-Bildschirm**.
-Danach startet sie wie eine normale App im Vollbild und funktioniert auch offline.
+**Am iPhone/iPad:** Adresse in *Safari* öffnen → **Teilen-Symbol** → **Zum Home-Bildschirm**.
+Danach startet sie im Vollbild mit eigenem Symbol und funktioniert auch ohne Netz.
+Unter Android geht dasselbe in Chrome über *Menü → App installieren*.
+
+**Lokal:** Datei `index.html` im Browser öffnen — funktioniert ebenfalls, nur ohne
+Offline-Zwischenspeicher (dafür braucht der Service Worker `https`).
+
+> Die Trainingsdaten liegen im Browser des jeweiligen Geräts und wandern nicht mit.
+> Handy und Tablet zählen also getrennt.
 
 ## Ablauf
 
