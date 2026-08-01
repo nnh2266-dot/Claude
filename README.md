@@ -30,13 +30,18 @@ Offline-Zwischenspeicher (dafür braucht der Service Worker `https`).
 
 Aus beiden Werten ergibt sich die Startstufe.
 
-**Tägliche Einheit** — immer exakt 6:00, in drei Blöcken:
+**Tägliche Einheit** — immer exakt 6:00, drei Übungen nacheinander:
 
-| Block | Was |
+| Übung | Was du tust |
 |---|---|
-| Schnellkraft | kurze Kontraktionen im Sekundentakt |
-| Kraft | mittlere Haltephasen mit Pause |
-| Ausdauer | lange Haltephasen mit Pause |
+| Schnellspanner | kurz anspannen, sofort lösen |
+| Halten | mittellang halten |
+| Langes Halten | lange halten |
+
+Jede Übung wird vorher angekündigt — mit Name, was zu tun ist und wie viele
+Wiederholungen kommen. In den Satzpausen steht, was als Nächstes dran ist.
+Die letzte Wiederholung eines Satzes geht direkt in die Satzpause über, damit
+nie zwei Ruhephasen aufeinander folgen.
 
 Der Kreis wächst beim Anspannen und schrumpft beim Loslassen, der Ring zählt die
 laufende Phase herunter. Signale sind rein visuell; Ton und Vibration lassen sich in

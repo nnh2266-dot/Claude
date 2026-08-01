@@ -223,6 +223,17 @@
     min-height: 1.6rem;
   }
   .phase-label.tense { color: var(--accent); }
+  .phase-label.announce { font-size: 1.5rem; font-weight: 350; }
+
+  .phase-note {
+    text-align: center;
+    font-size: 0.88rem;
+    color: var(--muted);
+    min-height: 1.4rem;
+    margin-top: 6px;
+    white-space: pre-line;
+    line-height: 1.5;
+  }
 
   .meta-row {
     display: flex;
@@ -473,6 +484,7 @@
 
     <div class="spacer" style="max-height:26px"></div>
     <div class="phase-label" id="s-label">Bereit machen</div>
+    <div class="phase-note" id="s-note"></div>
     <div class="spacer" style="max-height:10px"></div>
     <div class="meta-row">
       <span id="s-set"></span>
@@ -611,6 +623,14 @@
     return { hold, rest, longHold, longRest, flickReps, setTarget, blockPause };
   }
 
+  // Die drei Übungen einer Einheit — Name und was dabei zu tun ist.
+  const EX = {
+    schnell: { name: "Schnellspanner", how: () => "kurz anspannen, sofort lösen" },
+    halten:  { name: "Halten",         how: (s) => `${s} Sekunden halten` },
+    lang:    { name: "Langes Halten",  how: (s) => `${s} Sekunden halten` }
+  };
+  const INTRO = 6;   // Sekunden Ankündigung vor jeder Übung
+
   // Verteilt n Wiederholungen möglichst gleichmäßig auf mehrere Sätze.
   function spread(n, sets) {
     const out = [];
@@ -629,15 +649,21 @@
     const perA = clamp(Math.floor(p.setTarget / aCycle), 1, 5);
 
     const MIN_CLOSING = 15;
-    const warmup = 5 + p.flickReps * 2 + p.blockPause;
-    const budget = SESSION_SECONDS - warmup - MIN_CLOSING;
+    // Aufwärmen: Bereit machen, Ankündigung, Schnellspanner (letzte Wiederholung
+    // ohne Loslassen, weil direkt die Satzpause folgt), Satzpause.
+    const warmup = 5 + INTRO + (2 * p.flickReps - 1) + p.blockPause;
+    const budget = SESSION_SECONDS - warmup - MIN_CLOSING - 2 * INTRO;
 
     const setCount = (n, per) => (n > 0 ? Math.ceil(n / per) : 0);
-    const cost = (k, a) =>
-      k * kCycle + a * aCycle +
-      Math.max(0, setCount(k, perK) + setCount(a, perA) - 1) * p.blockPause;
+    // Je Satz entfällt ein Loslassen — die letzte Wiederholung geht in die Pause über.
+    const cost = (k, a) => {
+      const kSets = setCount(k, perK), aSets = setCount(a, perA);
+      return k * p.hold + Math.max(0, k - kSets) * p.rest +
+             a * p.longHold + Math.max(0, a - aSets) * p.longRest +
+             Math.max(0, kSets + aSets - 1) * p.blockPause;
+    };
 
-    // Ausdauer bekommt knapp die Hälfte der Arbeitszeit, der Rest geht an Kraft.
+    // Langes Halten bekommt knapp die Hälfte der Arbeitszeit, der Rest geht an Halten.
     let aReps = Math.max(1, Math.round(budget * 0.45 / aCycle));
     while (aReps > 1 && cost(1, aReps) > budget) aReps--;
     let kReps = 0;
@@ -647,50 +673,69 @@
       while (cost(kReps + 1, aReps) <= budget) kReps++;
     }
 
-    // Sätze abwechselnd anordnen: Kraft, Ausdauer, Kraft, Ausdauer …
+    // Jede Übung läuft am Stück durch, damit die Einheit einen Bogen hat.
+    // Sätze werden je Übung gezählt, nicht über die ganze Einheit.
+    const order = [];
     const kSets = spread(kReps, setCount(kReps, perK));
     const aSets = spread(aReps, setCount(aReps, perA));
-    const order = [];
-    for (let i = 0; i < Math.max(kSets.length, aSets.length); i++) {
-      if (i < kSets.length) order.push({ block: "Kraft", n: kSets[i], h: p.hold, r: p.rest });
-      if (i < aSets.length) order.push({ block: "Ausdauer", n: aSets[i], h: p.longHold, r: p.longRest });
-    }
+    kSets.forEach((n, i) =>
+      order.push({ block: EX.halten.name, n, h: p.hold, r: p.rest, set: i + 1, of: kSets.length }));
+    aSets.forEach((n, i) =>
+      order.push({ block: EX.lang.name, n, h: p.longHold, r: p.longRest, set: i + 1, of: aSets.length }));
 
     const tl = [];
-    const add = (kind, label, dur, block, set) => tl.push({ kind, label, dur, block, set: set || 0 });
+    const add = (kind, label, dur, block, set, of) => {
+      const ph = { kind, label, dur, block, set: set || 0, of: of || 0 };
+      tl.push(ph);
+      return ph;
+    };
 
-    add("prep", "Bereit machen", 5, "Aufwärmen");
+    // Ankündigung vor jeder Übung: Name, was zu tun ist, wie viele Wiederholungen.
+    const announce = (ex, reps, holdSec) => {
+      add("intro", ex.name, INTRO, ex.name).note =
+        `${ex.how(holdSec)}\n${reps} ${reps === 1 ? "Wiederholung" : "Wiederholungen"}`;
+    };
+
+    add("prep", "Bereit machen", 5, EX.schnell.name);
+    announce(EX.schnell, p.flickReps, 1);
     for (let i = 0; i < p.flickReps; i++) {
-      add("tense", "Anspannen", 1, "Schnellkraft");
-      add("release", "Locker", 1, "Schnellkraft");
+      add("tense", "Anspannen", 1, EX.schnell.name, 1, 1);
+      // Nach der letzten Wiederholung geht es direkt in die Satzpause.
+      if (i < p.flickReps - 1) add("release", "Locker", 1, EX.schnell.name, 1, 1);
     }
-    add("pause", "Pause", p.blockPause, "Schnellkraft");
+    add("pause", "Satzpause", p.blockPause, EX.schnell.name, 1, 1);
 
     order.forEach((set, i) => {
-      for (let n = 0; n < set.n; n++) {
-        add("tense", "Anspannen", set.h, set.block, i + 1);
-        add("release", "Loslassen", set.r, set.block, i + 1);
+      const ex = set.block === EX.halten.name ? EX.halten : EX.lang;
+      if (i === 0 || order[i - 1].block !== set.block) {
+        const total = order.filter(s => s.block === set.block).reduce((a, s) => a + s.n, 0);
+        announce(ex, total, set.h);
       }
-      if (i < order.length - 1) add("pause", "Pause", p.blockPause, set.block, i + 1);
+      for (let n = 0; n < set.n; n++) {
+        add("tense", "Anspannen", set.h, set.block, set.set, set.of);
+        if (n < set.n - 1) add("release", "Loslassen", set.r, set.block, set.set, set.of);
+      }
+      if (i < order.length - 1) add("pause", "Satzpause", p.blockPause, set.block, set.set, set.of);
     });
 
     add("relax", "Entspannen", MIN_CLOSING, "Abschluss");
 
-    // Übrige Sekunden auf die Pausen verteilen, damit der Abschluss kurz bleibt.
+    // Übrige Sekunden verteilen — höchstens 2 s je Pause, damit keine
+    // Satzpause spürbar länger wird; der Rest geht in den Abschluss.
     let slack = SESSION_SECONDS - tl.reduce((a, ph) => a + ph.dur, 0);
     const pauses = tl.filter(ph => ph.kind === "pause");
-    for (let round = 0; round < 6 && slack > 0 && pauses.length; round++) {
+    for (let round = 0; round < 2 && slack > 0 && pauses.length; round++) {
       for (const ph of pauses) {
         if (slack <= 0) break;
         ph.dur++; slack--;
       }
     }
-    tl[tl.length - 1].dur += slack;   // Rest in den Abschluss
+    tl[tl.length - 1].dur += slack;
 
     let t = 0;
     tl.forEach(ph => { ph.start = t; t += ph.dur; });
 
-    const reps = { Schnellkraft: 0, Kraft: 0, Ausdauer: 0 };
+    const reps = { [EX.schnell.name]: 0, [EX.halten.name]: 0, [EX.lang.name]: 0 };
     tl.forEach(ph => { if (ph.kind === "tense") reps[ph.block]++; });
 
     return { phases: tl, p, reps, total: t, sets: order.length };
@@ -699,9 +744,9 @@
   function planRows(level) {
     const s = buildTimeline(level, state.maxHold, state.flicks);
     return [
-      ["Schnellkraft", `${s.reps.Schnellkraft} × 1 s`],
-      ["Kraft", `${s.reps.Kraft} × ${s.p.hold} s halten / ${s.p.rest} s Pause`],
-      ["Ausdauer", `${s.reps.Ausdauer} × ${s.p.longHold} s halten / ${s.p.longRest} s Pause`]
+      [EX.schnell.name, `${s.reps[EX.schnell.name]} × kurz anspannen`],
+      [EX.halten.name, `${s.reps[EX.halten.name]} × ${s.p.hold} s halten`],
+      [EX.lang.name, `${s.reps[EX.lang.name]} × ${s.p.longHold} s halten`]
     ];
   }
 
@@ -944,6 +989,22 @@
     return (now - ses.t0 - ses.pausedTotal) / 1000;
   }
 
+  // Was kommt nach dieser Pause — die nächste Übung oder der nächste Satz?
+  function nextUp(i) {
+    const cur = ses.phases[i];
+    for (let j = i + 1; j < ses.phases.length; j++) {
+      const ph = ses.phases[j];
+      if (ph.kind === "intro") return "Als Nächstes: " + ph.label;
+      if (ph.kind === "relax") return "Als Nächstes: Abschluss";
+      if (ph.kind === "tense") {
+        return ph.of > 1 && ph.set !== cur.set
+          ? `Als Nächstes: Satz ${ph.set} von ${ph.of}`
+          : "Als Nächstes: " + ph.block;
+      }
+    }
+    return "";
+  }
+
   function enterPhase(i) {
     ses.idx = i;
     const ph = ses.phases[i];
@@ -951,7 +1012,7 @@
 
     $("s-label").textContent = ph.label;
     $("s-label").classList.toggle("tense", tense);
-    $("s-block").textContent = ph.block;
+    $("s-block").textContent = ph.kind === "intro" ? "Als Nächstes" : ph.block;
     $("s-blob").classList.toggle("tense", tense);
     $("s-blob").style.transitionDuration = Math.min(ph.dur * 0.45, 1.1) + "s";
     document.querySelector("#v-session .ring").classList.toggle("neutral", !tense);
@@ -967,7 +1028,13 @@
     $("s-rep").textContent = (ph.kind === "tense" || ph.kind === "release") && all
       ? `Wiederholung ${done} von ${all}`
       : "";
-    $("s-set").textContent = ph.set ? `Satz ${ph.set} von ${ses.sets}` : "";
+    $("s-set").textContent = ph.of > 1 ? `Satz ${ph.set} von ${ph.of}` : "";
+
+    // Ankündigung zeigt, was zu tun ist; in Pausen steht dort, was als Nächstes kommt.
+    $("s-note").textContent =
+      ph.kind === "intro" ? ph.note :
+      ph.kind === "pause" ? nextUp(i) : "";
+    $("s-label").classList.toggle("announce", ph.kind === "intro");
 
     if (tense || ph.kind === "release") cue(ph.kind);
   }
