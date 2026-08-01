@@ -16,6 +16,7 @@
     --muted: #8b8b95;
     --accent: #9bd7b5;
     --accent-dim: #2a3b34;
+    --on-accent: #0d0d0f;
     --radius: 14px;
   }
   @media (prefers-color-scheme: light) {
@@ -27,6 +28,7 @@
       --muted: #75757e;
       --accent: #3f8e68;
       --accent-dim: #dcefe4;
+      --on-accent: #ffffff;
     }
   }
 
@@ -91,13 +93,12 @@
     width: 100%;
     padding: 17px 20px;
     background: var(--accent);
-    color: #0d0d0f;
+    color: var(--on-accent);
     font-weight: 500;
     font-size: 1rem;
     text-align: center;
     transition: opacity .15s ease;
   }
-  @media (prefers-color-scheme: light) { .btn { color: #fff; } }
   .btn:active { opacity: .8; }
 
   .btn-ghost {
