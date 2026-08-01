@@ -371,16 +371,24 @@ input[type="range"]:active::-webkit-slider-thumb{transform:scale(1.15)}
 .zone.is-live .zone__cm{color:var(--heat)}
 
 /* SVG-Zustände */
-/* fill-opacity statt opacity: die Konturlinie bleibt dabei voll deckend */
-.z-band{fill:var(--cold);fill-opacity:.4;stroke:var(--line);stroke-width:1.2;
+/* Grundton des Rumpfes. Liegt unter den Zonen, damit Hals und Ränder,
+   die keine Zone tragen, trotzdem Körper bleiben und kein Loch zeigen. */
+.z-body{fill:var(--cold);fill-opacity:.32}
+/* Die Zonen tragen selbst keine Kontur mehr — die Silhouette wird einmal
+   aussen gezogen. fill-opacity statt opacity, damit nichts durchscheint. */
+.z-band{fill:var(--cold);fill-opacity:.34;
         transition:fill-opacity .5s cubic-bezier(.22,.7,.25,1),fill .5s}
-.z-band.is-live{fill:var(--heat);fill-opacity:.72}
-.z-neck{fill:var(--cold);fill-opacity:.4;stroke:var(--line);stroke-width:1.2}
+.z-band.is-live{fill:var(--heat);fill-opacity:.74}
+.z-seam{stroke:var(--line);stroke-width:1;opacity:.55}
+.z-outline{fill:none;stroke:var(--line);stroke-width:1.6}
 .z-hint{stroke:var(--muted);stroke-width:1.1;opacity:.35}
 .z-spine{stroke:var(--muted);stroke-width:1.3;opacity:.62}
-.z-shaft{stroke:var(--text);stroke-width:3.2;stroke-linecap:round;opacity:.85}
-.z-grip{fill:var(--raised);stroke:var(--text);stroke-width:1.5}
-.z-headring{fill:none;stroke:var(--accent);stroke-width:1.3;opacity:.5}
+/* Das Gerät ist Beiwerk, nicht Hauptmotiv: dünner Schaft in Grau statt eines
+   deckend weissen Balkens, der quer über den Rumpf schneidet. Blau bleibt dem
+   Instrument vorbehalten, Kupfer dem Gewebe — die beiden dürfen sich nicht mischen. */
+.z-shaft{stroke:var(--muted);stroke-width:2.2;stroke-linecap:round;opacity:.5}
+.z-grip{fill:var(--raised);stroke:var(--muted);stroke-width:1.2;opacity:.75}
+.z-headring{fill:none;stroke:var(--accent);stroke-width:1.2;opacity:.45}
 .z-head{fill:var(--accent)}
 
 /* ============================================================
@@ -403,8 +411,14 @@ input[type="range"]:active::-webkit-slider-thumb{transform:scale(1.15)}
 .cut__svg{width:100%;height:auto}
 .cut__scroll{overflow-x:auto}
 .cut__scroll > svg{min-width:640px}
-.c-body{fill:var(--raised);stroke:var(--line);stroke-width:1.2}
-.c-detail{stroke:var(--faint);stroke-width:1;opacity:.7}
+/* Gehäuse: eine Fläche, eine Kontur. Die Bauteile liegen darin geclippt,
+   deshalb braucht keines davon einen eigenen Rahmen. */
+.c-shell{fill:var(--raised);opacity:.55}
+.c-outline{fill:none;stroke:var(--line);stroke-width:1.6}
+.c-fill{fill:var(--surface);opacity:.9}
+.c-detail{stroke:var(--faint);stroke-width:1;opacity:.55}
+.c-detail-f{fill:none;stroke:var(--faint);stroke-width:1;opacity:.5}
+.c-weave{stroke:var(--faint);stroke-width:.9;opacity:.38}
 .c-accent{fill:var(--accent);opacity:.85}
 .c-heat{fill:var(--heat);opacity:.9}
 .c-lead{stroke:var(--line);stroke-width:1}
@@ -511,7 +525,10 @@ tbody tr:last-child th,tbody tr:last-child td{border-bottom:0}
 /* ============================================================
    FAQ
    ============================================================ */
-.faq{display:grid;max-width:52rem}
+/* Volle Satzbreite wie .routines und der Preisblock darüber. Mit 52rem endete
+   die Liste 270 px vor der Karte darüber und stand als Fragment im Raum;
+   die Antwortlänge begrenzt ohnehin .qa__a. */
+.faq{display:grid}
 .qa{border-top:1px solid var(--line-soft)}
 .qa:last-child{border-bottom:1px solid var(--line-soft)}
 .qa summary{
@@ -601,7 +618,15 @@ tbody tr:last-child th,tbody tr:last-child td{border-bottom:0}
   .reach{grid-template-columns:minmax(0,.85fr) minmax(0,1fr)}
   .reach__stage{padding:1.8rem 0 1.8rem 1.8rem;align-items:center}
   .reach__panel{border-top:0;border-left:1px solid var(--line-soft)}
-  .app{grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);align-items:start}
+  /* Nebeneinander wird aus der Aufsatzleiste eine Liste: fünf Kacheln nebeneinander
+     sind nur 107 px hoch und liessen unter sich ein 120-px-Loch neben der
+     Detailtafel stehen. Als Zeilen füllen sie die Spalte auf gleiche Höhe. */
+  .app{grid-template-columns:minmax(0,.82fr) minmax(0,1.18fr);align-items:stretch}
+  .heads{grid-template-columns:minmax(0,1fr);grid-auto-rows:1fr}
+  .head{flex-direction:row;align-items:center;justify-content:flex-start;gap:.9rem;padding:.7rem 1.1rem}
+  .head__ico{width:28px;height:28px}
+  .head__n{text-align:left}
+  .head:hover .head__ico{transform:translateX(2px)}
   .buy{grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr)}
   .buy__side{border-top:0;border-left:1px solid var(--line-soft)}
   .voices{grid-template-columns:repeat(3,minmax(0,1fr))}
@@ -852,35 +877,45 @@ tbody tr:last-child th,tbody tr:last-child td{border-bottom:0}
             <title id="figTitle">Rückenkarte mit erreichbaren Muskelzonen</title>
             <desc id="figDesc">Schematische Darstellung eines Rückens von hinten. Zonen, die mit der eingestellten Griffverlängerung erreichbar sind, erscheinen in Kupfer, nicht erreichbare bleiben kalt.</desc>
 
-            <!-- Hals -->
-            <path class="z-neck" d="M150 0 L190 0 L192 28 L148 28 Z"/>
+            <!-- Eine einzige Rumpfkontur. Die Zonen sind schlichte Rechtecke, die
+                 hineingeclippt werden — dadurch bleibt die Silhouette durchgehend,
+                 statt aus sechs einzeln umrandeten Trapezen zu bestehen. -->
+            <defs>
+              <clipPath id="torsoClip"><path d="M196.0,2.0 C196.0,5.0 195.3,15.7 196.0,20.0 C196.7,24.3 197.2,25.3 200.0,28.0 C202.8,30.7 208.5,33.2 213.0,36.0 C217.5,38.8 222.3,42.0 227.0,45.0 C231.7,48.0 236.7,51.0 241.0,54.0 C245.3,57.0 249.5,59.8 253.0,63.0 C256.5,66.2 259.5,69.2 262.0,73.0 C264.5,76.8 267.2,80.5 268.0,86.0 C268.8,91.5 268.0,98.0 267.0,106.0 C266.0,114.0 263.8,124.3 262.0,134.0 C260.2,143.7 258.0,154.0 256.0,164.0 C254.0,174.0 252.0,184.0 250.0,194.0 C248.0,204.0 246.0,214.3 244.0,224.0 C242.0,233.7 239.7,243.3 238.0,252.0 C236.3,260.7 235.0,268.3 234.0,276.0 C233.0,283.7 232.2,290.7 232.0,298.0 C231.8,305.3 232.0,312.0 233.0,320.0 C234.0,328.0 236.5,337.0 238.0,346.0 C239.5,355.0 241.3,365.0 242.0,374.0 C242.7,383.0 242.7,392.3 242.0,400.0 C241.3,407.7 240.3,414.3 238.0,420.0 C235.7,425.7 229.7,431.7 228.0,434.0 L112.0,434.0 C110.3,431.7 104.3,425.7 102.0,420.0 C99.7,414.3 98.7,407.7 98.0,400.0 C97.3,392.3 97.3,383.0 98.0,374.0 C98.7,365.0 100.5,355.0 102.0,346.0 C103.5,337.0 106.0,328.0 107.0,320.0 C108.0,312.0 108.2,305.3 108.0,298.0 C107.8,290.7 107.0,283.7 106.0,276.0 C105.0,268.3 103.7,260.7 102.0,252.0 C100.3,243.3 98.0,233.7 96.0,224.0 C94.0,214.3 92.0,204.0 90.0,194.0 C88.0,184.0 86.0,174.0 84.0,164.0 C82.0,154.0 79.8,143.7 78.0,134.0 C76.2,124.3 74.0,114.0 73.0,106.0 C72.0,98.0 71.2,91.5 72.0,86.0 C72.8,80.5 75.5,76.8 78.0,73.0 C80.5,69.2 83.5,66.2 87.0,63.0 C90.5,59.8 94.7,57.0 99.0,54.0 C103.3,51.0 108.3,48.0 113.0,45.0 C117.7,42.0 122.5,38.8 127.0,36.0 C131.5,33.2 137.2,30.7 140.0,28.0 C142.8,25.3 143.3,24.3 144.0,20.0 C144.7,15.7 144.0,5.0 144.0,2.0 Z"/></clipPath>
+            </defs>
 
-            <!-- Die Zonen bilden selbst die Rumpfform: breit an der Schulter,
-                 schmal an der Taille, wieder breiter am Becken. -->
-            <path class="z-band" data-band="nacken"  d="M128 30 L212 30 L228 70 L112 70 Z"/>
-            <path class="z-band" data-band="trapez"  d="M110 74 L230 74 L258 138 L82 138 Z"/>
-            <path class="z-band" data-band="scapula" d="M86 142 L254 142 L242 222 L98 222 Z"/>
-            <path class="z-band" data-band="mitte"   d="M100 226 L240 226 L228 290 L112 290 Z"/>
-            <path class="z-band" data-band="lende"   d="M113 294 L227 294 L224 354 L116 354 Z"/>
-            <path class="z-band" data-band="gesaess" d="M114 358 L226 358 L234 426 L106 426 Z"/>
+            <path class="z-body" d="M196.0,2.0 C196.0,5.0 195.3,15.7 196.0,20.0 C196.7,24.3 197.2,25.3 200.0,28.0 C202.8,30.7 208.5,33.2 213.0,36.0 C217.5,38.8 222.3,42.0 227.0,45.0 C231.7,48.0 236.7,51.0 241.0,54.0 C245.3,57.0 249.5,59.8 253.0,63.0 C256.5,66.2 259.5,69.2 262.0,73.0 C264.5,76.8 267.2,80.5 268.0,86.0 C268.8,91.5 268.0,98.0 267.0,106.0 C266.0,114.0 263.8,124.3 262.0,134.0 C260.2,143.7 258.0,154.0 256.0,164.0 C254.0,174.0 252.0,184.0 250.0,194.0 C248.0,204.0 246.0,214.3 244.0,224.0 C242.0,233.7 239.7,243.3 238.0,252.0 C236.3,260.7 235.0,268.3 234.0,276.0 C233.0,283.7 232.2,290.7 232.0,298.0 C231.8,305.3 232.0,312.0 233.0,320.0 C234.0,328.0 236.5,337.0 238.0,346.0 C239.5,355.0 241.3,365.0 242.0,374.0 C242.7,383.0 242.7,392.3 242.0,400.0 C241.3,407.7 240.3,414.3 238.0,420.0 C235.7,425.7 229.7,431.7 228.0,434.0 L112.0,434.0 C110.3,431.7 104.3,425.7 102.0,420.0 C99.7,414.3 98.7,407.7 98.0,400.0 C97.3,392.3 97.3,383.0 98.0,374.0 C98.7,365.0 100.5,355.0 102.0,346.0 C103.5,337.0 106.0,328.0 107.0,320.0 C108.0,312.0 108.2,305.3 108.0,298.0 C107.8,290.7 107.0,283.7 106.0,276.0 C105.0,268.3 103.7,260.7 102.0,252.0 C100.3,243.3 98.0,233.7 96.0,224.0 C94.0,214.3 92.0,204.0 90.0,194.0 C88.0,184.0 86.0,174.0 84.0,164.0 C82.0,154.0 79.8,143.7 78.0,134.0 C76.2,124.3 74.0,114.0 73.0,106.0 C72.0,98.0 71.2,91.5 72.0,86.0 C72.8,80.5 75.5,76.8 78.0,73.0 C80.5,69.2 83.5,66.2 87.0,63.0 C90.5,59.8 94.7,57.0 99.0,54.0 C103.3,51.0 108.3,48.0 113.0,45.0 C117.7,42.0 122.5,38.8 127.0,36.0 C131.5,33.2 137.2,30.7 140.0,28.0 C142.8,25.3 143.3,24.3 144.0,20.0 C144.7,15.7 144.0,5.0 144.0,2.0 Z"/>
+            <g clip-path="url(#torsoClip)">
+              <!-- reicht bis an die Oberkante: der Halsansatz gehört zur Zone,
+                   sonst bleibt oben ein andersfarbiger Stummel stehen -->
+              <rect class="z-band" data-band="nacken" x="56" y="0" width="228" height="72"/>
+              <rect class="z-band" data-band="trapez" x="56" y="72" width="228" height="68"/>
+              <rect class="z-band" data-band="scapula" x="56" y="140" width="228" height="84"/>
+              <rect class="z-band" data-band="mitte" x="56" y="224" width="228" height="68"/>
+              <rect class="z-band" data-band="lende" x="56" y="292" width="228" height="64"/>
+              <rect class="z-band" data-band="gesaess" x="56" y="356" width="228" height="80"/>
+              <path class="z-seam" d="M56 72h228M56 140h228M56 224h228M56 292h228M56 356h228"/>
+            </g>
+            <path class="z-outline" d="M196.0,2.0 C196.0,5.0 195.3,15.7 196.0,20.0 C196.7,24.3 197.2,25.3 200.0,28.0 C202.8,30.7 208.5,33.2 213.0,36.0 C217.5,38.8 222.3,42.0 227.0,45.0 C231.7,48.0 236.7,51.0 241.0,54.0 C245.3,57.0 249.5,59.8 253.0,63.0 C256.5,66.2 259.5,69.2 262.0,73.0 C264.5,76.8 267.2,80.5 268.0,86.0 C268.8,91.5 268.0,98.0 267.0,106.0 C266.0,114.0 263.8,124.3 262.0,134.0 C260.2,143.7 258.0,154.0 256.0,164.0 C254.0,174.0 252.0,184.0 250.0,194.0 C248.0,204.0 246.0,214.3 244.0,224.0 C242.0,233.7 239.7,243.3 238.0,252.0 C236.3,260.7 235.0,268.3 234.0,276.0 C233.0,283.7 232.2,290.7 232.0,298.0 C231.8,305.3 232.0,312.0 233.0,320.0 C234.0,328.0 236.5,337.0 238.0,346.0 C239.5,355.0 241.3,365.0 242.0,374.0 C242.7,383.0 242.7,392.3 242.0,400.0 C241.3,407.7 240.3,414.3 238.0,420.0 C235.7,425.7 229.7,431.7 228.0,434.0 L112.0,434.0 C110.3,431.7 104.3,425.7 102.0,420.0 C99.7,414.3 98.7,407.7 98.0,400.0 C97.3,392.3 97.3,383.0 98.0,374.0 C98.7,365.0 100.5,355.0 102.0,346.0 C103.5,337.0 106.0,328.0 107.0,320.0 C108.0,312.0 108.2,305.3 108.0,298.0 C107.8,290.7 107.0,283.7 106.0,276.0 C105.0,268.3 103.7,260.7 102.0,252.0 C100.3,243.3 98.0,233.7 96.0,224.0 C94.0,214.3 92.0,204.0 90.0,194.0 C88.0,184.0 86.0,174.0 84.0,164.0 C82.0,154.0 79.8,143.7 78.0,134.0 C76.2,124.3 74.0,114.0 73.0,106.0 C72.0,98.0 71.2,91.5 72.0,86.0 C72.8,80.5 75.5,76.8 78.0,73.0 C80.5,69.2 83.5,66.2 87.0,63.0 C90.5,59.8 94.7,57.0 99.0,54.0 C103.3,51.0 108.3,48.0 113.0,45.0 C117.7,42.0 122.5,38.8 127.0,36.0 C131.5,33.2 137.2,30.7 140.0,28.0 C142.8,25.3 143.3,24.3 144.0,20.0 C144.7,15.7 144.0,5.0 144.0,2.0 Z"/>
 
-            <!-- Schulterblätter -->
-            <g class="z-hint" fill="none">
-              <path d="M150 156 L122 170 L132 214 L162 204 Z"/>
-              <path d="M190 156 L218 170 L208 214 L178 204 Z"/>
+            <g clip-path="url(#torsoClip)">
+              <!-- Schulterblätter -->
+              <g class="z-hint" fill="none">
+                <path d="M152 132 C133 143 128 168 135 196 C149 189 161 175 165 157 Z"/>
+                <path d="M188 132 C207 143 212 168 205 196 C191 189 179 175 175 157 Z"/>
+              </g>
+              <!-- Wirbelsäule -->
+              <g class="z-spine" fill="none" stroke-linecap="round">
+                <path d="M170 36v396"/>
+                <path d="M159 62h22M157 97h26M155 132h30M155 167h30M156 202h28M158 237h24M159 272h22M160 307h20M161 342h18M162 377h16M163 410h14"/>
+              </g>
             </g>
 
-            <!-- Wirbelsäule -->
-            <g class="z-spine" fill="none" stroke-linecap="round">
-              <path d="M170 34v388"/>
-              <path d="M159 60h22M157 95h26M155 130h30M155 165h30M156 200h28M158 235h24M159 270h22M160 305h20M161 340h18M162 375h16"/>
-            </g>
-
-            <!-- Gerät: Griff, Schaft, Kopf -->
+            <!-- Gerät: Griff, Schaft, Kopf. Die Ids bleiben, das Skript bewegt sie. -->
             <g id="device">
-              <line class="z-shaft" id="shaft" x1="312" y1="40" x2="196" y2="51"/>
-              <rect class="z-grip" x="304" y="14" width="16" height="44" rx="8"/>
-              <circle class="z-headring" id="headRing" cx="196" cy="51" r="16"/>
+              <line class="z-shaft" id="shaft" x1="310" y1="52" x2="196" y2="51"/>
+              <rect class="z-grip" x="303" y="20" width="15" height="38" rx="7.5"/>
+              <circle class="z-headring" id="headRing" cx="196" cy="51" r="13"/>
               <circle class="z-head" id="head" cx="196" cy="51" r="8"/>
             </g>
           </svg>
@@ -940,78 +975,71 @@ tbody tr:last-child th,tbody tr:last-child td{border-bottom:0}
       <div class="cut" id="cutaway">
         <p class="cut__title">Aufbau von vorn nach hinten</p>
         <div class="cut__scroll">
-          <svg class="cut__svg" viewBox="0 0 900 240" role="img" aria-label="Schematischer Aufbau: Aufsatz, Gelenkkopf, bürstenloser Motor, Exzentergetriebe, Carbon-Griffrohr, Akku und Endkappe.">
-            <!-- Achse -->
-            <line class="c-detail" x1="30" y1="96" x2="870" y2="96" stroke-dasharray="2 5"/>
+          <svg class="cut__svg" viewBox="0 0 900 240" role="img" aria-label="Schnitt durch das Gerät: Silikonaufsatz, Gelenkkopf, bürstenloser Motor im Kopf, Exzentergetriebe, Carbon-Griffrohr, Akku und Endkappe.">
+            <defs>
+              <clipPath id="shellClip"><path d="M38.0,96.0 C39.0,92.0 41.0,78.3 44.0,72.0 C47.0,65.7 51.0,61.8 56.0,58.0 C61.0,54.2 66.7,51.2 74.0,49.0 C81.3,46.8 90.3,45.8 100.0,45.0 C109.7,44.2 121.7,43.8 132.0,44.0 C142.3,44.2 152.3,44.8 162.0,46.0 C171.7,47.2 181.0,48.8 190.0,51.0 C199.0,53.2 207.7,56.2 216.0,59.0 C224.3,61.8 232.3,65.3 240.0,68.0 C247.7,70.7 255.3,73.3 262.0,75.0 C268.7,76.7 273.7,77.3 280.0,78.0 C286.3,78.7 276.7,78.8 300.0,79.0 C323.3,79.2 376.7,79.0 420.0,79.0 C463.3,79.0 513.3,79.0 560.0,79.0 C606.7,79.0 663.3,79.0 700.0,79.0 C736.7,79.0 762.3,79.2 780.0,79.0 C797.7,78.8 798.0,78.5 806.0,78.0 C814.0,77.5 821.0,76.3 828.0,76.0 C835.0,75.7 842.3,75.2 848.0,76.0 C853.7,76.8 858.3,77.7 862.0,81.0 C865.7,84.3 868.7,93.5 870.0,96.0 C868.7,98.5 865.7,107.7 862.0,111.0 C858.3,114.3 853.7,115.2 848.0,116.0 C842.3,116.8 835.0,116.3 828.0,116.0 C821.0,115.7 814.0,114.5 806.0,114.0 C798.0,113.5 797.7,113.2 780.0,113.0 C762.3,112.8 736.7,113.0 700.0,113.0 C663.3,113.0 606.7,113.0 560.0,113.0 C513.3,113.0 463.3,113.0 420.0,113.0 C376.7,113.0 323.3,112.8 300.0,113.0 C276.7,113.2 286.3,113.3 280.0,114.0 C273.7,114.7 268.7,115.3 262.0,117.0 C255.3,118.7 247.7,121.3 240.0,124.0 C232.3,126.7 224.3,130.2 216.0,133.0 C207.7,135.8 199.0,138.8 190.0,141.0 C181.0,143.2 171.7,144.8 162.0,146.0 C152.3,147.2 142.3,147.8 132.0,148.0 C121.7,148.2 109.7,147.8 100.0,147.0 C90.3,146.2 81.3,145.2 74.0,143.0 C66.7,140.8 61.0,137.8 56.0,134.0 C51.0,130.2 47.0,126.3 44.0,120.0 C41.0,113.7 39.0,100.0 38.0,96.0 Z"/></clipPath>
+            </defs>
 
-            <!-- Aufsatz -->
-            <g class="c-part" style="--d:0ms">
-              <circle class="c-heat" cx="70" cy="96" r="26"/>
-              <line class="c-lead" x1="70" y1="130" x2="70" y2="164"/>
-              <text class="c-label" x="70" y="180" text-anchor="middle">AUFSATZ</text>
-              <text class="c-label" x="70" y="194" text-anchor="middle" opacity=".6">SILIKON</text>
-            </g>
+            <!-- Gehäuse als eine durchgehende Kontur. Die Bauteile liegen darin,
+                 nicht daneben — sonst liest sich der Schnitt als Teileliste. -->
+            <path class="c-shell" d="M38.0,96.0 C39.0,92.0 41.0,78.3 44.0,72.0 C47.0,65.7 51.0,61.8 56.0,58.0 C61.0,54.2 66.7,51.2 74.0,49.0 C81.3,46.8 90.3,45.8 100.0,45.0 C109.7,44.2 121.7,43.8 132.0,44.0 C142.3,44.2 152.3,44.8 162.0,46.0 C171.7,47.2 181.0,48.8 190.0,51.0 C199.0,53.2 207.7,56.2 216.0,59.0 C224.3,61.8 232.3,65.3 240.0,68.0 C247.7,70.7 255.3,73.3 262.0,75.0 C268.7,76.7 273.7,77.3 280.0,78.0 C286.3,78.7 276.7,78.8 300.0,79.0 C323.3,79.2 376.7,79.0 420.0,79.0 C463.3,79.0 513.3,79.0 560.0,79.0 C606.7,79.0 663.3,79.0 700.0,79.0 C736.7,79.0 762.3,79.2 780.0,79.0 C797.7,78.8 798.0,78.5 806.0,78.0 C814.0,77.5 821.0,76.3 828.0,76.0 C835.0,75.7 842.3,75.2 848.0,76.0 C853.7,76.8 858.3,77.7 862.0,81.0 C865.7,84.3 868.7,93.5 870.0,96.0 C868.7,98.5 865.7,107.7 862.0,111.0 C858.3,114.3 853.7,115.2 848.0,116.0 C842.3,116.8 835.0,116.3 828.0,116.0 C821.0,115.7 814.0,114.5 806.0,114.0 C798.0,113.5 797.7,113.2 780.0,113.0 C762.3,112.8 736.7,113.0 700.0,113.0 C663.3,113.0 606.7,113.0 560.0,113.0 C513.3,113.0 463.3,113.0 420.0,113.0 C376.7,113.0 323.3,112.8 300.0,113.0 C276.7,113.2 286.3,113.3 280.0,114.0 C273.7,114.7 268.7,115.3 262.0,117.0 C255.3,118.7 247.7,121.3 240.0,124.0 C232.3,126.7 224.3,130.2 216.0,133.0 C207.7,135.8 199.0,138.8 190.0,141.0 C181.0,143.2 171.7,144.8 162.0,146.0 C152.3,147.2 142.3,147.8 132.0,148.0 C121.7,148.2 109.7,147.8 100.0,147.0 C90.3,146.2 81.3,145.2 74.0,143.0 C66.7,140.8 61.0,137.8 56.0,134.0 C51.0,130.2 47.0,126.3 44.0,120.0 C41.0,113.7 39.0,100.0 38.0,96.0 Z"/>
 
-            <!-- Gelenkkopf -->
-            <g class="c-part" style="--d:90ms">
-              <rect class="c-body" x="112" y="66" width="86" height="60" rx="10"/>
-              <circle class="c-accent" cx="156" cy="96" r="7"/>
-              <line class="c-lead" x1="156" y1="132" x2="156" y2="164"/>
-              <text class="c-label" x="156" y="180" text-anchor="middle">GELENKKOPF</text>
-              <text class="c-label" x="156" y="194" text-anchor="middle" opacity=".6">5 RASTEN</text>
-            </g>
-
-            <!-- Motor -->
-            <g class="c-part" style="--d:180ms">
-              <rect class="c-body" x="214" y="56" width="150" height="80" rx="6"/>
+            <g clip-path="url(#shellClip)">
+              <path class="c-heat" d="M30 40 L94 40 L94 152 L30 152 Z"/>
+              <rect class="c-fill" x="98" y="44" width="70" height="104" rx="10"/>
+              <circle class="c-detail-f" cx="133" cy="96" r="22"/>
+              <circle class="c-accent" cx="133" cy="96" r="7"/>
+              <rect class="c-fill" x="174" y="56" width="96" height="80" rx="8"/>
               <g class="c-detail" fill="none">
-                <path d="M232 56v80M254 56v80M276 56v80M298 56v80M320 56v80M342 56v80"/>
+                <path d="M186 58v76M198 58v76M210 58v76M222 58v76M234 58v76M246 58v76M258 58v76"/>
               </g>
-              <circle class="c-accent" cx="289" cy="96" r="12"/>
-              <line class="c-lead" x1="289" y1="142" x2="289" y2="164"/>
-              <text class="c-label" x="289" y="180" text-anchor="middle">BÜRSTENLOSER MOTOR</text>
-              <text class="c-label" x="289" y="194" text-anchor="middle" opacity=".6">IM KOPF, NICHT IM GRIFF</text>
-              <!-- Reicht bis zum Exzenter, deshalb bleibt hier Platz für die lange Zeile -->
-
-            </g>
-
-            <!-- Exzenter -->
-            <g class="c-part" style="--d:270ms">
-              <rect class="c-body" x="380" y="70" width="74" height="52" rx="5"/>
+              <circle class="c-accent" cx="222" cy="96" r="13"/>
+              <rect class="c-fill" x="352" y="74" width="76" height="44" rx="6"/>
               <g class="c-detail" fill="none">
-                <circle cx="417" cy="96" r="17"/>
-                <circle cx="423" cy="90" r="6"/>
+                <circle cx="390" cy="96" r="15"/><circle cx="397" cy="89" r="5.5"/>
               </g>
-              <line class="c-lead" x1="417" y1="128" x2="417" y2="164"/>
-              <text class="c-label" x="417" y="180" text-anchor="middle">EXZENTER</text>
-              <text class="c-label" x="417" y="194" text-anchor="middle" opacity=".6">14 mm HUB</text>
-            </g>
-
-            <!-- Carbon-Griffrohr -->
-            <g class="c-part" style="--d:360ms">
-              <rect class="c-body" x="470" y="80" width="250" height="32" rx="16"/>
-              <g class="c-detail" fill="none">
-                <path d="M486 80l16 32M510 80l16 32M534 80l16 32M558 80l16 32M582 80l16 32M606 80l16 32M630 80l16 32M654 80l16 32M678 80l16 32"/>
+              <g class="c-weave" fill="none">
+                <path d="M446 79l18 34M470 79l18 34M494 79l18 34M518 79l18 34M542 79l18 34M566 79l18 34M590 79l18 34M614 79l18 34M638 79l18 34M662 79l18 34"/>
+                <path d="M464 79l-18 34M488 79l-18 34M512 79l-18 34M536 79l-18 34M560 79l-18 34M584 79l-18 34M608 79l-18 34M632 79l-18 34M656 79l-18 34M680 79l-18 34"/>
               </g>
-              <rect class="c-accent" x="596" y="76" width="4" height="40" rx="2"/>
-              <line class="c-lead" x1="596" y1="120" x2="596" y2="164"/>
-              <text class="c-label" x="596" y="180" text-anchor="middle">CARBON-GRIFFROHR</text>
-              <text class="c-label" x="596" y="194" text-anchor="middle" opacity=".6">TELESKOP 26–48 cm</text>
+              <rect class="c-accent" x="558" y="72" width="4" height="48" rx="2"/>
+              <rect class="c-fill" x="700" y="80" width="112" height="32" rx="4"/>
+              <g class="c-detail" fill="none"><path d="M737 80v32M774 80v32"/></g>
             </g>
 
-            <!-- Akku -->
-            <g class="c-part" style="--d:450ms">
-              <rect class="c-body" x="736" y="72" width="98" height="48" rx="5"/>
-              <g class="c-detail" fill="none"><path d="M769 72v48M802 72v48"/></g>
-              <line class="c-lead" x1="785" y1="126" x2="785" y2="164"/>
-              <text class="c-label" x="785" y="180" text-anchor="middle">AKKU 2550 mAh</text>
-              <text class="c-label" x="785" y="194" text-anchor="middle" opacity=".6">USB-C · 90 min</text>
-            </g>
+            <path class="c-outline" d="M38.0,96.0 C39.0,92.0 41.0,78.3 44.0,72.0 C47.0,65.7 51.0,61.8 56.0,58.0 C61.0,54.2 66.7,51.2 74.0,49.0 C81.3,46.8 90.3,45.8 100.0,45.0 C109.7,44.2 121.7,43.8 132.0,44.0 C142.3,44.2 152.3,44.8 162.0,46.0 C171.7,47.2 181.0,48.8 190.0,51.0 C199.0,53.2 207.7,56.2 216.0,59.0 C224.3,61.8 232.3,65.3 240.0,68.0 C247.7,70.7 255.3,73.3 262.0,75.0 C268.7,76.7 273.7,77.3 280.0,78.0 C286.3,78.7 276.7,78.8 300.0,79.0 C323.3,79.2 376.7,79.0 420.0,79.0 C463.3,79.0 513.3,79.0 560.0,79.0 C606.7,79.0 663.3,79.0 700.0,79.0 C736.7,79.0 762.3,79.2 780.0,79.0 C797.7,78.8 798.0,78.5 806.0,78.0 C814.0,77.5 821.0,76.3 828.0,76.0 C835.0,75.7 842.3,75.2 848.0,76.0 C853.7,76.8 858.3,77.7 862.0,81.0 C865.7,84.3 868.7,93.5 870.0,96.0 C868.7,98.5 865.7,107.7 862.0,111.0 C858.3,114.3 853.7,115.2 848.0,116.0 C842.3,116.8 835.0,116.3 828.0,116.0 C821.0,115.7 814.0,114.5 806.0,114.0 C798.0,113.5 797.7,113.2 780.0,113.0 C762.3,112.8 736.7,113.0 700.0,113.0 C663.3,113.0 606.7,113.0 560.0,113.0 C513.3,113.0 463.3,113.0 420.0,113.0 C376.7,113.0 323.3,112.8 300.0,113.0 C276.7,113.2 286.3,113.3 280.0,114.0 C273.7,114.7 268.7,115.3 262.0,117.0 C255.3,118.7 247.7,121.3 240.0,124.0 C232.3,126.7 224.3,130.2 216.0,133.0 C207.7,135.8 199.0,138.8 190.0,141.0 C181.0,143.2 171.7,144.8 162.0,146.0 C152.3,147.2 142.3,147.8 132.0,148.0 C121.7,148.2 109.7,147.8 100.0,147.0 C90.3,146.2 81.3,145.2 74.0,143.0 C66.7,140.8 61.0,137.8 56.0,134.0 C51.0,130.2 47.0,126.3 44.0,120.0 C41.0,113.7 39.0,100.0 38.0,96.0 Z"/>
 
-            <!-- Endkappe -->
-            <g class="c-part" style="--d:540ms">
-              <rect class="c-body" x="844" y="80" width="22" height="32" rx="6"/>
-            </g>
+            
+              <g class="c-part" style="--d:0ms">
+                <line class="c-lead" x1="62" y1="148" x2="62" y2="158"/>
+                <text class="c-label" x="62" y="174" text-anchor="middle">AUFSATZ</text>
+                <text class="c-label" x="62" y="188" text-anchor="middle" opacity=".62">SILIKON</text>
+              </g>
+              <g class="c-part" style="--d:90ms">
+                <line class="c-lead" x1="150" y1="152" x2="150" y2="196"/>
+                <text class="c-label" x="150" y="212" text-anchor="middle">GELENKKOPF</text>
+                <text class="c-label" x="150" y="226" text-anchor="middle" opacity=".62">5 RASTEN</text>
+              </g>
+              <g class="c-part" style="--d:180ms">
+                <line class="c-lead" x1="250" y1="140" x2="250" y2="158"/>
+                <text class="c-label" x="250" y="174" text-anchor="middle">BÜRSTENLOSER MOTOR</text>
+                <text class="c-label" x="250" y="188" text-anchor="middle" opacity=".62">IM KOPF, NICHT IM GRIFF</text>
+              </g>
+              <g class="c-part" style="--d:270ms">
+                <line class="c-lead" x1="390" y1="120" x2="390" y2="196"/>
+                <text class="c-label" x="390" y="212" text-anchor="middle">EXZENTER</text>
+                <text class="c-label" x="390" y="226" text-anchor="middle" opacity=".62">14 mm HUB</text>
+              </g>
+              <g class="c-part" style="--d:360ms">
+                <line class="c-lead" x1="560" y1="120" x2="560" y2="158"/>
+                <text class="c-label" x="560" y="174" text-anchor="middle">CARBON-GRIFFROHR</text>
+                <text class="c-label" x="560" y="188" text-anchor="middle" opacity=".62">TELESKOP 26–48 cm</text>
+              </g>
+              <g class="c-part" style="--d:450ms">
+                <line class="c-lead" x1="760" y1="118" x2="760" y2="196"/>
+                <text class="c-label" x="760" y="212" text-anchor="middle">AKKU 2550 mAh</text>
+                <text class="c-label" x="760" y="226" text-anchor="middle" opacity=".62">USB-C · 90 min</text>
+              </g>
           </svg>
         </div>
 
