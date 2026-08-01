@@ -30,6 +30,9 @@
 <meta name="theme-color" content="#0A0D13" media="(prefers-color-scheme: dark)">
 <meta name="theme-color" content="#F1F3F7" media="(prefers-color-scheme: light)">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230A0D13'/%3E%3Cpath d='M9 22.5 23 9.5' stroke='%234C7BFF' stroke-width='2.6' stroke-linecap='round'/%3E%3Ccircle cx='23' cy='9.5' r='4' fill='%23E2703A'/%3E%3C/svg%3E">
+<!-- Setzt die Flagge, an der alle Enthüllungs-Regeln hängen. Ohne JavaScript
+     greift keine davon und der Inhalt steht sofort da, statt auf opacity:0 zu warten. -->
+<script>document.documentElement.classList.add('js')</script>
 <style>
 /* ============================================================
    SCHRIFTEN — Fira Sans Condensed / Fira Sans / Fira Mono
@@ -225,7 +228,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 /* ============================================================
    REVEAL
    ============================================================ */
-.rise{opacity:0;transform:translate3d(0,18px,0);transition:opacity .7s cubic-bezier(.22,.7,.25,1),transform .7s cubic-bezier(.22,.7,.25,1);transition-delay:var(--d,0ms)}
+.js .rise{opacity:0;transform:translate3d(0,18px,0);transition:opacity .7s cubic-bezier(.22,.7,.25,1),transform .7s cubic-bezier(.22,.7,.25,1);transition-delay:var(--d,0ms)}
 .rise.is-in{opacity:1;transform:none}
 
 /* ============================================================
@@ -303,7 +306,8 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .hero__h1{text-transform:uppercase;letter-spacing:-.005em}
 /* padding-top gibt den Umlautpunkten Platz, sonst schneidet die Reveal-Maske sie ab */
 .hero__h1 span{display:block;overflow:hidden;padding-top:.09em;margin-bottom:-.06em}
-.hero__h1 i{display:block;font-style:normal;transform:translateY(105%);animation:lift .95s cubic-bezier(.19,.9,.22,1) forwards;animation-delay:var(--d,0ms)}
+.hero__h1 i{display:block;font-style:normal}
+.js .hero__h1 i{transform:translateY(105%);animation:lift .95s cubic-bezier(.19,.9,.22,1) forwards;animation-delay:var(--d,0ms)}
 .hero__h1 em{font-style:normal;color:var(--accent)}
 @keyframes lift{to{transform:none}}
 .hero__cta{display:flex;flex-wrap:wrap;gap:.7rem}
@@ -399,7 +403,8 @@ input[type="range"]:active::-webkit-slider-thumb{transform:scale(1.15)}
 
 .specs{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--line-soft);border:1px solid var(--line-soft)}
 .spec{background:var(--ground);padding:1.3rem 1.1rem;display:flex;flex-direction:column;gap:.15rem;position:relative;overflow:hidden}
-.spec::after{content:"";position:absolute;inset:auto 0 0 0;height:1px;background:var(--accent);transform:scaleX(0);transform-origin:left;transition:transform .8s cubic-bezier(.22,.7,.25,1)}
+.spec::after{content:"";position:absolute;inset:auto 0 0 0;height:1px;background:var(--accent);transform-origin:left;transition:transform .8s cubic-bezier(.22,.7,.25,1)}
+.js .spec::after{transform:scaleX(0)}
 .spec.is-in::after{transform:scaleX(1)}
 .spec__v{font-family:var(--font-display);font-size:clamp(2.1rem,5.2vw,3rem);line-height:1;font-variant-numeric:tabular-nums}
 .spec__v small{font-family:var(--font-mono);font-size:.36em;color:var(--muted);letter-spacing:.04em;margin-left:.25em}
@@ -423,13 +428,22 @@ input[type="range"]:active::-webkit-slider-thumb{transform:scale(1.15)}
 .c-heat{fill:var(--heat);opacity:.9}
 .c-lead{stroke:var(--line);stroke-width:1}
 .c-label{font-family:var(--font-mono);font-size:9px;fill:var(--muted);letter-spacing:.08em}
-.c-part{opacity:0;transform:translateY(10px);transition:opacity .6s ease,transform .6s cubic-bezier(.22,.7,.25,1);transition-delay:var(--d,0ms)}
+.js .c-part{opacity:0;transform:translateY(10px);transition:opacity .6s ease,transform .6s cubic-bezier(.22,.7,.25,1);transition-delay:var(--d,0ms)}
 .cut.is-in .c-part{opacity:1;transform:none}
 
 .wave{margin-top:clamp(2rem,4vw,3rem);display:grid;gap:1.25rem}
 /* Höher als zuvor: die Fläche trägt jetzt eine mm- und eine ms-Achse,
    und die Schläge brauchen Platz, um als Ausschlag statt als Welle zu lesen. */
-.wave__canvas{width:100%;height:172px;border:1px solid var(--line-soft);border-radius:var(--radius);background:var(--ground)}
+.wave__plot{position:relative}
+.wave__canvas,.wave__fallback{display:block;width:100%;height:172px;border:1px solid var(--line-soft);border-radius:var(--radius);background:var(--ground)}
+/* Genau eine der beiden Darstellungen ist da: ohne JavaScript bliebe das Canvas
+   zwangsläufig leer, also übernimmt dann die statische Spur. */
+.wave__canvas{display:none}
+.js .wave__canvas{display:block}
+.js .wave__fallback{display:none}
+.wf-grid{stroke:var(--line-soft);stroke-width:1}
+.wf-label{font-family:var(--font-mono);font-size:9px;fill:var(--faint)}
+.wf-trace{fill:none;stroke:var(--accent);stroke-width:1.8;stroke-linejoin:round;stroke-linecap:round}
 .levels{display:flex;flex-wrap:wrap;gap:.5rem}
 .level{
   font-family:var(--font-mono);font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;
@@ -689,10 +703,13 @@ tbody tr:last-child th,tbody tr:last-child td{border-bottom:0}
    ============================================================ */
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.001ms !important}
-  .rise{opacity:1;transform:none}
-  .hero__h1 i{transform:none}
-  .spec::after{transform:scaleX(1)}
-  .cut .c-part{opacity:1;transform:none}
+  /* Auf .js gezogen wie die Regeln, die sie zurücknehmen. Ohne das ist
+     .js .rise (0,2,0) spezifischer als .rise (0,1,0) und gewinnt — der Inhalt
+     bliebe trotz reduzierter Bewegung bis zum Scrollen unsichtbar. */
+  .js .rise{opacity:1;transform:none}
+  .js .hero__h1 i{transform:none}
+  .js .spec::after{transform:scaleX(1)}
+  .js .cut .c-part{opacity:1;transform:none}
 }
 </style>
 <!-- Fragen und Antworten, wortgleich aus den <details> unten. Wer eines von beiden
@@ -942,7 +959,14 @@ tbody tr:last-child th,tbody tr:last-child td{border-bottom:0}
             <p class="hero__fine" id="extHint">0 cm entspricht einer üblichen Massagepistole ohne Griff.</p>
           </div>
 
-          <ul class="zones" id="zoneList"></ul>
+          <ul class="zones" id="zoneList">
+            <li class="zone"><span class="zone__dot"></span><span class="zone__name">Nacken & Halsansatz</span><span class="zone__cm">ab 0 cm</span></li>
+            <li class="zone"><span class="zone__dot"></span><span class="zone__name">Trapez oben</span><span class="zone__cm">ab 0 cm</span></li>
+            <li class="zone"><span class="zone__dot"></span><span class="zone__name">Schulterblätter</span><span class="zone__cm">ab 16 cm</span></li>
+            <li class="zone"><span class="zone__dot"></span><span class="zone__name">Mittlerer Rücken</span><span class="zone__cm">ab 26 cm</span></li>
+            <li class="zone"><span class="zone__dot"></span><span class="zone__name">Lendenmuskulatur</span><span class="zone__cm">ab 36 cm</span></li>
+            <li class="zone"><span class="zone__dot"></span><span class="zone__name">Gesäß & Piriformis</span><span class="zone__cm">ab 44 cm</span></li>
+          </ul>
         </div>
       </div>
 
@@ -1046,7 +1070,14 @@ tbody tr:last-child th,tbody tr:last-child td{border-bottom:0}
 
         <!-- Intensitätsstufen -->
         <div class="wave">
-          <canvas class="wave__canvas" id="waveCanvas" aria-hidden="true"></canvas>
+          <div class="wave__plot">
+            <svg class="wave__fallback" viewBox="0 0 1000 172" preserveAspectRatio="none" role="img" aria-label="Perkussionsverlauf, Stufe 3: 2450 Schläge pro Minute bei 14 mm Hub.">
+            <g class="wf-grid" fill="none"><path d="M38 26.0H970M38 82.0H970M38 138.0H970"/><path d="M38 12V152M271 12V152M504 12V152M737 12V152M970 12V152"/></g>
+            <g class="wf-label"><text x="4" y="10" dominant-baseline="hanging">mm</text><text x="31" y="26.0" text-anchor="end" dominant-baseline="middle">+7</text><text x="31" y="82.0" text-anchor="end" dominant-baseline="middle">0</text><text x="31" y="138.0" text-anchor="end" dominant-baseline="middle">-7</text><text x="271" y="157" text-anchor="middle" dominant-baseline="hanging">50 ms</text><text x="504" y="157" text-anchor="middle" dominant-baseline="hanging">100 ms</text><text x="737" y="157" text-anchor="middle" dominant-baseline="hanging">150 ms</text><text x="970" y="157" text-anchor="middle" dominant-baseline="hanging">200 ms</text></g>
+            <path class="wf-trace" d="M38,82.0 L39,69.7 L40,57.5 L41,45.2 L42,32.9 L43,31.3 L44,43.6 L45,55.9 L46,68.1 L47,80.4 L48,92.7 L49,104.9 L50,117.2 L51,129.5 L52,136.4 L53,130.7 L54,124.6 L55,118.5 L56,112.4 L57,106.5 L58,101.0 L59,96.0 L60,91.4 L61,87.3 L62,83.8 L63,80.9 L64,78.4 L65,76.5 L66,75.1 L67,74.1 L68,73.5 L69,73.2 L70,73.2 L71,73.4 L72,73.9 L73,74.4 L74,75.1 L75,75.9 L76,76.7 L77,77.5 L78,78.2 L79,79.0 L80,79.7 L81,80.3 L82,80.9 L83,81.4 L84,81.9 L85,82.2 L86,82.5 L87,82.8 L88,82.9 L89,83.0 L90,83.1 L91,83.1 L92,83.1 L93,83.1 L94,83.0 L95,83.0 L96,82.9 L97,82.8 L98,82.7 L99,82.6 L100,82.0 L101,82.0 L102,82.0 L103,82.0 L104,82.0 L105,82.0 L106,82.0 L107,82.0 L108,82.0 L109,82.0 L110,82.0 L111,82.0 L112,82.0 L113,82.0 L114,82.0 L115,82.0 L116,82.0 L117,82.0 L118,82.0 L119,82.0 L120,82.0 L121,82.0 L122,82.0 L123,82.0 L124,82.0 L125,82.0 L126,82.0 L127,82.0 L128,82.0 L129,82.0 L130,82.0 L131,82.0 L132,82.0 L133,82.0 L134,82.0 L135,82.0 L136,82.0 L137,82.0 L138,82.0 L139,82.0 L140,82.0 L141,82.0 L142,82.0 L143,82.0 L144,82.0 L145,82.0 L146,82.0 L147,82.0 L148,82.0 L149,82.0 L150,82.0 L151,82.0 L152,82.0 L153,71.2 L154,59.0 L155,46.7 L156,34.4 L157,29.8 L158,42.1 L159,54.4 L160,66.6 L161,78.9 L162,91.2 L163,103.4 L164,115.7 L165,128.0 L166,137.0 L167,131.4 L168,125.4 L169,119.2 L170,113.1 L171,107.3 L172,101.7 L173,96.5 L174,91.9 L175,87.8 L176,84.2 L177,81.2 L178,78.7 L179,76.7 L180,75.2 L181,74.2 L182,73.5 L183,73.2 L184,73.2 L185,73.4 L186,73.8 L187,74.4 L188,75.0 L189,75.8 L190,76.6 L191,77.4 L192,78.1 L193,78.9 L194,79.6 L195,80.3 L196,80.8 L197,81.4 L198,81.8 L199,82.2 L200,82.5 L201,82.7 L202,82.9 L203,83.0 L204,83.1 L205,83.1 L206,83.1 L207,83.1 L208,83.0 L209,83.0 L210,82.9 L211,82.8 L212,82.7 L213,82.6 L214,82.0 L215,82.0 L216,82.0 L217,82.0 L218,82.0 L219,82.0 L220,82.0 L221,82.0 L222,82.0 L223,82.0 L224,82.0 L225,82.0 L226,82.0 L227,82.0 L228,82.0 L229,82.0 L230,82.0 L231,82.0 L232,82.0 L233,82.0 L234,82.0 L235,82.0 L236,82.0 L237,82.0 L238,82.0 L239,82.0 L240,82.0 L241,82.0 L242,82.0 L243,82.0 L244,82.0 L245,82.0 L246,82.0 L247,82.0 L248,82.0 L249,82.0 L250,82.0 L251,82.0 L252,82.0 L253,82.0 L254,82.0 L255,82.0 L256,82.0 L257,82.0 L258,82.0 L259,82.0 L260,82.0 L261,82.0 L262,82.0 L263,82.0 L264,82.0 L265,82.0 L266,82.0 L267,72.7 L268,60.5 L269,48.2 L270,35.9 L271,28.3 L272,40.6 L273,52.9 L274,65.1 L275,77.4 L276,89.7 L277,101.9 L278,114.2 L279,126.5 L280,137.7 L281,132.1 L282,126.1 L283,120.0 L284,113.9 L285,108.0 L286,102.3 L287,97.2 L288,92.4 L289,88.2 L290,84.6 L291,81.5 L292,79.0 L293,76.9 L294,75.4 L295,74.3 L296,73.6 L297,73.2 L298,73.2 L299,73.4 L300,73.7 L301,74.3 L302,74.9 L303,75.7 L304,76.5 L305,77.3 L306,78.0 L307,78.8 L308,79.5 L309,80.2 L310,80.8 L311,81.3 L312,81.8 L313,82.1 L314,82.5 L315,82.7 L316,82.9 L317,83.0 L318,83.1 L319,83.1 L320,83.1 L321,83.1 L322,83.1 L323,83.0 L324,82.9 L325,82.8 L326,82.7 L327,82.6 L328,82.0 L329,82.0 L330,82.0 L331,82.0 L332,82.0 L333,82.0 L334,82.0 L335,82.0 L336,82.0 L337,82.0 L338,82.0 L339,82.0 L340,82.0 L341,82.0 L342,82.0 L343,82.0 L344,82.0 L345,82.0 L346,82.0 L347,82.0 L348,82.0 L349,82.0 L350,82.0 L351,82.0 L352,82.0 L353,82.0 L354,82.0 L355,82.0 L356,82.0 L357,82.0 L358,82.0 L359,82.0 L360,82.0 L361,82.0 L362,82.0 L363,82.0 L364,82.0 L365,82.0 L366,82.0 L367,82.0 L368,82.0 L369,82.0 L370,82.0 L371,82.0 L372,82.0 L373,82.0 L374,82.0 L375,82.0 L376,82.0 L377,82.0 L378,82.0 L379,82.0 L380,82.0 L381,74.2 L382,62.0 L383,49.7 L384,37.4 L385,26.8 L386,39.1 L387,51.4 L388,63.6 L389,75.9 L390,88.2 L391,100.4 L392,112.7 L393,125.0 L394,137.2 L395,132.8 L396,126.9 L397,120.7 L398,114.6 L399,108.7 L400,103.0 L401,97.8 L402,93.0 L403,88.7 L404,85.0 L405,81.9 L406,79.3 L407,77.2 L408,75.6 L409,74.4 L410,73.7 L411,73.3 L412,73.2 L413,73.3 L414,73.7 L415,74.2 L416,74.9 L417,75.6 L418,76.4 L419,77.2 L420,77.9 L421,78.7 L422,79.4 L423,80.1 L424,80.7 L425,81.2 L426,81.7 L427,82.1 L428,82.4 L429,82.7 L430,82.9 L431,83.0 L432,83.1 L433,83.1 L434,83.1 L435,83.1 L436,83.1 L437,83.0 L438,82.9 L439,82.8 L440,82.7 L441,82.6 L442,82.0 L443,82.0 L444,82.0 L445,82.0 L446,82.0 L447,82.0 L448,82.0 L449,82.0 L450,82.0 L451,82.0 L452,82.0 L453,82.0 L454,82.0 L455,82.0 L456,82.0 L457,82.0 L458,82.0 L459,82.0 L460,82.0 L461,82.0 L462,82.0 L463,82.0 L464,82.0 L465,82.0 L466,82.0 L467,82.0 L468,82.0 L469,82.0 L470,82.0 L471,82.0 L472,82.0 L473,82.0 L474,82.0 L475,82.0 L476,82.0 L477,82.0 L478,82.0 L479,82.0 L480,82.0 L481,82.0 L482,82.0 L483,82.0 L484,82.0 L485,82.0 L486,82.0 L487,82.0 L488,82.0 L489,82.0 L490,82.0 L491,82.0 L492,82.0 L493,82.0 L494,82.0 L495,75.7 L496,63.5 L497,51.2 L498,38.9 L499,26.7 L500,37.6 L501,49.9 L502,62.1 L503,74.4 L504,86.7 L505,98.9 L506,111.2 L507,123.5 L508,135.7 L509,133.5 L510,127.6 L511,121.5 L512,115.4 L513,109.4 L514,103.7 L515,98.4 L516,93.5 L517,89.2 L518,85.4 L519,82.2 L520,79.6 L521,77.4 L522,75.7 L523,74.5 L524,73.7 L525,73.3 L526,73.2 L527,73.3 L528,73.6 L529,74.1 L530,74.8 L531,75.5 L532,76.3 L533,77.1 L534,77.9 L535,78.6 L536,79.3 L537,80.0 L538,80.6 L539,81.2 L540,81.6 L541,82.1 L542,82.4 L543,82.6 L544,82.8 L545,83.0 L546,83.1 L547,83.1 L548,83.1 L549,83.1 L550,83.1 L551,83.0 L552,82.9 L553,82.8 L554,82.7 L555,82.6 L556,82.5 L557,82.0 L558,82.0 L559,82.0 L560,82.0 L561,82.0 L562,82.0 L563,82.0 L564,82.0 L565,82.0 L566,82.0 L567,82.0 L568,82.0 L569,82.0 L570,82.0 L571,82.0 L572,82.0 L573,82.0 L574,82.0 L575,82.0 L576,82.0 L577,82.0 L578,82.0 L579,82.0 L580,82.0 L581,82.0 L582,82.0 L583,82.0 L584,82.0 L585,82.0 L586,82.0 L587,82.0 L588,82.0 L589,82.0 L590,82.0 L591,82.0 L592,82.0 L593,82.0 L594,82.0 L595,82.0 L596,82.0 L597,82.0 L598,82.0 L599,82.0 L600,82.0 L601,82.0 L602,82.0 L603,82.0 L604,82.0 L605,82.0 L606,82.0 L607,82.0 L608,82.0 L609,77.2 L610,65.0 L611,52.7 L612,40.4 L613,28.2 L614,36.1 L615,48.4 L616,60.6 L617,72.9 L618,85.2 L619,97.4 L620,109.7 L621,122.0 L622,134.2 L623,134.2 L624,128.4 L625,122.3 L626,116.1 L627,110.1 L628,104.4 L629,99.0 L630,94.1 L631,89.7 L632,85.9 L633,82.6 L634,79.9 L635,77.6 L636,75.9 L637,74.7 L638,73.8 L639,73.3 L640,73.2 L641,73.3 L642,73.6 L643,74.1 L644,74.7 L645,75.4 L646,76.2 L647,77.0 L648,77.8 L649,78.5 L650,79.3 L651,79.9 L652,80.6 L653,81.1 L654,81.6 L655,82.0 L656,82.3 L657,82.6 L658,82.8 L659,83.0 L660,83.1 L661,83.1 L662,83.1 L663,83.1 L664,83.1 L665,83.0 L666,82.9 L667,82.8 L668,82.7 L669,82.6 L670,82.5 L671,82.0 L672,82.0 L673,82.0 L674,82.0 L675,82.0 L676,82.0 L677,82.0 L678,82.0 L679,82.0 L680,82.0 L681,82.0 L682,82.0 L683,82.0 L684,82.0 L685,82.0 L686,82.0 L687,82.0 L688,82.0 L689,82.0 L690,82.0 L691,82.0 L692,82.0 L693,82.0 L694,82.0 L695,82.0 L696,82.0 L697,82.0 L698,82.0 L699,82.0 L700,82.0 L701,82.0 L702,82.0 L703,82.0 L704,82.0 L705,82.0 L706,82.0 L707,82.0 L708,82.0 L709,82.0 L710,82.0 L711,82.0 L712,82.0 L713,82.0 L714,82.0 L715,82.0 L716,82.0 L717,82.0 L718,82.0 L719,82.0 L720,82.0 L721,82.0 L722,82.0 L723,78.7 L724,66.5 L725,54.2 L726,41.9 L727,29.7 L728,34.6 L729,46.9 L730,59.1 L731,71.4 L732,83.7 L733,95.9 L734,108.2 L735,120.5 L736,132.7 L737,134.9 L738,129.1 L739,123.0 L740,116.9 L741,110.8 L742,105.0 L743,99.6 L744,94.7 L745,90.2 L746,86.3 L747,83.0 L748,80.2 L749,77.9 L750,76.1 L751,74.8 L752,73.9 L753,73.4 L754,73.2 L755,73.2 L756,73.5 L757,74.0 L758,74.6 L759,75.3 L760,76.1 L761,76.9 L762,77.7 L763,78.4 L764,79.2 L765,79.9 L766,80.5 L767,81.0 L768,81.5 L769,82.0 L770,82.3 L771,82.6 L772,82.8 L773,83.0 L774,83.1 L775,83.1 L776,83.1 L777,83.1 L778,83.1 L779,83.0 L780,82.9 L781,82.8 L782,82.7 L783,82.6 L784,82.5 L785,82.0 L786,82.0 L787,82.0 L788,82.0 L789,82.0 L790,82.0 L791,82.0 L792,82.0 L793,82.0 L794,82.0 L795,82.0 L796,82.0 L797,82.0 L798,82.0 L799,82.0 L800,82.0 L801,82.0 L802,82.0 L803,82.0 L804,82.0 L805,82.0 L806,82.0 L807,82.0 L808,82.0 L809,82.0 L810,82.0 L811,82.0 L812,82.0 L813,82.0 L814,82.0 L815,82.0 L816,82.0 L817,82.0 L818,82.0 L819,82.0 L820,82.0 L821,82.0 L822,82.0 L823,82.0 L824,82.0 L825,82.0 L826,82.0 L827,82.0 L828,82.0 L829,82.0 L830,82.0 L831,82.0 L832,82.0 L833,82.0 L834,82.0 L835,82.0 L836,82.0 L837,80.2 L838,68.0 L839,55.7 L840,43.4 L841,31.2 L842,33.1 L843,45.4 L844,57.6 L845,69.9 L846,82.2 L847,94.4 L848,106.7 L849,119.0 L850,131.2 L851,135.6 L852,129.8 L853,123.8 L854,117.6 L855,111.6 L856,105.7 L857,100.3 L858,95.3 L859,90.7 L860,86.8 L861,83.3 L862,80.5 L863,78.1 L864,76.3 L865,74.9 L866,74.0 L867,73.4 L868,73.2 L869,73.2 L870,73.5 L871,73.9 L872,74.5 L873,75.2 L874,76.0 L875,76.8 L876,77.6 L877,78.3 L878,79.1 L879,79.8 L880,80.4 L881,81.0 L882,81.5 L883,81.9 L884,82.3 L885,82.6 L886,82.8 L887,82.9 L888,83.1 L889,83.1 L890,83.1 L891,83.1 L892,83.1 L893,83.0 L894,82.9 L895,82.9 L896,82.8 L897,82.7 L898,82.6 L899,82.0 L900,82.0 L901,82.0 L902,82.0 L903,82.0 L904,82.0 L905,82.0 L906,82.0 L907,82.0 L908,82.0 L909,82.0 L910,82.0 L911,82.0 L912,82.0 L913,82.0 L914,82.0 L915,82.0 L916,82.0 L917,82.0 L918,82.0 L919,82.0 L920,82.0 L921,82.0 L922,82.0 L923,82.0 L924,82.0 L925,82.0 L926,82.0 L927,82.0 L928,82.0 L929,82.0 L930,82.0 L931,82.0 L932,82.0 L933,82.0 L934,82.0 L935,82.0 L936,82.0 L937,82.0 L938,82.0 L939,82.0 L940,82.0 L941,82.0 L942,82.0 L943,82.0 L944,82.0 L945,82.0 L946,82.0 L947,82.0 L948,82.0 L949,82.0 L950,82.0 L951,81.7 L952,69.5 L953,57.2 L954,44.9 L955,32.7 L956,31.6 L957,43.9 L958,56.1 L959,68.4 L960,80.7 L961,92.9 L962,105.2 L963,117.5 L964,129.7 L965,136.3 L966,130.5 L967,124.5 L968,118.4 L969,112.3 L970,106.4"/>
+          </svg>
+            <canvas class="wave__canvas" id="waveCanvas" aria-hidden="true"></canvas>
+          </div>
           <div class="levels" id="levels" role="group" aria-label="Intensitätsstufe wählen">
             <button class="level" type="button" data-rpm="1750" data-name="Aufwärmen" aria-pressed="false">1 · Aufwärmen</button>
             <button class="level" type="button" data-rpm="2100" data-name="Lockern" aria-pressed="false">2 · Lockern</button>
@@ -1077,8 +1108,22 @@ tbody tr:last-child th,tbody tr:last-child td{border-bottom:0}
       </div>
 
       <div class="app">
-        <div class="heads" id="heads" role="group" aria-label="Aufsatz wählen"></div>
-        <div class="headdetail" id="headDetail" aria-live="polite"></div>
+        <div class="heads" id="heads" role="group" aria-label="Aufsatz wählen">
+          <button class="head" type="button" aria-pressed="false"><span class="head__ico"><svg viewBox="0 0 48 48" fill="none" aria-hidden="true"><circle cx="24" cy="17" r="12" fill="currentColor" opacity=".9"/><rect x="21" y="28" width="6" height="16" rx="3" fill="currentColor" opacity=".45"/></svg></span><span class="head__n">Kugel</span></button>
+          <button class="head" type="button" aria-pressed="false"><span class="head__ico"><svg viewBox="0 0 48 48" fill="none" aria-hidden="true"><path d="M24 5c8 0 13 6 13 12s-5 11-13 11-13-5-13-11S16 5 24 5Z" fill="currentColor" opacity=".55"/><path d="M24 9c5 0 8 4 8 8s-3 7-8 7-8-3-8-7 3-8 8-8Z" fill="currentColor" opacity=".35"/><rect x="21" y="28" width="6" height="16" rx="3" fill="currentColor" opacity=".45"/></svg></span><span class="head__n">Dämpfer</span></button>
+          <button class="head" type="button" aria-pressed="false"><span class="head__ico"><svg viewBox="0 0 48 48" fill="none" aria-hidden="true"><path d="M24 4 38 24H10L24 4Z" fill="currentColor" opacity=".85"/><rect x="21" y="26" width="6" height="18" rx="3" fill="currentColor" opacity=".45"/></svg></span><span class="head__n">Keil</span></button>
+          <button class="head" type="button" aria-pressed="true"><span class="head__ico"><svg viewBox="0 0 48 48" fill="none" aria-hidden="true"><path d="M13 5v10a6 6 0 0 0 6 6h10a6 6 0 0 0 6-6V5" stroke="currentColor" stroke-width="5" stroke-linecap="round"/><rect x="21" y="26" width="6" height="18" rx="3" fill="currentColor" opacity=".45"/></svg></span><span class="head__n">Gabel</span></button>
+          <button class="head" type="button" aria-pressed="false"><span class="head__ico"><svg viewBox="0 0 48 48" fill="none" aria-hidden="true"><path d="M24 4c4 8 7 14 7 18a7 7 0 1 1-14 0c0-4 3-10 7-18Z" fill="currentColor" opacity=".9"/><rect x="21" y="28" width="6" height="16" rx="3" fill="currentColor" opacity=".45"/></svg></span><span class="head__n">Kegel</span></button>
+        </div>
+        <div class="headdetail" id="headDetail" aria-live="polite">
+          <h3 class="display headdetail__t">Gabelaufsatz, 26 mm Spurbreite</h3>
+          <p class="headdetail__d">Läuft links und rechts der Wirbelsäule, ohne sie zu berühren. Für die Rückenstrecker und die Kante des Schulterblatts — die Zone, die den langen Griff überhaupt erst nötig macht.</p>
+          <div class="headdetail__meta">
+            <span class="chip chip--heat">Schulterblätter & Lende</span>
+            <span class="chip">Stufe 3–4</span>
+            <span class="chip">Wirbelsäule aussparen</span>
+          </div>
+        </div>
       </div>
 
       <div class="routines">
@@ -1385,6 +1430,14 @@ tbody tr:last-child th,tbody tr:last-child td{border-bottom:0}
     document.querySelectorAll(".rise, .cut").forEach(function(el){ el.classList.add("is-in"); });
   }
 
+  /* Sicherheitsnetz. Hat der Observer nach zwei Sekunden kein einziges Element
+     enthüllt, arbeitet er nicht — dann lieber alles zeigen als nichts. An die
+     Bedingung geknüpft, damit die Scroll-Dramaturgie sonst erhalten bleibt. */
+  setTimeout(function(){
+    if (!document.querySelector(".rise.is-in"))
+      document.querySelectorAll(".rise, .cut").forEach(function(el){ el.classList.add("is-in"); });
+  }, 2000);
+
   /* ---------- Zählerwerte ---------- */
   function countUp(el){
     var target = parseFloat(el.getAttribute("data-count"));
@@ -1436,17 +1489,23 @@ tbody tr:last-child th,tbody tr:last-child td{border-bottom:0}
   var bands    = {};
   document.querySelectorAll(".z-band").forEach(function(b){ bands[b.getAttribute("data-band")] = b; });
 
-  /* Zonenliste aufbauen */
+  /* Zonenliste. Die Zeilen stehen statisch im HTML, damit ohne JavaScript kein
+     leerer Kasten bleibt — hier werden sie nur übernommen. Fehlen sie, werden
+     sie wie bisher erzeugt. */
   var zoneRows = {};
-  ZONES.forEach(function(z){
-    var li = document.createElement("li");
-    li.className = "zone";
-    li.innerHTML = '<span class="zone__dot"></span>' +
-                   '<span class="zone__name"></span>' +
-                   '<span class="zone__cm"></span>';
-    li.querySelector(".zone__name").textContent = z.name;
-    li.querySelector(".zone__cm").textContent = z.cm === 0 ? "ab 0 cm" : "ab " + z.cm + " cm";
-    zoneList.appendChild(li);
+  var existingZones = zoneList.querySelectorAll("li.zone");
+  ZONES.forEach(function(z, i){
+    var li = existingZones[i];
+    if (!li) {
+      li = document.createElement("li");
+      li.className = "zone";
+      li.innerHTML = '<span class="zone__dot"></span>' +
+                     '<span class="zone__name"></span>' +
+                     '<span class="zone__cm"></span>';
+      li.querySelector(".zone__name").textContent = z.name;
+      li.querySelector(".zone__cm").textContent = z.cm === 0 ? "ab 0 cm" : "ab " + z.cm + " cm";
+      zoneList.appendChild(li);
+    }
     zoneRows[z.id] = li;
   });
 
@@ -1560,15 +1619,21 @@ tbody tr:last-child th,tbody tr:last-child td{border-bottom:0}
     });
   }
 
+  /* Dieselbe Logik wie bei den Zonen: die Schaltflächen stehen im HTML,
+     hier kommt nur das Verhalten dazu. */
+  var existingHeads = headsEl.querySelectorAll(".head");
   HEADS.forEach(function(h,i){
-    var b = document.createElement("button");
-    b.type = "button";
-    b.className = "head";
-    b.setAttribute("aria-pressed","false");
-    b.innerHTML = '<span class="head__ico">' + h.svg + '</span><span class="head__n"></span>';
-    b.querySelector(".head__n").textContent = h.n;
+    var b = existingHeads[i];
+    if (!b) {
+      b = document.createElement("button");
+      b.type = "button";
+      b.className = "head";
+      b.setAttribute("aria-pressed","false");
+      b.innerHTML = '<span class="head__ico">' + h.svg + '</span><span class="head__n"></span>';
+      b.querySelector(".head__n").textContent = h.n;
+      headsEl.appendChild(b);
+    }
     b.addEventListener("click", function(){ showHead(i); });
-    headsEl.appendChild(b);
   });
   showHead(3); /* Gabel: der Aufsatz, der den Griff begründet */
 
@@ -1674,6 +1739,9 @@ tbody tr:last-child th,tbody tr:last-child td{border-bottom:0}
   function stop(){ if (raf) { cancelAnimationFrame(raf); raf = null; } }
 
   sizeCanvas();
+  /* Einmal zeichnen, bevor der Observer überhaupt etwas sagt. Feuert er nie —
+     eingebettete Ansichten, Druck —, steht sonst nur ein leerer Kasten. */
+  requestAnimationFrame(draw);
   if ("IntersectionObserver" in window) {
     var wio = new IntersectionObserver(function(entries){
       entries.forEach(function(en){
