@@ -1,0 +1,19 @@
+{
+  "name": "Beckenboden",
+  "short_name": "Beckenboden",
+  "description": "Minimalistisches Beckenboden-Training: Eingangstest und progressives 6-Minuten-Programm.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0d0d0f",
+  "theme_color": "#0d0d0f",
+  "icons": [
+    {
+      "src": "data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='112' fill='%230d0d0f'/%3E%3Ccircle cx='256' cy='256' r='150' fill='none' stroke='%239bd7b5' stroke-width='10'/%3E%3Ccircle cx='256' cy='256' r='86' fill='%239bd7b5'/%3E%3C/svg%3E",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

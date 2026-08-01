@@ -1,0 +1,1127 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0d0d0f">
+<meta name="description" content="Minimalistisches Beckenboden-Training: Eingangstest und progressives 6-Minuten-Programm.">
+<title>Beckenboden</title>
+<link rel="manifest" href="manifest.json">
+<style>
+  :root {
+    --bg: #0d0d0f;
+    --surface: #16161a;
+    --line: #26262c;
+    --text: #ecece9;
+    --muted: #8b8b95;
+    --accent: #9bd7b5;
+    --accent-dim: #2a3b34;
+    --radius: 14px;
+  }
+  @media (prefers-color-scheme: light) {
+    :root {
+      --bg: #faf9f7;
+      --surface: #ffffff;
+      --line: #e6e4df;
+      --text: #17171a;
+      --muted: #75757e;
+      --accent: #3f8e68;
+      --accent-dim: #dcefe4;
+    }
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { -webkit-text-size-adjust: 100%; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    font-weight: 350;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    min-height: 100dvh;
+    overflow-x: hidden;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  #app {
+    max-width: 460px;
+    margin: 0 auto;
+    padding: max(28px, env(safe-area-inset-top)) 22px max(28px, env(safe-area-inset-bottom));
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .view { display: none; flex: 1; flex-direction: column; }
+  .view.active { display: flex; }
+
+  /* ---------- Typografie ---------- */
+  h1 { font-size: 1.35rem; font-weight: 400; letter-spacing: -0.02em; }
+  h2 { font-size: 1.05rem; font-weight: 450; letter-spacing: -0.01em; margin-bottom: 8px; }
+  p  { color: var(--muted); font-size: 0.94rem; }
+  .num { font-variant-numeric: tabular-nums; letter-spacing: -0.03em; }
+
+  .eyebrow {
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 450;
+  }
+
+  .stack > * + * { margin-top: 14px; }
+  .stack-l > * + * { margin-top: 26px; }
+  .spacer { flex: 1; min-height: 20px; }
+
+  /* ---------- Bedienelemente ---------- */
+  button {
+    font: inherit;
+    color: inherit;
+    background: none;
+    border: none;
+    cursor: pointer;
+    border-radius: var(--radius);
+  }
+
+  .btn {
+    display: block;
+    width: 100%;
+    padding: 17px 20px;
+    background: var(--accent);
+    color: #0d0d0f;
+    font-weight: 500;
+    font-size: 1rem;
+    text-align: center;
+    transition: opacity .15s ease;
+  }
+  @media (prefers-color-scheme: light) { .btn { color: #fff; } }
+  .btn:active { opacity: .8; }
+
+  .btn-ghost {
+    display: block;
+    width: 100%;
+    padding: 15px 20px;
+    border: 1px solid var(--line);
+    color: var(--text);
+    font-size: 0.95rem;
+    text-align: center;
+  }
+  .btn-ghost:active { background: var(--surface); }
+
+  .btn-text {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    color: var(--muted);
+    font-size: 0.88rem;
+    text-align: center;
+  }
+  .btn-text:active { color: var(--text); }
+
+  .row { display: flex; gap: 10px; }
+  .row > * { flex: 1; }
+
+  /* ---------- Karten ---------- */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 18px;
+  }
+
+  .stat-row { display: flex; gap: 10px; }
+  .stat {
+    flex: 1;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+  }
+  .stat-value { font-size: 1.7rem; font-weight: 300; display: block; line-height: 1.2; }
+  .stat-label { font-size: 0.75rem; color: var(--muted); }
+
+  .plan-list { list-style: none; }
+  .plan-list li {
+    display: flex;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 9px 0;
+    font-size: 0.9rem;
+    border-bottom: 1px solid var(--line);
+  }
+  .plan-list li:last-child { border-bottom: none; padding-bottom: 0; }
+  .plan-list li:first-child { padding-top: 0; }
+  .plan-list span:last-child { color: var(--muted); font-variant-numeric: tabular-nums; text-align: right; }
+
+  .dots { display: flex; gap: 7px; }
+  .dot {
+    flex: 1;
+    height: 5px;
+    border-radius: 3px;
+    background: var(--line);
+  }
+  .dot.on { background: var(--accent); }
+
+  .hint {
+    font-size: 0.82rem;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+  .hint strong { color: var(--text); font-weight: 500; }
+
+  /* ---------- Kreis ---------- */
+  .circle-wrap {
+    position: relative;
+    width: min(76vw, 300px);
+    aspect-ratio: 1;
+    margin: 0 auto;
+    display: grid;
+    place-items: center;
+  }
+  .ring { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg); }
+  .ring circle { fill: none; stroke-width: 2; }
+  .ring .track { stroke: var(--line); }
+  .ring .prog  { stroke: var(--accent); transition: stroke .4s ease; }
+  .ring.neutral .prog { stroke: var(--muted); }
+
+  .blob {
+    width: 70%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    transform: scale(.58);
+    transition: transform .6s cubic-bezier(.4,0,.2,1), background .4s ease;
+    display: grid;
+    place-items: center;
+  }
+  .blob.tense { transform: scale(1); background: var(--accent-dim); border-color: var(--accent); }
+
+  .counter {
+    position: absolute;
+    font-size: 3.4rem;
+    font-weight: 200;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.04em;
+  }
+
+  .phase-label {
+    text-align: center;
+    font-size: 1.15rem;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+    min-height: 1.6rem;
+  }
+  .phase-label.tense { color: var(--accent); }
+
+  .meta-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .bar { height: 3px; background: var(--line); border-radius: 2px; overflow: hidden; }
+  .bar > i { display: block; height: 100%; width: 0; background: var(--muted); }
+
+  .attempts { display: flex; gap: 10px; }
+  .attempt {
+    flex: 1;
+    text-align: center;
+    padding: 12px 4px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    font-size: 1.05rem;
+    font-variant-numeric: tabular-nums;
+    color: var(--muted);
+  }
+  .attempt.filled { color: var(--text); border-color: var(--accent); }
+
+  .tap-zone {
+    width: 100%;
+    padding: 44px 20px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--surface);
+    text-align: center;
+    font-size: 1.05rem;
+  }
+  .tap-zone:active { border-color: var(--accent); }
+
+  .toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--line);
+    font-size: 0.94rem;
+    width: 100%;
+    text-align: left;
+  }
+  .toggle:last-of-type { border-bottom: none; }
+  .switch {
+    flex: none;
+    width: 44px;
+    height: 26px;
+    border-radius: 13px;
+    background: var(--line);
+    position: relative;
+    transition: background .2s ease;
+  }
+  .switch::after {
+    content: "";
+    position: absolute;
+    top: 3px; left: 3px;
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    background: var(--muted);
+    transition: transform .2s ease, background .2s ease;
+  }
+  .toggle[aria-pressed="true"] .switch { background: var(--accent-dim); }
+  .toggle[aria-pressed="true"] .switch::after { transform: translateX(18px); background: var(--accent); }
+
+  .head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+  .center { text-align: center; }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- ============ START ============ -->
+  <section id="v-home" class="view">
+    <div class="head">
+      <h1>Beckenboden</h1>
+      <span class="eyebrow" id="home-level">Stufe 1</span>
+    </div>
+
+    <div class="spacer" style="max-height:24px"></div>
+
+    <div class="stack">
+      <div class="stat-row">
+        <div class="stat">
+          <span class="stat-value num" id="stat-streak">0</span>
+          <span class="stat-label">Tage in Folge</span>
+        </div>
+        <div class="stat">
+          <span class="stat-value num" id="stat-total">0</span>
+          <span class="stat-label">Einheiten gesamt</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="dots" id="week-dots"></div>
+        <p style="margin-top:12px;font-size:0.82rem" id="week-label">Letzte 7 Tage</p>
+      </div>
+
+      <div class="card">
+        <h2>Heutige Einheit · 6:00</h2>
+        <ul class="plan-list" id="plan-preview"></ul>
+      </div>
+
+      <p class="hint" id="progress-hint"></p>
+    </div>
+
+    <div class="spacer"></div>
+
+    <div class="stack">
+      <button class="btn" id="go-session">Training starten</button>
+      <div class="row">
+        <button class="btn-text" id="go-settings">Einstellungen</button>
+        <button class="btn-text" id="go-retest">Test wiederholen</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ TEST ============ -->
+  <section id="v-test" class="view">
+    <!-- Schritt: Technik -->
+    <div id="t-intro" class="tstep">
+      <span class="eyebrow">Eingangstest</span>
+      <div class="spacer" style="max-height:20px"></div>
+      <div class="stack-l">
+        <div>
+          <h2>So spannst du richtig an</h2>
+          <p style="margin-top:8px">Spanne die Muskeln an, mit denen du den Urinstrahl anhalten würdest — und zieh sie nach innen und oben.</p>
+        </div>
+        <div class="card">
+          <p class="hint">
+            <strong>Locker bleiben:</strong> Bauch, Po und Oberschenkel bleiben entspannt. Nur der Beckenboden arbeitet.<br><br>
+            <strong>Weiteratmen:</strong> Halte nie die Luft an. Ruhig ein und aus.<br><br>
+            <strong>Nicht beim Wasserlassen üben:</strong> Das ist nur zum Erspüren gedacht, nicht zum Training.
+          </p>
+        </div>
+        <p>Gleich misst du zweimal: wie <strong style="color:var(--text);font-weight:500">lange</strong> du halten kannst und wie <strong style="color:var(--text);font-weight:500">schnell</strong> du anspannen kannst. Daraus baue ich dein Programm.</p>
+      </div>
+      <div class="spacer"></div>
+      <div class="stack">
+        <button class="btn" id="t-intro-next">Test beginnen</button>
+        <button class="btn-text" id="t-abort">Abbrechen</button>
+      </div>
+    </div>
+
+    <!-- Schritt: Maximaltest -->
+    <div id="t-hold" class="tstep" style="display:none">
+      <div class="head">
+        <span class="eyebrow">Teil 1 · Halten</span>
+        <span class="eyebrow num" id="t-hold-attempt">Versuch 1 von 3</span>
+      </div>
+      <div class="spacer" style="max-height:16px"></div>
+
+      <div class="circle-wrap">
+        <svg class="ring neutral" viewBox="0 0 260 260" aria-hidden="true">
+          <circle class="track" cx="130" cy="130" r="124"></circle>
+        </svg>
+        <div class="blob" id="t-blob"></div>
+        <div class="counter num" id="t-hold-time">0,0</div>
+      </div>
+
+      <div class="spacer" style="max-height:20px"></div>
+      <p class="center" id="t-hold-msg">Spanne an, sobald du bereit bist — und halte so lange du kannst.</p>
+
+      <div class="spacer"></div>
+      <div class="stack">
+        <div class="attempts" id="t-attempts"></div>
+        <button class="btn" id="t-hold-btn">Jetzt anspannen</button>
+      </div>
+    </div>
+
+    <!-- Schritt: Schnellkraft -->
+    <div id="t-quick" class="tstep" style="display:none">
+      <span class="eyebrow">Teil 2 · Schnellkraft</span>
+      <div class="spacer" style="max-height:16px"></div>
+
+      <div class="circle-wrap">
+        <svg class="ring neutral" viewBox="0 0 260 260" aria-hidden="true">
+          <circle class="track" cx="130" cy="130" r="124"></circle>
+          <circle class="prog" id="t-quick-ring" cx="130" cy="130" r="124"></circle>
+        </svg>
+        <div class="counter num" id="t-quick-count">0</div>
+      </div>
+
+      <div class="spacer" style="max-height:20px"></div>
+      <p class="center">10 Sekunden lang: kurz anspannen, sofort loslassen — und bei jeder Wiederholung tippen.</p>
+
+      <div class="spacer"></div>
+      <button class="tap-zone" id="t-quick-tap">Tippen zum Starten</button>
+    </div>
+
+    <!-- Schritt: Ergebnis -->
+    <div id="t-result" class="tstep" style="display:none">
+      <span class="eyebrow">Dein Ergebnis</span>
+      <div class="spacer" style="max-height:20px"></div>
+
+      <div class="stack">
+        <div class="stat-row">
+          <div class="stat">
+            <span class="stat-value num" id="r-hold">0 s</span>
+            <span class="stat-label">Längstes Halten</span>
+          </div>
+          <div class="stat">
+            <span class="stat-value num" id="r-quick">0</span>
+            <span class="stat-label">Schnellkraft / 10 s</span>
+          </div>
+        </div>
+        <div class="card">
+          <h2 id="r-level">Startstufe 1</h2>
+          <p id="r-text" style="margin-top:6px"></p>
+        </div>
+        <div class="card">
+          <h2>Deine erste Einheit</h2>
+          <ul class="plan-list" id="r-plan"></ul>
+        </div>
+      </div>
+
+      <div class="spacer"></div>
+      <div class="stack">
+        <button class="btn" id="t-result-next">Übernehmen</button>
+        <button class="btn-text" id="t-result-again">Test wiederholen</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ TRAINING ============ -->
+  <section id="v-session" class="view">
+    <div class="head">
+      <span class="eyebrow" id="s-block">Schnellkraft</span>
+      <span class="eyebrow num" id="s-remaining">6:00</span>
+    </div>
+
+    <div class="spacer" style="max-height:8px"></div>
+    <div class="bar"><i id="s-bar"></i></div>
+    <div class="spacer" style="max-height:24px"></div>
+
+    <div class="circle-wrap">
+      <svg class="ring" viewBox="0 0 260 260" aria-hidden="true">
+        <circle class="track" cx="130" cy="130" r="124"></circle>
+        <circle class="prog" id="s-ring" cx="130" cy="130" r="124"></circle>
+      </svg>
+      <div class="blob" id="s-blob"></div>
+      <div class="counter num" id="s-count">5</div>
+    </div>
+
+    <div class="spacer" style="max-height:26px"></div>
+    <div class="phase-label" id="s-label">Bereit machen</div>
+    <div class="spacer" style="max-height:10px"></div>
+    <div class="meta-row">
+      <span id="s-set"></span>
+      <span id="s-rep"></span>
+    </div>
+
+    <div class="spacer"></div>
+    <div class="row">
+      <button class="btn-ghost" id="s-pause">Pause</button>
+      <button class="btn-ghost" id="s-stop">Beenden</button>
+    </div>
+  </section>
+
+  <!-- ============ ABSCHLUSS ============ -->
+  <section id="v-done" class="view">
+    <div class="spacer"></div>
+    <div class="center stack">
+      <span class="eyebrow">Geschafft</span>
+      <h1 id="d-title" style="font-weight:300;font-size:1.9rem">6 Minuten erledigt</h1>
+      <p id="d-sub"></p>
+    </div>
+    <div class="spacer"></div>
+
+    <div class="stack">
+      <p class="center" style="font-size:0.9rem">Wie hat sich die Einheit angefühlt?</p>
+      <button class="btn-ghost" data-fb="easy">Zu leicht</button>
+      <button class="btn-ghost" data-fb="ok">Genau richtig</button>
+      <button class="btn-ghost" data-fb="hard">Zu schwer</button>
+    </div>
+  </section>
+
+  <!-- ============ EINSTELLUNGEN ============ -->
+  <section id="v-settings" class="view">
+    <div class="head">
+      <h1>Einstellungen</h1>
+    </div>
+    <div class="spacer" style="max-height:24px"></div>
+
+    <div class="stack">
+      <div class="card">
+        <button class="toggle" id="set-sound" aria-pressed="false">
+          <span>Signalton bei Wechsel<br><span class="stat-label">Kurzer Ton beim Anspannen und Loslassen</span></span>
+          <span class="switch"></span>
+        </button>
+        <button class="toggle" id="set-vibe" aria-pressed="false">
+          <span>Vibration bei Wechsel<br><span class="stat-label">Diskret, ohne Ton</span></span>
+          <span class="switch"></span>
+        </button>
+      </div>
+
+      <div class="card">
+        <h2>Stufe</h2>
+        <p style="margin-top:4px">Du trainierst auf <span id="set-level-txt">Stufe 1</span>. Passt das Tempo nicht, kannst du sie hier direkt ändern.</p>
+        <div class="row" style="margin-top:14px">
+          <button class="btn-ghost" id="set-level-down">− Stufe</button>
+          <button class="btn-ghost" id="set-level-up">+ Stufe</button>
+        </div>
+      </div>
+
+      <p class="hint">Alle Daten bleiben ausschließlich auf diesem Gerät. Es wird nichts hochgeladen und nichts geteilt.</p>
+      <button class="btn-text" id="set-reset" style="color:#c98b8b">Alle Daten löschen</button>
+    </div>
+
+    <div class="spacer"></div>
+    <button class="btn" id="set-back">Zurück</button>
+  </section>
+
+</div>
+
+<script>
+(() => {
+  "use strict";
+
+  const $ = (id) => document.getElementById(id);
+  const SESSION_SECONDS = 360;
+  const CIRC = 2 * Math.PI * 124;
+  const KEY = "kegel.v1";
+
+  /* ========== Speicher ========== */
+  const defaults = () => ({
+    tested: false,
+    maxHold: 0,
+    flicks: 0,
+    level: 1,
+    points: 0,
+    hardStreak: 0,
+    total: 0,
+    streak: 0,
+    lastDay: null,
+    days: [],
+    sound: false,
+    vibe: false
+  });
+
+  let state = defaults();
+
+  function load() {
+    try {
+      const raw = localStorage.getItem(KEY);
+      if (raw) state = Object.assign(defaults(), JSON.parse(raw));
+    } catch (e) { /* Speicher nicht verfügbar — App läuft trotzdem */ }
+  }
+  function save() {
+    try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {}
+  }
+
+  const today = () => new Date().toLocaleDateString("sv");           // YYYY-MM-DD, lokale Zeit
+  const dayOffset = (n) => {
+    const d = new Date();
+    d.setDate(d.getDate() - n);
+    return d.toLocaleDateString("sv");
+  };
+
+  /* ========== Programmlogik ========== */
+  const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
+
+  function levelFromHold(s) {
+    if (s < 3) return 1;
+    if (s <= 5) return 2;
+    if (s <= 8) return 3;
+    if (s <= 12) return 4;
+    if (s <= 20) return 5;
+    return 6;
+  }
+
+  // Mit jeder Stufe wird länger gehalten, kürzer pausiert und dichter gearbeitet.
+  function params(level, maxHold, flicks) {
+    const g = level - 1;
+    const hold = Math.min(12, clamp(Math.round(maxHold * 0.4), 2, 6) + g);
+    const rest = clamp(Math.round(hold * Math.max(0.5, 1.6 - g * 0.09)), 2, 10);
+    const longHold = Math.min(40, Math.max(5, Math.round(maxHold * 0.9)) + g * 3);
+    const longRest = clamp(Math.round(longHold * Math.max(0.4, 0.7 - g * 0.02)), 4, 20);
+    const flickReps = Math.min(24, Math.max(8, flicks) + g * 2);
+    const setTarget = Math.min(75, 45 + g * 3);      // angestrebte Satzlänge in Sekunden
+    const blockPause = Math.max(8, 15 - Math.floor(g / 2));
+    return { hold, rest, longHold, longRest, flickReps, setTarget, blockPause };
+  }
+
+  // Verteilt n Wiederholungen möglichst gleichmäßig auf mehrere Sätze.
+  function spread(n, sets) {
+    const out = [];
+    for (let i = 0; i < sets; i++) out.push(Math.floor(n / sets) + (i < n % sets ? 1 : 0));
+    return out.filter(x => x > 0);
+  }
+
+  // Baut die komplette Einheit als Phasenliste mit kumulativen Startzeiten.
+  // Die Wiederholungszahlen werden so gewählt, dass die 6 Minuten möglichst
+  // dicht gefüllt sind — Restsekunden landen in den Pausen, nicht am Ende.
+  function buildTimeline(level, maxHold, flicks) {
+    const p = params(level, maxHold, flicks);
+    const kCycle = p.hold + p.rest;
+    const aCycle = p.longHold + p.longRest;
+    const perK = clamp(Math.floor(p.setTarget / kCycle), 1, 12);
+    const perA = clamp(Math.floor(p.setTarget / aCycle), 1, 5);
+
+    const MIN_CLOSING = 15;
+    const warmup = 5 + p.flickReps * 2 + p.blockPause;
+    const budget = SESSION_SECONDS - warmup - MIN_CLOSING;
+
+    const setCount = (n, per) => (n > 0 ? Math.ceil(n / per) : 0);
+    const cost = (k, a) =>
+      k * kCycle + a * aCycle +
+      Math.max(0, setCount(k, perK) + setCount(a, perA) - 1) * p.blockPause;
+
+    // Ausdauer bekommt knapp die Hälfte der Arbeitszeit, der Rest geht an Kraft.
+    let aReps = Math.max(1, Math.round(budget * 0.45 / aCycle));
+    while (aReps > 1 && cost(1, aReps) > budget) aReps--;
+    let kReps = 0;
+    while (cost(kReps + 1, aReps) <= budget) kReps++;
+    if (kReps === 0 && aReps > 1) {
+      aReps--;
+      while (cost(kReps + 1, aReps) <= budget) kReps++;
+    }
+
+    // Sätze abwechselnd anordnen: Kraft, Ausdauer, Kraft, Ausdauer …
+    const kSets = spread(kReps, setCount(kReps, perK));
+    const aSets = spread(aReps, setCount(aReps, perA));
+    const order = [];
+    for (let i = 0; i < Math.max(kSets.length, aSets.length); i++) {
+      if (i < kSets.length) order.push({ block: "Kraft", n: kSets[i], h: p.hold, r: p.rest });
+      if (i < aSets.length) order.push({ block: "Ausdauer", n: aSets[i], h: p.longHold, r: p.longRest });
+    }
+
+    const tl = [];
+    const add = (kind, label, dur, block, set) => tl.push({ kind, label, dur, block, set: set || 0 });
+
+    add("prep", "Bereit machen", 5, "Aufwärmen");
+    for (let i = 0; i < p.flickReps; i++) {
+      add("tense", "Anspannen", 1, "Schnellkraft");
+      add("release", "Locker", 1, "Schnellkraft");
+    }
+    add("pause", "Pause", p.blockPause, "Schnellkraft");
+
+    order.forEach((set, i) => {
+      for (let n = 0; n < set.n; n++) {
+        add("tense", "Anspannen", set.h, set.block, i + 1);
+        add("release", "Loslassen", set.r, set.block, i + 1);
+      }
+      if (i < order.length - 1) add("pause", "Pause", p.blockPause, set.block, i + 1);
+    });
+
+    add("relax", "Entspannen", MIN_CLOSING, "Abschluss");
+
+    // Übrige Sekunden auf die Pausen verteilen, damit der Abschluss kurz bleibt.
+    let slack = SESSION_SECONDS - tl.reduce((a, ph) => a + ph.dur, 0);
+    const pauses = tl.filter(ph => ph.kind === "pause");
+    for (let round = 0; round < 6 && slack > 0 && pauses.length; round++) {
+      for (const ph of pauses) {
+        if (slack <= 0) break;
+        ph.dur++; slack--;
+      }
+    }
+    tl[tl.length - 1].dur += slack;   // Rest in den Abschluss
+
+    let t = 0;
+    tl.forEach(ph => { ph.start = t; t += ph.dur; });
+
+    const reps = { Schnellkraft: 0, Kraft: 0, Ausdauer: 0 };
+    tl.forEach(ph => { if (ph.kind === "tense") reps[ph.block]++; });
+
+    return { phases: tl, p, reps, total: t, sets: order.length };
+  }
+
+  function planRows(level) {
+    const s = buildTimeline(level, state.maxHold, state.flicks);
+    return [
+      ["Schnellkraft", `${s.reps.Schnellkraft} × 1 s`],
+      ["Kraft", `${s.reps.Kraft} × ${s.p.hold} s halten / ${s.p.rest} s Pause`],
+      ["Ausdauer", `${s.reps.Ausdauer} × ${s.p.longHold} s halten / ${s.p.longRest} s Pause`]
+    ];
+  }
+
+  function fillPlan(el, level) {
+    el.innerHTML = "";
+    planRows(level).forEach(([a, b]) => {
+      const li = document.createElement("li");
+      const s1 = document.createElement("span"); s1.textContent = a;
+      const s2 = document.createElement("span"); s2.textContent = b;
+      li.append(s1, s2);
+      el.appendChild(li);
+    });
+  }
+
+  /* ========== Ansichten ========== */
+  const views = ["home", "test", "session", "done", "settings"];
+  function show(name) {
+    views.forEach(v => $("v-" + v).classList.toggle("active", v === name));
+    window.scrollTo(0, 0);
+  }
+
+  /* ========== Rückmeldung (Ton / Vibration) ========== */
+  let audioCtx = null;
+  function cue(kind) {
+    if (state.vibe && navigator.vibrate) {
+      navigator.vibrate(kind === "tense" ? 60 : 25);
+    }
+    if (!state.sound) return;
+    try {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === "suspended") audioCtx.resume();
+      const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+      o.frequency.value = kind === "tense" ? 620 : 420;
+      o.type = "sine";
+      const n = audioCtx.currentTime;
+      g.gain.setValueAtTime(0.0001, n);
+      g.gain.exponentialRampToValueAtTime(0.07, n + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.0001, n + 0.18);
+      o.connect(g).connect(audioCtx.destination);
+      o.start(n); o.stop(n + 0.2);
+    } catch (e) {}
+  }
+
+  /* ========== Startbildschirm ========== */
+  function renderHome() {
+    $("home-level").textContent = "Stufe " + state.level;
+    $("stat-streak").textContent = state.streak;
+    $("stat-total").textContent = state.total;
+
+    const dots = $("week-dots");
+    dots.innerHTML = "";
+    let doneToday = false;
+    for (let i = 6; i >= 0; i--) {
+      const day = dayOffset(i);
+      const on = state.days.includes(day);
+      if (i === 0) doneToday = on;
+      const d = document.createElement("div");
+      d.className = "dot" + (on ? " on" : "");
+      d.title = day;
+      dots.appendChild(d);
+    }
+    const count = state.days.filter(d => {
+      for (let i = 0; i < 7; i++) if (d === dayOffset(i)) return true;
+      return false;
+    }).length;
+    $("week-label").textContent = doneToday
+      ? `Heute erledigt · ${count} von 7 Tagen`
+      : `Letzte 7 Tage · ${count} Einheiten`;
+
+    fillPlan($("plan-preview"), state.level);
+
+    const need = Math.max(1, Math.ceil(4 - state.points));
+    $("progress-hint").textContent = `Noch ${need} ${need === 1 ? "Einheit" : "Einheiten"} bis Stufe ${state.level + 1}. Nach jeder Einheit sagst du, wie es sich angefühlt hat — danach richtet sich das Tempo.`;
+
+    $("go-session").textContent = doneToday ? "Nochmal trainieren" : "Training starten";
+  }
+
+  /* ========== Eingangstest ========== */
+  const tSteps = ["t-intro", "t-hold", "t-quick", "t-result"];
+  function tShow(id) {
+    tSteps.forEach(s => $(s).style.display = s === id ? "flex" : "none");
+    tSteps.forEach(s => $(s).style.flexDirection = "column");
+    tSteps.forEach(s => $(s).style.flex = s === id ? "1" : "");
+  }
+
+  let test = { attempts: [], running: false, t0: 0, raf: 0, quick: 0, quickRaf: 0 };
+
+  function renderAttempts() {
+    const el = $("t-attempts");
+    el.innerHTML = "";
+    for (let i = 0; i < 3; i++) {
+      const d = document.createElement("div");
+      const v = test.attempts[i];
+      d.className = "attempt" + (v != null ? " filled" : "");
+      d.textContent = v != null ? v.toFixed(1).replace(".", ",") + " s" : "–";
+      el.appendChild(d);
+    }
+    $("t-hold-attempt").textContent = `Versuch ${Math.min(3, test.attempts.length + 1)} von 3`;
+  }
+
+  function startTest() {
+    test = { attempts: [], running: false, t0: 0, raf: 0, quick: 0, quickRaf: 0 };
+    renderAttempts();
+    $("t-hold-time").textContent = "0,0";
+    $("t-hold-btn").textContent = "Jetzt anspannen";
+    $("t-hold-msg").textContent = "Spanne an, sobald du bereit bist — und halte so lange du kannst.";
+    $("t-blob").classList.remove("tense");
+    $("t-quick-count").textContent = "0";
+    $("t-quick-tap").textContent = "Tippen zum Starten";
+    $("t-quick-ring").style.strokeDasharray = CIRC;
+    $("t-quick-ring").style.strokeDashoffset = CIRC;
+    tShow("t-intro");
+    show("test");
+  }
+
+  function holdTick() {
+    const el = (performance.now() - test.t0) / 1000;
+    $("t-hold-time").textContent = el.toFixed(1).replace(".", ",");
+    if (el >= 90) { stopHold(); return; }
+    test.raf = requestAnimationFrame(holdTick);
+  }
+
+  function startHold() {
+    test.running = true;
+    test.t0 = performance.now();
+    $("t-blob").classList.add("tense");
+    $("t-hold-btn").textContent = "Losgelassen";
+    $("t-hold-msg").textContent = "Halten … tippe, sobald du nicht mehr kannst.";
+    cue("tense");
+    holdTick();
+  }
+
+  function stopHold() {
+    cancelAnimationFrame(test.raf);
+    test.running = false;
+    const el = Math.min(90, (performance.now() - test.t0) / 1000);
+    test.attempts.push(Math.round(el * 10) / 10);
+    $("t-blob").classList.remove("tense");
+    cue("release");
+    renderAttempts();
+
+    if (test.attempts.length >= 3) {
+      $("t-hold-btn").textContent = "Weiter zu Teil 2";
+      $("t-hold-msg").textContent = "Sehr gut. Kurz durchatmen.";
+      $("t-hold-time").textContent = "✓";
+      return;
+    }
+
+    // 20 s Erholung
+    let left = 20;
+    $("t-hold-btn").disabled = true;
+    $("t-hold-btn").style.opacity = ".45";
+    $("t-hold-msg").textContent = "Pause — locker lassen.";
+    const iv = setInterval(() => {
+      left--;
+      $("t-hold-time").textContent = left;
+      if (left <= 0) {
+        clearInterval(iv);
+        $("t-hold-btn").disabled = false;
+        $("t-hold-btn").style.opacity = "";
+        $("t-hold-btn").textContent = "Jetzt anspannen";
+        $("t-hold-time").textContent = "0,0";
+        $("t-hold-msg").textContent = "Nochmal: halte so lange du kannst.";
+      }
+    }, 1000);
+    $("t-hold-time").textContent = left;
+  }
+
+  function startQuick() {
+    test.quick = 1;
+    $("t-quick-count").textContent = "1";
+    $("t-quick-tap").textContent = "Tippen bei jedem Anspannen";
+    const t0 = performance.now();
+    const ring = $("t-quick-ring");
+    ring.style.strokeDasharray = CIRC;
+    const tick = () => {
+      const el = (performance.now() - t0) / 1000;
+      ring.style.strokeDashoffset = CIRC * Math.min(1, el / 10);
+      if (el >= 10) { endQuick(); return; }
+      test.quickRaf = requestAnimationFrame(tick);
+    };
+    tick();
+  }
+
+  function endQuick() {
+    cancelAnimationFrame(test.quickRaf);
+    test.quickRunning = false;
+    $("t-quick-tap").textContent = "Fertig";
+    showResult();
+  }
+
+  function showResult() {
+    const maxHold = Math.max(...test.attempts, 1);
+    const flicks = Math.max(1, test.quick);
+    const level = levelFromHold(maxHold);
+
+    state.maxHold = maxHold;
+    state.flicks = flicks;
+    state.level = level;
+    state.points = 0;
+    state.hardStreak = 0;
+    state.tested = true;
+
+    $("r-hold").textContent = maxHold.toFixed(1).replace(".", ",") + " s";
+    $("r-quick").textContent = flicks;
+    $("r-level").textContent = "Startstufe " + level;
+    $("r-text").textContent = level <= 2
+      ? "Ein sehr guter Ausgangspunkt. Wir starten bewusst kurz — Sauberkeit vor Dauer."
+      : level <= 4
+        ? "Solide Grundlage. Das Programm baut jetzt Halte- und Schnellkraft parallel auf."
+        : "Starker Ausgangswert. Das Programm steigt entsprechend höher ein.";
+    fillPlan($("r-plan"), level);
+    tShow("t-result");
+  }
+
+  /* ========== Trainingseinheit ========== */
+  let ses = null;
+
+  function startSession() {
+    const built = buildTimeline(state.level, state.maxHold || 5, state.flicks || 10);
+    ses = {
+      phases: built.phases,
+      total: built.total,
+      sets: built.sets,
+      idx: -1,
+      t0: performance.now(),
+      pausedAt: 0,
+      pausedTotal: 0,
+      raf: 0,
+      lock: null
+    };
+    $("s-pause").textContent = "Pause";
+    show("session");
+    requestWakeLock();
+    tick();
+  }
+
+  function elapsed() {
+    const now = ses.pausedAt ? ses.pausedAt : performance.now();
+    return (now - ses.t0 - ses.pausedTotal) / 1000;
+  }
+
+  function enterPhase(i) {
+    ses.idx = i;
+    const ph = ses.phases[i];
+    const tense = ph.kind === "tense";
+
+    $("s-label").textContent = ph.label;
+    $("s-label").classList.toggle("tense", tense);
+    $("s-block").textContent = ph.block;
+    $("s-blob").classList.toggle("tense", tense);
+    $("s-blob").style.transitionDuration = Math.min(ph.dur * 0.45, 1.1) + "s";
+    document.querySelector("#v-session .ring").classList.toggle("neutral", !tense);
+
+    // Wiederholungszähler innerhalb des Blocks
+    let done = 0, all = 0;
+    ses.phases.forEach((p, j) => {
+      if (p.kind === "tense" && p.block === ph.block) {
+        all++;
+        if (j <= i) done++;
+      }
+    });
+    $("s-rep").textContent = (ph.kind === "tense" || ph.kind === "release") && all
+      ? `Wiederholung ${done} von ${all}`
+      : "";
+    $("s-set").textContent = ph.set ? `Satz ${ph.set} von ${ses.sets}` : "";
+
+    if (tense || ph.kind === "release") cue(ph.kind);
+  }
+
+  function tick() {
+    const e = elapsed();
+
+    if (e >= ses.total) { finishSession(); return; }
+
+    let i = ses.idx < 0 ? 0 : ses.idx;
+    while (i < ses.phases.length - 1 && e >= ses.phases[i].start + ses.phases[i].dur) i++;
+    if (i !== ses.idx) enterPhase(i);
+
+    const ph = ses.phases[i];
+    const inPhase = Math.max(0, e - ph.start);
+    const left = Math.max(0, ph.dur - inPhase);
+
+    $("s-count").textContent = Math.ceil(left - 0.001) || 0;
+    const ring = $("s-ring");
+    ring.style.strokeDasharray = CIRC;
+    ring.style.strokeDashoffset = CIRC * Math.min(1, inPhase / ph.dur);
+
+    const totalLeft = Math.max(0, ses.total - e);
+    $("s-remaining").textContent =
+      Math.floor(totalLeft / 60) + ":" + String(Math.floor(totalLeft % 60)).padStart(2, "0");
+    $("s-bar").style.width = (e / ses.total * 100) + "%";
+
+    ses.raf = requestAnimationFrame(tick);
+  }
+
+  function togglePause() {
+    if (!ses) return;
+    if (ses.pausedAt) {
+      ses.pausedTotal += performance.now() - ses.pausedAt;
+      ses.pausedAt = 0;
+      $("s-pause").textContent = "Pause";
+      requestWakeLock();
+      tick();
+    } else {
+      ses.pausedAt = performance.now();
+      cancelAnimationFrame(ses.raf);
+      $("s-pause").textContent = "Weiter";
+      releaseWakeLock();
+    }
+  }
+
+  function stopSession(finished) {
+    if (ses) { cancelAnimationFrame(ses.raf); releaseWakeLock(); }
+    ses = null;
+    $("s-blob").classList.remove("tense");
+    if (!finished) { renderHome(); show("home"); }
+  }
+
+  function finishSession() {
+    stopSession(true);
+    const day = today();
+    if (!state.days.includes(day)) {
+      state.days.push(day);
+      state.days = state.days.slice(-120);
+      state.streak = state.lastDay === dayOffset(1) ? state.streak + 1 : 1;
+      state.lastDay = day;
+    }
+    state.total++;
+    save();
+
+    $("d-title").textContent = "6 Minuten erledigt";
+    $("d-sub").textContent = state.streak > 1
+      ? `${state.streak} Tage in Folge · Stufe ${state.level}`
+      : `Einheit ${state.total} · Stufe ${state.level}`;
+    show("done");
+  }
+
+  function feedback(kind) {
+    if (kind === "hard") {
+      state.hardStreak++;
+      state.points += 0.5;
+      if (state.hardStreak >= 3 && state.level > 1) {
+        state.level--; state.points = 0; state.hardStreak = 0;
+      }
+    } else {
+      state.hardStreak = 0;
+      state.points += kind === "easy" ? 2 : 1;
+    }
+    if (state.points >= 4) { state.level++; state.points = 0; }
+    save();
+    renderHome();
+    show("home");
+  }
+
+  /* ========== Bildschirm wachhalten ========== */
+  let wakeLock = null;
+  async function requestWakeLock() {
+    try {
+      if ("wakeLock" in navigator) wakeLock = await navigator.wakeLock.request("screen");
+    } catch (e) {}
+  }
+  function releaseWakeLock() {
+    try { if (wakeLock) { wakeLock.release(); wakeLock = null; } } catch (e) {}
+  }
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible" && ses && !ses.pausedAt) requestWakeLock();
+  });
+
+  /* ========== Einstellungen ========== */
+  function renderSettings() {
+    $("set-sound").setAttribute("aria-pressed", String(!!state.sound));
+    $("set-vibe").setAttribute("aria-pressed", String(!!state.vibe));
+    $("set-level-txt").textContent = "Stufe " + state.level;
+  }
+
+  /* ========== Ereignisse ========== */
+  $("go-session").onclick = startSession;
+  $("go-retest").onclick = startTest;
+  $("go-settings").onclick = () => { renderSettings(); show("settings"); };
+
+  $("t-abort").onclick = () => { renderHome(); show(state.tested ? "home" : "home"); };
+  $("t-intro-next").onclick = () => { renderAttempts(); tShow("t-hold"); };
+
+  $("t-hold-btn").onclick = () => {
+    if (test.attempts.length >= 3 && !test.running) { tShow("t-quick"); return; }
+    test.running ? stopHold() : startHold();
+  };
+
+  $("t-quick-tap").onclick = () => {
+    if (!test.quick) { startQuick(); return; }
+    test.quick++;
+    $("t-quick-count").textContent = test.quick;
+    cue("tense");
+  };
+
+  $("t-result-next").onclick = () => { save(); renderHome(); show("home"); };
+  $("t-result-again").onclick = startTest;
+
+  $("s-pause").onclick = togglePause;
+  $("s-stop").onclick = () => stopSession(false);
+
+  document.querySelectorAll("[data-fb]").forEach(b => {
+    b.onclick = () => feedback(b.dataset.fb);
+  });
+
+  $("set-sound").onclick = () => { state.sound = !state.sound; save(); renderSettings(); if (state.sound) cue("tense"); };
+  $("set-vibe").onclick  = () => { state.vibe  = !state.vibe;  save(); renderSettings(); if (state.vibe) cue("tense"); };
+  $("set-level-up").onclick = () => { state.level++; state.points = 0; save(); renderSettings(); renderHome(); };
+  $("set-level-down").onclick = () => { if (state.level > 1) { state.level--; state.points = 0; save(); renderSettings(); renderHome(); } };
+  $("set-back").onclick = () => { renderHome(); show("home"); };
+  $("set-reset").onclick = () => {
+    if (confirm("Wirklich alle Daten löschen? Test, Stufe und Verlauf gehen verloren.")) {
+      state = defaults();
+      save();
+      startTest();
+    }
+  };
+
+  /* ========== Start ========== */
+  load();
+  if (state.tested) { renderHome(); show("home"); } else { startTest(); }
+
+  if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
+    navigator.serviceWorker.register("sw.js").catch(() => {});
+  }
+})();
+</script>
+</body>
+</html>
