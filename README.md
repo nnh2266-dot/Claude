@@ -30,18 +30,25 @@ Offline-Zwischenspeicher (dafür braucht der Service Worker `https`).
 
 Aus beiden Werten ergibt sich die Startstufe.
 
-**Tägliche Einheit** — immer exakt 6:00, drei Übungen nacheinander:
+**Tägliche Einheit** — immer exakt 6:00, drei Übungen nacheinander.
 
-| Übung | Was du tust |
-|---|---|
-| Schnellspanner | kurz anspannen, sofort lösen |
-| Halten | mittellang halten |
-| Langes Halten | lange halten |
+| Übung | Ab | Was du tust |
+|---|---|---|
+| Schnellspanner | Start | kurz anspannen, sofort lösen |
+| Halten | Start | mittellang halten |
+| Langes Halten | Start | lange halten |
+| Aufzug | Stufe 3 | in 3 Stufen anspannen, oben halten, in 3 Stufen lösen |
+| Langsames Lösen | Stufe 5 | zügig anspannen, dann ganz langsam lösen |
+| Pulsieren | Stufe 7 | auf halber Kraft halten und dabei pulsieren |
+
+Schnellspanner wärmt immer auf, dazu kommen zwei weitere Übungen, die von Tag zu
+Tag durchrotieren. Erreichst du die passende Stufe, wird eine neue Übung
+freigeschaltet und erklärt.
 
 Jede Übung wird vorher angekündigt — mit Name, was zu tun ist und wie viele
-Wiederholungen kommen. In den Satzpausen steht, was als Nächstes dran ist.
-Die letzte Wiederholung eines Satzes geht direkt in die Satzpause über, damit
-nie zwei Ruhephasen aufeinander folgen.
+Wiederholungen kommen. Diese Ankündigung *ist* zugleich die Pause davor, es kommt
+also nie beides hintereinander. Auch die letzte Wiederholung eines Satzes geht
+direkt in die Satzpause über: nie folgen zwei Ruhephasen aufeinander.
 
 Der Kreis wächst beim Anspannen und schrumpft beim Loslassen, der Ring zählt die
 laufende Phase herunter. Signale sind rein visuell; Ton und Vibration lassen sich in
@@ -53,10 +60,15 @@ Nach jeder Einheit gibst du an, wie sie sich angefühlt hat: *zu leicht* zählt 
 *genau richtig* 1, *zu schwer* 0,5. Bei 4 Punkten geht es eine Stufe hoch. Dreimal
 hintereinander *zu schwer* senkt die Stufe wieder.
 
-Mit steigender Stufe wird **länger gehalten, kürzer pausiert und dichter gearbeitet** —
-die Gesamtdauer bleibt bei 6 Minuten, der Anteil unter Spannung wächst von rund
-einem Drittel auf über die Hälfte. Die Stufe lässt sich in den Einstellungen auch
-direkt korrigieren.
+Mit steigender Stufe wird **kürzer pausiert, dichter gearbeitet und näher am
+Maximum gehalten** — die Gesamtdauer bleibt bei 6 Minuten. Die Stufe lässt sich in
+den Einstellungen auch direkt korrigieren.
+
+**Alle Haltezeiten sind ein Anteil deines gemessenen Maximums und können es nie
+überschreiten.** Halten liegt bei 35–65 % davon, Langes Halten bei 65–100 %. Damit
+die Zeiten mitwachsen können, schlägt die App nach jeder 10. Einheit einen kurzen
+Nachtest vor — nur der Haltetest, gut eine Minute. Danach steht da, wie sich dein
+Maximum verändert hat.
 
 ## Hinweise zur Ausführung
 

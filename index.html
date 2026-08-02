@@ -207,6 +207,17 @@
   }
   .blob.tense { transform: scale(1); background: var(--accent-dim); border-color: var(--accent); }
 
+  /* Pulsieren: Grundspannung bleibt stehen, der Kreis schwingt darum. */
+  .blob.pulsing { animation: puls 1.2s ease-in-out infinite; }
+  @keyframes puls {
+    0%, 100% { box-shadow: 0 0 0 0 var(--accent-dim); }
+    50%      { box-shadow: 0 0 0 14px var(--accent-dim); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .blob { transition: none; }
+    .blob.pulsing { animation: none; }
+  }
+
   .counter {
     position: absolute;
     font-size: 3.4rem;
@@ -339,6 +350,16 @@
       <div class="card">
         <h2>Heutige Einheit · 6:00</h2>
         <ul class="plan-list" id="plan-preview"></ul>
+        <p class="stat-label" id="plan-unlocked" style="margin-top:12px"></p>
+      </div>
+
+      <div class="card" id="retest-card" style="display:none">
+        <h2>Zeit für einen Nachtest</h2>
+        <p id="retest-text" style="margin-top:6px"></p>
+        <div class="row" style="margin-top:14px">
+          <button class="btn-ghost" id="retest-later">Später</button>
+          <button class="btn-ghost" id="retest-now" style="border-color:var(--accent);color:var(--accent)">Nachtest starten</button>
+        </div>
       </div>
 
       <p class="hint" id="progress-hint"></p>
@@ -441,7 +462,7 @@
           </div>
           <div class="stat">
             <span class="stat-value num" id="r-quick">0</span>
-            <span class="stat-label">Schnellkraft / 10 s</span>
+            <span class="stat-label" id="r-quick-label">Schnellkraft / 10 s</span>
           </div>
         </div>
         <div class="card">
@@ -516,6 +537,22 @@
     </div>
   </section>
 
+  <!-- ============ FREISCHALTUNG ============ -->
+  <section id="v-unlock" class="view">
+    <div class="spacer"></div>
+    <div class="center stack">
+      <span class="eyebrow">Neue Übung freigeschaltet</span>
+      <h1 id="u-name" style="font-weight:300;font-size:1.9rem"></h1>
+      <p id="u-how"></p>
+    </div>
+    <div class="spacer" style="max-height:28px"></div>
+    <div class="card">
+      <p class="hint" id="u-note"></p>
+    </div>
+    <div class="spacer"></div>
+    <button class="btn" id="u-ok">Weiter</button>
+  </section>
+
   <!-- ============ EINSTELLUNGEN ============ -->
   <section id="v-settings" class="view">
     <div class="head">
@@ -575,9 +612,13 @@
     streak: 0,
     lastDay: null,
     days: [],
+    seen: [],          // Übungen, deren Freischaltung schon gezeigt wurde
+    lastRetest: 0,     // Einheiten-Stand des letzten Nachtests
     sound: false,
     vibe: false
   });
+
+  const RETEST_EVERY = 10;   // nach so vielen Einheiten einen Nachtest vorschlagen
 
   let state = defaults();
 
@@ -610,26 +651,102 @@
     return 6;
   }
 
-  // Mit jeder Stufe wird länger gehalten, kürzer pausiert und dichter gearbeitet.
+  // Alle Haltezeiten sind ein Anteil des gemessenen Maximums und können es nie
+  // überschreiten. Die Stufe hebt den Anteil und macht die Einheit dichter;
+  // länger halten geht erst, wenn ein Nachtest ein höheres Maximum ergibt.
   function params(level, maxHold, flicks) {
     const g = level - 1;
-    const hold = Math.min(12, clamp(Math.round(maxHold * 0.4), 2, 6) + g);
-    const rest = clamp(Math.round(hold * Math.max(0.5, 1.6 - g * 0.09)), 2, 10);
-    const longHold = Math.min(40, Math.max(5, Math.round(maxHold * 0.9)) + g * 3);
-    const longRest = clamp(Math.round(longHold * Math.max(0.4, 0.7 - g * 0.02)), 4, 20);
+    const m = Math.max(2, maxHold);
+    // Nie über dem gemessenen Maximum — auch nicht durch die Untergrenze.
+    const hold = Math.min(m, Math.max(2, Math.round(m * Math.min(0.65, 0.35 + g * 0.03))));
+    const longHold = Math.min(m, Math.max(3, Math.round(m * Math.min(1.0, 0.65 + g * 0.04))));
+    const step = clamp(Math.round(m * 0.22), 1, 3);   // Stufenhöhe beim Aufzug
+    const rest = clamp(Math.round(hold * Math.max(0.6, 1.6 - g * 0.09)), 2, 10);
+    const longRest = clamp(Math.round(longHold * Math.max(0.5, 0.9 - g * 0.03)), 3, 15);
+    const slowRelease = Math.max(4, Math.round(m * 0.6));
+    const pulse = Math.max(6, Math.round(m * 1.2));   // halbe Kraft lässt sich länger halten
     const flickReps = Math.min(24, Math.max(8, flicks) + g * 2);
     const setTarget = Math.min(75, 45 + g * 3);      // angestrebte Satzlänge in Sekunden
-    const blockPause = Math.max(8, 15 - Math.floor(g / 2));
-    return { hold, rest, longHold, longRest, flickReps, setTarget, blockPause };
+    const blockPause = Math.max(9, 15 - Math.floor(g / 2));
+    return { hold, longHold, step, rest, longRest, slowRelease, pulse, flickReps, setTarget, blockPause };
   }
 
-  // Die drei Übungen einer Einheit — Name und was dabei zu tun ist.
+  // Die Übungen. `rep` liefert die Phasen einer Wiederholung als
+  // [Art, Beschriftung, Sekunden, Kreisgröße]; `rest` die Pause danach.
+  // `from` ist die Stufe, ab der die Übung freigeschaltet ist.
   const EX = {
-    schnell: { name: "Schnellspanner", how: () => "kurz anspannen, sofort lösen" },
-    halten:  { name: "Halten",         how: (s) => `${s} Sekunden halten` },
-    lang:    { name: "Langes Halten",  how: (s) => `${s} Sekunden halten` }
+    schnell: {
+      id: "schnell", name: "Schnellspanner", from: 1, warmup: true,
+      short: () => "kurz anspannen",
+      how: () => "kurz anspannen, sofort lösen",
+      rep: () => [["tense", "Anspannen", 1, 1]],
+      rest: () => 1, restLabel: "Locker"
+    },
+    halten: {
+      id: "halten", name: "Halten", from: 1,
+      short: (p) => `${p.hold} s halten`,
+      how: (p) => `${p.hold} Sekunden halten`,
+      rep: (p) => [["tense", "Anspannen", p.hold, 1]],
+      rest: (p) => p.rest, restLabel: "Loslassen"
+    },
+    lang: {
+      id: "lang", name: "Langes Halten", from: 1,
+      short: (p) => `${p.longHold} s halten`,
+      how: (p) => `${p.longHold} Sekunden halten`,
+      rep: (p) => [["tense", "Anspannen", p.longHold, 1]],
+      rest: (p) => p.longRest, restLabel: "Loslassen"
+    },
+    aufzug: {
+      id: "aufzug", name: "Aufzug", from: 3,
+      short: () => "3 Stufen hoch und runter",
+      how: () => "in 3 Stufen anspannen, oben halten, in 3 Stufen lösen",
+      rep: (p) => [
+        ["tense", "Stufe 1", p.step, 0.72],
+        ["tense", "Stufe 2", p.step, 0.86],
+        ["tense", "Stufe 3", p.step, 1],
+        ["tense", "oben halten", Math.max(1, p.hold - p.step), 1],
+        ["tense", "Stufe 2", p.step, 0.86],
+        ["tense", "Stufe 1", p.step, 0.72]
+      ],
+      rest: (p) => p.rest + 2, restLabel: "Ganz loslassen"
+    },
+    loesen: {
+      id: "loesen", name: "Langsames Lösen", from: 5,
+      short: (p) => `${p.slowRelease} s langsam lösen`,
+      how: (p) => `anspannen, dann ${p.slowRelease} Sekunden lang langsam lösen`,
+      rep: (p) => [
+        ["tense", "Anspannen", 2, 1],
+        ["slow", "langsam lösen", p.slowRelease, 0.58]
+      ],
+      rest: (p) => p.rest, restLabel: "Loslassen"
+    },
+    pulsieren: {
+      id: "pulsieren", name: "Pulsieren", from: 7,
+      short: (p) => `${p.pulse} s pulsieren`,
+      how: (p) => `${p.pulse} Sekunden auf halber Kraft pulsieren`,
+      rep: (p) => [["pulse", "Pulsieren", p.pulse, 0.85]],
+      rest: (p) => p.rest, restLabel: "Loslassen"
+    }
   };
-  const INTRO = 6;   // Sekunden Ankündigung vor jeder Übung
+
+  const ALL_EX = [EX.schnell, EX.halten, EX.lang, EX.aufzug, EX.loesen, EX.pulsieren];
+
+  // Freigeschaltet ist, was die Stufe erlaubt.
+  const unlocked = (level) => ALL_EX.filter(e => e.from <= level);
+
+  // Welche Übungen sind heute dran? Schnellspanner wärmt immer auf, dazu zwei
+  // weitere, die von Einheit zu Einheit durchrotieren.
+  function pickExercises(level, sessionNo) {
+    const pool = unlocked(level).filter(e => !e.warmup);
+    const picked = [];
+    for (let i = 0; i < Math.min(2, pool.length); i++) {
+      picked.push(pool[(sessionNo + i) % pool.length]);
+    }
+    return [EX.schnell, ...picked];
+  }
+
+  // Eine Wiederholung dauert so lange:
+  const repSeconds = (ex, p) => ex.rep(p).reduce((a, ph) => a + ph[2], 0);
 
   // Verteilt n Wiederholungen möglichst gleichmäßig auf mehrere Sätze.
   function spread(n, sets) {
@@ -638,85 +755,83 @@
     return out.filter(x => x > 0);
   }
 
+  // Wie viele Wiederholungen einer Übung passen in ein Zeitbudget?
+  // Je Satz entfällt eine Pause: die letzte Wiederholung geht direkt in die
+  // Satzpause bzw. in die nächste Ankündigung über.
+  function fitReps(ex, p, budget) {
+    const repDur = repSeconds(ex, p);
+    const rest = ex.rest(p);
+    const perSet = clamp(Math.floor(p.setTarget / (repDur + rest)), 1, 12);
+    const setsFor = (n) => Math.ceil(n / perSet);
+    const cost = (n) =>
+      n * repDur + Math.max(0, n - setsFor(n)) * rest +
+      Math.max(0, setsFor(n) - 1) * p.blockPause;
+    let n = 1;
+    while (cost(n + 1) <= budget) n++;
+    return { n, perSet, cost: cost(n) };
+  }
+
   // Baut die komplette Einheit als Phasenliste mit kumulativen Startzeiten.
-  // Die Wiederholungszahlen werden so gewählt, dass die 6 Minuten möglichst
-  // dicht gefüllt sind — Restsekunden landen in den Pausen, nicht am Ende.
-  function buildTimeline(level, maxHold, flicks) {
+  function buildTimeline(level, maxHold, flicks, sessionNo = 0) {
     const p = params(level, maxHold, flicks);
-    const kCycle = p.hold + p.rest;
-    const aCycle = p.longHold + p.longRest;
-    const perK = clamp(Math.floor(p.setTarget / kCycle), 1, 12);
-    const perA = clamp(Math.floor(p.setTarget / aCycle), 1, 5);
-
+    const list = pickExercises(level, sessionNo);
+    const INTRO = p.blockPause;        // Die Ankündigung ist zugleich die Pause davor.
     const MIN_CLOSING = 15;
-    // Aufwärmen: Bereit machen, Ankündigung, Schnellspanner (letzte Wiederholung
-    // ohne Loslassen, weil direkt die Satzpause folgt), Satzpause.
-    const warmup = 5 + INTRO + (2 * p.flickReps - 1) + p.blockPause;
-    const budget = SESSION_SECONDS - warmup - MIN_CLOSING - 2 * INTRO;
 
-    const setCount = (n, per) => (n > 0 ? Math.ceil(n / per) : 0);
-    // Je Satz entfällt ein Loslassen — die letzte Wiederholung geht in die Pause über.
-    const cost = (k, a) => {
-      const kSets = setCount(k, perK), aSets = setCount(a, perA);
-      return k * p.hold + Math.max(0, k - kSets) * p.rest +
-             a * p.longHold + Math.max(0, a - aSets) * p.longRest +
-             Math.max(0, kSets + aSets - 1) * p.blockPause;
-    };
+    // Schnellspanner ist als Aufwärmen fest gesetzt, der Rest wird geteilt.
+    const warmupCost = 2 * p.flickReps - 1;
+    let rest = SESSION_SECONDS - list.length * INTRO - warmupCost - MIN_CLOSING;
 
-    // Langes Halten bekommt knapp die Hälfte der Arbeitszeit, der Rest geht an Halten.
-    let aReps = Math.max(1, Math.round(budget * 0.45 / aCycle));
-    while (aReps > 1 && cost(1, aReps) > budget) aReps--;
-    let kReps = 0;
-    while (cost(kReps + 1, aReps) <= budget) kReps++;
-    if (kReps === 0 && aReps > 1) {
-      aReps--;
-      while (cost(kReps + 1, aReps) <= budget) kReps++;
-    }
-
-    // Jede Übung läuft am Stück durch, damit die Einheit einen Bogen hat.
-    // Sätze werden je Übung gezählt, nicht über die ganze Einheit.
-    const order = [];
-    const kSets = spread(kReps, setCount(kReps, perK));
-    const aSets = spread(aReps, setCount(aReps, perA));
-    kSets.forEach((n, i) =>
-      order.push({ block: EX.halten.name, n, h: p.hold, r: p.rest, set: i + 1, of: kSets.length }));
-    aSets.forEach((n, i) =>
-      order.push({ block: EX.lang.name, n, h: p.longHold, r: p.longRest, set: i + 1, of: aSets.length }));
+    const main = list.slice(1);
+    const plan = [];
+    main.forEach((ex, i) => {
+      const share = Math.floor(rest / (main.length - i));
+      const fit = fitReps(ex, p, share);
+      plan.push({ ex, ...fit });
+      rest -= fit.cost;
+    });
 
     const tl = [];
-    const add = (kind, label, dur, block, set, of) => {
-      const ph = { kind, label, dur, block, set: set || 0, of: of || 0 };
+    let repNo = 0, repTotal = 0;
+    const add = (kind, label, dur, block, set, of, scale) => {
+      const ph = { kind, label, dur, block, set: set || 0, of: of || 0,
+                   scale: scale ?? 0.58, rep: repNo, reps: repTotal };
       tl.push(ph);
       return ph;
     };
 
-    // Ankündigung vor jeder Übung: Name, was zu tun ist, wie viele Wiederholungen.
-    const announce = (ex, reps, holdSec) => {
+    // Die Ankündigung ersetzt die Pause vor einer Übung — nie beides hintereinander.
+    const announce = (ex, reps) => {
       add("intro", ex.name, INTRO, ex.name).note =
-        `${ex.how(holdSec)}\n${reps} ${reps === 1 ? "Wiederholung" : "Wiederholungen"}`;
+        `${ex.how(p)}\n${reps} ${reps === 1 ? "Wiederholung" : "Wiederholungen"}`;
     };
 
-    add("prep", "Bereit machen", 5, EX.schnell.name);
-    announce(EX.schnell, p.flickReps, 1);
+    // Aufwärmen
+    repTotal = p.flickReps;
+    announce(EX.schnell, p.flickReps);
     for (let i = 0; i < p.flickReps; i++) {
-      add("tense", "Anspannen", 1, EX.schnell.name, 1, 1);
-      // Nach der letzten Wiederholung geht es direkt in die Satzpause.
-      if (i < p.flickReps - 1) add("release", "Locker", 1, EX.schnell.name, 1, 1);
+      repNo = i + 1;
+      add("tense", "Anspannen", 1, EX.schnell.name, 1, 1, 1);
+      if (i < p.flickReps - 1) add("release", "Locker", 1, EX.schnell.name, 1, 1, 0.58);
     }
-    add("pause", "Satzpause", p.blockPause, EX.schnell.name, 1, 1);
 
-    order.forEach((set, i) => {
-      const ex = set.block === EX.halten.name ? EX.halten : EX.lang;
-      if (i === 0 || order[i - 1].block !== set.block) {
-        const total = order.filter(s => s.block === set.block).reduce((a, s) => a + s.n, 0);
-        announce(ex, total, set.h);
-      }
-      for (let n = 0; n < set.n; n++) {
-        add("tense", "Anspannen", set.h, set.block, set.set, set.of);
-        if (n < set.n - 1) add("release", "Loslassen", set.r, set.block, set.set, set.of);
-      }
-      if (i < order.length - 1) add("pause", "Satzpause", p.blockPause, set.block, set.set, set.of);
+    // Hauptübungen, jede am Stück
+    plan.forEach(({ ex, n, perSet }) => {
+      repTotal = n;
+      repNo = 0;
+      announce(ex, n);
+      const sets = spread(n, Math.ceil(n / perSet));
+      sets.forEach((count, s) => {
+        for (let r = 0; r < count; r++) {
+          repNo++;
+          ex.rep(p).forEach(([kind, label, dur, scale]) =>
+            add(kind, label, dur, ex.name, s + 1, sets.length, scale));
+          if (r < count - 1) add("release", ex.restLabel, ex.rest(p), ex.name, s + 1, sets.length, 0.58);
+        }
+        if (s < sets.length - 1) add("pause", "Satzpause", p.blockPause, ex.name, s + 1, sets.length, 0.58);
+      });
     });
+    repNo = 0; repTotal = 0;
 
     add("relax", "Entspannen", MIN_CLOSING, "Abschluss");
 
@@ -735,24 +850,21 @@
     let t = 0;
     tl.forEach(ph => { ph.start = t; t += ph.dur; });
 
-    const reps = { [EX.schnell.name]: 0, [EX.halten.name]: 0, [EX.lang.name]: 0 };
-    tl.forEach(ph => { if (ph.kind === "tense") reps[ph.block]++; });
-
-    return { phases: tl, p, reps, total: t, sets: order.length };
+    return { phases: tl, p, total: t, plan, list };
   }
 
-  function planRows(level) {
-    const s = buildTimeline(level, state.maxHold, state.flicks);
+  // Was heute ansteht — je Übung Name und Umfang.
+  function planRows(level, sessionNo) {
+    const s = buildTimeline(level, state.maxHold, state.flicks, sessionNo);
     return [
-      [EX.schnell.name, `${s.reps[EX.schnell.name]} × kurz anspannen`],
-      [EX.halten.name, `${s.reps[EX.halten.name]} × ${s.p.hold} s halten`],
-      [EX.lang.name, `${s.reps[EX.lang.name]} × ${s.p.longHold} s halten`]
+      [EX.schnell.name, `${s.p.flickReps} × ${EX.schnell.short(s.p)}`],
+      ...s.plan.map(({ ex, n }) => [ex.name, `${n} × ${ex.short(s.p)}`])
     ];
   }
 
-  function fillPlan(el, level) {
+  function fillPlan(el, level, sessionNo) {
     el.innerHTML = "";
-    planRows(level).forEach(([a, b]) => {
+    planRows(level, sessionNo).forEach(([a, b]) => {
       const li = document.createElement("li");
       const s1 = document.createElement("span"); s1.textContent = a;
       const s2 = document.createElement("span"); s2.textContent = b;
@@ -762,7 +874,7 @@
   }
 
   /* ========== Ansichten ========== */
-  const views = ["home", "test", "session", "done", "settings"];
+  const views = ["home", "test", "session", "done", "unlock", "settings"];
   function show(name) {
     views.forEach(v => $("v-" + v).classList.toggle("active", v === name));
     window.scrollTo(0, 0);
@@ -816,13 +928,28 @@
       ? `Heute erledigt · ${count} von 7 Tagen`
       : `Letzte 7 Tage · ${count} Einheiten`;
 
-    fillPlan($("plan-preview"), state.level);
+    fillPlan($("plan-preview"), state.level, state.total);
+
+    const frei = unlocked(state.level).length;
+    $("plan-unlocked").textContent =
+      `${frei} von ${ALL_EX.length} Übungen` +
+      (frei < ALL_EX.length ? ` · nächste ab Stufe ${ALL_EX.find(e => e.from > state.level).from}` : " freigeschaltet");
 
     const need = Math.max(1, Math.ceil(4 - state.points));
     $("progress-hint").textContent = `Noch ${need} ${need === 1 ? "Einheit" : "Einheiten"} bis Stufe ${state.level + 1}. Nach jeder Einheit sagst du, wie es sich angefühlt hat — danach richtet sich das Tempo.`;
 
     $("go-session").textContent = doneToday ? "Nochmal trainieren" : "Training starten";
+
+    // Nachtest-Vorschlag, damit die Haltezeiten wieder mitwachsen können
+    const due = state.total >= RETEST_EVERY && state.total - state.lastRetest >= RETEST_EVERY;
+    $("retest-card").style.display = due ? "block" : "none";
+    if (due) {
+      $("retest-text").textContent =
+        `Du hast ${state.total} Einheiten geschafft. Dein Maximum liegt noch bei ${fmt(state.maxHold)} s aus dem letzten Test — wahrscheinlich kannst du inzwischen mehr. Ein kurzer Nachtest dauert etwa eine Minute.`;
+    }
   }
+
+  const fmt = (v) => (Math.round(v * 10) / 10).toString().replace(".", ",");
 
   /* ========== Eingangstest ========== */
   const tSteps = ["t-intro", "t-hold", "t-quick", "t-result"];
@@ -847,8 +974,8 @@
     $("t-hold-attempt").textContent = `Versuch ${Math.min(3, test.attempts.length + 1)} von 3`;
   }
 
-  function startTest() {
-    test = { attempts: [], running: false, t0: 0, raf: 0, quick: 0, quickRaf: 0 };
+  function startTest(retest = false) {
+    test = { attempts: [], running: false, t0: 0, raf: 0, quick: 0, quickRaf: 0, retest };
     renderAttempts();
     $("t-hold-time").textContent = "0,0";
     $("t-hold-btn").textContent = "Jetzt anspannen";
@@ -858,7 +985,8 @@
     $("t-quick-tap").textContent = "Tippen zum Starten";
     $("t-quick-ring").style.strokeDasharray = CIRC;
     $("t-quick-ring").style.strokeDashoffset = CIRC;
-    tShow("t-intro");
+    // Der Nachtest misst nur das Maximum und überspringt Einweisung und Schnellkraft.
+    tShow(retest ? "t-hold" : "t-intro");
     show("test");
   }
 
@@ -889,7 +1017,7 @@
     renderAttempts();
 
     if (test.attempts.length >= 3) {
-      $("t-hold-btn").textContent = "Weiter zu Teil 2";
+      $("t-hold-btn").textContent = test.retest ? "Ergebnis ansehen" : "Weiter zu Teil 2";
       $("t-hold-msg").textContent = "Sehr gut. Kurz durchatmen.";
       $("t-hold-time").textContent = "✓";
       return;
@@ -940,25 +1068,46 @@
 
   function showResult() {
     const maxHold = Math.max(...test.attempts, 1);
-    const flicks = Math.max(1, test.quick);
-    const level = levelFromHold(maxHold);
+    const vorher = state.maxHold;
 
-    state.maxHold = maxHold;
-    state.flicks = flicks;
-    state.level = level;
-    state.points = 0;
-    state.hardStreak = 0;
-    state.tested = true;
+    if (test.retest) {
+      // Nachtest: nur das Maximum wird neu gesetzt, Stufe und Fortschritt bleiben.
+      state.maxHold = maxHold;
+      state.lastRetest = state.total;
+      const diff = maxHold - vorher;
+      $("r-hold").textContent = fmt(maxHold) + " s";
+      $("r-quick").textContent = (diff >= 0 ? "+" : "") + fmt(diff) + " s";
+      $("r-quick-label").textContent = "Veränderung";
+      $("r-level").textContent = `Dein Maximum: ${fmt(vorher)} s → ${fmt(maxHold)} s`;
+      $("r-text").textContent = diff > 0.5
+        ? "Stärker geworden. Die Haltezeiten wachsen entsprechend mit."
+        : diff < -0.5
+          ? "Heute etwas weniger — das schwankt von Tag zu Tag. Die Haltezeiten passen sich an."
+          : "Ungefähr gleich geblieben. Die Haltezeiten bleiben, wie sie sind.";
+    } else {
+      const flicks = Math.max(1, test.quick);
+      const level = levelFromHold(maxHold);
+      state.maxHold = maxHold;
+      state.flicks = flicks;
+      state.level = level;
+      state.points = 0;
+      state.hardStreak = 0;
+      state.tested = true;
+      state.lastRetest = state.total;
+      state.seen = unlocked(level).map(e => e.id);   // beim Start Bekanntes nicht nachmelden
 
-    $("r-hold").textContent = maxHold.toFixed(1).replace(".", ",") + " s";
-    $("r-quick").textContent = flicks;
-    $("r-level").textContent = "Startstufe " + level;
-    $("r-text").textContent = level <= 2
-      ? "Ein sehr guter Ausgangspunkt. Wir starten bewusst kurz — Sauberkeit vor Dauer."
-      : level <= 4
-        ? "Solide Grundlage. Das Programm baut jetzt Halte- und Schnellkraft parallel auf."
-        : "Starker Ausgangswert. Das Programm steigt entsprechend höher ein.";
-    fillPlan($("r-plan"), level);
+      $("r-hold").textContent = fmt(maxHold) + " s";
+      $("r-quick").textContent = flicks;
+      $("r-quick-label").textContent = "Schnellkraft / 10 s";
+      $("r-level").textContent = "Startstufe " + level;
+      $("r-text").textContent = level <= 2
+        ? "Ein sehr guter Ausgangspunkt. Wir starten bewusst kurz — Sauberkeit vor Dauer."
+        : level <= 4
+          ? "Solide Grundlage. Das Programm baut jetzt Halte- und Schnellkraft parallel auf."
+          : "Starker Ausgangswert. Das Programm steigt entsprechend höher ein.";
+    }
+
+    fillPlan($("r-plan"), state.level, state.total);
     tShow("t-result");
   }
 
@@ -966,11 +1115,10 @@
   let ses = null;
 
   function startSession() {
-    const built = buildTimeline(state.level, state.maxHold || 5, state.flicks || 10);
+    const built = buildTimeline(state.level, state.maxHold || 5, state.flicks || 10, state.total);
     ses = {
       phases: built.phases,
       total: built.total,
-      sets: built.sets,
       idx: -1,
       t0: performance.now(),
       pausedAt: 0,
@@ -996,7 +1144,7 @@
       const ph = ses.phases[j];
       if (ph.kind === "intro") return "Als Nächstes: " + ph.label;
       if (ph.kind === "relax") return "Als Nächstes: Abschluss";
-      if (ph.kind === "tense") {
+      if (WORK.has(ph.kind)) {
         return ph.of > 1 && ph.set !== cur.set
           ? `Als Nächstes: Satz ${ph.set} von ${ph.of}`
           : "Als Nächstes: " + ph.block;
@@ -1005,29 +1153,28 @@
     return "";
   }
 
+  // Phasen, in denen der Muskel arbeitet — auch das langsame Lösen zählt dazu.
+  const WORK = new Set(["tense", "slow", "pulse"]);
+
   function enterPhase(i) {
     ses.idx = i;
     const ph = ses.phases[i];
-    const tense = ph.kind === "tense";
+    const working = WORK.has(ph.kind);
 
     $("s-label").textContent = ph.label;
-    $("s-label").classList.toggle("tense", tense);
+    $("s-label").classList.toggle("tense", working);
     $("s-block").textContent = ph.kind === "intro" ? "Als Nächstes" : ph.block;
-    $("s-blob").classList.toggle("tense", tense);
-    $("s-blob").style.transitionDuration = Math.min(ph.dur * 0.45, 1.1) + "s";
-    document.querySelector("#v-session .ring").classList.toggle("neutral", !tense);
 
-    // Wiederholungszähler innerhalb des Blocks
-    let done = 0, all = 0;
-    ses.phases.forEach((p, j) => {
-      if (p.kind === "tense" && p.block === ph.block) {
-        all++;
-        if (j <= i) done++;
-      }
-    });
-    $("s-rep").textContent = (ph.kind === "tense" || ph.kind === "release") && all
-      ? `Wiederholung ${done} von ${all}`
-      : "";
+    const blob = $("s-blob");
+    blob.classList.toggle("tense", working);
+    blob.classList.toggle("pulsing", ph.kind === "pulse");
+    // Beim langsamen Lösen schrumpft der Kreis über die gesamte Phase.
+    blob.style.transitionDuration =
+      (ph.kind === "slow" ? ph.dur : Math.min(ph.dur * 0.45, 1.1)) + "s";
+    blob.style.transform = `scale(${ph.scale})`;
+    document.querySelector("#v-session .ring").classList.toggle("neutral", !working);
+
+    $("s-rep").textContent = ph.rep ? `Wiederholung ${ph.rep} von ${ph.reps}` : "";
     $("s-set").textContent = ph.of > 1 ? `Satz ${ph.set} von ${ph.of}` : "";
 
     // Ankündigung zeigt, was zu tun ist; in Pausen steht dort, was als Nächstes kommt.
@@ -1036,7 +1183,7 @@
       ph.kind === "pause" ? nextUp(i) : "";
     $("s-label").classList.toggle("announce", ph.kind === "intro");
 
-    if (tense || ph.kind === "release") cue(ph.kind);
+    if (working || ph.kind === "release") cue(working ? "tense" : "release");
   }
 
   function tick() {
@@ -1084,7 +1231,8 @@
   function stopSession(finished) {
     if (ses) { cancelAnimationFrame(ses.raf); releaseWakeLock(); }
     ses = null;
-    $("s-blob").classList.remove("tense");
+    $("s-blob").classList.remove("tense", "pulsing");
+    $("s-blob").style.transform = "";
     if (!finished) { renderHome(); show("home"); }
   }
 
@@ -1120,8 +1268,25 @@
     }
     if (state.points >= 4) { state.level++; state.points = 0; }
     save();
-    renderHome();
-    show("home");
+
+    const neu = showUnlock();
+    if (!neu) { renderHome(); show("home"); }
+  }
+
+  // Ist durch den Stufenaufstieg eine Übung dazugekommen? Dann zeigen.
+  function showUnlock() {
+    const neu = unlocked(state.level).find(e => !state.seen.includes(e.id));
+    if (!neu) return false;
+    state.seen.push(neu.id);
+    save();
+
+    const p = params(state.level, state.maxHold, state.flicks);
+    $("u-name").textContent = neu.name;
+    $("u-how").textContent = neu.how(p);
+    $("u-note").textContent =
+      `Ab jetzt taucht ${neu.name} in deinen Einheiten auf. Es sind nicht alle Übungen an einem Tag dran — sie wechseln sich ab, damit jede genug Zeit bekommt.`;
+    show("unlock");
+    return true;
   }
 
   /* ========== Bildschirm wachhalten ========== */
@@ -1147,14 +1312,20 @@
 
   /* ========== Ereignisse ========== */
   $("go-session").onclick = startSession;
-  $("go-retest").onclick = startTest;
+  $("go-retest").onclick = () => startTest(false);
   $("go-settings").onclick = () => { renderSettings(); show("settings"); };
+  $("retest-now").onclick = () => startTest(true);
+  $("retest-later").onclick = () => { state.lastRetest = state.total; save(); renderHome(); };
+  $("u-ok").onclick = () => { renderHome(); show("home"); };
 
-  $("t-abort").onclick = () => { renderHome(); show(state.tested ? "home" : "home"); };
+  $("t-abort").onclick = () => { renderHome(); show("home"); };
   $("t-intro-next").onclick = () => { renderAttempts(); tShow("t-hold"); };
 
   $("t-hold-btn").onclick = () => {
-    if (test.attempts.length >= 3 && !test.running) { tShow("t-quick"); return; }
+    if (test.attempts.length >= 3 && !test.running) {
+      if (test.retest) showResult(); else tShow("t-quick");
+      return;
+    }
     test.running ? stopHold() : startHold();
   };
 
@@ -1166,7 +1337,7 @@
   };
 
   $("t-result-next").onclick = () => { save(); renderHome(); show("home"); };
-  $("t-result-again").onclick = startTest;
+  $("t-result-again").onclick = () => startTest(test.retest);
 
   $("s-pause").onclick = togglePause;
   $("s-stop").onclick = () => stopSession(false);
