@@ -323,6 +323,53 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 /* ============================================================
    REICHWEITEN-DEMO
    ============================================================ */
+.picker{
+  grid-column:1/-1;
+  border-bottom:1px solid var(--line-soft);
+  padding:1.1rem clamp(1.1rem,3vw,1.6rem) 1.2rem;
+  display:flex;flex-direction:column;gap:.7rem;
+}
+.picker__lead{
+  font-family:var(--font-mono);font-size:.7rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--faint);margin:0;
+}
+/* Die Aufsätze sehen jetzt aus wie das, was sie sind. Vorher lag zwischen
+   gewählt und nicht gewählt ein Kontrast von 1,3:1 und kein Rahmen — auf dem
+   Touchscreen war nichts davon als Bedienelement erkennbar. */
+.heads{display:flex;flex-wrap:wrap;gap:.5rem;background:none;border:0}
+.head{
+  flex:1 1 8.5rem;
+  display:flex;flex-direction:row;align-items:center;justify-content:flex-start;gap:.6rem;
+  background:var(--ground);color:var(--muted);
+  border:1px solid var(--line);border-radius:var(--radius);
+  padding:.6rem .8rem;
+  transition:border-color .22s,background-color .22s,color .22s;
+}
+.head:hover{border-color:var(--accent-edge);color:var(--text)}
+.head[aria-pressed="true"]{
+  background:var(--accent);border-color:var(--accent);
+  color:var(--accent-ink);font-weight:600;
+}
+.head[aria-pressed="true"] .head__ico{color:var(--accent-ink)}
+.head__ico{width:22px;height:22px;flex:none;color:var(--faint);transition:color .22s}
+.head:hover .head__ico{color:var(--heat)}
+.head__n{font-family:var(--font-mono);font-size:.72rem;letter-spacing:.09em;text-transform:uppercase;text-align:left}
+
+.zones__legend{
+  display:flex;align-items:center;gap:.45rem;flex-wrap:wrap;
+  font-family:var(--font-mono);font-size:.66rem;letter-spacing:.06em;
+  color:var(--faint);margin:.9rem 0 0;
+}
+.zones__key{
+  width:7px;height:7px;border-radius:50%;flex:none;
+  border:1px solid var(--faint);margin-left:.6rem;
+}
+.zones__key--on{background:var(--heat);border-color:var(--heat);margin-left:0}
+/* Zeile und Band gehören zusammen — Zeigen auf das eine hebt das andere hervor. */
+.zone{cursor:default}
+.zone.is-hot .zone__name{color:var(--text)}
+.z-band.is-hot{fill-opacity:.9}
+
 .reach{
   position:relative;
   background:var(--surface);
@@ -385,25 +432,6 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .spec__k{font-family:var(--font-mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--faint)}
 .spec__note{font-size:.8rem;color:var(--muted);margin-top:.4rem}
 
-.cut{margin-top:clamp(3rem,6vw,4.5rem);border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);padding:clamp(1.2rem,3vw,2rem)}
-.cut__title{font-family:var(--font-mono);font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);margin:0 0 1.2rem}
-.cut__svg{width:100%;height:auto}
-.cut__scroll{overflow-x:auto}
-.cut__scroll > svg{min-width:640px}
-/* Gehäuse: eine Fläche, eine Kontur. Die Bauteile liegen darin geclippt,
-   deshalb braucht keines davon einen eigenen Rahmen. */
-.c-shell{fill:var(--raised);opacity:.55}
-.c-outline{fill:none;stroke:var(--line);stroke-width:1.6}
-.c-fill{fill:var(--surface);opacity:.9}
-.c-detail{stroke:var(--faint);stroke-width:1;opacity:.55}
-.c-detail-f{fill:none;stroke:var(--faint);stroke-width:1;opacity:.5}
-.c-weave{stroke:var(--faint);stroke-width:.9;opacity:.38}
-.c-accent{fill:var(--accent);opacity:.85}
-.c-heat{fill:var(--heat);opacity:.9}
-.c-lead{stroke:var(--line);stroke-width:1}
-.c-label{font-family:var(--font-mono);font-size:9px;fill:var(--muted);letter-spacing:.08em}
-.js .c-part{opacity:0;transform:translateY(10px);transition:opacity .6s ease,transform .6s cubic-bezier(.22,.7,.25,1);transition-delay:var(--d,0ms)}
-.cut.is-in .c-part{opacity:1;transform:none}
 
 /* Höher als zuvor: die Fläche trägt jetzt eine mm- und eine ms-Achse,
    und die Schläge brauchen Platz, um als Ausschlag statt als Welle zu lesen. */
@@ -414,18 +442,6 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
    ANWENDUNG
    ============================================================ */
 .app{display:grid;gap:clamp(2rem,4vw,3rem);grid-template-columns:1fr}
-/* Genau vier Aufsätze: vier Spalten, damit keine leere Zelle entsteht */
-.heads{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:var(--line-soft);border:1px solid var(--line-soft)}
-.head{
-  background:var(--ground);padding:1rem .6rem 1.1rem;display:flex;flex-direction:column;align-items:center;gap:.6rem;
-  transition:background-color .3s,color .3s;color:var(--muted);
-}
-.head:hover{background:var(--raised);color:var(--text)}
-.head[aria-pressed="true"]{background:var(--raised);color:var(--text)}
-.head[aria-pressed="true"] .head__ico{color:var(--heat)}
-.head__ico{width:clamp(30px,8vw,44px);height:clamp(30px,8vw,44px);color:var(--faint);transition:color .3s,transform .35s cubic-bezier(.22,.7,.25,1)}
-.head:hover .head__ico{transform:translateY(-3px)}
-.head__n{font-family:var(--font-mono);font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;text-align:center}
 .headdetail{border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);padding:clamp(1.2rem,3vw,1.8rem);display:grid;gap:.8rem;min-height:11rem}
 .headdetail__t{font-family:var(--font-display);font-size:var(--step-2);text-transform:uppercase;margin:0}
 .headdetail__d{color:var(--muted);margin:0;max-width:52ch}
@@ -545,8 +561,6 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
   /* Fünf Spalten lassen auf dem Telefon rund 45 px Textbreite übrig — „U-Form“
      bricht dann mitten im Wort. Flex statt Grid: die letzte Reihe füllt sich selbst
      auf, es bleibt keine leere Zelle stehen, die den Hairline-Trick verrät. */
-  .heads{display:flex;flex-wrap:wrap}
-  .head{flex:1 1 88px}
 }
 @media (min-width:560px){
   .btn__more{display:inline}
@@ -565,11 +579,6 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
      sind nur 107 px hoch und liessen unter sich ein 120-px-Loch neben der
      Detailtafel stehen. Als Zeilen füllen sie die Spalte auf gleiche Höhe. */
   .app{grid-template-columns:minmax(0,.82fr) minmax(0,1.18fr);align-items:stretch}
-  .heads{grid-template-columns:minmax(0,1fr);grid-auto-rows:1fr}
-  .head{flex-direction:row;align-items:center;justify-content:flex-start;gap:.9rem;padding:.7rem 1.1rem}
-  .head__ico{width:28px;height:28px}
-  .head__n{text-align:left}
-  .head:hover .head__ico{transform:translateX(2px)}
   .buy{grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr)}
   .buy__side{border-top:0;border-left:1px solid var(--line-soft)}
   }
@@ -635,7 +644,6 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
   .js .rise{opacity:1;transform:none}
   .js .hero__h1 i{transform:none}
   .js .spec::after{transform:scaleX(1)}
-  .js .cut .c-part{opacity:1;transform:none}
 }
 </style>
 <!-- Fragen und Antworten, wortgleich aus den <details> unten. Wer eines von beiden
@@ -814,6 +822,18 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 
       <!-- Interaktive Demo -->
       <div class="reach rise" id="reachCard">
+        <!-- Die Auswahl steht über allem: Ursache und Wirkung in einem Blick,
+             und auf dem Telefon direkt übereinander statt 80 px auseinander. -->
+        <div class="picker">
+          <p class="picker__lead" id="pickerLead">Aufsatz wählen</p>
+          <div class="heads" id="heads" role="group" aria-label="Aufsatz wählen">
+            <button class="head" type="button" aria-pressed="true"><span class="head__ico"><svg viewBox="0 0 48 48" fill="none" aria-hidden="true"><circle cx="24" cy="17" r="12" fill="currentColor" opacity=".9"/><rect x="21" y="28" width="6" height="16" rx="3" fill="currentColor" opacity=".45"/></svg></span><span class="head__n">Kugel</span></button>
+            <button class="head" type="button" aria-pressed="false"><span class="head__ico"><svg viewBox="0 0 48 48" fill="none" aria-hidden="true"><ellipse cx="24" cy="17" rx="13" ry="7" fill="currentColor" opacity=".85"/><rect x="21" y="25" width="6" height="19" rx="3" fill="currentColor" opacity=".45"/></svg></span><span class="head__n">Flach</span></button>
+            <button class="head" type="button" aria-pressed="false"><span class="head__ico"><svg viewBox="0 0 48 48" fill="none" aria-hidden="true"><path d="M13 5v10a6 6 0 0 0 6 6h10a6 6 0 0 0 6-6V5" stroke="currentColor" stroke-width="5" stroke-linecap="round"/><rect x="21" y="26" width="6" height="18" rx="3" fill="currentColor" opacity=".45"/></svg></span><span class="head__n">U-Form</span></button>
+            <button class="head" type="button" aria-pressed="false"><span class="head__ico"><svg viewBox="0 0 48 48" fill="none" aria-hidden="true"><path d="M24 4c4 8 7 14 7 18a7 7 0 1 1-14 0c0-4 3-10 7-18Z" fill="currentColor" opacity=".9"/><rect x="21" y="28" width="6" height="16" rx="3" fill="currentColor" opacity=".45"/></svg></span><span class="head__n">Spitz</span></button>
+          </div>
+        </div>
+
         <div class="reach__stage">
           <svg class="reach__figure" viewBox="0 0 340 460" role="img"
                aria-labelledby="figTitle figDesc">
@@ -859,24 +879,11 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
         </div>
 
         <div class="reach__panel">
-          <div class="reach__head">
-            <p class="reach__pctlabel">Aufsatz wählen — die Karte zeigt, wofür der
-              Hersteller ihn vorsieht.</p>
-          </div>
-
-          <div class="heads" id="heads" role="group" aria-label="Aufsatz wählen">
-            <button class="head" type="button" aria-pressed="true"><span class="head__ico"><svg viewBox="0 0 48 48" fill="none" aria-hidden="true"><circle cx="24" cy="17" r="12" fill="currentColor" opacity=".9"/><rect x="21" y="28" width="6" height="16" rx="3" fill="currentColor" opacity=".45"/></svg></span><span class="head__n">Kugel</span></button>
-            <button class="head" type="button" aria-pressed="false"><span class="head__ico"><svg viewBox="0 0 48 48" fill="none" aria-hidden="true"><ellipse cx="24" cy="17" rx="13" ry="7" fill="currentColor" opacity=".85"/><rect x="21" y="25" width="6" height="19" rx="3" fill="currentColor" opacity=".45"/></svg></span><span class="head__n">Flach</span></button>
-            <button class="head" type="button" aria-pressed="false"><span class="head__ico"><svg viewBox="0 0 48 48" fill="none" aria-hidden="true"><path d="M13 5v10a6 6 0 0 0 6 6h10a6 6 0 0 0 6-6V5" stroke="currentColor" stroke-width="5" stroke-linecap="round"/><rect x="21" y="26" width="6" height="18" rx="3" fill="currentColor" opacity=".45"/></svg></span><span class="head__n">U-Form</span></button>
-            <button class="head" type="button" aria-pressed="false"><span class="head__ico"><svg viewBox="0 0 48 48" fill="none" aria-hidden="true"><path d="M24 4c4 8 7 14 7 18a7 7 0 1 1-14 0c0-4 3-10 7-18Z" fill="currentColor" opacity=".9"/><rect x="21" y="28" width="6" height="16" rx="3" fill="currentColor" opacity=".45"/></svg></span><span class="head__n">Spitz</span></button>
-          </div>
-
           <div class="headdetail" id="headDetail" aria-live="polite">
             <h3 class="display headdetail__t">Kugelkopf</h3>
             <p class="headdetail__d">Der Allrounder des Sets. Der Hersteller nennt ihn für Arme, Taille und Rücken sowie für große Muskelgruppen wie Gesäß, Oberschenkel und Waden.</p>
             <div class="headdetail__meta"><span class="chip chip--heat">auch Arme, Oberschenkel, Waden</span></div>
           </div>
-
           <ul class="zones" id="zoneList">
             <li class="zone"><span class="zone__dot"></span><span class="zone__name">Nacken & Halsansatz</span></li>
             <li class="zone is-live"><span class="zone__dot"></span><span class="zone__name">Trapez / oberer Rücken</span></li>
@@ -885,6 +892,10 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
             <li class="zone is-live"><span class="zone__dot"></span><span class="zone__name">Taille / Lende</span></li>
             <li class="zone is-live"><span class="zone__dot"></span><span class="zone__name">Gesäß</span></li>
           </ul>
+          <p class="zones__legend">
+            <span class="zones__key zones__key--on"></span> vom Hersteller genannt
+            <span class="zones__key"></span> nicht genannt
+          </p>
         </div>
       </div>
 
@@ -914,79 +925,6 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
         <div class="spec rise" style="--d:300ms"><div class="spec__v" data-count="590" data-dec="0">0</div><div class="spec__k">Gramm pro Satz</div></div>
       </div>
 
-      <!-- Aufbau -->
-      <div class="cut" id="cutaway">
-        <p class="cut__title">Aufbau von vorn nach hinten</p>
-        <div class="cut__scroll">
-          <svg class="cut__svg" viewBox="0 0 900 240" role="img" aria-label="Schnitt durch das Gerät: Silikonaufsatz, Kopf, Motor, Antrieb, gebogener ABS-Griff und Akku.">
-            <defs>
-              <clipPath id="shellClip"><path d="M38.0,96.0 C39.0,92.0 41.0,78.3 44.0,72.0 C47.0,65.7 51.0,61.8 56.0,58.0 C61.0,54.2 66.7,51.2 74.0,49.0 C81.3,46.8 90.3,45.8 100.0,45.0 C109.7,44.2 121.7,43.8 132.0,44.0 C142.3,44.2 152.3,44.8 162.0,46.0 C171.7,47.2 181.0,48.8 190.0,51.0 C199.0,53.2 207.7,56.2 216.0,59.0 C224.3,61.8 232.3,65.3 240.0,68.0 C247.7,70.7 255.3,73.3 262.0,75.0 C268.7,76.7 273.7,77.3 280.0,78.0 C286.3,78.7 276.7,78.8 300.0,79.0 C323.3,79.2 376.7,79.0 420.0,79.0 C463.3,79.0 513.3,79.0 560.0,79.0 C606.7,79.0 663.3,79.0 700.0,79.0 C736.7,79.0 762.3,79.2 780.0,79.0 C797.7,78.8 798.0,78.5 806.0,78.0 C814.0,77.5 821.0,76.3 828.0,76.0 C835.0,75.7 842.3,75.2 848.0,76.0 C853.7,76.8 858.3,77.7 862.0,81.0 C865.7,84.3 868.7,93.5 870.0,96.0 C868.7,98.5 865.7,107.7 862.0,111.0 C858.3,114.3 853.7,115.2 848.0,116.0 C842.3,116.8 835.0,116.3 828.0,116.0 C821.0,115.7 814.0,114.5 806.0,114.0 C798.0,113.5 797.7,113.2 780.0,113.0 C762.3,112.8 736.7,113.0 700.0,113.0 C663.3,113.0 606.7,113.0 560.0,113.0 C513.3,113.0 463.3,113.0 420.0,113.0 C376.7,113.0 323.3,112.8 300.0,113.0 C276.7,113.2 286.3,113.3 280.0,114.0 C273.7,114.7 268.7,115.3 262.0,117.0 C255.3,118.7 247.7,121.3 240.0,124.0 C232.3,126.7 224.3,130.2 216.0,133.0 C207.7,135.8 199.0,138.8 190.0,141.0 C181.0,143.2 171.7,144.8 162.0,146.0 C152.3,147.2 142.3,147.8 132.0,148.0 C121.7,148.2 109.7,147.8 100.0,147.0 C90.3,146.2 81.3,145.2 74.0,143.0 C66.7,140.8 61.0,137.8 56.0,134.0 C51.0,130.2 47.0,126.3 44.0,120.0 C41.0,113.7 39.0,100.0 38.0,96.0 Z"/></clipPath>
-            </defs>
-
-            <!-- Gehäuse als eine durchgehende Kontur. Die Bauteile liegen darin,
-                 nicht daneben — sonst liest sich der Schnitt als Teileliste. -->
-            <path class="c-shell" d="M38.0,96.0 C39.0,92.0 41.0,78.3 44.0,72.0 C47.0,65.7 51.0,61.8 56.0,58.0 C61.0,54.2 66.7,51.2 74.0,49.0 C81.3,46.8 90.3,45.8 100.0,45.0 C109.7,44.2 121.7,43.8 132.0,44.0 C142.3,44.2 152.3,44.8 162.0,46.0 C171.7,47.2 181.0,48.8 190.0,51.0 C199.0,53.2 207.7,56.2 216.0,59.0 C224.3,61.8 232.3,65.3 240.0,68.0 C247.7,70.7 255.3,73.3 262.0,75.0 C268.7,76.7 273.7,77.3 280.0,78.0 C286.3,78.7 276.7,78.8 300.0,79.0 C323.3,79.2 376.7,79.0 420.0,79.0 C463.3,79.0 513.3,79.0 560.0,79.0 C606.7,79.0 663.3,79.0 700.0,79.0 C736.7,79.0 762.3,79.2 780.0,79.0 C797.7,78.8 798.0,78.5 806.0,78.0 C814.0,77.5 821.0,76.3 828.0,76.0 C835.0,75.7 842.3,75.2 848.0,76.0 C853.7,76.8 858.3,77.7 862.0,81.0 C865.7,84.3 868.7,93.5 870.0,96.0 C868.7,98.5 865.7,107.7 862.0,111.0 C858.3,114.3 853.7,115.2 848.0,116.0 C842.3,116.8 835.0,116.3 828.0,116.0 C821.0,115.7 814.0,114.5 806.0,114.0 C798.0,113.5 797.7,113.2 780.0,113.0 C762.3,112.8 736.7,113.0 700.0,113.0 C663.3,113.0 606.7,113.0 560.0,113.0 C513.3,113.0 463.3,113.0 420.0,113.0 C376.7,113.0 323.3,112.8 300.0,113.0 C276.7,113.2 286.3,113.3 280.0,114.0 C273.7,114.7 268.7,115.3 262.0,117.0 C255.3,118.7 247.7,121.3 240.0,124.0 C232.3,126.7 224.3,130.2 216.0,133.0 C207.7,135.8 199.0,138.8 190.0,141.0 C181.0,143.2 171.7,144.8 162.0,146.0 C152.3,147.2 142.3,147.8 132.0,148.0 C121.7,148.2 109.7,147.8 100.0,147.0 C90.3,146.2 81.3,145.2 74.0,143.0 C66.7,140.8 61.0,137.8 56.0,134.0 C51.0,130.2 47.0,126.3 44.0,120.0 C41.0,113.7 39.0,100.0 38.0,96.0 Z"/>
-
-            <g clip-path="url(#shellClip)">
-              <path class="c-heat" d="M30 40 L94 40 L94 152 L30 152 Z"/>
-              <rect class="c-fill" x="98" y="44" width="70" height="104" rx="10"/>
-              <circle class="c-detail-f" cx="133" cy="96" r="22"/>
-              <circle class="c-accent" cx="133" cy="96" r="7"/>
-              <rect class="c-fill" x="174" y="56" width="96" height="80" rx="8"/>
-              <g class="c-detail" fill="none">
-                <path d="M186 58v76M198 58v76M210 58v76M222 58v76M234 58v76M246 58v76M258 58v76"/>
-              </g>
-              <circle class="c-accent" cx="222" cy="96" r="13"/>
-              <rect class="c-fill" x="352" y="74" width="76" height="44" rx="6"/>
-              <g class="c-detail" fill="none">
-                <circle cx="390" cy="96" r="15"/><circle cx="397" cy="89" r="5.5"/>
-              </g>
-              <g class="c-weave" fill="none">
-                <path d="M446 79l18 34M470 79l18 34M494 79l18 34M518 79l18 34M542 79l18 34M566 79l18 34M590 79l18 34M614 79l18 34M638 79l18 34M662 79l18 34"/>
-                <path d="M464 79l-18 34M488 79l-18 34M512 79l-18 34M536 79l-18 34M560 79l-18 34M584 79l-18 34M608 79l-18 34M632 79l-18 34M656 79l-18 34M680 79l-18 34"/>
-              </g>
-              <rect class="c-accent" x="558" y="72" width="4" height="48" rx="2"/>
-              <rect class="c-fill" x="700" y="80" width="112" height="32" rx="4"/>
-              <g class="c-detail" fill="none"><path d="M737 80v32M774 80v32"/></g>
-            </g>
-
-            <path class="c-outline" d="M38.0,96.0 C39.0,92.0 41.0,78.3 44.0,72.0 C47.0,65.7 51.0,61.8 56.0,58.0 C61.0,54.2 66.7,51.2 74.0,49.0 C81.3,46.8 90.3,45.8 100.0,45.0 C109.7,44.2 121.7,43.8 132.0,44.0 C142.3,44.2 152.3,44.8 162.0,46.0 C171.7,47.2 181.0,48.8 190.0,51.0 C199.0,53.2 207.7,56.2 216.0,59.0 C224.3,61.8 232.3,65.3 240.0,68.0 C247.7,70.7 255.3,73.3 262.0,75.0 C268.7,76.7 273.7,77.3 280.0,78.0 C286.3,78.7 276.7,78.8 300.0,79.0 C323.3,79.2 376.7,79.0 420.0,79.0 C463.3,79.0 513.3,79.0 560.0,79.0 C606.7,79.0 663.3,79.0 700.0,79.0 C736.7,79.0 762.3,79.2 780.0,79.0 C797.7,78.8 798.0,78.5 806.0,78.0 C814.0,77.5 821.0,76.3 828.0,76.0 C835.0,75.7 842.3,75.2 848.0,76.0 C853.7,76.8 858.3,77.7 862.0,81.0 C865.7,84.3 868.7,93.5 870.0,96.0 C868.7,98.5 865.7,107.7 862.0,111.0 C858.3,114.3 853.7,115.2 848.0,116.0 C842.3,116.8 835.0,116.3 828.0,116.0 C821.0,115.7 814.0,114.5 806.0,114.0 C798.0,113.5 797.7,113.2 780.0,113.0 C762.3,112.8 736.7,113.0 700.0,113.0 C663.3,113.0 606.7,113.0 560.0,113.0 C513.3,113.0 463.3,113.0 420.0,113.0 C376.7,113.0 323.3,112.8 300.0,113.0 C276.7,113.2 286.3,113.3 280.0,114.0 C273.7,114.7 268.7,115.3 262.0,117.0 C255.3,118.7 247.7,121.3 240.0,124.0 C232.3,126.7 224.3,130.2 216.0,133.0 C207.7,135.8 199.0,138.8 190.0,141.0 C181.0,143.2 171.7,144.8 162.0,146.0 C152.3,147.2 142.3,147.8 132.0,148.0 C121.7,148.2 109.7,147.8 100.0,147.0 C90.3,146.2 81.3,145.2 74.0,143.0 C66.7,140.8 61.0,137.8 56.0,134.0 C51.0,130.2 47.0,126.3 44.0,120.0 C41.0,113.7 39.0,100.0 38.0,96.0 Z"/>
-
-            
-              <g class="c-part" style="--d:0ms">
-                <line class="c-lead" x1="62" y1="148" x2="62" y2="158"/>
-                <text class="c-label" x="62" y="174" text-anchor="middle">AUFSATZ</text>
-                <text class="c-label" x="62" y="188" text-anchor="middle" opacity=".62">SILIKON</text>
-              </g>
-              <g class="c-part" style="--d:90ms">
-                <line class="c-lead" x1="150" y1="152" x2="150" y2="196"/>
-                <text class="c-label" x="150" y="212" text-anchor="middle">KOPF</text>
-                <text class="c-label" x="150" y="226" text-anchor="middle" opacity=".62">SILIKON</text>
-              </g>
-              <g class="c-part" style="--d:180ms">
-                <line class="c-lead" x1="250" y1="140" x2="250" y2="158"/>
-                <text class="c-label" x="250" y="174" text-anchor="middle">MOTOR</text>
-                <text class="c-label" x="250" y="188" text-anchor="middle" opacity=".62">9 KRAFTSTUFEN</text>
-              </g>
-              <g class="c-part" style="--d:270ms">
-                <line class="c-lead" x1="390" y1="120" x2="390" y2="196"/>
-                <text class="c-label" x="390" y="212" text-anchor="middle">ANTRIEB</text>
-                <text class="c-label" x="390" y="226" text-anchor="middle" opacity=".62">20 WATT</text>
-              </g>
-              <g class="c-part" style="--d:360ms">
-                <line class="c-lead" x1="560" y1="120" x2="560" y2="158"/>
-                <text class="c-label" x="560" y="174" text-anchor="middle">GRIFF</text>
-                <text class="c-label" x="560" y="188" text-anchor="middle" opacity=".62">ABS, GEBOGEN</text>
-              </g>
-              <g class="c-part" style="--d:450ms">
-                <line class="c-lead" x1="760" y1="118" x2="760" y2="196"/>
-                <text class="c-label" x="760" y="212" text-anchor="middle">AKKU 1200 mAh</text>
-                <text class="c-label" x="760" y="226" text-anchor="middle" opacity=".62">USB 5V · 3–4 h</text>
-              </g>
-          </svg>
-        </div>
-
-      </div>
     </div>
   </section>
 
@@ -1168,9 +1106,9 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
         if (en.isIntersecting) { en.target.classList.add("is-in"); io.unobserve(en.target); }
       });
     }, { rootMargin: "0px 0px -12% 0px", threshold: .12 });
-    document.querySelectorAll(".rise, .cut").forEach(function(el){ io.observe(el); });
+    document.querySelectorAll(".rise").forEach(function(el){ io.observe(el); });
   } else {
-    document.querySelectorAll(".rise, .cut").forEach(function(el){ el.classList.add("is-in"); });
+    document.querySelectorAll(".rise").forEach(function(el){ el.classList.add("is-in"); });
   }
 
   /* Sicherheitsnetz. Hat der Observer nach zwei Sekunden kein einziges Element
@@ -1178,7 +1116,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
      Bedingung geknüpft, damit die Scroll-Dramaturgie sonst erhalten bleibt. */
   setTimeout(function(){
     if (!document.querySelector(".rise.is-in"))
-      document.querySelectorAll(".rise, .cut").forEach(function(el){ el.classList.add("is-in"); });
+      document.querySelectorAll(".rise").forEach(function(el){ el.classList.add("is-in"); });
   }, 2000);
 
   /* ---------- Zählerwerte ---------- */
@@ -1263,6 +1201,19 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
       zoneList.appendChild(li);
     }
     zoneRows[z.id] = li;
+
+    /* Zeile und Band gehören zusammen. Ohne diese Kopplung steuern vier Knöpfe
+       eine Grafik in einer anderen Spalte, ohne dass etwas den Bezug zeigt. */
+    function hot(on){
+      li.classList.toggle("is-hot", on);
+      if (bands[z.id]) bands[z.id].classList.toggle("is-hot", on);
+    }
+    li.addEventListener("mouseenter", function(){ hot(true); });
+    li.addEventListener("mouseleave", function(){ hot(false); });
+    if (bands[z.id]) {
+      bands[z.id].addEventListener("mouseenter", function(){ hot(true); });
+      bands[z.id].addEventListener("mouseleave", function(){ hot(false); });
+    }
   });
 
   var headsEl  = document.getElementById("heads");
@@ -1289,6 +1240,9 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
     headsEl.querySelectorAll(".head").forEach(function(b, bi){
       b.setAttribute("aria-pressed", bi === i ? "true" : "false");
     });
+
+    var lead = document.getElementById("pickerLead");
+    if (lead) lead.textContent = "Aufsatz wählen — gezeigt: " + h.t;
   }
 
   var existingHeads = headsEl.querySelectorAll(".head");
