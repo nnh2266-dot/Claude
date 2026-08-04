@@ -365,16 +365,54 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
   border:1px solid var(--faint);margin-left:.6rem;
 }
 .zones__key--on{background:var(--heat);border-color:var(--heat);margin-left:0}
-/* Zeile und Band gehören zusammen — Antippen hebt beide hervor. */
-.zone__btn{
-  display:flex;align-items:center;gap:.75rem;width:100%;
-  font:inherit;color:inherit;text-align:left;padding:0;cursor:pointer;
-}
-.zone__btn:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:2px}
-.zone.is-hot{color:var(--text)}
-.zone.is-hot .zone__name{color:var(--text);font-weight:600}
-.zone.is-hot .zone__dot{box-shadow:0 0 0 4px var(--accent-wash)}
-.z-band.is-hot{stroke:var(--text);stroke-width:2.5;fill-opacity:.92}
+/* Zustandssteuerung ohne Skript: Die Radios stehen als Geschwister vor Bühne
+   und Tafel, deshalb erreichen sie beide über den ~-Kombinator. */
+.pick{position:absolute;width:1px;height:1px;opacity:0}
+.headdetail{display:none}
+#p-kugel:checked ~ .picker [for="p-kugel"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:600}
+#p-kugel:checked ~ .picker [for="p-kugel"] .head__ico{color:var(--accent-ink)}
+#p-kugel:focus-visible ~ .picker [for="p-kugel"]{outline:2px solid var(--accent);outline-offset:3px}
+#p-kugel:checked ~ .reach__panel [data-head="kugel"]{display:grid}
+#p-kugel:checked ~ .reach__stage [data-band="trapez"],#p-kugel:checked ~ .reach__stage [data-band="scapula"],#p-kugel:checked ~ .reach__stage [data-band="mitte"],#p-kugel:checked ~ .reach__stage [data-band="lende"],#p-kugel:checked ~ .reach__stage [data-band="gesaess"]{fill:var(--heat);fill-opacity:.74}
+#p-kugel:checked ~ .reach__panel .zone[data-zone="trapez"],#p-kugel:checked ~ .reach__panel .zone[data-zone="scapula"],#p-kugel:checked ~ .reach__panel .zone[data-zone="mitte"],#p-kugel:checked ~ .reach__panel .zone[data-zone="lende"],#p-kugel:checked ~ .reach__panel .zone[data-zone="gesaess"]{color:var(--text)}
+#p-kugel:checked ~ .reach__panel .zone[data-zone="trapez"] .zone__dot,#p-kugel:checked ~ .reach__panel .zone[data-zone="scapula"] .zone__dot,#p-kugel:checked ~ .reach__panel .zone[data-zone="mitte"] .zone__dot,#p-kugel:checked ~ .reach__panel .zone[data-zone="lende"] .zone__dot,#p-kugel:checked ~ .reach__panel .zone[data-zone="gesaess"] .zone__dot{background:var(--heat);box-shadow:0 0 0 4px var(--heat-wash)}
+#p-flach:checked ~ .picker [for="p-flach"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:600}
+#p-flach:checked ~ .picker [for="p-flach"] .head__ico{color:var(--accent-ink)}
+#p-flach:focus-visible ~ .picker [for="p-flach"]{outline:2px solid var(--accent);outline-offset:3px}
+#p-flach:checked ~ .reach__panel [data-head="flach"]{display:grid}
+#p-flach:checked ~ .reach__stage [data-band="lende"],#p-flach:checked ~ .reach__stage [data-band="gesaess"]{fill:var(--heat);fill-opacity:.74}
+#p-flach:checked ~ .reach__panel .zone[data-zone="lende"],#p-flach:checked ~ .reach__panel .zone[data-zone="gesaess"]{color:var(--text)}
+#p-flach:checked ~ .reach__panel .zone[data-zone="lende"] .zone__dot,#p-flach:checked ~ .reach__panel .zone[data-zone="gesaess"] .zone__dot{background:var(--heat);box-shadow:0 0 0 4px var(--heat-wash)}
+#p-ukopf:checked ~ .picker [for="p-ukopf"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:600}
+#p-ukopf:checked ~ .picker [for="p-ukopf"] .head__ico{color:var(--accent-ink)}
+#p-ukopf:focus-visible ~ .picker [for="p-ukopf"]{outline:2px solid var(--accent);outline-offset:3px}
+#p-ukopf:checked ~ .reach__panel [data-head="ukopf"]{display:grid}
+#p-ukopf:checked ~ .reach__stage [data-band="nacken"],#p-ukopf:checked ~ .reach__stage [data-band="trapez"]{fill:var(--heat);fill-opacity:.74}
+#p-ukopf:checked ~ .reach__panel .zone[data-zone="nacken"],#p-ukopf:checked ~ .reach__panel .zone[data-zone="trapez"]{color:var(--text)}
+#p-ukopf:checked ~ .reach__panel .zone[data-zone="nacken"] .zone__dot,#p-ukopf:checked ~ .reach__panel .zone[data-zone="trapez"] .zone__dot{background:var(--heat);box-shadow:0 0 0 4px var(--heat-wash)}
+#p-spitz:checked ~ .picker [for="p-spitz"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:600}
+#p-spitz:checked ~ .picker [for="p-spitz"] .head__ico{color:var(--accent-ink)}
+#p-spitz:focus-visible ~ .picker [for="p-spitz"]{outline:2px solid var(--accent);outline-offset:3px}
+#p-spitz:checked ~ .reach__panel [data-head="spitz"]{display:grid}
+#z-nacken:checked ~ .reach__stage [data-band="nacken"]{stroke:var(--text);stroke-width:2.5;fill-opacity:.92}
+#z-nacken:checked ~ .reach__panel .zone[data-zone="nacken"] .zone__name{color:var(--text);font-weight:600}
+#z-nacken:focus-visible ~ .reach__panel .zone[data-zone="nacken"] .zone__btn{outline:2px solid var(--accent);outline-offset:3px}
+#z-trapez:checked ~ .reach__stage [data-band="trapez"]{stroke:var(--text);stroke-width:2.5;fill-opacity:.92}
+#z-trapez:checked ~ .reach__panel .zone[data-zone="trapez"] .zone__name{color:var(--text);font-weight:600}
+#z-trapez:focus-visible ~ .reach__panel .zone[data-zone="trapez"] .zone__btn{outline:2px solid var(--accent);outline-offset:3px}
+#z-scapula:checked ~ .reach__stage [data-band="scapula"]{stroke:var(--text);stroke-width:2.5;fill-opacity:.92}
+#z-scapula:checked ~ .reach__panel .zone[data-zone="scapula"] .zone__name{color:var(--text);font-weight:600}
+#z-scapula:focus-visible ~ .reach__panel .zone[data-zone="scapula"] .zone__btn{outline:2px solid var(--accent);outline-offset:3px}
+#z-mitte:checked ~ .reach__stage [data-band="mitte"]{stroke:var(--text);stroke-width:2.5;fill-opacity:.92}
+#z-mitte:checked ~ .reach__panel .zone[data-zone="mitte"] .zone__name{color:var(--text);font-weight:600}
+#z-mitte:focus-visible ~ .reach__panel .zone[data-zone="mitte"] .zone__btn{outline:2px solid var(--accent);outline-offset:3px}
+#z-lende:checked ~ .reach__stage [data-band="lende"]{stroke:var(--text);stroke-width:2.5;fill-opacity:.92}
+#z-lende:checked ~ .reach__panel .zone[data-zone="lende"] .zone__name{color:var(--text);font-weight:600}
+#z-lende:focus-visible ~ .reach__panel .zone[data-zone="lende"] .zone__btn{outline:2px solid var(--accent);outline-offset:3px}
+#z-gesaess:checked ~ .reach__stage [data-band="gesaess"]{stroke:var(--text);stroke-width:2.5;fill-opacity:.92}
+#z-gesaess:checked ~ .reach__panel .zone[data-zone="gesaess"] .zone__name{color:var(--text);font-weight:600}
+#z-gesaess:focus-visible ~ .reach__panel .zone[data-zone="gesaess"] .zone__btn{outline:2px solid var(--accent);outline-offset:3px}
+.zone__btn{display:flex;align-items:center;gap:.75rem;width:100%;cursor:pointer}
 
 .reach{
   position:relative;
@@ -401,9 +439,6 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .zone__dot{width:7px;height:7px;border-radius:50%;background:var(--cold);flex:none;transition:background-color .45s,box-shadow .45s}
 .zone__name{flex:1}
 .zone__cm{font-family:var(--font-mono);font-size:.72rem;color:var(--faint);font-variant-numeric:tabular-nums;white-space:nowrap}
-.zone.is-live{color:var(--text)}
-.zone.is-live .zone__dot{background:var(--heat);box-shadow:0 0 0 4px var(--heat-wash)}
-.zone.is-live .zone__cm{color:var(--heat)}
 
 /* SVG-Zustände */
 /* Grundton des Rumpfes. Liegt unter den Zonen, damit Hals und Ränder,
@@ -448,7 +483,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
    ANWENDUNG
    ============================================================ */
 .app{display:grid;gap:clamp(2rem,4vw,3rem);grid-template-columns:1fr}
-.headdetail{border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);padding:clamp(1.2rem,3vw,1.8rem);display:grid;gap:.8rem;min-height:11rem}
+.headdetail{border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);padding:clamp(1.2rem,3vw,1.8rem);gap:.8rem;min-height:11rem}
 .headdetail__t{font-family:var(--font-display);font-size:var(--step-2);text-transform:uppercase;margin:0}
 .headdetail__d{color:var(--muted);margin:0;max-width:52ch}
 .headdetail__meta{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.2rem}
@@ -829,7 +864,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
           </p>
           <div class="hero__cta">
             <a class="btn btn--solid" href="#preis">Zum Angebot</a>
-            <button class="btn btn--ghost" type="button" id="tryReach">Aufsätze und Zonen ansehen</button>
+            <a class="btn btn--ghost" href="#reachCard">Aufsätze und Zonen ansehen</a>
           </div>
           <p class="hero__fine">Schwarz · 590 g · USB-Ladung · Zwei Jahre gesetzliche Gewährleistung</p>
         </div>
@@ -872,15 +907,26 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 
       <!-- Interaktive Demo -->
       <div class="reach rise" id="reachCard">
-        <!-- Die Auswahl steht über allem: Ursache und Wirkung in einem Blick,
-             und auf dem Telefon direkt übereinander statt 80 px auseinander. -->
+        <!-- Die Auswahl läuft über verborgene Radios und CSS, nicht über ein Skript.
+             So funktioniert die Karte auch dort, wo kein JavaScript ausgeführt wird. -->
+        <input class="pick" type="radio" name="aufsatz" id="p-kugel" checked>
+        <input class="pick" type="radio" name="aufsatz" id="p-flach">
+        <input class="pick" type="radio" name="aufsatz" id="p-ukopf">
+        <input class="pick" type="radio" name="aufsatz" id="p-spitz">
+        <input class="pick" type="radio" name="zonenlupe" id="z-nacken">
+        <input class="pick" type="radio" name="zonenlupe" id="z-trapez">
+        <input class="pick" type="radio" name="zonenlupe" id="z-scapula">
+        <input class="pick" type="radio" name="zonenlupe" id="z-mitte">
+        <input class="pick" type="radio" name="zonenlupe" id="z-lende">
+        <input class="pick" type="radio" name="zonenlupe" id="z-gesaess">
+
         <div class="picker">
-          <p class="picker__lead" id="pickerLead">Aufsatz wählen</p>
-          <div class="heads" id="heads" role="group" aria-label="Aufsatz wählen">
-            <button class="head" type="button" aria-pressed="true"><span class="head__ico"><svg viewBox="0 0 48 48" fill="none" aria-hidden="true"><circle cx="24" cy="17" r="12" fill="currentColor" opacity=".9"/><rect x="21" y="28" width="6" height="16" rx="3" fill="currentColor" opacity=".45"/></svg></span><span class="head__n">Kugel</span></button>
-            <button class="head" type="button" aria-pressed="false"><span class="head__ico"><svg viewBox="0 0 48 48" fill="none" aria-hidden="true"><ellipse cx="24" cy="17" rx="13" ry="7" fill="currentColor" opacity=".85"/><rect x="21" y="25" width="6" height="19" rx="3" fill="currentColor" opacity=".45"/></svg></span><span class="head__n">Flach</span></button>
-            <button class="head" type="button" aria-pressed="false"><span class="head__ico"><svg viewBox="0 0 48 48" fill="none" aria-hidden="true"><path d="M13 5v10a6 6 0 0 0 6 6h10a6 6 0 0 0 6-6V5" stroke="currentColor" stroke-width="5" stroke-linecap="round"/><rect x="21" y="26" width="6" height="18" rx="3" fill="currentColor" opacity=".45"/></svg></span><span class="head__n">U-Form</span></button>
-            <button class="head" type="button" aria-pressed="false"><span class="head__ico"><svg viewBox="0 0 48 48" fill="none" aria-hidden="true"><path d="M24 4c4 8 7 14 7 18a7 7 0 1 1-14 0c0-4 3-10 7-18Z" fill="currentColor" opacity=".9"/><rect x="21" y="28" width="6" height="16" rx="3" fill="currentColor" opacity=".45"/></svg></span><span class="head__n">Spitz</span></button>
+          <p class="picker__lead">Aufsatz wählen</p>
+          <div class="heads" role="group" aria-label="Aufsatz wählen">
+            <label class="head" for="p-kugel"><span class="head__ico"><svg viewBox="0 0 48 48" fill="none" aria-hidden="true"><circle cx="24" cy="17" r="12" fill="currentColor" opacity=".9"/><rect x="21" y="28" width="6" height="16" rx="3" fill="currentColor" opacity=".45"/></svg></span><span class="head__n">Kugel</span></label>
+            <label class="head" for="p-flach"><span class="head__ico"><svg viewBox="0 0 48 48" fill="none" aria-hidden="true"><ellipse cx="24" cy="17" rx="13" ry="7" fill="currentColor" opacity=".85"/><rect x="21" y="25" width="6" height="19" rx="3" fill="currentColor" opacity=".45"/></svg></span><span class="head__n">Flach</span></label>
+            <label class="head" for="p-ukopf"><span class="head__ico"><svg viewBox="0 0 48 48" fill="none" aria-hidden="true"><path d="M13 5v10a6 6 0 0 0 6 6h10a6 6 0 0 0 6-6V5" stroke="currentColor" stroke-width="5" stroke-linecap="round"/><rect x="21" y="26" width="6" height="18" rx="3" fill="currentColor" opacity=".45"/></svg></span><span class="head__n">U-Form</span></label>
+            <label class="head" for="p-spitz"><span class="head__ico"><svg viewBox="0 0 48 48" fill="none" aria-hidden="true"><path d="M24 4c4 8 7 14 7 18a7 7 0 1 1-14 0c0-4 3-10 7-18Z" fill="currentColor" opacity=".9"/><rect x="21" y="28" width="6" height="16" rx="3" fill="currentColor" opacity=".45"/></svg></span><span class="head__n">Spitz</span></label>
           </div>
         </div>
 
@@ -902,11 +948,11 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
               <!-- reicht bis an die Oberkante: der Halsansatz gehört zur Zone,
                    sonst bleibt oben ein andersfarbiger Stummel stehen -->
               <rect class="z-band" data-band="nacken" x="56" y="0" width="228" height="72"/>
-              <rect class="z-band is-live" data-band="trapez" x="56" y="72" width="228" height="68"/>
-              <rect class="z-band is-live" data-band="scapula" x="56" y="140" width="228" height="84"/>
-              <rect class="z-band is-live" data-band="mitte" x="56" y="224" width="228" height="68"/>
-              <rect class="z-band is-live" data-band="lende" x="56" y="292" width="228" height="64"/>
-              <rect class="z-band is-live" data-band="gesaess" x="56" y="356" width="228" height="80"/>
+              <rect class="z-band" data-band="trapez" x="56" y="72" width="228" height="68"/>
+              <rect class="z-band" data-band="scapula" x="56" y="140" width="228" height="84"/>
+              <rect class="z-band" data-band="mitte" x="56" y="224" width="228" height="68"/>
+              <rect class="z-band" data-band="lende" x="56" y="292" width="228" height="64"/>
+              <rect class="z-band" data-band="gesaess" x="56" y="356" width="228" height="80"/>
               <path class="z-seam" d="M56 72h228M56 140h228M56 224h228M56 292h228M56 356h228"/>
             </g>
             <path class="z-outline" d="M200.0,0.0 C200.2,3.0 200.0,13.7 201.0,18.0 C202.0,22.3 202.7,23.3 206.0,26.0 C209.3,28.7 215.8,31.0 221.0,34.0 C226.2,37.0 232.2,40.7 237.0,44.0 C241.8,47.3 246.3,50.7 250.0,54.0 C253.7,57.3 256.5,60.3 259.0,64.0 C261.5,67.7 263.5,71.7 265.0,76.0 C266.5,80.3 267.7,84.3 268.0,90.0 C268.3,95.7 267.8,102.3 267.0,110.0 C266.2,117.7 264.5,127.0 263.0,136.0 C261.5,145.0 259.8,154.3 258.0,164.0 C256.2,173.7 254.0,184.0 252.0,194.0 C250.0,204.0 248.0,214.3 246.0,224.0 C244.0,233.7 241.7,243.3 240.0,252.0 C238.3,260.7 237.0,268.3 236.0,276.0 C235.0,283.7 234.2,290.7 234.0,298.0 C233.8,305.3 234.2,312.0 235.0,320.0 C235.8,328.0 237.7,337.0 239.0,346.0 C240.3,355.0 242.3,365.0 243.0,374.0 C243.7,383.0 243.7,392.3 243.0,400.0 C242.3,407.7 241.5,414.3 239.0,420.0 C236.5,425.7 229.8,431.7 228.0,434.0 L112.0,434.0 C110.2,431.7 103.5,425.7 101.0,420.0 C98.5,414.3 97.7,407.7 97.0,400.0 C96.3,392.3 96.3,383.0 97.0,374.0 C97.7,365.0 99.7,355.0 101.0,346.0 C102.3,337.0 104.2,328.0 105.0,320.0 C105.8,312.0 106.2,305.3 106.0,298.0 C105.8,290.7 105.0,283.7 104.0,276.0 C103.0,268.3 101.7,260.7 100.0,252.0 C98.3,243.3 96.0,233.7 94.0,224.0 C92.0,214.3 90.0,204.0 88.0,194.0 C86.0,184.0 83.8,173.7 82.0,164.0 C80.2,154.3 78.5,145.0 77.0,136.0 C75.5,127.0 73.8,117.7 73.0,110.0 C72.2,102.3 71.7,95.7 72.0,90.0 C72.3,84.3 73.5,80.3 75.0,76.0 C76.5,71.7 78.5,67.7 81.0,64.0 C83.5,60.3 86.3,57.3 90.0,54.0 C93.7,50.7 98.2,47.3 103.0,44.0 C107.8,40.7 113.8,37.0 119.0,34.0 C124.2,31.0 130.7,28.7 134.0,26.0 C137.3,23.3 138.0,22.3 139.0,18.0 C140.0,13.7 139.8,3.0 140.0,0.0 Z"/>
@@ -929,18 +975,33 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
         </div>
 
         <div class="reach__panel">
-          <div class="headdetail" id="headDetail" aria-live="polite">
+          <div class="headdetail" data-head="kugel">
             <h3 class="display headdetail__t">Kugelkopf</h3>
             <p class="headdetail__d">Der Allrounder des Sets. Für Arme, Taille und Rücken und für große Muskelgruppen wie Gesäß, Oberschenkel und Waden.</p>
             <div class="headdetail__meta"><span class="chip chip--heat">auch Arme, Oberschenkel, Waden</span></div>
           </div>
-          <ul class="zones" id="zoneList">
-            <li class="zone"><span class="zone__dot"></span><span class="zone__name">Nacken & Halsansatz</span></li>
-            <li class="zone is-live"><span class="zone__dot"></span><span class="zone__name">Trapez / oberer Rücken</span></li>
-            <li class="zone is-live"><span class="zone__dot"></span><span class="zone__name">Schulterblätter</span></li>
-            <li class="zone is-live"><span class="zone__dot"></span><span class="zone__name">Mittlerer Rücken</span></li>
-            <li class="zone is-live"><span class="zone__dot"></span><span class="zone__name">Taille / Lende</span></li>
-            <li class="zone is-live"><span class="zone__dot"></span><span class="zone__name">Gesäß</span></li>
+          <div class="headdetail" data-head="flach">
+            <h3 class="display headdetail__t">Flachkopf</h3>
+            <p class="headdetail__d">Für große Muskelgruppen und Beine, und für die tiefe Stimulation des Gesäßes. Verteilt den Anschlag über eine breite Auflage.</p>
+            <div class="headdetail__meta"><span class="chip chip--heat">auch Beine</span></div>
+          </div>
+          <div class="headdetail" data-head="ukopf">
+            <h3 class="display headdetail__t">U-förmiger Kopf</h3>
+            <p class="headdetail__d">Läuft links und rechts der Wirbelsäule, ohne sie zu berühren. Für Nacken und entlang der Wirbelsäule.</p>
+            <div class="headdetail__meta"><span class="chip chip--heat">entlang der Wirbelsäule führen</span></div>
+          </div>
+          <div class="headdetail" data-head="spitz">
+            <h3 class="display headdetail__t">Spitzkopf</h3>
+            <p class="headdetail__d">Punktuelle Arbeit bei Muskelschmerzen und an Akupunkturpunkten. Er wirkt auf den Punkt statt auf die Fläche — deshalb bleibt die Karte hier kalt.</p>
+            <div class="headdetail__meta"><span class="chip chip--heat">punktuell, keine flächige Zone</span></div>
+          </div>
+          <ul class="zones">
+            <li class="zone" data-zone="nacken"><label class="zone__btn" for="z-nacken"><span class="zone__dot"></span><span class="zone__name">Nacken & Halsansatz</span></label></li>
+            <li class="zone" data-zone="trapez"><label class="zone__btn" for="z-trapez"><span class="zone__dot"></span><span class="zone__name">Trapez / oberer Rücken</span></label></li>
+            <li class="zone" data-zone="scapula"><label class="zone__btn" for="z-scapula"><span class="zone__dot"></span><span class="zone__name">Schulterblätter</span></label></li>
+            <li class="zone" data-zone="mitte"><label class="zone__btn" for="z-mitte"><span class="zone__dot"></span><span class="zone__name">Mittlerer Rücken</span></label></li>
+            <li class="zone" data-zone="lende"><label class="zone__btn" for="z-lende"><span class="zone__dot"></span><span class="zone__name">Taille / Lende</span></label></li>
+            <li class="zone" data-zone="gesaess"><label class="zone__btn" for="z-gesaess"><span class="zone__dot"></span><span class="zone__name">Gesäß</span></label></li>
           </ul>
           <p class="zones__legend">
             <span class="zones__key zones__key--on"></span> dafür vorgesehen
@@ -1248,137 +1309,6 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
   /* ============================================================
      REICHWEITEN-DEMO
      ============================================================ */
-  /* Die sechs Regionen der Rumpfkarte. Welche davon ein Aufsatz bedient, steht
-     in HEADS — die Zuordnung folgt dem dokumentierten Einsatzgebiet, nicht einer Schätzung. */
-  var ZONES = [
-    { id:"nacken",  name:"Nacken & Halsansatz" },
-    { id:"trapez",  name:"Trapez / oberer Rücken" },
-    { id:"scapula", name:"Schulterblätter" },
-    { id:"mitte",   name:"Mittlerer Rücken" },
-    { id:"lende",   name:"Taille / Lende" },
-    { id:"gesaess", name:"Gesäß" }
-  ];
-
-  /* Vier Aufsätze mit ihren Einsatzgebieten.
-     `zones` bildet nur ab, was dort genannt ist; `weitere` fängt die Bereiche
-     auf, die auf einer Rückenkarte nicht vorkommen (Arme, Beine). */
-  var HEADS = [
-    { id:"kugel", n:"Kugel", t:"Kugelkopf",
-      d:"Der Allrounder des Sets. Für Arme, Taille und Rücken und für große Muskelgruppen wie Gesäß, Oberschenkel und Waden.",
-      zones:["trapez","scapula","mitte","lende","gesaess"],
-      weitere:"auch Arme, Oberschenkel, Waden",
-      svg:'<svg viewBox="0 0 48 48" fill="none" aria-hidden="true"><circle cx="24" cy="17" r="12" fill="currentColor" opacity=".9"/><rect x="21" y="28" width="6" height="16" rx="3" fill="currentColor" opacity=".45"/></svg>' },
-    { id:"flach", n:"Flach", t:"Flachkopf",
-      d:"Für große Muskelgruppen und Beine, und für die tiefe Stimulation des Gesäßes. Verteilt den Anschlag über eine breite Auflage.",
-      zones:["lende","gesaess"],
-      weitere:"auch Beine",
-      svg:'<svg viewBox="0 0 48 48" fill="none" aria-hidden="true"><ellipse cx="24" cy="17" rx="13" ry="7" fill="currentColor" opacity=".85"/><rect x="21" y="25" width="6" height="19" rx="3" fill="currentColor" opacity=".45"/></svg>' },
-    { id:"ukopf", n:"U-Form", t:"U-förmiger Kopf",
-      d:"Läuft links und rechts der Wirbelsäule, ohne sie zu berühren. Für Nacken und entlang der Wirbelsäule.",
-      zones:["nacken","trapez"],
-      weitere:"entlang der Wirbelsäule führen",
-      svg:'<svg viewBox="0 0 48 48" fill="none" aria-hidden="true"><path d="M13 5v10a6 6 0 0 0 6 6h10a6 6 0 0 0 6-6V5" stroke="currentColor" stroke-width="5" stroke-linecap="round"/><rect x="21" y="26" width="6" height="18" rx="3" fill="currentColor" opacity=".45"/></svg>' },
-    { id:"spitz", n:"Spitz", t:"Spitzkopf",
-      d:"Punktuelle Arbeit bei Muskelschmerzen und an Akupunkturpunkten. Er wirkt auf den Punkt statt auf die Fläche — deshalb bleibt die Karte hier kalt.",
-      zones:[],
-      weitere:"punktuell, keine flächige Zone",
-      svg:'<svg viewBox="0 0 48 48" fill="none" aria-hidden="true"><path d="M24 4c4 8 7 14 7 18a7 7 0 1 1-14 0c0-4 3-10 7-18Z" fill="currentColor" opacity=".9"/><rect x="21" y="28" width="6" height="16" rx="3" fill="currentColor" opacity=".45"/></svg>' }
-  ];
-
-  var zoneList = document.getElementById("zoneList");
-  var bands    = {};
-  document.querySelectorAll(".z-band").forEach(function(b){ bands[b.getAttribute("data-band")] = b; });
-
-  /* Zeilen stehen statisch im HTML; hier werden sie nur übernommen. */
-  var zoneRows = {}, zoneBtns = {};
-  var existingZones = zoneList.querySelectorAll("li.zone");
-  ZONES.forEach(function(z, i){
-    var li = existingZones[i];
-    if (!li) {
-      li = document.createElement("li");
-      li.className = "zone";
-      li.innerHTML = '<span class="zone__dot"></span><span class="zone__name"></span>';
-      li.querySelector(".zone__name").textContent = z.name;
-      zoneList.appendChild(li);
-    }
-    zoneRows[z.id] = li;
-
-    /* Aus der Zeile wird eine echte Schaltfläche. Vorher hing die Kopplung an
-       mouseenter — das gibt es auf einem Touchscreen nicht, und mit der Tastatur
-       war sie gar nicht erreichbar. Ohne Skript bleibt es eine schlichte Liste. */
-    var btn = document.createElement("button");
-    btn.type = "button";
-    btn.className = "zone__btn";
-    btn.setAttribute("aria-pressed", "false");
-    while (li.firstChild) btn.appendChild(li.firstChild);
-    li.appendChild(btn);
-    btn.addEventListener("click", function(){ markZone(z.id); });
-    zoneBtns[z.id] = btn;
-  });
-
-  /* Genau eine Zone ist hervorgehoben; erneutes Tippen hebt sie wieder auf. */
-  var hotZone = null;
-  function markZone(id){
-    hotZone = (hotZone === id) ? null : id;
-    ZONES.forEach(function(z){
-      var on = z.id === hotZone;
-      zoneRows[z.id].classList.toggle("is-hot", on);
-      zoneBtns[z.id].setAttribute("aria-pressed", on ? "true" : "false");
-      if (bands[z.id]) bands[z.id].classList.toggle("is-hot", on);
-    });
-  }
-
-  var headsEl  = document.getElementById("heads");
-  var detailEl = document.getElementById("headDetail");
-
-  function showHead(i){
-    var h = HEADS[i];
-
-    detailEl.innerHTML =
-      '<h3 class="display headdetail__t"></h3>' +
-      '<p class="headdetail__d"></p>' +
-      '<div class="headdetail__meta"><span class="chip chip--heat"></span></div>';
-    detailEl.querySelector(".headdetail__t").textContent = h.t;
-    detailEl.querySelector(".headdetail__d").textContent = h.d;
-    detailEl.querySelector(".chip").textContent = h.weitere;
-
-    /* Karte und Liste folgen der Auswahl */
-    if (typeof markZone === "function" && hotZone) markZone(hotZone);
-    ZONES.forEach(function(z){
-      var live = h.zones.indexOf(z.id) !== -1;
-      if (bands[z.id]) bands[z.id].classList.toggle("is-live", live);
-      zoneRows[z.id].classList.toggle("is-live", live);
-    });
-
-    headsEl.querySelectorAll(".head").forEach(function(b, bi){
-      b.setAttribute("aria-pressed", bi === i ? "true" : "false");
-    });
-
-    var lead = document.getElementById("pickerLead");
-    if (lead) lead.textContent = "Aufsatz wählen — gezeigt: " + h.t;
-  }
-
-  var existingHeads = headsEl.querySelectorAll(".head");
-  HEADS.forEach(function(h, i){
-    var b = existingHeads[i];
-    if (!b) {
-      b = document.createElement("button");
-      b.type = "button";
-      b.className = "head";
-      b.setAttribute("aria-pressed","false");
-      b.innerHTML = '<span class="head__ico">' + h.svg + '</span><span class="head__n"></span>';
-      b.querySelector(".head__n").textContent = h.n;
-      headsEl.appendChild(b);
-    }
-    b.addEventListener("click", function(){ showHead(i); });
-  });
-  showHead(0); /* Kugelkopf: der Aufsatz mit der größten Reichweite im Set */
-
-  document.getElementById("tryReach").addEventListener("click", function(){
-    var card = document.getElementById("reachCard");
-    card.scrollIntoView({ behavior: reduce.matches ? "auto" : "smooth", block: "center" });
-  });
-
   /* Ankerlinks: sanft scrollen, wo erlaubt — und in jedem Fall den Fokus
      mitnehmen. Ohne das wandert nur das Bild, während die Tabreihenfolge im
      Kopf stehen bleibt und der nächste Tab wieder ganz oben landet.
