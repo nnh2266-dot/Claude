@@ -365,10 +365,16 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
   border:1px solid var(--faint);margin-left:.6rem;
 }
 .zones__key--on{background:var(--heat);border-color:var(--heat);margin-left:0}
-/* Zeile und Band gehören zusammen — Zeigen auf das eine hebt das andere hervor. */
-.zone{cursor:default}
-.zone.is-hot .zone__name{color:var(--text)}
-.z-band.is-hot{fill-opacity:.9}
+/* Zeile und Band gehören zusammen — Antippen hebt beide hervor. */
+.zone__btn{
+  display:flex;align-items:center;gap:.75rem;width:100%;
+  font:inherit;color:inherit;text-align:left;padding:0;cursor:pointer;
+}
+.zone__btn:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:2px}
+.zone.is-hot{color:var(--text)}
+.zone.is-hot .zone__name{color:var(--text);font-weight:600}
+.zone.is-hot .zone__dot{box-shadow:0 0 0 4px var(--accent-wash)}
+.z-band.is-hot{stroke:var(--text);stroke-width:2.5;fill-opacity:.92}
 
 .reach{
   position:relative;
@@ -1284,7 +1290,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
   document.querySelectorAll(".z-band").forEach(function(b){ bands[b.getAttribute("data-band")] = b; });
 
   /* Zeilen stehen statisch im HTML; hier werden sie nur übernommen. */
-  var zoneRows = {};
+  var zoneRows = {}, zoneBtns = {};
   var existingZones = zoneList.querySelectorAll("li.zone");
   ZONES.forEach(function(z, i){
     var li = existingZones[i];
@@ -1297,19 +1303,30 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
     }
     zoneRows[z.id] = li;
 
-    /* Zeile und Band gehören zusammen. Ohne diese Kopplung steuern vier Knöpfe
-       eine Grafik in einer anderen Spalte, ohne dass etwas den Bezug zeigt. */
-    function hot(on){
-      li.classList.toggle("is-hot", on);
-      if (bands[z.id]) bands[z.id].classList.toggle("is-hot", on);
-    }
-    li.addEventListener("mouseenter", function(){ hot(true); });
-    li.addEventListener("mouseleave", function(){ hot(false); });
-    if (bands[z.id]) {
-      bands[z.id].addEventListener("mouseenter", function(){ hot(true); });
-      bands[z.id].addEventListener("mouseleave", function(){ hot(false); });
-    }
+    /* Aus der Zeile wird eine echte Schaltfläche. Vorher hing die Kopplung an
+       mouseenter — das gibt es auf einem Touchscreen nicht, und mit der Tastatur
+       war sie gar nicht erreichbar. Ohne Skript bleibt es eine schlichte Liste. */
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "zone__btn";
+    btn.setAttribute("aria-pressed", "false");
+    while (li.firstChild) btn.appendChild(li.firstChild);
+    li.appendChild(btn);
+    btn.addEventListener("click", function(){ markZone(z.id); });
+    zoneBtns[z.id] = btn;
   });
+
+  /* Genau eine Zone ist hervorgehoben; erneutes Tippen hebt sie wieder auf. */
+  var hotZone = null;
+  function markZone(id){
+    hotZone = (hotZone === id) ? null : id;
+    ZONES.forEach(function(z){
+      var on = z.id === hotZone;
+      zoneRows[z.id].classList.toggle("is-hot", on);
+      zoneBtns[z.id].setAttribute("aria-pressed", on ? "true" : "false");
+      if (bands[z.id]) bands[z.id].classList.toggle("is-hot", on);
+    });
+  }
 
   var headsEl  = document.getElementById("heads");
   var detailEl = document.getElementById("headDetail");
@@ -1326,6 +1343,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
     detailEl.querySelector(".chip").textContent = h.weitere;
 
     /* Karte und Liste folgen der Auswahl */
+    if (typeof markZone === "function" && hotZone) markZone(hotZone);
     ZONES.forEach(function(z){
       var live = h.zones.indexOf(z.id) !== -1;
       if (bands[z.id]) bands[z.id].classList.toggle("is-live", live);
