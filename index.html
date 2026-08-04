@@ -361,10 +361,14 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
   color:var(--faint);margin:.9rem 0 0;
 }
 .zones__key{
+  display:inline-block;vertical-align:middle;
   width:7px;height:7px;border-radius:50%;flex:none;
   border:1px solid var(--faint);margin-left:.6rem;
 }
 .zones__key--on{background:var(--heat);border-color:var(--heat);margin-left:0}
+.zones__key--dot{background:var(--heat);border-color:var(--heat);opacity:.55;margin-left:0}
+.key-flaeche,.key-punkt,.key-kalt{display:inline-flex;align-items:center;gap:.45rem}
+.key-punkt{display:none}
 /* Zustandssteuerung ohne Skript: Die Radios stehen als Geschwister vor Bühne
    und Tafel, deshalb erreichen sie beide über den ~-Kombinator. */
 .pick{position:absolute;width:1px;height:1px;opacity:0}
@@ -394,6 +398,13 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 #p-spitz:checked ~ .picker [for="p-spitz"] .head__ico{color:var(--accent-ink)}
 #p-spitz:focus-visible ~ .picker [for="p-spitz"]{outline:2px solid var(--accent);outline-offset:3px}
 #p-spitz:checked ~ .reach__panel [data-head="spitz"]{display:grid}
+/* Alle Zonen, aber als Raster: überall einsetzbar, nur eben punktweise. */
+#p-spitz:checked ~ .reach__stage .z-band{fill:url(#punktraster);fill-opacity:.95}
+#p-spitz:checked ~ .reach__panel .zone{color:var(--text)}
+#p-spitz:checked ~ .reach__panel .zone .zone__dot{background:var(--heat);box-shadow:0 0 0 3px var(--heat-wash);opacity:.55}
+#p-spitz:checked ~ .reach__panel .zones__legend .key-flaeche{display:none}
+#p-spitz:checked ~ .reach__panel .zones__legend .key-punkt{display:inline-flex}
+#p-spitz:checked ~ .reach__panel .zones__legend .key-kalt{display:none}
 #z-nacken:checked ~ .reach__stage [data-band="nacken"]{stroke:var(--text);stroke-width:2.5;fill-opacity:.92}
 #z-nacken:checked ~ .reach__panel .zone[data-zone="nacken"] .zone__name{color:var(--text);font-weight:600}
 #z-nacken:focus-visible ~ .reach__panel .zone[data-zone="nacken"] .zone__btn{outline:2px solid var(--accent);outline-offset:3px}
@@ -940,6 +951,11 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
                  hineingeclippt werden — dadurch bleibt die Silhouette durchgehend,
                  statt aus sechs einzeln umrandeten Trapezen zu bestehen. -->
             <defs>
+              <!-- Der Spitzkopf arbeitet auf den Punkt, nicht auf der Fläche.
+                   Deshalb wird sein Wirkbereich gerastert statt flächig gefüllt. -->
+              <pattern id="punktraster" width="13" height="13" patternUnits="userSpaceOnUse">
+                <circle cx="6.5" cy="6.5" r="2.6" fill="var(--heat)"/>
+              </pattern>
               <clipPath id="torsoClip"><path d="M200.0,0.0 C200.2,3.0 200.0,13.7 201.0,18.0 C202.0,22.3 202.7,23.3 206.0,26.0 C209.3,28.7 215.8,31.0 221.0,34.0 C226.2,37.0 232.2,40.7 237.0,44.0 C241.8,47.3 246.3,50.7 250.0,54.0 C253.7,57.3 256.5,60.3 259.0,64.0 C261.5,67.7 263.5,71.7 265.0,76.0 C266.5,80.3 267.7,84.3 268.0,90.0 C268.3,95.7 267.8,102.3 267.0,110.0 C266.2,117.7 264.5,127.0 263.0,136.0 C261.5,145.0 259.8,154.3 258.0,164.0 C256.2,173.7 254.0,184.0 252.0,194.0 C250.0,204.0 248.0,214.3 246.0,224.0 C244.0,233.7 241.7,243.3 240.0,252.0 C238.3,260.7 237.0,268.3 236.0,276.0 C235.0,283.7 234.2,290.7 234.0,298.0 C233.8,305.3 234.2,312.0 235.0,320.0 C235.8,328.0 237.7,337.0 239.0,346.0 C240.3,355.0 242.3,365.0 243.0,374.0 C243.7,383.0 243.7,392.3 243.0,400.0 C242.3,407.7 241.5,414.3 239.0,420.0 C236.5,425.7 229.8,431.7 228.0,434.0 L112.0,434.0 C110.2,431.7 103.5,425.7 101.0,420.0 C98.5,414.3 97.7,407.7 97.0,400.0 C96.3,392.3 96.3,383.0 97.0,374.0 C97.7,365.0 99.7,355.0 101.0,346.0 C102.3,337.0 104.2,328.0 105.0,320.0 C105.8,312.0 106.2,305.3 106.0,298.0 C105.8,290.7 105.0,283.7 104.0,276.0 C103.0,268.3 101.7,260.7 100.0,252.0 C98.3,243.3 96.0,233.7 94.0,224.0 C92.0,214.3 90.0,204.0 88.0,194.0 C86.0,184.0 83.8,173.7 82.0,164.0 C80.2,154.3 78.5,145.0 77.0,136.0 C75.5,127.0 73.8,117.7 73.0,110.0 C72.2,102.3 71.7,95.7 72.0,90.0 C72.3,84.3 73.5,80.3 75.0,76.0 C76.5,71.7 78.5,67.7 81.0,64.0 C83.5,60.3 86.3,57.3 90.0,54.0 C93.7,50.7 98.2,47.3 103.0,44.0 C107.8,40.7 113.8,37.0 119.0,34.0 C124.2,31.0 130.7,28.7 134.0,26.0 C137.3,23.3 138.0,22.3 139.0,18.0 C140.0,13.7 139.8,3.0 140.0,0.0 Z"/></clipPath>
             </defs>
 
@@ -992,8 +1008,8 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
           </div>
           <div class="headdetail" data-head="spitz">
             <h3 class="display headdetail__t">Spitzkopf</h3>
-            <p class="headdetail__d">Punktuelle Arbeit bei Muskelschmerzen und an Akupunkturpunkten. Er wirkt auf den Punkt statt auf die Fläche — deshalb bleibt die Karte hier kalt.</p>
-            <div class="headdetail__meta"><span class="chip chip--heat">punktuell, keine flächige Zone</span></div>
+            <p class="headdetail__d">Für Muskelschmerzen und Akupunkturpunkte. Er arbeitet nicht flächig, sondern auf den einzelnen Punkt — dadurch überall einsetzbar, aber immer nur kurz an einer Stelle.</p>
+            <div class="headdetail__meta"><span class="chip chip--heat">punktweise, überall</span></div>
           </div>
           <ul class="zones">
             <li class="zone" data-zone="nacken"><label class="zone__btn" for="z-nacken"><span class="zone__dot"></span><span class="zone__name">Nacken & Halsansatz</span></label></li>
@@ -1004,8 +1020,9 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
             <li class="zone" data-zone="gesaess"><label class="zone__btn" for="z-gesaess"><span class="zone__dot"></span><span class="zone__name">Gesäß</span></label></li>
           </ul>
           <p class="zones__legend">
-            <span class="zones__key zones__key--on"></span> dafür vorgesehen
-            <span class="zones__key"></span> nicht vorgesehen
+            <span class="key-flaeche"><span class="zones__key zones__key--on"></span> dafür vorgesehen</span>
+            <span class="key-punkt"><span class="zones__key zones__key--dot"></span> punktweise einsetzbar</span>
+            <span class="key-kalt"><span class="zones__key"></span> nicht vorgesehen</span>
           </p>
         </div>
       </div>
