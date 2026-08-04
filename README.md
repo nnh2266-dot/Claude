@@ -3,8 +3,18 @@
 Eine schlichte App für Beckenboden-/Kegel-Training: erst ein Eingangstest, danach ein
 Programm, das mit jeder Stufe schwerer wird. Jeden Tag genau **6 Minuten**.
 
-Alles steckt in einer einzigen `index.html` — kein Build, kein Server, keine Konten.
-Alle Daten bleiben im Browser des Geräts (`localStorage`). Es wird nichts hochgeladen.
+Es gibt sie zweimal:
+
+| | Wo | Was |
+|---|---|---|
+| **Web-App** | `index.html`, live unter [nnh2266-dot.github.io/Claude](https://nnh2266-dot.github.io/Claude/) | eine einzige Datei, kein Build, sofort nutzbar |
+| **Echte App** | `app/` | React Native mit Expo, für Play Store und App Store |
+
+Beide teilen dieselbe Trainingslogik. In der App ist sie als eigenes Modul
+(`app/src/training.ts`) mit automatischen Tests hinterlegt.
+
+Alle Daten bleiben auf dem Gerät. Es wird nichts hochgeladen, es gibt keine Konten,
+keine Werbung und kein Abo.
 
 ## Benutzen
 
@@ -82,6 +92,23 @@ Maximum verändert hat.
 
 | Datei | Zweck |
 |---|---|
-| `index.html` | die komplette App |
+| `index.html` | die komplette Web-App |
 | `manifest.json` | Homescreen-Installation |
 | `sw.js` | Offline-Betrieb |
+| `datenschutz.html` | Datenschutzerklärung für den Store |
+| `app/` | die native App (Expo) |
+| `store/` | Store-Texte, Screenshots und die Anleitung zum Veröffentlichen |
+
+## Die native App
+
+```bash
+cd app
+npm install
+npm test          # Trainingslogik über alle Stufen prüfen
+npx expo start    # auf dem eigenen Handy mit Expo Go öffnen
+```
+
+Was sie zusätzlich kann: **tägliche Erinnerung**, **Vibration** bei jedem Wechsel,
+**Datensicherung** zum Export und Import, sowie **Deutsch und Englisch**.
+
+Zum Veröffentlichen siehe [`store/veroeffentlichen.md`](store/veroeffentlichen.md).
