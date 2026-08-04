@@ -223,7 +223,6 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 }
 .lede{font-size:var(--step-1);line-height:1.5;color:var(--muted);max-width:34ch;margin:0}
 .prose{max-width:62ch;color:var(--muted);margin:0}
-.num{font-family:var(--font-mono);font-variant-numeric:tabular-nums}
 
 /* ============================================================
    REVEAL
@@ -321,7 +320,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .gauge__k{font-family:var(--font-mono);font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin-top:.35rem}
 
 /* ============================================================
-   REICHWEITEN-DEMO
+   AUFSATZ- UND ZONENKARTE
    ============================================================ */
 .picker{
   grid-column:1/-1;
@@ -436,8 +435,6 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .reach__stage{position:relative;padding:1.5rem 1.5rem 0;display:flex;justify-content:center}
 .reach__figure{width:100%;max-width:382px}
 .reach__panel{padding:1.5rem;display:flex;flex-direction:column;gap:1.35rem;border-top:1px solid var(--line-soft)}
-.reach__head{display:flex;flex-direction:column;gap:.35rem}
-.reach__pctlabel{font-family:var(--font-mono);font-size:.68rem;letter-spacing:.13em;text-transform:uppercase;color:var(--faint);line-height:1.5;margin:0}
 
 
 .zones{list-style:none;margin:0;padding:0;display:grid;gap:1px;background:var(--line-soft)}
@@ -482,18 +479,13 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .spec__v{font-family:var(--font-display);font-size:clamp(2.1rem,5.2vw,3rem);line-height:1;font-variant-numeric:tabular-nums}
 .spec__v small{font-family:var(--font-mono);font-size:.36em;color:var(--muted);letter-spacing:.04em;margin-left:.25em}
 .spec__k{font-family:var(--font-mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--faint)}
-.spec__note{font-size:.8rem;color:var(--muted);margin-top:.4rem}
 
 
 /* Höher als zuvor: die Fläche trägt jetzt eine mm- und eine ms-Achse,
    und die Schläge brauchen Platz, um als Ausschlag statt als Welle zu lesen. */
-/* Genau eine der beiden Darstellungen ist da: ohne JavaScript bliebe das Canvas
-   zwangsläufig leer, also übernimmt dann die statische Spur. */
-.js 
 /* ============================================================
    ANWENDUNG
    ============================================================ */
-.app{display:grid;gap:clamp(2rem,4vw,3rem);grid-template-columns:1fr}
 .headdetail{border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);padding:clamp(1.2rem,3vw,1.8rem);gap:.8rem;min-height:11rem}
 .headdetail__t{font-family:var(--font-display);font-size:var(--step-2);text-transform:uppercase;margin:0}
 .headdetail__d{color:var(--muted);margin:0;max-width:52ch}
@@ -503,11 +495,6 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
   padding:.35em .7em;border:1px solid var(--line);border-radius:100px;color:var(--muted);
 }
 .chip--heat{border-color:var(--heat);color:var(--heat)}
-
-
-/* ============================================================
-   VERGLEICH + STIMMEN
-   ============================================================ */
 
 
 /* ============================================================
@@ -652,7 +639,6 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
   /* Nebeneinander wird aus der Aufsatzleiste eine Liste: fünf Kacheln nebeneinander
      sind nur 107 px hoch und liessen unter sich ein 120-px-Loch neben der
      Detailtafel stehen. Als Zeilen füllen sie die Spalte auf gleiche Höhe. */
-  .app{grid-template-columns:minmax(0,.82fr) minmax(0,1.18fr);align-items:stretch}
   .buy{grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr)}
   .buy__side{border-top:0;border-left:1px solid var(--line-soft)}
   }
@@ -908,7 +894,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
     </div>
   </section>
 
-  <!-- ══════════════ REICHWEITEN-DEMO ══════════════ -->
+  <!-- ══════════════ AUFSÄTZE UND ZONEN ══════════════ -->
   <section class="bay" id="anwendung" aria-labelledby="h-anwendung">
     <div class="shell">
       <div class="sechead">
@@ -1323,9 +1309,6 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
     document.querySelectorAll("[data-count]").forEach(countUp);
   }
 
-  /* ============================================================
-     REICHWEITEN-DEMO
-     ============================================================ */
   /* Ankerlinks: sanft scrollen, wo erlaubt — und in jedem Fall den Fokus
      mitnehmen. Ohne das wandert nur das Bild, während die Tabreihenfolge im
      Kopf stehen bleibt und der nächste Tab wieder ganz oben landet.
