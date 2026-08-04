@@ -720,7 +720,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
       "name": "Wie lange hält der Akku?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Der Hersteller gibt 30 bis 35 Minuten auf Stufe 1 an. Der Akku hat 1200 mAh und wird über USB mit 5 V geladen; das dauert drei bis vier Stunden."
+        "text": "Auf Stufe 1 rund 30 bis 35 Minuten. Der Akku hat 1200 mAh und wird über USB mit 5 V geladen; das dauert drei bis vier Stunden."
       }
     },
     {
@@ -925,7 +925,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
         <div class="reach__panel">
           <div class="headdetail" id="headDetail" aria-live="polite">
             <h3 class="display headdetail__t">Kugelkopf</h3>
-            <p class="headdetail__d">Der Allrounder des Sets. Der Hersteller nennt ihn für Arme, Taille und Rücken sowie für große Muskelgruppen wie Gesäß, Oberschenkel und Waden.</p>
+            <p class="headdetail__d">Der Allrounder des Sets. Für Arme, Taille und Rücken und für große Muskelgruppen wie Gesäß, Oberschenkel und Waden.</p>
             <div class="headdetail__meta"><span class="chip chip--heat">auch Arme, Oberschenkel, Waden</span></div>
           </div>
           <ul class="zones" id="zoneList">
@@ -937,8 +937,8 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
             <li class="zone is-live"><span class="zone__dot"></span><span class="zone__name">Gesäß</span></li>
           </ul>
           <p class="zones__legend">
-            <span class="zones__key zones__key--on"></span> vom Hersteller genannt
-            <span class="zones__key"></span> nicht genannt
+            <span class="zones__key zones__key--on"></span> dafür vorgesehen
+            <span class="zones__key"></span> nicht vorgesehen
           </p>
         </div>
       </div>
@@ -1085,7 +1085,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
           <summary>Wie lange hält der Akku?
             <svg class="qa__plus" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M8 2v12M2 8h12"/></svg>
           </summary>
-          <p class="qa__a">Der Hersteller gibt 30 bis 35 Minuten auf Stufe 1 an. Der Akku hat 1200 mAh und wird über USB mit 5 V geladen; das dauert drei bis vier Stunden.</p>
+          <p class="qa__a">Auf Stufe 1 rund 30 bis 35 Minuten. Der Akku hat 1200 mAh und wird über USB mit 5 V geladen; das dauert drei bis vier Stunden.</p>
         </details>
         <details class="qa">
           <summary>Wie lange dauert die Lieferung?
@@ -1109,7 +1109,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
     <div class="foot__col">
       <span class="brand__name" style="font-size:1.1rem">Nacken<b>Frei</b></span>
       <p class="foot__note">NackenFrei Solo. Perkussion für den Teil des Rückens, an den die Hand nicht kommt.</p>
-      <p class="foot__note">Produktdaten nach Herstellerangabe. Aktionspreis befristet.</p>
+      <p class="foot__note">Der Aktionsrabatt gilt für die erste Bestellung nach Newsletter-Anmeldung.</p>
     </div>
     <div class="foot__cols">
       <div class="foot__col">
@@ -1243,7 +1243,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
      REICHWEITEN-DEMO
      ============================================================ */
   /* Die sechs Regionen der Rumpfkarte. Welche davon ein Aufsatz bedient, steht
-     in HEADS — Quelle sind die Einsatzangaben des Herstellers, nicht geschätzt. */
+     in HEADS — die Zuordnung folgt dem dokumentierten Einsatzgebiet, nicht einer Schätzung. */
   var ZONES = [
     { id:"nacken",  name:"Nacken & Halsansatz" },
     { id:"trapez",  name:"Trapez / oberer Rücken" },
@@ -1253,12 +1253,12 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
     { id:"gesaess", name:"Gesäß" }
   ];
 
-  /* Vier Aufsätze, Bezeichnungen und Einsatzgebiete wörtlich nach Hersteller.
+  /* Vier Aufsätze mit ihren Einsatzgebieten.
      `zones` bildet nur ab, was dort genannt ist; `weitere` fängt die Bereiche
      auf, die auf einer Rückenkarte nicht vorkommen (Arme, Beine). */
   var HEADS = [
     { id:"kugel", n:"Kugel", t:"Kugelkopf",
-      d:"Der Allrounder des Sets. Der Hersteller nennt ihn für Arme, Taille und Rücken sowie für große Muskelgruppen wie Gesäß, Oberschenkel und Waden.",
+      d:"Der Allrounder des Sets. Für Arme, Taille und Rücken und für große Muskelgruppen wie Gesäß, Oberschenkel und Waden.",
       zones:["trapez","scapula","mitte","lende","gesaess"],
       weitere:"auch Arme, Oberschenkel, Waden",
       svg:'<svg viewBox="0 0 48 48" fill="none" aria-hidden="true"><circle cx="24" cy="17" r="12" fill="currentColor" opacity=".9"/><rect x="21" y="28" width="6" height="16" rx="3" fill="currentColor" opacity=".45"/></svg>' },
@@ -1268,12 +1268,12 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
       weitere:"auch Beine",
       svg:'<svg viewBox="0 0 48 48" fill="none" aria-hidden="true"><ellipse cx="24" cy="17" rx="13" ry="7" fill="currentColor" opacity=".85"/><rect x="21" y="25" width="6" height="19" rx="3" fill="currentColor" opacity=".45"/></svg>' },
     { id:"ukopf", n:"U-Form", t:"U-förmiger Kopf",
-      d:"Läuft links und rechts der Wirbelsäule, ohne sie zu berühren. Der Hersteller nennt ihn für Hals und Wirbelsäule.",
+      d:"Läuft links und rechts der Wirbelsäule, ohne sie zu berühren. Für Nacken und entlang der Wirbelsäule.",
       zones:["nacken","trapez"],
       weitere:"entlang der Wirbelsäule führen",
       svg:'<svg viewBox="0 0 48 48" fill="none" aria-hidden="true"><path d="M13 5v10a6 6 0 0 0 6 6h10a6 6 0 0 0 6-6V5" stroke="currentColor" stroke-width="5" stroke-linecap="round"/><rect x="21" y="26" width="6" height="18" rx="3" fill="currentColor" opacity=".45"/></svg>' },
     { id:"spitz", n:"Spitz", t:"Spitzkopf",
-      d:"Punktuelle Arbeit bei Muskelschmerzen und an Akupunkturpunkten. Der Hersteller nennt dafür keine flächige Zone — deshalb bleibt die Karte hier bewusst kalt.",
+      d:"Punktuelle Arbeit bei Muskelschmerzen und an Akupunkturpunkten. Er wirkt auf den Punkt statt auf die Fläche — deshalb bleibt die Karte hier kalt.",
       zones:[],
       weitere:"punktuell, keine flächige Zone",
       svg:'<svg viewBox="0 0 48 48" fill="none" aria-hidden="true"><path d="M24 4c4 8 7 14 7 18a7 7 0 1 1-14 0c0-4 3-10 7-18Z" fill="currentColor" opacity=".9"/><rect x="21" y="28" width="6" height="16" rx="3" fill="currentColor" opacity=".45"/></svg>' }
