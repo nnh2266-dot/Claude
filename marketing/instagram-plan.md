@@ -358,6 +358,29 @@ verfügbar). Dann sind es 3–7 Tage, die Verpackung ist meist neutral, es fäll
 beim Kunden an, und Retouren bleiben in der EU. Der Einkauf ist etwas teurer — bei
 50 € Deckungsbeitrag ist das leicht zu verkraften.
 
+### Lieferantensuche: Reihenfolge der Kriterien
+
+Beides zu wollen — schnell **und** individuell bedruckt — führt auf AliExpress ins
+Leere. Die Prioritäten:
+
+1. **Versand aus einem EU-Lager.** Nicht verhandelbar. Alles andere ist zweitrangig,
+   weil die Lieferzeit über Retouren, Rückbuchungen und den Meta-Zufriedenheitswert
+   entscheidet.
+2. **Neutrale Verpackung ohne Preisangabe.** Vor der ersten Bestellung beim Lieferanten
+   erfragen: keine Rechnung, kein Preis, kein Werbematerial im Paket. Bei
+   Dropshipping-erfahrenen Anbietern ist das eine Standardbitte.
+3. **Ein Testkauf an die eigene Adresse.** Vor jeder Anzeige. Prüfen: tatsächliche
+   Laufzeit, Zustand, was im Karton liegt, wie das Gerät wirklich klingt und wirkt.
+   Ohne diesen Testkauf bewirbst du ein Produkt, das du nie in der Hand hattest.
+4. **Bedruckte Verpackung und Logo** sind ein anderes Spiel. Das gibt es nicht auf
+   AliExpress, sondern über OEM-Anbieter auf Alibaba, mit Mindestabnahme von meist
+   100–500 Stück. Bei 15,91 € sind 100 Stück rund 1.600 € Vorleistung. Sinnvoll —
+   aber **erst, wenn der Werbetest gezeigt hat, dass das Produkt verkauft wird.**
+   Vorher ist es totes Kapital.
+
+Kurz: Für den Test reicht ein EU-Lager mit neutraler Verpackung. Eigene Verpackung
+kommt in die Skalierungsphase, nicht in den Start.
+
 **Die bessere Alternative bei diesem Preis:** eine kleine Charge selbst einkaufen.
 50 Stück zu 15,91 € sind rund 800 € — weniger als das geplante Werbebudget. Dafür
 bekommst du Versand in ein bis zwei Tagen, eigene Verpackung, beherrschbare Retouren
@@ -394,6 +417,39 @@ Abmahnziele:
 Das ist kein Grund, es zu lassen. Aber es gehört in **Phase 0**, nicht in ein
 „machen wir später": Eine Abmahnung wegen fehlender EAR-Registrierung kostet mehr als
 der gesamte Werbetest.
+
+### Vom Ausland aus verkaufen
+
+Der eigene Aufenthaltsort spielt für den Betrieb keine Rolle. Meta-Werbung, Shopify,
+Lieferantenkontakt und Kundenservice laufen von überall — aus Thailand genauso wie aus
+Deutschland. Entscheidend ist nicht, wo du sitzt, sondern **welche Firma verkauft.**
+
+**Fall A — es gibt ein deutsches Gewerbe, eine UG oder GmbH** und du bist nur gerade
+nicht im Land: Dann gilt alles oben Beschriebene unverändert. Kein zusätzlicher
+Aufwand, keine Sonderregel. Steuerlich ist zu klären, ob der Aufenthalt an der
+Ansässigkeit etwas ändert — das ist eine Frage an den Steuerberater, keine an den
+Werbeplan.
+
+**Fall B — es gibt keine EU-Firma**, verkauft wird als thailändisches oder gar kein
+Unternehmen: Dann ist der Verkauf an EU-Verbraucher **ohne EU-Vertretung nicht zulässig.**
+Konkret:
+
+- **GPSR Art. 16** verlangt einen in der EU niedergelassenen Wirtschaftsakteur, der
+  für die Produktkonformität verantwortlich ist. Ohne diese Person darf das Produkt
+  nicht auf den EU-Markt.
+- **ElektroG** verlangt von Herstellern ohne deutsche Niederlassung einen
+  **Bevollmächtigten in Deutschland**, der bei der Stiftung EAR registriert ist.
+- **Umsatzsteuer:** Für IOSS braucht ein Anbieter ohne EU-Sitz einen in der EU
+  ansässigen Vermittler.
+- **Impressumspflicht** besteht unabhängig vom Sitz. Eine ladungsfähige Anschrift
+  außerhalb der EU senkt zusätzlich das Vertrauen — bei einem 100-€-Kauf messbar.
+
+Es gibt Dienstleister, die EU-Bevollmächtigung, EAR-Registrierung und IOSS-Vermittlung
+gebündelt anbieten; die Kosten liegen üblicherweise im niedrigen dreistelligen Bereich
+pro Jahr. Die häufigere und meist einfachere Lösung ist aber eine deutsche UG.
+
+**Diese Frage gehört vor den Werbetest**, weil sie darüber entscheidet, ob überhaupt
+verkauft werden darf — nicht, wie gut es läuft.
 
 ## 4. Offen
 
