@@ -58,32 +58,64 @@ Ohne Impressum, Widerrufsbelehrung und Datenschutzerklärung ist Werbung in
 Deutschland zusätzlich abmahnfähig, und Meta lehnt Anzeigen ab, deren Zielseite
 Pflichtangaben vermissen lässt.
 
-### Der ehrliche Wirtschaftlichkeits-Check
+### Der Wirtschaftlichkeits-Check
 
 Massagepistolen sind eine überlaufene Kategorie. Der Bogengriff rettet das
 Produkt — aber nur, wenn jede Anzeige mit der **Reichweite** öffnet und nie mit dem
 Wort „Massagepistole". Sobald eine Anzeige wie eine generische Massagepistolen-Anzeige
 aussieht, wird sie wie eine behandelt: weggescrollt.
 
-Rechenrahmen (Zahlen sind Annahmen — Einkaufspreis und Versandkosten musst du
-einsetzen):
+Einkaufspreis 15,91 € pro Stück. Daraus die Rechnung:
 
 ```
-Verkaufspreis brutto                99,99 €
-./. MwSt. 19 %                      15,97 €
-= netto                             84,02 €
-./. Wareneinsatz + Versand + Retouren   ? €   ← einsetzen
-= Deckungsbeitrag                       ? €
+Verkaufspreis brutto                  99,99 €
+./. MwSt. 19 %                        15,96 €
+= Nettoerlös                          84,03 €
+
+./. Wareneinsatz                      15,91 €
+./. Versand an den Kunden (DE)         5,00 €   Annahme
+./. Verpackung, Handling               1,00 €   Annahme
+./. Zahlungsgebühr (~2,3 % + 0,35 €)   2,65 €   Annahme
+= Rohertrag je Verkauf                59,47 €
+
+./. Retouren (7 % Quote, ~8 € Restkosten je Fall)
+= Deckungsbeitrag je Verkauf     rund 55 €
 ```
 
-Liegt der Deckungsbeitrag bei rund 50 €, darf die Kundengewinnung **unter 50 €**
-kosten, um überhaupt schwarze Null zu sein — Break-even-ROAS also etwa 2,0. Realistisch
-für ein Erklärprodukt in DE: CPM 9–15 €, Klickrate 1–2 %, Kaufrate der Seite 1,5–3 %.
-Daraus ergibt sich ein CPA von grob 40–90 €. Es ist also **möglich, aber knapp** — und
-es steht und fällt zu ungefähr 80 % mit dem Creative, nicht mit Zielgruppen-Einstellungen.
+Das ist eine **gute Marge** — 71 % auf den Nettoerlös. Daraus folgen die Zielwerte,
+mit denen die Kampagne gesteuert wird:
 
-Deshalb: kein großes Startbudget, sondern ein sauber gemessener Test über vier Wochen
-und danach eine Entscheidung anhand echter Zahlen.
+| | |
+|---|---|
+| Maximaler CPA bei Break-even | **55 €** |
+| Break-even-ROAS (auf Bruttoumsatz, so weist Meta es aus) | **1,8** |
+| CPA für 20 € Gewinn je Stück | **35 €** |
+| ROAS für 20 € Gewinn je Stück | **2,9** |
+| Verkäufe, damit sich der 700-€-Test selbst trägt | **13** |
+
+Realistisch in DE: CPM 9–15 €, Klickrate 1–2 %, also CPC um 1 €. Bei 2 % Kaufrate der
+Landingpage landet man bei einem CPA von rund 50 € — knapp im Plus. Bei 3 % bei rund
+33 € — klar profitabel.
+
+**Der Hebel ist damit benannt: die Kaufrate der Landingpage.** Zwischen 2 % und 3 %
+liegt der Unterschied zwischen „trägt sich gerade so" und „verdient Geld". Der
+Einkaufspreis ist gut genug, dass die Kampagne funktionieren *kann*; ob sie es tut,
+entscheidet die Seite.
+
+Und da fehlt aktuell das Wichtigste: **auf der Seite steht kein einziger
+Sozialbeweis.** Die Abschnitte sind Bühne, Anwendung, Technik, Preis, Fragen — keine
+Bewertungen, keine Kundenstimmen, kein Vergleich mit einer geraden Massagepistole.
+Bei 99,99 € von einem unbekannten Anbieter ist das der größte einzelne Grund, warum
+jemand nicht bestellt. Eine frühere Fassung der Seite hatte „Vergleich" und „Stimmen";
+beides gehört zurück, sobald die ersten echten Rückmeldungen da sind.
+
+Zwei Zahlen sind noch Annahme und sollten geprüft werden: **Ist der Einkaufspreis
+von 15,91 € der Landepreis** — also inklusive Fracht, Zoll und Einfuhrabgaben — oder
+der reine Warenwert ab Werk? Im zweiten Fall kommen erfahrungsgemäß 15–25 % dazu, der
+Deckungsbeitrag sinkt auf etwa 51 € und der Break-even-ROAS steigt auf 2,0. Und:
+Versand in die **Schweiz** kostet ein Vielfaches des DE-Versands. Bei kostenfreiem
+Versand dorthin ist die Marge je CH-Bestellung deutlich dünner — im Test deshalb
+zunächst nur DE bewerben.
 
 ### Was zusätzlich Ärger machen kann: Meta-Werberichtlinien
 
@@ -238,19 +270,23 @@ Zu beobachtende Zahlen, mit Zielwerten:
 | Hook-Rate (3-Sek.-Views ÷ Impressionen) | > 25 % | Die ersten drei Sekunden funktionieren nicht — neue Anfänge, gleicher Rest |
 | Ausgehende Klickrate | > 1,0 % | Das Versprechen ist zu schwach oder zu unklar |
 | Kaufrate der Seite | > 1,5 % | Anzeige und Seite versprechen Verschiedenes |
-| Kosten pro Kauf | < Deckungsbeitrag | Darüber zahlt jeder Verkauf drauf |
-| ROAS | > 2,0 | Unter Break-even |
+| Kosten pro Kauf | < 55 € | Darüber zahlt jeder Verkauf drauf |
+| ROAS | > 1,8 | Unter Break-even |
 
 ### Phase 3 — Entscheiden (Ende Woche 6)
 
 Drei mögliche Ausgänge, vorab festgelegt, damit die Entscheidung nicht am Bauchgefühl hängt:
 
-- **ROAS über 2,0 →** Budget in 20-%-Schritten alle 3–4 Tage erhöhen, Gewinner-Creative
-  in fünf Varianten weiterbauen, AT und CH dazunehmen.
-- **ROAS 1,2–2,0 →** nicht skalieren, sondern reparieren. Erst die schwächste Kennzahl
-  aus der Tabelle angehen — meist die Hook-Rate, danach die Kaufrate der Seite.
-- **ROAS unter 1,2 nach 700 € →** Meta-Werbung für dieses Produkt aussetzen. Dann ist
-  entweder der Deckungsbeitrag zu dünn oder die Nachfrage zu klein. Stattdessen: Google
+- **ROAS über 2,5 →** Budget in 20-%-Schritten alle 3–4 Tage erhöhen, Gewinner-Creative
+  in fünf Varianten weiterbauen, AT dazunehmen (CH erst, wenn der Versand dorthin
+  eingepreist ist).
+- **ROAS 1,3–2,5 →** nicht skalieren, sondern reparieren. Erst die schwächste Kennzahl
+  aus der Tabelle angehen — meist die Hook-Rate, danach die Kaufrate der Seite. Bei
+  55 € Deckungsbeitrag lohnt sich diese Arbeit: Von 2 % auf 3 % Kaufrate senkt den CPA
+  um rund ein Drittel.
+- **ROAS unter 1,3 nach 700 € →** Meta-Werbung für dieses Produkt aussetzen. Dann ist
+  nicht die Marge das Problem — die reicht —, sondern die Nachfrage oder das
+  Creative. Stattdessen: Google
   Shopping und Suchanzeigen auf „Massagepistole für den Rücken selbst" — dort greift man
   bestehende Nachfrage ab, statt sie zu erzeugen, und das ist bei einem Produkt mit
   klarem Suchbegriff oft billiger.
@@ -269,19 +305,16 @@ Drei mögliche Ausgänge, vorab festgelegt, damit die Entscheidung nicht am Bauc
 
 ## 4. Offen
 
-**„Der ellenlange Flow"** aus der Aufgabenstellung ist nicht zugeordnet. Je nach
-Bedeutung ändert sich ein Teil des Plans:
+Für die Marge noch zu klären:
 
-- **Ein langer Funnel** (Anzeige → Seite → Rabattcode → E-Mail-Strecke → Kauf): Dann
-  gehört zwischen Phase 2 und 3 eine E-Mail-Automatisierung mit fünf bis sieben Mails.
-  Der Newsletter-Rabatt auf der Seite ist der vorhandene Einstieg dafür. Bei 99,99 €
-  ist das grundsätzlich sinnvoll, aber es lohnt erst, wenn die Anzeigen überhaupt
-  Adressen liefern.
-- **Ein Automatisierungswerkzeug** (ManyChat, n8n, Flowise): Betrifft Idee I. Dann wird
-  die Kommentar-zu-DM-Automatisierung vorgezogen und in Phase 1 eingerichtet.
-- **Die lange, schrittweise Arbeitsweise**, mit der die Produktseite entstanden ist:
-  Dann ist dieser Plan der erste Schritt, und wir arbeiten ihn Phase für Phase gemeinsam ab.
+- **Ist 15,91 € der Landepreis** (inkl. Fracht, Zoll, Einfuhrabgaben) oder der Warenwert
+  ab Werk? Der Unterschied verschiebt den Deckungsbeitrag um etwa 4 € und den
+  Break-even-ROAS von 1,8 auf 2,0.
+- **Tatsächliche Versandkosten** je Paket nach DE, AT und CH. Der kostenfreie
+  CH-Versand ist der wahrscheinlichste stille Margenfresser.
+- **Retourenquote** nach den ersten hundert Bestellungen. Die 7 % oben sind ein
+  Erfahrungswert, kein gemessener.
 
-Ebenfalls offen und für die Rechnung entscheidend: **Einkaufspreis, Versandkosten und
-erwartete Retourenquote.** Ohne diese drei Zahlen ist der Deckungsbeitrag geraten — und
-damit auch jede Aussage darüber, ob eine Kampagne funktioniert oder nur beschäftigt aussieht.
+Inhaltlich der wichtigste offene Punkt: **Sozialbeweis auf der Landingpage.** Solange
+dort keine Bewertungen stehen, arbeitet die Kaufrate gegen die Kampagne — und die
+Kaufrate ist bei dieser Marge der Hebel, an dem alles hängt.
