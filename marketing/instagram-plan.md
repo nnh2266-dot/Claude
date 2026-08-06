@@ -221,9 +221,18 @@ das mit ihrer Bestätigungsmail bereits richtig, das muss hier genauso laufen.
 
 Ohne diese Phase kein Werbe-Euro. Reihenfolge egal, Vollständigkeit nicht.
 
-- [ ] Shopify-Shop aufsetzen, Produkt anlegen, Preis 99,99 €, Versand DE/AT/CH kostenfrei
+- [ ] Lieferant mit **EU-Lager** auswählen (Versand aus DE/PL/CZ) oder kleine Charge
+      selbst einkaufen — siehe Abschnitt 3a. Vor allem anderen, weil die Lieferzeit
+      über den Rest entscheidet
+- [ ] Registrierungen: Stiftung EAR (ElektroG), Batterierecht, LUCID (VerpackG);
+      GPSR-Angaben und CE-Konformitätserklärung vom Lieferanten anfordern
+- [ ] Umsatzsteuer beim Import klären (IOSS, Vorsteuerabzug) — mit dem Steuerberater
+- [ ] Shopify-Shop aufsetzen, Produkt anlegen, Preis 99,99 €, Versand **DE und AT**
+      kostenfrei; CH vorerst nicht anbieten
 - [ ] Alle sechs Platzhalter in `index.html` ersetzen: Produkt-URL (2×), Shop-Domain,
       Impressum, Datenschutz, Widerruf, Lieferzeit (2×)
+- [ ] Auf der Seite anpassen: Versandländer auf DE und AT, Rückgabefrist von 30 auf
+      14 Tage, Schweiz-Hinweis im FAQ und im Bestellabschnitt entfernen
 - [ ] Impressum, Datenschutzerklärung, Widerrufsbelehrung und AGB erstellen —
       rechtlich prüfen lassen, nicht aus einem Generator übernehmen und hoffen
 - [ ] Consent-Banner einbauen; Pixel darf erst **nach** Einwilligung feuern
@@ -302,6 +311,89 @@ Drei mögliche Ausgänge, vorab festgelegt, damit die Entscheidung nicht am Bauc
 | Retargeting | — | ~150 € über 3 Wochen |
 
 ---
+
+## 3a. Dropshipping von AliExpress — was daran hängt
+
+Die Ware geht direkt aus China an den Kunden. Das lässt die Marge weitgehend intakt,
+verändert aber alles andere.
+
+### Die Marge bleibt tragfähig
+
+```
+Nettoerlös                            84,03 €
+./. Wareneinsatz                      15,91 €
+./. AliExpress-Versand                 6,00 €   Annahme — echten Wert einsetzen
+./. Zahlungsgebühr                     2,65 €
+= Rohertrag                           59,47 €
+./. Retouren (realistisch 12 %, faktisch Totalverlust je Fall)
+= Deckungsbeitrag              rund   50 €
+```
+
+Retouren sind beim Dropshipping teurer als beim Lagerverkauf: Zurück nach China geht
+praktisch nicht, eine Rücksendung landet bei dir zu Hause und lässt sich nicht wieder
+in den Bestand legen. Rechne mit dem vollen Verlust je Fall. Die auf der Seite
+zugesagten **30 Tage Rückgabe — doppelt so lang wie gesetzlich nötig — sind für dieses
+Modell eine selbstgestellte Falle.** Bei Direktversand aus China gehören da 14 Tage hin,
+nicht 30.
+
+### Das eigentliche Problem: Lieferzeit
+
+Standardversand von AliExpress nach Deutschland dauert typisch 10–25 Tage. Bei einem
+Produkt für 99,99 € ist das der Punkt, an dem das Geschäft kippt:
+
+- **Retouren und Rückbuchungen steigen stark.** Wer 100 € zahlt und drei Wochen wartet,
+  storniert oder eröffnet einen PayPal-Fall. Jeder solche Fall ist ein Totalverlust.
+- **Meta bestraft es direkt.** Im Commerce Manager läuft ein Kundenzufriedenheitswert
+  von 1 bis 5, gespeist aus Käuferbefragungen. Unter 2,0 werden Anzeigen eingeschränkt,
+  unter 1,0 wird das Werbekonto gesperrt. Lange Lieferzeit plus AliExpress-Verpackung
+  ist genau das Muster, das diesen Wert kippt. Man merkt es erst, wenn das Konto
+  schon eingeschränkt ist.
+- **Das Paket verrät den Preis.** Es kommt in AliExpress-Verpackung mit chinesischem
+  Absender, oft mit Warenwert auf dem Zolldokument. Der Kunde sieht, dass er für
+  einen Artikel von 16 € hundert Euro gezahlt hat.
+
+**Die Lösung ist einfacher als sie klingt: Lieferanten mit EU-Lager.** Auf AliExpress
+nach „Versand aus Deutschland / Polen / Tschechien" filtern (bei AliExpress Choice oft
+verfügbar). Dann sind es 3–7 Tage, die Verpackung ist meist neutral, es fällt kein Zoll
+beim Kunden an, und Retouren bleiben in der EU. Der Einkauf ist etwas teurer — bei
+50 € Deckungsbeitrag ist das leicht zu verkraften.
+
+**Die bessere Alternative bei diesem Preis:** eine kleine Charge selbst einkaufen.
+50 Stück zu 15,91 € sind rund 800 € — weniger als das geplante Werbebudget. Dafür
+bekommst du Versand in ein bis zwei Tagen, eigene Verpackung, beherrschbare Retouren
+und einen Zufriedenheitswert, der die Anzeigen nicht gefährdet. Bei 99,99 € Verkaufspreis
+ist Direktversand aus China schlicht das falsche Werkzeug.
+
+### Versandländer: nur DE und AT, nicht CH
+
+- **Deutschland und Österreich** sind EU-Binnenmarkt — kein Zoll, keine
+  Einfuhrabgaben für den Kunden, gleiche Rechtslage. Beide unproblematisch.
+- **Die Schweiz ist Drittland.** Der Kunde zahlt Schweizer Einfuhrsteuer plus
+  Verzollungsgebühr des Transporteurs, oft 20–30 CHF, und zwar an der Haustür. Die
+  Seite sagt das zwar ehrlich dazu, aber bei einer 100-€-Bestellung ist das der
+  häufigste Grund für Annahmeverweigerung. **CH aus dem Angebot nehmen**, solange nicht
+  verzollt versendet wird.
+
+### Steuer und Recht — vor der ersten Anzeige klären
+
+Beim Direktimport bist du **Importeur** und damit der Verantwortliche im Rechtssinn.
+Das ist keine Formalie; die folgenden Punkte sind in Deutschland die klassischen
+Abmahnziele:
+
+| Thema | Was zu tun ist |
+|---|---|
+| **ElektroG / WEEE** | Registrierung bei der Stiftung EAR **vor** dem ersten Verkauf. Elektrogerät mit Akku. Verstoß ist bußgeldbewehrt und abmahnfähig. |
+| **Batterierecht** | Registrierung der Batterien, Rücknahmepflicht |
+| **VerpackG** | LUCID-Registrierung und Beteiligung an einem dualen System |
+| **GPSR** (EU 2023/988, seit 12/2024) | Verantwortliche Person in der EU, Hersteller- und Importeurangaben am Produkt und im Angebot |
+| **CE / EMV / RoHS** | Konformitätserklärung vom Lieferanten anfordern und prüfen |
+| **Einfuhrumsatzsteuer / IOSS** | Bei Sendungen bis 150 € muss die deutsche Umsatzsteuer beim Verkauf erhoben und über IOSS abgeführt werden. Ohne IOSS zahlt der Kunde beim Zoll drauf. |
+| **Doppelte Umsatzsteuer** | Klassischer Dropshipping-Fehler: erst Mehrwertsteuer an AliExpress zahlen, dann nochmal auf den eigenen Verkauf abführen. Ohne ordentliche Rechnung ist kein Vorsteuerabzug möglich. Steuerberater fragen. |
+| **Gewährleistung** | Zwei Jahre, gesetzlich, nicht verhandelbar — auch ohne Ersatzteile und ohne Lager. |
+
+Das ist kein Grund, es zu lassen. Aber es gehört in **Phase 0**, nicht in ein
+„machen wir später": Eine Abmahnung wegen fehlender EAR-Registrierung kostet mehr als
+der gesamte Werbetest.
 
 ## 4. Offen
 
