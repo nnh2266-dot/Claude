@@ -320,6 +320,53 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .gauge__k{font-family:var(--font-mono);font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin-top:.35rem}
 
 /* ============================================================
+   STUFENSKALA
+   Die neun Stufen sind die Kopfzeile des Abschnitts und standen bisher
+   nur als Ziffer in einer Kachel. Als Skala, die sich beim Erscheinen
+   von links aufbaut, sagt die Bewegung etwas über das Produkt aus —
+   statt eines weiteren Einblendens von unten.
+   ============================================================ */
+.stufen{margin-top:clamp(2.2rem,4vw,3rem);display:flex;flex-direction:column;gap:.85rem}
+.stufen__t{
+  font-family:var(--font-mono);font-size:.7rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--faint);margin:0;
+}
+/* align-items:stretch, damit .stufe die Reihenhöhe erbt — sonst hat die
+   Prozenthöhe der Balken keinen Bezugsrahmen und sie bleiben unsichtbar. */
+.stufen__row{display:flex;align-items:stretch;gap:clamp(.3rem,1vw,.6rem);height:104px}
+.stufe{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:.45rem;min-width:0}
+.stufe__bar{
+  width:100%;
+  /* Feste Pixelstufung statt Prozent: die Zahl unter dem Balken zehrt an der
+     verfügbaren Höhe, wodurch die obersten Balken sonst gleich abgeschnitten wurden. */
+  height:calc(14px + var(--i) * 8px);
+  background:linear-gradient(to top,var(--accent),var(--heat));
+  border-radius:2px 2px 0 0;
+  transform-origin:bottom;
+  animation:stufeAuf .55s cubic-bezier(.22,.7,.25,1) backwards;
+  animation-delay:calc(var(--i) * 65ms);
+}
+@keyframes stufeAuf{from{transform:scaleY(.06);opacity:.35}}
+.stufe__n{
+  font-family:var(--font-mono);font-size:.64rem;color:var(--faint);
+  font-variant-numeric:tabular-nums;
+}
+.stufen__ends{
+  display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;
+  font-family:var(--font-mono);font-size:.66rem;letter-spacing:.05em;color:var(--muted);
+}
+
+.daten{
+  margin:clamp(2rem,3.5vw,2.6rem) 0 0;display:grid;gap:1px;
+  background:var(--line-soft);border:1px solid var(--line-soft);
+  grid-template-columns:repeat(2,minmax(0,1fr));
+}
+.daten > div{background:var(--ground);padding:.85rem 1rem;display:flex;flex-direction:column;gap:.15rem}
+.daten dt{font-family:var(--font-mono);font-size:.64rem;letter-spacing:.13em;text-transform:uppercase;color:var(--faint)}
+.daten dd{margin:0;font-size:.9rem;color:var(--text)}
+@media (min-width:760px){.daten{grid-template-columns:repeat(3,minmax(0,1fr))}}
+
+/* ============================================================
    AUFSATZ- UND ZONENKARTE
    ============================================================ */
 .picker{
@@ -338,11 +385,12 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .heads{display:flex;flex-wrap:wrap;gap:.5rem;background:none;border:0}
 .head{
   flex:1 1 8.5rem;
+  transform:translateY(0);
   display:flex;flex-direction:row;align-items:center;justify-content:flex-start;gap:.6rem;
   background:var(--ground);color:var(--muted);
   border:1px solid var(--line);border-radius:var(--radius);
   padding:.6rem .8rem;
-  transition:border-color .22s,background-color .22s,color .22s;
+  transition:border-color .22s,background-color .22s,color .22s,transform .28s cubic-bezier(.22,.7,.25,1);
 }
 .head:hover{border-color:var(--accent-edge);color:var(--text)}
 .head[aria-pressed="true"]{
@@ -372,28 +420,28 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
    und Tafel, deshalb erreichen sie beide über den ~-Kombinator. */
 .pick{position:absolute;width:1px;height:1px;opacity:0}
 .headdetail{display:none}
-#p-kugel:checked ~ .picker [for="p-kugel"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:600}
+#p-kugel:checked ~ .picker [for="p-kugel"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:600;transform:translateY(-2px)}
 #p-kugel:checked ~ .picker [for="p-kugel"] .head__ico{color:var(--accent-ink)}
 #p-kugel:focus-visible ~ .picker [for="p-kugel"]{outline:2px solid var(--accent);outline-offset:3px}
 #p-kugel:checked ~ .reach__panel [data-head="kugel"]{display:grid}
 #p-kugel:checked ~ .reach__stage [data-band="trapez"],#p-kugel:checked ~ .reach__stage [data-band="scapula"],#p-kugel:checked ~ .reach__stage [data-band="mitte"],#p-kugel:checked ~ .reach__stage [data-band="lende"],#p-kugel:checked ~ .reach__stage [data-band="gesaess"]{fill:var(--heat);fill-opacity:.74}
 #p-kugel:checked ~ .reach__panel .zone[data-zone="trapez"],#p-kugel:checked ~ .reach__panel .zone[data-zone="scapula"],#p-kugel:checked ~ .reach__panel .zone[data-zone="mitte"],#p-kugel:checked ~ .reach__panel .zone[data-zone="lende"],#p-kugel:checked ~ .reach__panel .zone[data-zone="gesaess"]{color:var(--text)}
 #p-kugel:checked ~ .reach__panel .zone[data-zone="trapez"] .zone__dot,#p-kugel:checked ~ .reach__panel .zone[data-zone="scapula"] .zone__dot,#p-kugel:checked ~ .reach__panel .zone[data-zone="mitte"] .zone__dot,#p-kugel:checked ~ .reach__panel .zone[data-zone="lende"] .zone__dot,#p-kugel:checked ~ .reach__panel .zone[data-zone="gesaess"] .zone__dot{background:var(--heat);box-shadow:0 0 0 4px var(--heat-wash)}
-#p-flach:checked ~ .picker [for="p-flach"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:600}
+#p-flach:checked ~ .picker [for="p-flach"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:600;transform:translateY(-2px)}
 #p-flach:checked ~ .picker [for="p-flach"] .head__ico{color:var(--accent-ink)}
 #p-flach:focus-visible ~ .picker [for="p-flach"]{outline:2px solid var(--accent);outline-offset:3px}
 #p-flach:checked ~ .reach__panel [data-head="flach"]{display:grid}
 #p-flach:checked ~ .reach__stage [data-band="lende"],#p-flach:checked ~ .reach__stage [data-band="gesaess"]{fill:var(--heat);fill-opacity:.74}
 #p-flach:checked ~ .reach__panel .zone[data-zone="lende"],#p-flach:checked ~ .reach__panel .zone[data-zone="gesaess"]{color:var(--text)}
 #p-flach:checked ~ .reach__panel .zone[data-zone="lende"] .zone__dot,#p-flach:checked ~ .reach__panel .zone[data-zone="gesaess"] .zone__dot{background:var(--heat);box-shadow:0 0 0 4px var(--heat-wash)}
-#p-ukopf:checked ~ .picker [for="p-ukopf"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:600}
+#p-ukopf:checked ~ .picker [for="p-ukopf"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:600;transform:translateY(-2px)}
 #p-ukopf:checked ~ .picker [for="p-ukopf"] .head__ico{color:var(--accent-ink)}
 #p-ukopf:focus-visible ~ .picker [for="p-ukopf"]{outline:2px solid var(--accent);outline-offset:3px}
 #p-ukopf:checked ~ .reach__panel [data-head="ukopf"]{display:grid}
 #p-ukopf:checked ~ .reach__stage [data-band="nacken"],#p-ukopf:checked ~ .reach__stage [data-band="trapez"]{fill:var(--heat);fill-opacity:.74}
 #p-ukopf:checked ~ .reach__panel .zone[data-zone="nacken"],#p-ukopf:checked ~ .reach__panel .zone[data-zone="trapez"]{color:var(--text)}
 #p-ukopf:checked ~ .reach__panel .zone[data-zone="nacken"] .zone__dot,#p-ukopf:checked ~ .reach__panel .zone[data-zone="trapez"] .zone__dot{background:var(--heat);box-shadow:0 0 0 4px var(--heat-wash)}
-#p-spitz:checked ~ .picker [for="p-spitz"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:600}
+#p-spitz:checked ~ .picker [for="p-spitz"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:600;transform:translateY(-2px)}
 #p-spitz:checked ~ .picker [for="p-spitz"] .head__ico{color:var(--accent-ink)}
 #p-spitz:focus-visible ~ .picker [for="p-spitz"]{outline:2px solid var(--accent);outline-offset:3px}
 #p-spitz:checked ~ .reach__panel [data-head="spitz"]{display:grid}
@@ -455,7 +503,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 /* Die Zonen tragen selbst keine Kontur mehr — die Silhouette wird einmal
    aussen gezogen. fill-opacity statt opacity, damit nichts durchscheint. */
 .z-band{fill:var(--cold);fill-opacity:.34;
-        transition:fill-opacity .5s cubic-bezier(.22,.7,.25,1),fill .5s}
+        transition:fill-opacity .55s cubic-bezier(.22,.7,.25,1),fill .55s ease}
 .z-band.is-live{fill:var(--heat);fill-opacity:.74}
 .z-seam{stroke:var(--line);stroke-width:1;opacity:.55}
 .z-outline{fill:none;stroke:var(--line);stroke-width:1.6}
@@ -475,7 +523,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .spec{background:var(--ground);padding:1.3rem 1.1rem;display:flex;flex-direction:column;gap:.15rem;position:relative;overflow:hidden}
 .spec::after{content:"";position:absolute;inset:auto 0 0 0;height:1px;background:var(--accent);transform-origin:left;transition:transform .8s cubic-bezier(.22,.7,.25,1)}
 .js .spec::after{transform:scaleX(0)}
-.spec.is-in::after{transform:scaleX(1)}
+.js .specs.is-in .spec::after{transform:scaleX(1)}
 .spec__v{font-family:var(--font-display);font-size:clamp(2.1rem,5.2vw,3rem);line-height:1;font-variant-numeric:tabular-nums}
 .spec__v small{font-family:var(--font-mono);font-size:.36em;color:var(--muted);letter-spacing:.04em;margin-left:.25em}
 .spec__k{font-family:var(--font-mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--faint)}
@@ -704,6 +752,8 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
   .js .rise{opacity:1;transform:none}
   .js .hero__h1 i{transform:none}
   .js .spec::after{transform:scaleX(1)}
+  .stufe__bar{animation:none}
+  .head{transform:none !important}
 }
 </style>
 <!-- Fragen und Antworten, wortgleich aus den <details> unten. Wer eines von beiden
@@ -903,7 +953,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
       </div>
 
       <!-- Interaktive Demo -->
-      <div class="reach rise" id="reachCard">
+      <div class="reach" id="reachCard">
         <!-- Die Auswahl läuft über verborgene Radios und CSS, nicht über ein Skript.
              So funktioniert die Karte auch dort, wo kein JavaScript ausgeführt wird. -->
         <input class="pick" type="radio" name="aufsatz" id="p-kugel" checked>
@@ -1030,14 +1080,42 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
         </p>
       </div>
 
-      <div class="specs" id="specGrid">
-        <div class="spec rise"><div class="spec__v" data-count="9" data-dec="0">0</div><div class="spec__k">Kraftstufen</div></div>
-        <div class="spec rise" style="--d:60ms"><div class="spec__v" data-count="1200" data-dec="0">0</div><div class="spec__k">mAh Akku</div></div>
-        <div class="spec rise" style="--d:120ms"><div class="spec__v" data-count="20" data-dec="0">0</div><div class="spec__k">Watt Leistung</div></div>
-        <div class="spec rise" style="--d:180ms"><div class="spec__v">30–35<small>min</small></div><div class="spec__k">Laufzeit, Stufe 1</div></div>
-        <div class="spec rise" style="--d:240ms"><div class="spec__v">3–4<small>h</small></div><div class="spec__k">Ladezeit</div></div>
-        <div class="spec rise" style="--d:300ms"><div class="spec__v" data-count="590" data-dec="0">0</div><div class="spec__k">Gramm pro Satz</div></div>
+      <div class="specs rise" id="specGrid">
+        <div class="spec"><div class="spec__v" data-count="9" data-dec="0">0</div><div class="spec__k">Kraftstufen</div></div>
+        <div class="spec"><div class="spec__v" data-count="1200" data-dec="0">0</div><div class="spec__k">mAh Akku</div></div>
+        <div class="spec"><div class="spec__v" data-count="20" data-dec="0">0</div><div class="spec__k">Watt Leistung</div></div>
+        <div class="spec"><div class="spec__v">30–35<small>min</small></div><div class="spec__k">Laufzeit, Stufe 1</div></div>
+        <div class="spec"><div class="spec__v">3–4<small>h</small></div><div class="spec__k">Ladezeit</div></div>
+        <div class="spec"><div class="spec__v" data-count="590" data-dec="0">0</div><div class="spec__k">Gramm pro Satz</div></div>
       </div>
+
+      <div class="stufen">
+        <p class="stufen__t">Neun Kraftstufen</p>
+        <div class="stufen__row" role="img" aria-label="Neun Kraftstufen, von der ersten für Aufwärmen bis zur neunten für tiefe Muskelgruppen.">
+            <span class="stufe" style="--i:0"><span class="stufe__bar"></span><span class="stufe__n">1</span></span>
+            <span class="stufe" style="--i:1"><span class="stufe__bar"></span><span class="stufe__n">2</span></span>
+            <span class="stufe" style="--i:2"><span class="stufe__bar"></span><span class="stufe__n">3</span></span>
+            <span class="stufe" style="--i:3"><span class="stufe__bar"></span><span class="stufe__n">4</span></span>
+            <span class="stufe" style="--i:4"><span class="stufe__bar"></span><span class="stufe__n">5</span></span>
+            <span class="stufe" style="--i:5"><span class="stufe__bar"></span><span class="stufe__n">6</span></span>
+            <span class="stufe" style="--i:6"><span class="stufe__bar"></span><span class="stufe__n">7</span></span>
+            <span class="stufe" style="--i:7"><span class="stufe__bar"></span><span class="stufe__n">8</span></span>
+            <span class="stufe" style="--i:8"><span class="stufe__bar"></span><span class="stufe__n">9</span></span>
+        </div>
+        <div class="stufen__ends">
+          <span>Stufe 1 — Aufwärmen und empfindliche Stellen</span>
+          <span>Stufe 9 — tiefe Muskelgruppen</span>
+        </div>
+      </div>
+
+      <dl class="daten">
+        <div><dt>Material</dt><dd>ABS-Gehäuse, Silikonaufsätze</dd></div>
+        <div><dt>Akku</dt><dd>1200 mAh, Lithium</dd></div>
+        <div><dt>Ladung</dt><dd>USB, 5 V–1 A</dd></div>
+        <div><dt>Leistung</dt><dd>20 Watt</dd></div>
+        <div><dt>Kartonmaß</dt><dd>34 × 25 × 5 cm</dd></div>
+        <div><dt>Farbe</dt><dd>Schwarz</dd></div>
+      </dl>
 
     </div>
   </section>
@@ -1052,7 +1130,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
         <h2 class="display sechead__h rise" id="h-preis" style="--d:60ms">Ein Set.<br>Vier Aufsätze.</h2>
       </div>
 
-      <div class="buy rise">
+      <div class="buy">
         <div class="buy__main">
           <div class="buy__price">
             <span class="display buy__p">99,99</span>
@@ -1120,7 +1198,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
         <p class="eyebrow rise">Fragen</p>
         <h2 class="display sechead__h rise" id="h-fragen" style="--d:60ms">Bevor du<br>bestellst.</h2>
       </div>
-      <div class="faq rise" style="--d:120ms">
+      <div class="faq" style="--d:120ms">
         <details class="qa">
           <summary>Komme ich damit wirklich allein an den Rücken?
             <svg class="qa__plus" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M8 2v12M2 8h12"/></svg>
