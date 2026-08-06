@@ -529,6 +529,106 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
    Instrument vorbehalten, Kupfer dem Gewebe — die beiden dürfen sich nicht mischen. */
 
 /* ============================================================
+   VERGLEICH
+   Zwei Karten, dieselbe Rückenkarte, ein Unterschied. Rahmen, Fugen und
+   Ikonengröße kommen aus .reach und .trust — es entsteht keine zweite
+   Formensprache, nur ein zweiter Satz derselben.
+   ============================================================ */
+.gegen{
+  display:grid;grid-template-columns:1fr;gap:1px;
+  background:var(--line-soft);
+  border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;
+}
+.gegen__karte{
+  background:var(--surface);
+  padding:clamp(1.2rem,3vw,1.9rem);
+  display:flex;flex-direction:column;gap:1.15rem;
+}
+.gegen__kopf{display:flex;align-items:center;gap:1rem}
+/* Die Silhouette ist hier kein Beiwerk, sondern die Aussage — sie bekommt den
+   Rahmen und das Maß der Kopfschalter, damit sie als Motiv gelesen wird. */
+.gegen__form{
+  width:54px;height:54px;flex:none;color:var(--no);
+  border:1px solid var(--line);border-radius:var(--radius);
+  padding:5px;box-sizing:border-box;
+}
+.gegen__karte--wir .gegen__form{color:var(--accent);border-color:var(--accent-edge)}
+.gegen__t{font-family:var(--font-mono);font-size:.74rem;letter-spacing:.1em;text-transform:uppercase;margin:0}
+.gegen__u{font-size:.8rem;color:var(--muted);margin:.2rem 0 0}
+.gegen__fig{width:100%;max-width:210px;margin-inline:auto;display:block}
+.gegen__text{font-size:.9rem;color:var(--muted);margin:0}
+.gegen__bilanz{
+  font-size:.88rem;margin:auto 0 0;
+  padding-top:1rem;border-top:1px solid var(--line-soft);
+}
+/* --no ist ein Flächenton (3:1) und trägt als 14-px-Text nicht: gemessen
+   3,48:1 im dunklen Theme. Der Text steht deshalb in --muted, die Farbe
+   markiert weiter die Schraffur. */
+.gegen__aus{color:var(--muted)}
+.gegen__an{color:var(--heat)}
+.gegen__legende{margin:1.15rem 0 0;font-size:.8rem;color:var(--faint);max-width:46rem}
+
+/* Erreichbar in Kupfer, ausser Reichweite schraffiert statt einfach blass —
+   eine Lücke muss man sehen, nicht suchen. Die Füllung muss hier aus dem
+   Stylesheet kommen: .z-band setzt fill per CSS, und CSS schlägt das
+   fill-Attribut am Element. */
+.vg-an{fill:var(--heat);fill-opacity:.74}
+.vg-aus{fill:url(#vgGsperre);fill-opacity:.9}
+/* Die erreichbaren Zonen bauen sich von oben nach unten auf: dieselbe
+   Staffel-Idee wie bei der Stufenskala, hier als Aufbau einer Fläche. */
+.gegen__karte--wir .vg-an{
+  animation:zoneAn .5s cubic-bezier(.22,.7,.25,1) backwards;
+  animation-delay:calc(var(--i) * 70ms);
+}
+@keyframes zoneAn{from{fill-opacity:.12}}
+
+@media (min-width:760px){
+  .gegen{grid-template-columns:1fr 1fr}
+}
+/* Ab 1100 px ist die Karte breit genug, dass Figur und Text nebeneinander
+   passen. Untereinander stünde rechts und links der Rückenkarte nur Luft. */
+@media (min-width:1100px){
+  .gegen__karte{
+    display:grid;align-content:start;
+    grid-template-columns:190px minmax(0,1fr);
+    grid-template-rows:auto 1fr auto;
+    column-gap:clamp(1.4rem,2.5vw,2.2rem);row-gap:1.05rem;
+  }
+  .gegen__kopf{grid-column:1/-1}
+  .gegen__fig{grid-row:2/4;max-width:190px;margin:0;align-self:start}
+  .gegen__text{grid-column:2}
+  .gegen__bilanz{grid-column:2;margin:0}
+}
+
+/* ============================================================
+   VERTRAUEN
+   ============================================================ */
+/* Haarlinien als Rahmen statt als Fugen-Trick: bei zwei Spalten wäre eine
+   2-rem-Lücke in Linienfarbe ein Balken, keine Linie. */
+.zusagen{
+  list-style:none;margin:0;padding:0;
+  display:grid;grid-template-columns:1fr;
+  column-gap:clamp(2rem,4vw,3.5rem);
+}
+.zusage{
+  display:flex;gap:1.1rem;
+  padding:clamp(1.3rem,3vw,1.7rem) 0;
+  border-top:1px solid var(--line-soft);
+}
+.zusage:last-child{border-bottom:1px solid var(--line-soft)}
+.zusage__i{width:22px;height:22px;flex:none;color:var(--accent);margin-top:.15rem}
+.zusage__t{font-family:var(--font-mono);font-size:.74rem;letter-spacing:.1em;text-transform:uppercase;margin:0 0 .4rem;font-weight:400}
+.zusage__d{margin:0;font-size:.92rem;color:var(--muted);max-width:34rem}
+.zusage__d a{color:var(--text);text-decoration:underline;text-underline-offset:.18em;text-decoration-color:var(--accent-edge)}
+.zusage__d a:hover{text-decoration-color:var(--accent)}
+
+@media (min-width:800px){
+  .zusagen{grid-template-columns:1fr 1fr}
+  /* Bei zwei Spalten schliesst die vorletzte Kachel die untere Kante mit. */
+  .zusage:nth-last-child(2){border-bottom:1px solid var(--line-soft)}
+}
+
+/* ============================================================
    TECHNIK
    ============================================================ */
 .sechead{display:flex;flex-direction:column;gap:.85rem;margin-bottom:clamp(1.9rem,3.4vw,2.6rem);max-width:44rem}
@@ -648,11 +748,13 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
      Der Klappknopf hängt an einem Click-Handler — läge die Tafel auch hier
      zugeklappt, käme man ohne Skript nirgendwohin. */
   .nav{
-    display:flex;order:9;flex-basis:100%;
-    margin-left:0;gap:clamp(.9rem,4vw,1.6rem);
+    display:flex;flex-wrap:wrap;order:9;flex-basis:100%;
+    margin-left:0;gap:.25rem clamp(.75rem,3.4vw,1.5rem);
     border-top:1px solid var(--line-soft);
-    padding-block:.55rem;
-    font-size:.85rem;
+    padding-block:.5rem;
+    /* Sechs Sprungmarken müssen auf dem Telefon in eine Zeile — sonst steht
+       ein einzelnes Wort unten und der klebende Kopf frisst 124 px Höhe. */
+    font-size:.8rem;
   }
   .nav a{padding-block:.2rem}
 
@@ -682,6 +784,11 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
      das Ankerziel braucht dann mehr Vorlauf. */
   .bay,.pin{scroll-margin-top:8rem}
   .js .bay,.js .pin{scroll-margin-top:5.5rem}
+}
+/* Unter 360 px bricht die Sprungmarkenzeile doch um; der Kopf ist dann zwei
+   Zeilen höher und das Ankerziel braucht entsprechend mehr Vorlauf. */
+@media (max-width:360px){
+  html:not(.js) .bay,html:not(.js) .pin{scroll-margin-top:9.5rem}
 }
 @media (min-width:900px){
   .js .navbtn{display:none}
@@ -790,6 +897,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
   .js .hero__h1 i{transform:none}
   .js .spec::after{transform:scaleX(1)}
   .stufe__bar{animation:none}
+  .gegen__karte--wir .vg-an{animation:none}
   .head{transform:none !important}
 }
 </style>
@@ -909,8 +1017,10 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
     </a>
     <nav class="nav" id="mainnav" aria-label="Hauptnavigation">
       <a href="#anwendung">Anwendung</a>
+      <a href="#vergleich">Vergleich</a>
       <a href="#technik">Technik</a>
       <a href="#preis">Set</a>
+      <a href="#vertrauen">Vertrauen</a>
       <a href="#fragen">Fragen</a>
     </nav>
     <div class="top__end">
@@ -1103,6 +1213,132 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
     </div>
   </section>
 
+  <hr class="rule">
+
+  <!-- ══════════════ VERGLEICH ══════════════ -->
+  <section class="bay" id="vergleich" aria-labelledby="h-vergleich">
+    <div class="shell">
+      <div class="sechead">
+        <p class="eyebrow rise">Vergleich</p>
+        <h2 class="display sechead__h rise" id="h-vergleich" style="--d:60ms">Nicht länger.<br>Anders geführt.</h2>
+        <p class="prose">
+          Der Bogen macht das Gerät nicht größer. Er dreht den Kopf zum Rücken hin,
+          während die Hand unten bleibt. Das ist der ganze Unterschied — und er
+          entscheidet darüber, an welche Stellen du allein herankommst.
+        </p>
+      </div>
+
+      <div class="gegen">
+        <div class="gegen__karte">
+          <div class="gegen__kopf">
+            <!-- Griff und Kopf in einer Achse. Bei 54 px trägt nur die Silhouette;
+                 eine gestrichelte Hilfsachse verschwindet in dieser Größe. -->
+            <svg class="gegen__form" viewBox="0 0 96 96" fill="none" aria-hidden="true">
+              <path d="M48 84 V40" stroke="currentColor" stroke-width="11" stroke-linecap="round"/>
+              <circle cx="48" cy="27" r="13" fill="currentColor"/>
+            </svg>
+            <div>
+              <p class="gegen__t">Gerade Bauform</p>
+              <p class="gegen__u">Kopf in der Verlängerung des Griffs</p>
+            </div>
+          </div>
+          <svg class="gegen__fig" viewBox="0 0 340 440" role="img" aria-labelledby="vgGT vgGD">
+            <title id="vgGT">Rücken mit gerader Bauform</title>
+            <desc id="vgGD">Rückenkarte von hinten. Vier Zonen sind erreichbar. Schulterblätter und mittlerer Rücken sind schraffiert: dorthin kommt die eigene Hand mit einem Griff in einer Achse nicht.</desc>
+            <defs>
+              <path id="vgGtorso" d="M200.0,0.0 C200.2,3.0 200.0,13.7 201.0,18.0 C202.0,22.3 202.7,23.3 206.0,26.0 C209.3,28.7 215.8,31.0 221.0,34.0 C226.2,37.0 232.2,40.7 237.0,44.0 C241.8,47.3 246.3,50.7 250.0,54.0 C253.7,57.3 256.5,60.3 259.0,64.0 C261.5,67.7 263.5,71.7 265.0,76.0 C266.5,80.3 267.7,84.3 268.0,90.0 C268.3,95.7 267.8,102.3 267.0,110.0 C266.2,117.7 264.5,127.0 263.0,136.0 C261.5,145.0 259.8,154.3 258.0,164.0 C256.2,173.7 254.0,184.0 252.0,194.0 C250.0,204.0 248.0,214.3 246.0,224.0 C244.0,233.7 241.7,243.3 240.0,252.0 C238.3,260.7 237.0,268.3 236.0,276.0 C235.0,283.7 234.2,290.7 234.0,298.0 C233.8,305.3 234.2,312.0 235.0,320.0 C235.8,328.0 237.7,337.0 239.0,346.0 C240.3,355.0 242.3,365.0 243.0,374.0 C243.7,383.0 243.7,392.3 243.0,400.0 C242.3,407.7 241.5,414.3 239.0,420.0 C236.5,425.7 229.8,431.7 228.0,434.0 L112.0,434.0 C110.2,431.7 103.5,425.7 101.0,420.0 C98.5,414.3 97.7,407.7 97.0,400.0 C96.3,392.3 96.3,383.0 97.0,374.0 C97.7,365.0 99.7,355.0 101.0,346.0 C102.3,337.0 104.2,328.0 105.0,320.0 C105.8,312.0 106.2,305.3 106.0,298.0 C105.8,290.7 105.0,283.7 104.0,276.0 C103.0,268.3 101.7,260.7 100.0,252.0 C98.3,243.3 96.0,233.7 94.0,224.0 C92.0,214.3 90.0,204.0 88.0,194.0 C86.0,184.0 83.8,173.7 82.0,164.0 C80.2,154.3 78.5,145.0 77.0,136.0 C75.5,127.0 73.8,117.7 73.0,110.0 C72.2,102.3 71.7,95.7 72.0,90.0 C72.3,84.3 73.5,80.3 75.0,76.0 C76.5,71.7 78.5,67.7 81.0,64.0 C83.5,60.3 86.3,57.3 90.0,54.0 C93.7,50.7 98.2,47.3 103.0,44.0 C107.8,40.7 113.8,37.0 119.0,34.0 C124.2,31.0 130.7,28.7 134.0,26.0 C137.3,23.3 138.0,22.3 139.0,18.0 C140.0,13.7 139.8,3.0 140.0,0.0 Z"/>
+              <clipPath id="vgGclip"><use href="#vgGtorso"/></clipPath>
+              <pattern id="vgGsperre" width="9" height="9" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+                <line x1="0" y1="0" x2="0" y2="9" stroke="var(--no)" stroke-width="2.4"/>
+              </pattern>
+            </defs>
+            <use href="#vgGtorso" class="z-body"/>
+            <g clip-path="url(#vgGclip)">
+                <rect class="z-band vg-an" style="--i:0" x="56" y="0" width="228" height="72"/>
+                <rect class="z-band vg-an" style="--i:1" x="56" y="72" width="228" height="68"/>
+                <rect class="z-band vg-aus" style="--i:2" x="56" y="140" width="228" height="84" fill="url(#vgGsperre)"/>
+                <rect class="z-band vg-aus" style="--i:3" x="56" y="224" width="228" height="68" fill="url(#vgGsperre)"/>
+                <rect class="z-band vg-an" style="--i:4" x="56" y="292" width="228" height="64"/>
+                <rect class="z-band vg-an" style="--i:5" x="56" y="356" width="228" height="80"/>
+              <path class="z-seam" d="M56 72h228M56 140h228M56 224h228M56 292h228M56 356h228"/>
+              <g class="z-spine" fill="none" stroke-linecap="round">
+                <path d="M170 36v396"/>
+                <path d="M159 62h22M157 97h26M155 132h30M155 167h30M156 202h28M158 237h24M159 272h22M160 307h20M161 342h18M162 377h16M163 410h14"/>
+              </g>
+            </g>
+            <use href="#vgGtorso" class="z-outline"/>
+          </svg>
+          <p class="gegen__text">
+            Der Kopf zeigt dorthin, wohin der Griff zeigt. Um damit zwischen die
+            Schulterblätter zu kommen, muss der Arm hinter den Kopf und das
+            Handgelenk nach hinten abknicken. Genau in der Haltung lässt sich
+            kein Druck mehr aufbauen.
+          </p>
+          <p class="gegen__bilanz">
+            <span class="gegen__aus">Zwei Zonen bleiben außer Reichweite:</span>
+            Schulterblätter und mittlerer Rücken.
+          </p>
+        </div>
+
+        <div class="gegen__karte gegen__karte--wir">
+          <div class="gegen__kopf">
+            <!-- Gleicher Kasten, gleiche Strichstärke, gleiche Grifflänge —
+                 nur setzt der Bogen den Kopf seitlich statt obendrauf. -->
+            <svg class="gegen__form" viewBox="0 0 96 96" fill="none" aria-hidden="true">
+              <path d="M30 84 C30 52 34 32 56 26" stroke="currentColor" stroke-width="11" stroke-linecap="round"/>
+              <circle cx="68" cy="23" r="13" fill="currentColor"/>
+            </svg>
+            <div>
+              <p class="gegen__t">NackenFrei Solo</p>
+              <p class="gegen__u">Kopf im Winkel zum Griff</p>
+            </div>
+          </div>
+          <svg class="gegen__fig" viewBox="0 0 340 440" role="img" aria-labelledby="vgBT vgBD">
+            <title id="vgBT">Rücken mit gebogenem Griff</title>
+            <desc id="vgBD">Dieselbe Rückenkarte. Alle sechs Zonen sind erreichbar, auch Schulterblätter und mittlerer Rücken.</desc>
+            <defs>
+              <path id="vgBtorso" d="M200.0,0.0 C200.2,3.0 200.0,13.7 201.0,18.0 C202.0,22.3 202.7,23.3 206.0,26.0 C209.3,28.7 215.8,31.0 221.0,34.0 C226.2,37.0 232.2,40.7 237.0,44.0 C241.8,47.3 246.3,50.7 250.0,54.0 C253.7,57.3 256.5,60.3 259.0,64.0 C261.5,67.7 263.5,71.7 265.0,76.0 C266.5,80.3 267.7,84.3 268.0,90.0 C268.3,95.7 267.8,102.3 267.0,110.0 C266.2,117.7 264.5,127.0 263.0,136.0 C261.5,145.0 259.8,154.3 258.0,164.0 C256.2,173.7 254.0,184.0 252.0,194.0 C250.0,204.0 248.0,214.3 246.0,224.0 C244.0,233.7 241.7,243.3 240.0,252.0 C238.3,260.7 237.0,268.3 236.0,276.0 C235.0,283.7 234.2,290.7 234.0,298.0 C233.8,305.3 234.2,312.0 235.0,320.0 C235.8,328.0 237.7,337.0 239.0,346.0 C240.3,355.0 242.3,365.0 243.0,374.0 C243.7,383.0 243.7,392.3 243.0,400.0 C242.3,407.7 241.5,414.3 239.0,420.0 C236.5,425.7 229.8,431.7 228.0,434.0 L112.0,434.0 C110.2,431.7 103.5,425.7 101.0,420.0 C98.5,414.3 97.7,407.7 97.0,400.0 C96.3,392.3 96.3,383.0 97.0,374.0 C97.7,365.0 99.7,355.0 101.0,346.0 C102.3,337.0 104.2,328.0 105.0,320.0 C105.8,312.0 106.2,305.3 106.0,298.0 C105.8,290.7 105.0,283.7 104.0,276.0 C103.0,268.3 101.7,260.7 100.0,252.0 C98.3,243.3 96.0,233.7 94.0,224.0 C92.0,214.3 90.0,204.0 88.0,194.0 C86.0,184.0 83.8,173.7 82.0,164.0 C80.2,154.3 78.5,145.0 77.0,136.0 C75.5,127.0 73.8,117.7 73.0,110.0 C72.2,102.3 71.7,95.7 72.0,90.0 C72.3,84.3 73.5,80.3 75.0,76.0 C76.5,71.7 78.5,67.7 81.0,64.0 C83.5,60.3 86.3,57.3 90.0,54.0 C93.7,50.7 98.2,47.3 103.0,44.0 C107.8,40.7 113.8,37.0 119.0,34.0 C124.2,31.0 130.7,28.7 134.0,26.0 C137.3,23.3 138.0,22.3 139.0,18.0 C140.0,13.7 139.8,3.0 140.0,0.0 Z"/>
+              <clipPath id="vgBclip"><use href="#vgBtorso"/></clipPath>
+            </defs>
+            <use href="#vgBtorso" class="z-body"/>
+            <g clip-path="url(#vgBclip)">
+                <rect class="z-band vg-an" style="--i:0" x="56" y="0" width="228" height="72"/>
+                <rect class="z-band vg-an" style="--i:1" x="56" y="72" width="228" height="68"/>
+                <rect class="z-band vg-an" style="--i:2" x="56" y="140" width="228" height="84"/>
+                <rect class="z-band vg-an" style="--i:3" x="56" y="224" width="228" height="68"/>
+                <rect class="z-band vg-an" style="--i:4" x="56" y="292" width="228" height="64"/>
+                <rect class="z-band vg-an" style="--i:5" x="56" y="356" width="228" height="80"/>
+              <path class="z-seam" d="M56 72h228M56 140h228M56 224h228M56 292h228M56 356h228"/>
+              <g class="z-spine" fill="none" stroke-linecap="round">
+                <path d="M170 36v396"/>
+                <path d="M159 62h22M157 97h26M155 132h30M155 167h30M156 202h28M158 237h24M159 272h22M160 307h20M161 342h18M162 377h16M163 410h14"/>
+              </g>
+            </g>
+            <use href="#vgBtorso" class="z-outline"/>
+          </svg>
+          <p class="gegen__text">
+            Der Bogen führt den Kopf über die Schulter und zurück zur Wirbelsäule.
+            Der Unterarm bleibt dabei unten, das Handgelenk gerade — die Kraft
+            kommt aus dem Arm statt aus einer verdrehten Hand.
+          </p>
+          <p class="gegen__bilanz">
+            <span class="gegen__an">Alle sechs Zonen erreichbar</span>, ohne dass
+            dir jemand hilft.
+          </p>
+        </div>
+      </div>
+
+      <p class="gegen__legende">
+        Gemeint ist die Reichweite am eigenen Rücken, ohne fremde Hilfe — nicht,
+        welcher Aufsatz wofür gedacht ist. Wer sehr bewegliche Schultern hat, kommt
+        auch mit gerader Bauform weiter als hier gezeichnet. Verglichen wird die
+        Bauform, kein bestimmtes Fabrikat.
+      </p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
   <!-- ══════════════ TECHNIK ══════════════ -->
   <section class="bay" id="technik" aria-labelledby="h-technik">
     <div class="shell">
@@ -1226,6 +1462,73 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
         </div>
       </div>
 
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ══════════════ VERTRAUEN ══════════════
+       Vier Punkte, die es sonst nirgends auf der Seite gibt. Die Kacheln neben
+       dem Kaufknopf (Set-Inhalt, Rückgabe, Gewährleistung, Versand) bleiben
+       dort stehen — hier wird nichts davon wiederholt. -->
+  <section class="bay" id="vertrauen" aria-labelledby="h-vertrauen">
+    <div class="shell">
+      <div class="sechead">
+        <p class="eyebrow rise">Vertrauen</p>
+        <h2 class="display sechead__h rise" id="h-vertrauen" style="--d:60ms">Was ich zusage.</h2>
+        <p class="prose">
+          Ich bin eine Person, kein Konzern. Umso wichtiger ist, dass du vor dem
+          Bestellen weißt, woran du bist — und was passiert, wenn etwas nicht passt.
+        </p>
+      </div>
+
+      <ul class="zusagen">
+        <li class="zusage">
+          <svg class="zusage__i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M4 4h11l5 5v11H4z"/><path d="M8 12h8M8 16h5"/></svg>
+          <div>
+            <h3 class="zusage__t">Widerrufsrecht</h3>
+            <p class="zusage__d">
+              Vierzehn Tage ab Erhalt, ohne dass du einen Grund nennen musst — das
+              ist dein gesetzliches Recht, nicht mein Entgegenkommen. Wie es geht,
+              steht in der <a href="SHOPIFY_WIDERRUF_URL">Widerrufsbelehrung</a>.
+              Meine dreißig Tage Rückgabe kommen obendrauf.
+            </p>
+          </div>
+        </li>
+        <li class="zusage">
+          <svg class="zusage__i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="2" y="6" width="20" height="13" rx="2"/><path d="M2 10h20"/><path d="M6 15h4"/></svg>
+          <div>
+            <h3 class="zusage__t">Bezahlung</h3>
+            <p class="zusage__d">
+              Die Kasse läuft über Shopify, verschlüsselt. Deine Karten- und
+              Kontodaten liegen dort, ich bekomme sie nie zu sehen.
+              ZAHLUNGSARTEN_EINTRAGEN
+            </p>
+          </div>
+        </li>
+        <li class="zusage">
+          <svg class="zusage__i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="12" cy="8.5" r="3.8"/><path d="M4.5 20a7.5 7.5 0 0 1 15 0"/></svg>
+          <div>
+            <h3 class="zusage__t">Wer dahintersteht</h3>
+            <p class="zusage__d">
+              Kein „unser Team“ — ich mache das allein. Name und ladungsfähige
+              Anschrift stehen im <a href="SHOPIFY_IMPRESSUM_URL">Impressum</a>,
+              und auf eine Mail antworte ich selbst.
+            </p>
+          </div>
+        </li>
+        <li class="zusage">
+          <!-- Preisschild statt Dollarzeichen: der Laden rechnet in Euro. --><svg class="zusage__i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M12.6 2.6H21v8.4l-9.6 9.6a1.6 1.6 0 0 1-2.3 0l-6.1-6.1a1.6 1.6 0 0 1 0-2.3Z"/><circle cx="17" cy="7" r="1.5"/></svg>
+          <div>
+            <h3 class="zusage__t">Der Preis ist der Preis</h3>
+            <p class="zusage__d">
+              99,99 € inklusive Mehrwertsteuer. An der Kasse kommt nichts dazu,
+              es gibt kein Abo, und die Aufsätze musst du nie nachkaufen — die
+              vier liegen bei.
+            </p>
+          </div>
+        </li>
+      </ul>
     </div>
   </section>
 
