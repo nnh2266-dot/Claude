@@ -451,6 +451,71 @@ pro Jahr. Die häufigere und meist einfachere Lösung ist aber eine deutsche UG.
 **Diese Frage gehört vor den Werbetest**, weil sie darüber entscheidet, ob überhaupt
 verkauft werden darf — nicht, wie gut es läuft.
 
+## 3b. Zeitplan: drei Wochen Vorlauf nutzen
+
+Rückkehr nach Deutschland in drei Wochen. Das ist kein Hindernis, sondern der bessere
+Ablauf: Fast die gesamte Phase 0 ist Schreibtischarbeit und von überall erledigbar.
+Was Deutschland wirklich braucht, ist genau eine Sache — **das Gerät in der Hand, um
+damit zu drehen.**
+
+Der entscheidende Zug ist deshalb, die Muster **jetzt** zu bestellen, an die deutsche
+Adresse, damit sie dort liegen, wenn du ankommst. Bei EU-Lager-Versand sind sie in
+einer Woche da; bei Direktversand aus China braucht es genau diese drei Wochen.
+
+### Woche 1 — noch vor Ort
+
+- [ ] Firmenfrage klären (Fall A oder B aus Abschnitt 3a). Alles Weitere hängt daran
+- [ ] 2–3 Lieferanten mit EU-Lager auswählen
+- [ ] **Von jedem ein Muster an die deutsche Adresse bestellen.** Der wichtigste
+      Einzelschritt dieser Woche — Laufzeit, Verpackung und Verarbeitung lassen sich
+      nicht recherchieren, nur messen
+- [ ] Registrierungen anstoßen: Stiftung EAR, Batterierecht, LUCID. Die EAR-Registrierung
+      kann mehrere Wochen dauern, deshalb zuerst
+- [ ] Rechtstexte beauftragen (Impressum, Datenschutz, Widerruf, AGB) — läuft online
+- [ ] CE-Konformitätserklärung beim Lieferanten anfordern
+
+### Woche 2 — noch vor Ort
+
+- [ ] Shopify aufsetzen, Produkt anlegen, Versand DE und AT
+- [ ] Die sechs Platzhalter in `index.html` ersetzen, Rückgabefrist auf 14 Tage,
+      Schweiz entfernen
+- [ ] Consent-Banner, Meta-Pixel und Conversions-API, Domain verifizieren
+- [ ] Meta Business Suite, Werbekonto, Zahlungsmethode
+- [ ] Instagram-Profil anlegen, Bio, Link
+- [ ] **Drehbuch und Shotlist** für den Drehtag schreiben — jede Einstellung der
+      Konzepte A bis E vorher festlegen. Ein durchgeplanter Drehtag bringt fünfzehn
+      Assets, ein improvisierter drei
+
+### Woche 3 — noch vor Ort
+
+- [ ] Muster sind angekommen: jemanden vor Ort bitten, das Paket zu fotografieren —
+      Verpackung, Beilagen, Rechnung? Danach entscheiden, welcher Lieferant es wird
+- [ ] Anzeigentexte und Bildunterschriften schreiben
+- [ ] Sozialbeweis-Abschnitt für die Landingpage vorbereiten (Aufbau steht, Inhalte
+      folgen nach den ersten Bestellungen)
+- [ ] Testkauf im eigenen Shop, Pixel-Ereignis prüfen
+
+### Woche 4 — angekommen
+
+- [ ] Gerät auspacken, ausprobieren, alle Angaben der Seite gegen das echte Produkt
+      prüfen: neun Stufen? 590 g? Laufzeit auf Stufe 1?
+- [ ] **Drehtag.** Konzepte A, B, C, D, E nach Shotlist
+- [ ] Schnitt, 12–15 Assets, davon 6 in 9:16 und 4:5 als Anzeigenmaterial
+
+### Woche 5 — organisch
+
+- [ ] 3–4 Beiträge veröffentlichen, Highlights füllen
+- [ ] Profil erreicht neun Beiträge und vier Highlights
+
+### Woche 6 — Anzeigen an
+
+- [ ] Kampagne starten wie in Phase 2 beschrieben, 25 €/Tag
+- [ ] Entscheidung nach Woche 9 gemäß Phase 3
+
+**Eine Warnung zur Wartezeit:** Drei Wochen Vorlauf verleiten dazu, die Webseite weiter
+zu polieren. Die Seite ist gut. Der Engpass ist das Produkt vor der Kamera, nicht das
+nächste Detail im CSS. Wenn in Woche 2 Zeit übrig ist, gehört sie in das Drehbuch.
+
 ## 4. Offen
 
 Für die Marge noch zu klären:
