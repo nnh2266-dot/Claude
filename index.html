@@ -566,6 +566,18 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
    markiert weiter die Schraffur. */
 .gegen__aus{color:var(--muted)}
 .gegen__an{color:var(--heat)}
+/* Die eigene Erfahrung trägt die linke Zeichnung — sie steht deshalb direkt
+   darunter und wird durch die Akzentkante als Aussage markiert, nicht als
+   weiterer Fließtext. */
+.gegen__ich{
+  margin:1.5rem 0 0;padding:0 0 0 clamp(1rem,2.5vw,1.5rem);
+  border-left:2px solid var(--accent);max-width:46rem;
+}
+.gegen__ich-q{margin:0;font-size:clamp(.98rem,1.6vw,1.1rem);line-height:1.55;color:var(--text)}
+.gegen__ich-w{
+  margin:.65rem 0 0;font-family:var(--font-mono);font-size:.7rem;
+  letter-spacing:.12em;text-transform:uppercase;color:var(--faint);
+}
 .gegen__legende{margin:1.15rem 0 0;font-size:.8rem;color:var(--faint);max-width:46rem}
 
 /* Erreichbar in Kupfer, ausser Reichweite schraffiert statt einfach blass —
@@ -699,6 +711,48 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .trust__i{width:22px;height:22px;flex:none;color:var(--accent);margin-top:.15rem}
 .trust__t{font-family:var(--font-mono);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;margin:0 0 .15rem}
 .trust__d{font-size:.82rem;color:var(--muted);margin:0}
+
+/* ============================================================
+   KAUFBALKEN
+   Unter 900 px ist der Kaufknopf in der Kopfleiste auf 58 px zusammengefallen
+   und zeigte nur den Betrag — das liest sich als Preisschild, nicht als Knopf.
+   Der Balken unten trägt ihn stattdessen, in voller Breite und ausgeschrieben.
+   ============================================================ */
+.kaufbar{
+  position:fixed;left:0;right:0;bottom:0;z-index:55;
+  background:color-mix(in srgb,var(--surface) 92%,transparent);
+  backdrop-filter:blur(14px) saturate(1.4);
+  border-top:1px solid var(--line);
+  /* Ohne das sitzt der Knopf auf dem iPhone unter dem Home-Balken. */
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+.kaufbar__in{
+  display:flex;align-items:center;gap:1rem;
+  max-width:var(--max);margin-inline:auto;
+  padding:.7rem var(--gutter);
+}
+.kaufbar__preis{display:flex;flex-direction:column;line-height:1.2;min-width:0}
+.kaufbar__p{font-family:var(--font-display);font-size:1.5rem;letter-spacing:.01em}
+.kaufbar__f{font-family:var(--font-mono);font-size:.63rem;letter-spacing:.05em;color:var(--faint);white-space:nowrap}
+.kaufbar__btn{margin-left:auto;flex:none}
+
+/* Ab 900 px trägt die Kopfleiste den vollen Knopf — dort wäre der Balken
+   doppelt und nähme dauerhaft Fläche weg. */
+@media (min-width:900px){
+  .kaufbar{display:none}
+}
+@media (max-width:899px){
+  /* Polster in Balkenhöhe, sonst deckt er die letzte Zeile der Fußzeile zu. */
+  body{padding-bottom:calc(4.9rem + env(safe-area-inset-bottom,0px))}
+  /* Der Preis-Knopf oben entfällt: der Balken ist die bessere Stelle dafür,
+     und der Kopf gewinnt bei 320 px den Platz, um den es dort ging. */
+  .top__end .btn--sm{display:none}
+}
+@media (max-width:420px){
+  .kaufbar__in{gap:.7rem;padding-inline:1rem}
+  .kaufbar__p{font-size:1.3rem}
+  .kaufbar__btn{padding:.62em .9em}
+}
 
 /* ============================================================
    FAQ
@@ -1244,7 +1298,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
           </div>
           <svg class="gegen__fig" viewBox="0 0 340 440" role="img" aria-labelledby="vgGT vgGD">
             <title id="vgGT">Rücken mit gerader Bauform</title>
-            <desc id="vgGD">Rückenkarte von hinten. Vier Zonen sind erreichbar. Schulterblätter und mittlerer Rücken sind schraffiert: dorthin kommt die eigene Hand mit einem Griff in einer Achse nicht.</desc>
+            <desc id="vgGD">Rückenkarte von hinten. Erreichbar bleiben nur Nacken, Taille und Gesäß. Der gesamte obere und mittlere Rücken ist schraffiert — Trapez, Schulterblätter und mittlerer Rücken: dorthin kommt die eigene Hand mit einem Griff in einer Achse nicht.</desc>
             <defs>
               <path id="vgGtorso" d="M200.0,0.0 C200.2,3.0 200.0,13.7 201.0,18.0 C202.0,22.3 202.7,23.3 206.0,26.0 C209.3,28.7 215.8,31.0 221.0,34.0 C226.2,37.0 232.2,40.7 237.0,44.0 C241.8,47.3 246.3,50.7 250.0,54.0 C253.7,57.3 256.5,60.3 259.0,64.0 C261.5,67.7 263.5,71.7 265.0,76.0 C266.5,80.3 267.7,84.3 268.0,90.0 C268.3,95.7 267.8,102.3 267.0,110.0 C266.2,117.7 264.5,127.0 263.0,136.0 C261.5,145.0 259.8,154.3 258.0,164.0 C256.2,173.7 254.0,184.0 252.0,194.0 C250.0,204.0 248.0,214.3 246.0,224.0 C244.0,233.7 241.7,243.3 240.0,252.0 C238.3,260.7 237.0,268.3 236.0,276.0 C235.0,283.7 234.2,290.7 234.0,298.0 C233.8,305.3 234.2,312.0 235.0,320.0 C235.8,328.0 237.7,337.0 239.0,346.0 C240.3,355.0 242.3,365.0 243.0,374.0 C243.7,383.0 243.7,392.3 243.0,400.0 C242.3,407.7 241.5,414.3 239.0,420.0 C236.5,425.7 229.8,431.7 228.0,434.0 L112.0,434.0 C110.2,431.7 103.5,425.7 101.0,420.0 C98.5,414.3 97.7,407.7 97.0,400.0 C96.3,392.3 96.3,383.0 97.0,374.0 C97.7,365.0 99.7,355.0 101.0,346.0 C102.3,337.0 104.2,328.0 105.0,320.0 C105.8,312.0 106.2,305.3 106.0,298.0 C105.8,290.7 105.0,283.7 104.0,276.0 C103.0,268.3 101.7,260.7 100.0,252.0 C98.3,243.3 96.0,233.7 94.0,224.0 C92.0,214.3 90.0,204.0 88.0,194.0 C86.0,184.0 83.8,173.7 82.0,164.0 C80.2,154.3 78.5,145.0 77.0,136.0 C75.5,127.0 73.8,117.7 73.0,110.0 C72.2,102.3 71.7,95.7 72.0,90.0 C72.3,84.3 73.5,80.3 75.0,76.0 C76.5,71.7 78.5,67.7 81.0,64.0 C83.5,60.3 86.3,57.3 90.0,54.0 C93.7,50.7 98.2,47.3 103.0,44.0 C107.8,40.7 113.8,37.0 119.0,34.0 C124.2,31.0 130.7,28.7 134.0,26.0 C137.3,23.3 138.0,22.3 139.0,18.0 C140.0,13.7 139.8,3.0 140.0,0.0 Z"/>
               <clipPath id="vgGclip"><use href="#vgGtorso"/></clipPath>
@@ -1255,7 +1309,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
             <use href="#vgGtorso" class="z-body"/>
             <g clip-path="url(#vgGclip)">
                 <rect class="z-band vg-an" style="--i:0" x="56" y="0" width="228" height="72"/>
-                <rect class="z-band vg-an" style="--i:1" x="56" y="72" width="228" height="68"/>
+                <rect class="z-band vg-aus" style="--i:1" x="56" y="72" width="228" height="68" fill="url(#vgGsperre)"/>
                 <rect class="z-band vg-aus" style="--i:2" x="56" y="140" width="228" height="84" fill="url(#vgGsperre)"/>
                 <rect class="z-band vg-aus" style="--i:3" x="56" y="224" width="228" height="68" fill="url(#vgGsperre)"/>
                 <rect class="z-band vg-an" style="--i:4" x="56" y="292" width="228" height="64"/>
@@ -1269,14 +1323,15 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
             <use href="#vgGtorso" class="z-outline"/>
           </svg>
           <p class="gegen__text">
-            Der Kopf zeigt dorthin, wohin der Griff zeigt. Um damit zwischen die
-            Schulterblätter zu kommen, muss der Arm hinter den Kopf und das
-            Handgelenk nach hinten abknicken. Genau in der Haltung lässt sich
-            kein Druck mehr aufbauen.
+            Der Kopf zeigt dorthin, wohin der Griff zeigt. An den Nacken kommst
+            du damit noch, weil er weit vorne sitzt. Alles darunter verlangt,
+            dass der Arm hinter den Kopf geht und das Handgelenk nach hinten
+            abknickt — in der Haltung lässt sich kein Druck mehr aufbauen. Ganz
+            unten geht wieder etwas, von der Seite her.
           </p>
           <p class="gegen__bilanz">
-            <span class="gegen__aus">Zwei Zonen bleiben außer Reichweite:</span>
-            Schulterblätter und mittlerer Rücken.
+            <span class="gegen__aus">Drei Zonen bleiben außer Reichweite:</span>
+            Trapez, Schulterblätter und mittlerer Rücken.
           </p>
         </div>
 
@@ -1328,11 +1383,25 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
         </div>
       </div>
 
+      <!-- Die Quelle der linken Zeichnung. Keine fremde Kundenstimme, sondern
+           der Betreiber über sein eigenes Ausprobieren mit einem anderen Gerät —
+           deshalb steht sie hier und nicht in einem Bewertungsblock. -->
+      <figure class="gegen__ich">
+        <blockquote class="gegen__ich-q">
+          Ich habe es selbst mit einer geraden Massagepistole versucht. An den
+          Nacken komme ich damit noch heran, an den oberen Rücken so gut wie
+          nicht — am Ende habe ich sie nur noch für die Beine benutzt. Deshalb
+          gibt es dieses Gerät.
+        </blockquote>
+        <figcaption class="gegen__ich-w">Aus eigener Erfahrung</figcaption>
+      </figure>
+
       <p class="gegen__legende">
         Gemeint ist die Reichweite am eigenen Rücken, ohne fremde Hilfe — nicht,
-        welcher Aufsatz wofür gedacht ist. Wer sehr bewegliche Schultern hat, kommt
-        auch mit gerader Bauform weiter als hier gezeichnet. Verglichen wird die
-        Bauform, kein bestimmtes Fabrikat.
+        welcher Aufsatz wofür gedacht ist. Wie weit du kommst, hängt an deiner
+        Schulterbeweglichkeit; wer sehr beweglich ist, erreicht mit gerader
+        Bauform mehr als hier gezeichnet. Verglichen wird die Bauform, kein
+        bestimmtes Fabrikat.
       </p>
     </div>
   </section>
@@ -1622,6 +1691,20 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
     </div>
   </div>
 </footer>
+
+<!-- Fester Kaufbalken für Telefon und Tablet. Steht nach der Fußzeile, damit er
+     in der Tabreihenfolge zuletzt kommt und nicht vor dem Inhalt liegt. Reines
+     CSS — ohne Skript ist er genauso da. Ab 900 px trägt der Knopf in der
+     Kopfleiste den Kauf, dort erscheint der Balken nicht. -->
+<div class="kaufbar" role="complementary" aria-label="Bestellen">
+  <div class="kaufbar__in">
+    <div class="kaufbar__preis">
+      <span class="kaufbar__p">99,99&nbsp;€</span>
+      <span class="kaufbar__f">Inkl. MwSt. · Versand frei</span>
+    </div>
+    <a class="btn btn--solid kaufbar__btn" href="SHOPIFY_PRODUKT_URL_EINTRAGEN">In den Warenkorb</a>
+  </div>
+</div>
 
 <script>
 (function(){
