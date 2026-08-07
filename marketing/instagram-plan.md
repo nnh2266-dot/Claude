@@ -65,33 +65,59 @@ Produkt — aber nur, wenn jede Anzeige mit der **Reichweite** öffnet und nie m
 Wort „Massagepistole". Sobald eine Anzeige wie eine generische Massagepistolen-Anzeige
 aussieht, wird sie wie eine behandelt: weggescrollt.
 
-Einkaufspreis 15,91 € pro Stück. Daraus die Rechnung:
+Ausgangslage: Einkaufspreis 15,91 € pro Stück, Versand kommt oben drauf. Verkauft wird
+über ein **deutsches Einzelunternehmen als Kleinunternehmer nach § 19 UStG** — es wird
+also keine Umsatzsteuer erhoben, und die vollen 99,99 € bleiben im Haus.
 
 ```
-Verkaufspreis brutto                  99,99 €
-./. MwSt. 19 %                        15,96 €
-= Nettoerlös                          84,03 €
+Einnahme je Verkauf (ohne USt.)       99,99 €
 
 ./. Wareneinsatz                      15,91 €
-./. Versand an den Kunden (DE)         5,00 €   Annahme
-./. Verpackung, Handling               1,00 €   Annahme
-./. Zahlungsgebühr (~2,3 % + 0,35 €)   2,65 €   Annahme
-= Rohertrag je Verkauf                59,47 €
+./. AliExpress-Versand                 6,00 €   Annahme — echten Wert einsetzen
+./. Zahlungsgebühr (~2,3 % + 0,35 €)   2,65 €
+= Rohertrag je Verkauf                75,43 €
 
-./. Retouren (7 % Quote, ~8 € Restkosten je Fall)
-= Deckungsbeitrag je Verkauf     rund 55 €
+./. Retouren (12 %, faktisch Totalverlust je Fall)
+= Deckungsbeitrag je Verkauf     rund 66 €
 ```
 
-Das ist eine **gute Marge** — 71 % auf den Nettoerlös. Daraus folgen die Zielwerte,
-mit denen die Kampagne gesteuert wird:
+**Aber die Werbung ist für dich 19 % teurer, als Meta anzeigt.** Meta Platforms Ireland
+rechnet im Reverse-Charge-Verfahren ab: Die Rechnung kommt ohne Umsatzsteuer, die
+deutsche Umsatzsteuer schuldest du selbst nach § 13b UStG — und als Kleinunternehmer
+kannst du sie **nicht als Vorsteuer abziehen.** Aus 700 € Werbebudget werden real 833 €.
+Dasselbe gilt für Shopify-Gebühren.
+
+Beides zusammen ergibt die Steuergrößen:
 
 | | |
 |---|---|
-| Maximaler CPA bei Break-even | **55 €** |
-| Break-even-ROAS (auf Bruttoumsatz, so weist Meta es aus) | **1,8** |
-| CPA für 20 € Gewinn je Stück | **35 €** |
-| ROAS für 20 € Gewinn je Stück | **2,9** |
+| Deckungsbeitrag je Verkauf | **66 €** |
+| Maximaler CPA laut Meta bei Break-even | **55 €** (weil 55 € × 1,19 = 66 €) |
+| Break-even-ROAS | **1,8** |
+| CPA für 20 € Gewinn je Stück | **39 €** |
+| ROAS für 20 € Gewinn je Stück | **2,6** |
 | Verkäufe, damit sich der 700-€-Test selbst trägt | **13** |
+
+Der Vorteil aus § 19 wird also zu einem guten Teil von der nicht abziehbaren Steuer auf
+die Werbeausgaben wieder aufgezehrt. Unterm Strich bleibt es beim selben
+Break-even-ROAS von 1,8 — der absolute Deckungsbeitrag je Verkauf ist mit 66 € aber
+deutlich höher, und das ist der Puffer, der die Sache tragfähig macht.
+
+### Der Haken an § 19: Er endet genau dann, wenn es funktioniert
+
+Die Kleinunternehmergrenze liegt bei **25.000 € Vorjahresumsatz** und 100.000 € im
+laufenden Jahr. Bei 99,99 € sind das **250 verkaufte Geräte**. Läuft die Kampagne mit
+drei Verkäufen am Tag, ist die Grenze in rund drei Monaten erreicht — und im Folgejahr
+gilt Regelbesteuerung.
+
+Dann sinkt die Einnahme je Verkauf von 99,99 € auf 84,03 €, der Deckungsbeitrag von
+66 € auf **rund 50 €**, und der maximale CPA von 55 € auf 42 €. Im Gegenzug wird die
+Vorsteuer abziehbar, die Werbung kostet also wieder das, was Meta anzeigt.
+
+**Konsequenz für die Planung:** Die Kampagne muss auch mit 50 € Deckungsbeitrag
+funktionieren. Wer sie so auslegt, dass sie nur unter § 19 trägt, baut etwas, das in
+dem Moment zusammenbricht, in dem es erfolgreich wird. Als Zielwert deshalb **CPA unter
+42 €** anpeilen, nicht unter 55 €.
 
 Realistisch in DE: CPM 9–15 €, Klickrate 1–2 %, also CPC um 1 €. Bei 2 % Kaufrate der
 Landingpage landet man bei einem CPA von rund 50 € — knapp im Plus. Bei 3 % bei rund

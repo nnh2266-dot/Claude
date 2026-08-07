@@ -12,15 +12,34 @@ Block 6–7 in Woche 3 · Block 8 nach Ankunft · Block 9–10 danach.
 
 ## Block 0 — Blockierende Entscheidungen
 
-Ohne diese drei Antworten kann der Rest schiefgehen.
+- [x] **Verkaufende Firma:** deutsches Einzelunternehmen mit angemeldetem Gewerbe.
+      Damit entfallen EU-Bevollmächtigter, EAR-Bevollmächtigter und IOSS-Vermittler —
+      die brauchst du nicht. Der Aufenthalt in Thailand ändert daran nichts.
+- [x] **Umsatzsteuer:** Kleinunternehmer nach § 19 UStG. Keine MwSt. auf Rechnungen,
+      kein Vorsteuerabzug. Deckungsbeitrag rund **66 € je Verkauf**.
 
-- [ ] **Verkauft eine EU-Firma?** Deutsches Gewerbe / UG / GmbH vorhanden — ja oder
-      nein? Bei nein: EU-Bevollmächtigten, EAR-Bevollmächtigten und IOSS-Vermittler
-      beauftragen oder eine deutsche UG gründen. *(dort)*
-- [ ] **Ist 15,91 € der Landepreis** oder der reine Warenwert? Fracht, Zoll und
-      Einfuhrabgaben dazurechnen und den Deckungsbeitrag neu bestimmen. *(dort)*
-- [ ] **Steuerberater terminieren** — Themen: Einfuhrumsatzsteuer, IOSS, Vorsteuerabzug
-      bei AliExpress-Einkäufen, Ansässigkeit bei längerem Auslandsaufenthalt. *(dort)*
+Daraus ergeben sich vier neue Punkte, die vorher nicht sichtbar waren:
+
+- [ ] **USt-IdNr. beim Bundeszentralamt für Steuern beantragen** — online, kostenlos,
+      auch als Kleinunternehmer. Ohne sie stellt dir Meta die Werbung mit irischer
+      Umsatzsteuer in Rechnung, die du nie wiedersiehst *(dort)*
+- [ ] **Reverse-Charge einplanen:** Meta Ireland und Shopify rechnen ohne Umsatzsteuer
+      ab, du schuldest die deutschen 19 % nach § 13b UStG selbst und kannst sie als
+      Kleinunternehmer **nicht abziehen**. Werbung kostet dich real 19 % mehr als
+      angezeigt — 700 € Budget sind 833 € *(dort)*
+- [ ] **Umsatzsteuer-Voranmeldung** für diese § 13b-Umsätze einrichten. Gilt auch für
+      Kleinunternehmer und wird regelmäßig übersehen *(dort)*
+- [ ] **§-19-Grenze im Blick behalten:** 25.000 € Vorjahresumsatz = **250 Geräte**.
+      Danach Regelbesteuerung, Deckungsbeitrag fällt auf rund 50 €. Die Kampagne muss
+      auch damit funktionieren *(laufend)*
+
+Offen bleibt:
+
+- [ ] **AliExpress-Versandkosten beziffern.** In deiner Bestellübersicht steht der
+      Betrag je Stück — einsetzen und den Deckungsbeitrag nachrechnen *(dort)*
+- [ ] **Steuerberater terminieren** — Agenda: USt-IdNr. und Reverse-Charge auf
+      Werbeausgaben, § 13b-Voranmeldung, Zeitpunkt des Wechsels in die
+      Regelbesteuerung, Ansässigkeit bei längerem Auslandsaufenthalt *(dort)*
 
 ---
 
@@ -86,6 +105,10 @@ Datei: `index.html` auf Branch `claude/side-landing-checklist-criteria-8rejna`.
 - [ ] `SHOPIFY_DATENSCHUTZ_URL` ersetzen *(dort)*
 - [ ] `SHOPIFY_WIDERRUF_URL` ersetzen *(dort)*
 - [ ] `LIEFERZEIT_EINTRAGEN` ersetzen — **2 Stellen** (FAQ und strukturierte Daten) *(dort)*
+- [ ] **„Inkl. MwSt." entfernen** (Zeile 1139) und durch den Pflichthinweis ersetzen:
+      „Gemäß § 19 UStG wird keine Umsatzsteuer berechnet." Als Kleinunternehmer MwSt.
+      auszuweisen ist ein unberechtigter Steuerausweis nach § 14c UStG — du schuldest
+      die ausgewiesene Steuer dann tatsächlich, und abmahnfähig ist es obendrein *(dort)*
 - [ ] **Rückgabefrist von 30 auf 14 Tage** ändern — an allen Stellen inklusive FAQ *(dort)*
 - [ ] **Schweiz entfernen** — Bestellabschnitt, Versandhinweis, FAQ, Zollhinweis *(dort)*
 - [ ] **Sozialbeweis-Abschnitt ergänzen** — Bewertungen und Kundenstimmen. Aufbau jetzt,
@@ -201,8 +224,8 @@ Wöchentlich prüfen:
 | Hook-Rate (3-Sek.-Views ÷ Impressionen) | > 25 % | Neue erste drei Sekunden, Rest behalten |
 | Ausgehende Klickrate | > 1,0 % | Versprechen zu schwach oder unklar |
 | Kaufrate der Seite | > 1,5 % | Anzeige und Seite versprechen Verschiedenes |
-| Kosten pro Kauf | < 50 € | Jeder Verkauf zahlt drauf |
-| ROAS | > 2,0 | Unter Break-even |
+| Kosten pro Kauf | < 42 € | Break-even liegt zwar bei 55 €, aber 42 € ist der Wert, der auch nach dem Wechsel in die Regelbesteuerung trägt |
+| ROAS | > 1,8 | Unter Break-even |
 | Meta-Kundenzufriedenheit | > 3,0 | Lieferzeit oder Produkt — sofort handeln |
 
 **Entscheidung nach vier Wochen und rund 700 € Budget:**
