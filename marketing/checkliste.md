@@ -66,8 +66,44 @@ weil Bearbeitungszeiten dranhängen.
 
 Der wichtigste Block dieser Woche. Die Muster brauchen die drei Wochen Laufzeit.
 
-- [ ] **2–3 Lieferanten mit EU-Lager** auswählen — Filter „Versand aus Deutschland /
-      Polen / Tschechien", oft über AliExpress Choice *(dort)*
+Der ursprüngliche AliExpress-Artikel liefert nicht nach Deutschland. Die Bauform ist
+aber eine gängige OEM-Konstruktion und von mehreren Quellen zu bekommen.
+
+**Suchbegriffe**, die diese Bauform treffen: „massage gun extended handle",
+„long handle massage gun", „curved handle back massage gun", „U-shaped extension
+handle massager". Deutsch: „Massagepistole mit Verlängerungsgriff".
+
+**Bezugsquellen, in dieser Reihenfolge prüfen:**
+
+- [ ] **CJdropshipping** — hat ein **Lager in Deutschland** mit 3–7 Tagen Laufzeit und
+      führt die meisten AliExpress-Designs. Erste Adresse, weil es die Anforderung aus
+      Abschnitt 3a direkt erfüllt *(dort)*
+- [ ] **BigBuy** (Spanien) und **Spocket** (EU-Händler) — europäische
+      Dropshipping-Anbieter mit Massagegeräte-Sortiment *(dort)*
+- [ ] **AliExpress erneut**, aber gefiltert auf andere Verkäufer derselben Bauform mit
+      Versand aus DE/PL/CZ *(dort)*
+- [ ] **Alibaba / Global Sources** für den OEM-Weg — dort gibt es die Konstruktion als
+      „extended-handle 4-head massage gun" mit CE-Listung und anpassbarem Griff.
+      Mindestabnahme beachten; erst nach erfolgreichem Test sinnvoll *(dort)*
+
+**Gegen `produktfoto.png` abgleichen** (Branch `claude/container-scroll-animation-3f0qs8`):
+
+- [ ] Fester Bogen, kein klappbarer oder verstellbarer Griff
+- [ ] Mattschwarz, **Chromring** zwischen Kopf und Aufsatz
+- [ ] Gerauteter Griffbereich, Bedienfeld mit `+`, Wellensymbol, `−`
+- [ ] **Vier** Aufsatztypen: Kugel (beschichtet), Flach, U-Form, Spitz
+
+> Der Widerspruch „vier oder fünf Aufsätze" ist damit geklärt: Das Foto zeigt vier
+> Typen, einer davon zusätzlich montiert. Die Seite hat recht, das Prompt-Dokument
+> zählt den montierten doppelt.
+
+- [ ] **Achtung Spezifikationen:** Verbreitete Fassungen dieser Bauform haben
+      **12 Geschwindigkeitsstufen**, deine Seite nennt **neun Kraftstufen**. Nach der
+      Lieferantenwahl müssen Technikabschnitt, Zählerwerte und FAQ an das echte Gerät
+      angepasst werden *(dort/DE)*
+- [ ] **Preisprüfung:** Dieselbe Bauform liegt auf Amazon.de und Kaufland zwischen
+      etwa 46 € und 73 €. Bevor 99,99 € bleiben, prüfen, was die nächstliegenden
+      Angebote kosten — siehe Notiz unten *(dort)*
 - [ ] **Von jedem ein Muster an die deutsche Heimatadresse bestellen** *(dort)*
 - [ ] Beim Lieferanten **vor** der Bestellung erfragen: keine Rechnung, kein Preis,
       kein Werbematerial im Paket *(dort)*
