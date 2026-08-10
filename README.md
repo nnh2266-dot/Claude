@@ -9,6 +9,8 @@ Alle Mahlzeiten und Fotos bleiben auf deinem Gerät.
 
 - **Foto → Nährwerte**: Mahlzeit fotografieren, Claude zerlegt sie in Komponenten und
   schätzt Menge, Kalorien, Eiweiß, Kohlenhydrate und Fett
+- **Zwei Wege dorthin**: automatisch über einen eigenen API-Key, oder kostenlos über
+  die Claude-App (siehe *Ohne API-Key ausprobieren*)
 - **Alles korrigierbar**: jede Zahl ist editierbar, ein Portionsregler skaliert die
   ganze Mahlzeit auf einmal (25–250 %)
 - **Tagesübersicht**: Kalorienring gegen dein Tagesziel, Makrobalken, Mahlzeiten nach
@@ -18,9 +20,32 @@ Alle Mahlzeiten und Fotos bleiben auf deinem Gerät.
 - **Ohne Internet nutzbar**: alles außer der Foto-Analyse funktioniert offline
 - **Von Hand eintragen**: die App ist auch ganz ohne API-Key voll benutzbar
 
+## Ohne API-Key ausprobieren
+
+Du musst nichts aufladen, um die App zu testen.
+
+**Alles außer der Foto-Analyse läuft sofort**: Mahlzeiten von Hand eintragen,
+Kalorienring, Makrobalken, Verlauf, Favoriten. Dafür reicht Schritt 2 und 3 der
+Einrichtung unten.
+
+**Die Foto-Analyse kannst du über dein bestehendes Claude-Abo testen.** Nach dem
+Fotografieren erscheint im Editor der Abschnitt *Über die Claude-App analysieren*
+mit drei Schritten:
+
+1. **Anweisung kopieren** — die App legt den fertigen Prompt in die Zwischenablage
+2. **Foto teilen oder speichern** — auf dem Handy öffnet sich der Teilen-Dialog, am
+   Rechner wird das Foto heruntergeladen
+3. In der Claude-App beides einfügen, abschicken, die Antwort **komplett kopieren**
+   und zurück ins Feld einfügen → *Werte übernehmen*
+
+Die Werte landen im selben Editor wie beim API-Weg und lassen sich genauso
+korrigieren. Kostet kein Guthaben, dafür pro Mahlzeit etwas Kopierarbeit — gut
+geeignet, um die Schätzqualität zu beurteilen, bevor du dich entscheidest. Der Weg
+bleibt auch später verfügbar, etwa wenn das Guthaben mal leer ist.
+
 ## Einrichten
 
-### 1. API-Key holen
+### 1. API-Key holen (optional)
 
 Die Foto-Analyse läuft über die Anthropic-API mit **deinem eigenen Schlüssel**.
 
@@ -66,11 +91,13 @@ Die URL im Handy-Browser öffnen, dann:
 Sie verhält sich danach wie eine normale App: eigenes Icon, kein Browser-Rahmen,
 startet auch ohne Netz.
 
-### 4. Key eintragen
+### 4. Key eintragen (falls du einen hast)
 
 In der App unten rechts auf **Mehr** → API-Key einfügen → **Key speichern** →
 **Verbindung testen**. Der Test kostet Bruchteile eines Cents und sagt dir sofort,
 ob Key und Guthaben funktionieren.
+
+Ohne Key nutzt du stattdessen den Weg über die Claude-App, siehe oben.
 
 ## Datenschutz und Sicherheit
 
@@ -102,7 +129,7 @@ css/app.css              Design-Tokens, Light/Dark, Komponenten
 js/app.js                Routing, gemeinsamer Zustand, Bootstrap
 js/store.js              IndexedDB: Mahlzeiten, Favoriten, Einstellungen
 js/nutrition.js          Summen, Datumslogik, Portionsskalierung
-js/claude.js             Anthropic-API: Prompt, JSON-Schema, Fehlerübersetzung
+js/claude.js             Anthropic-API + Chat-Brücke: Prompts, Schema, Fehlertexte
 js/image.js              Kamera-Foto verkleinern, Thumbnail, Base64
 js/ui.js                 DOM-Helfer
 js/views/                today · capture · history · favorites · settings
@@ -120,6 +147,8 @@ brauchen eine neue `CACHE_VERSION` in `sw.js`, damit Geräte die neue Fassung la
   genau diesen Fall — deshalb braucht es keinen Proxy-Server.
 - Die Antwort wird über **Structured Outputs** (`output_config.format`) erzwungen,
   ist also garantiert gültiges JSON nach festem Schema. Kein Parsen aus Fließtext.
+- Im Chat gibt es diese Garantie nicht, deshalb verlangt der Prompt dort reines JSON
+  und das Einlesen toleriert Code-Blöcke sowie erklärenden Text drumherum.
 - Fotos werden vor dem Senden auf 1024 px lange Kante verkleinert. Das halbiert
   ungefähr die Bildkosten, ohne die Erkennung von Essen spürbar zu verschlechtern.
 - Der Tag richtet sich nach dem **lokalen** Kalendertag, nicht nach UTC — sonst

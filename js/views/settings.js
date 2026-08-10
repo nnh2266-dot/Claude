@@ -117,6 +117,14 @@ function apiKeySection(ctx) {
       'und das Guthaben lädst du selbst auf (mindestens 5 $, das reicht für über 1.000 Fotos).'
     ),
     el(
+      'p',
+      { class: 'hint' },
+      'Kein Key, kein Guthaben? Dann erscheint beim Foto der Weg ',
+      el('strong', { text: '„Über die Claude-App analysieren"' }),
+      ' — du kopierst Prompt und Foto in die Claude-App und die Antwort zurück. ' +
+      'Mehr Handarbeit, kostet aber nichts extra und eignet sich gut zum Ausprobieren.'
+    ),
+    el(
       'div',
       { class: 'banner banner-info' },
       el('strong', { text: 'Wo der Key liegt' }),

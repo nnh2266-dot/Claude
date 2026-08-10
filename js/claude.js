@@ -201,6 +201,88 @@ function num(value) {
   return Number.isFinite(n) && n > 0 ? n : 0;
 }
 
+/** Bringt ein geparstes Ergebnis in die Form, die der Editor erwartet. */
+function normaliseResult(parsed) {
+  const items = (Array.isArray(parsed.items) ? parsed.items : []).map((it) => ({
+    name: String(it.name ?? '').trim() || 'Komponente',
+    grams: num(it.grams),
+    kcal: num(it.kcal),
+    protein: num(it.protein),
+    carbs: num(it.carbs),
+    fat: num(it.fat),
+  }));
+
+  return {
+    dish: String(parsed.dish ?? '').trim() || 'Mahlzeit',
+    confidence: ['hoch', 'mittel', 'niedrig'].includes(parsed.confidence) ? parsed.confidence : null,
+    note: String(parsed.note ?? '').trim(),
+    items,
+  };
+}
+
+/* ---------------- Chat-Brücke ----------------
+   Weg ohne API-Key: der Nutzer schickt Prompt und Foto selbst durch die
+   Claude-App und fügt die Antwort hier wieder ein. Kostet nichts extra, wenn
+   ohnehin ein Claude-Abo vorhanden ist — dafür etwas Kopierarbeit.
+------------------------------------------------ */
+
+/** Prompt zum Kopieren. Im Chat gibt es keine Structured Outputs, deshalb
+    muss das Format hier in Worten erzwungen werden. */
+export const CHAT_PROMPT = `${SYSTEM_PROMPT}
+
+Antworte AUSSCHLIESSLICH mit einem JSON-Objekt in genau diesem Format — ohne Einleitung, ohne Erklärung davor oder danach, ohne Code-Block:
+
+{"dish":"Name der Mahlzeit","confidence":"hoch","items":[{"name":"Komponente","grams":100,"kcal":150,"protein":5,"carbs":20,"fat":4}],"note":"kurzer Hinweis"}`;
+
+/**
+ * Liest die Antwort aus dem Chat. Toleriert Code-Blöcke und Text drumherum,
+ * weil ein Chatfenster kein garantiertes Format liefert.
+ *
+ * @returns {{dish: string, confidence: string, note: string, items: Array}}
+ */
+export function parseChatResponse(text) {
+  const raw = String(text ?? '').trim();
+  if (!raw) {
+    throw new ApiError('Da war nichts zum Einfügen.', { kind: 'parse' });
+  }
+
+  // Code-Block-Auszeichnung entfernen, falls Claude sie doch gesetzt hat.
+  let candidate = raw.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '').trim();
+
+  // Sonst das äußerste JSON-Objekt aus umgebendem Text herausschneiden.
+  if (!candidate.startsWith('{')) {
+    const start = candidate.indexOf('{');
+    const end = candidate.lastIndexOf('}');
+    if (start === -1 || end <= start) {
+      throw new ApiError(
+        'In der eingefügten Antwort steckt kein JSON. Kopiere die vollständige Antwort aus dem Chat.',
+        { kind: 'parse' }
+      );
+    }
+    candidate = candidate.slice(start, end + 1);
+  }
+
+  let parsed;
+  try {
+    parsed = JSON.parse(candidate);
+  } catch {
+    throw new ApiError(
+      'Die eingefügte Antwort ließ sich nicht lesen. Achte darauf, sie vollständig zu kopieren.',
+      { kind: 'parse' }
+    );
+  }
+
+  const result = normaliseResult(parsed);
+  if (!result.items.length) {
+    throw new ApiError(
+      'In der Antwort standen keine Komponenten. Frag im Chat nochmal nach dem JSON-Format.',
+      { kind: 'parse' }
+    );
+  }
+
+  return result;
+}
+
 /**
  * Analysiert ein Foto und liefert die geschätzten Nährwerte.
  *
@@ -215,7 +297,8 @@ function num(value) {
 export async function analysePhoto({ apiKey, model, base64, mediaType = 'image/jpeg', hint = '' }) {
   if (!apiKey) {
     throw new ApiError(
-      'Für die Foto-Analyse fehlt der API-Key. Du findest das Feld unter „Mehr".',
+      'Es ist kein API-Key hinterlegt. Entweder du trägst unter „Mehr" einen ein — ' +
+        'oder du nutzt gleich hier unten die Claude-App, das kostet kein Guthaben.',
       { kind: 'auth' }
     );
   }
@@ -266,19 +349,5 @@ export async function analysePhoto({ apiKey, model, base64, mediaType = 'image/j
     });
   }
 
-  const items = (Array.isArray(parsed.items) ? parsed.items : []).map((it) => ({
-    name: String(it.name ?? '').trim() || 'Komponente',
-    grams: num(it.grams),
-    kcal: num(it.kcal),
-    protein: num(it.protein),
-    carbs: num(it.carbs),
-    fat: num(it.fat),
-  }));
-
-  return {
-    dish: String(parsed.dish ?? '').trim() || 'Mahlzeit',
-    confidence: ['hoch', 'mittel', 'niedrig'].includes(parsed.confidence) ? parsed.confidence : null,
-    note: String(parsed.note ?? '').trim(),
-    items,
-  };
+  return normaliseResult(parsed);
 }

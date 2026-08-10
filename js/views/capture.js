@@ -14,7 +14,7 @@
 import { el, mount, viewHead, iconButton, field, toast, confirmAction } from '../ui.js';
 import { saveMeal, deleteMeal, saveFavorite } from '../store.js';
 import { processPhoto, blobToBase64 } from '../image.js';
-import { analysePhoto, ApiError } from '../claude.js';
+import { analysePhoto, parseChatResponse, CHAT_PROMPT, ApiError } from '../claude.js';
 import {
   MEAL_TYPES, sumItems, scaleItems, parseNumber, formatGram,
   localDateKey, newId,
@@ -282,6 +282,173 @@ function photoSection() {
   );
 }
 
+/* ---------------- Chat-Brücke ---------------- */
+
+/** Kopiert Text, mit Rückmeldung ob es geklappt hat. */
+async function copyToClipboard(text) {
+  try {
+    await navigator.clipboard.writeText(text);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/** Schickt das Foto per Teilen-Dialog an eine andere App, sonst als Download. */
+async function sharePhoto(blob) {
+  const file = new File([blob], 'mahlzeit.jpg', { type: 'image/jpeg' });
+
+  if (navigator.canShare?.({ files: [file] })) {
+    try {
+      await navigator.share({ files: [file], title: 'Mahlzeit' });
+      return 'geteilt';
+    } catch (err) {
+      // Abbruch durch den Nutzer ist kein Fehler.
+      if (err?.name === 'AbortError') return 'abgebrochen';
+    }
+  }
+
+  const url = URL.createObjectURL(blob);
+  const link = el('a', { href: url, download: 'mahlzeit.jpg' });
+  document.body.append(link);
+  link.click();
+  link.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+  return 'heruntergeladen';
+}
+
+/**
+ * Analyse ohne API-Key: Prompt und Foto wandern von Hand durch die Claude-App,
+ * die Antwort kommt hier wieder herein.
+ */
+function chatBridgeCard(ctx) {
+  const answer = el('textarea', {
+    class: 'input',
+    rows: '4',
+    placeholder: 'Antwort aus dem Chat hier einfügen …',
+  });
+
+  const status = el('p', { class: 'hint' });
+
+  // Eigene Referenz statt event.currentTarget: das ist nach einem await
+  // bereits null, weil die Ereignisauslieferung dann abgeschlossen ist.
+  const copyButton = el(
+    'button',
+    {
+      class: 'btn btn-block',
+      type: 'button',
+      onClick: async () => {
+        const ok = await copyToClipboard(CHAT_PROMPT);
+        status.textContent = ok
+          ? 'Prompt kopiert. Jetzt in der Claude-App einfügen.'
+          : 'Kopieren ging nicht — nimm den Prompt aus dem Feld unten.';
+        if (ok) copyButton.textContent = 'Prompt kopiert ✓';
+      },
+    },
+    'Prompt kopieren'
+  );
+
+  const step = (n, label, control) =>
+    el(
+      'div',
+      { class: 'bridge-step' },
+      el('span', { class: 'bridge-num', text: String(n) }),
+      el('div', { class: 'grow' }, el('p', { class: 'bridge-label', text: label }), control)
+    );
+
+  return el(
+    'div',
+    { class: 'card stack' },
+    el('h3', { class: 'bridge-title', text: 'Über die Claude-App analysieren' }),
+    el('p', { class: 'hint' },
+      'Kostet nichts extra, wenn du ohnehin ein Claude-Abo hast — dafür etwas ' +
+      'Kopierarbeit pro Mahlzeit. Gut geeignet, um die Schätzqualität auszuprobieren, ' +
+      'bevor du Guthaben auflädst.'),
+
+    step(1, 'Anweisung für Claude kopieren', copyButton),
+
+    step(2, 'Foto an die Claude-App geben',
+      el(
+        'button',
+        {
+          class: 'btn btn-block',
+          type: 'button',
+          onClick: async () => {
+            if (!session.photoBlob) return;
+            const how = await sharePhoto(session.photoBlob);
+            if (how === 'heruntergeladen') {
+              status.textContent = 'Foto gespeichert — häng es in der Claude-App an den Prompt.';
+            } else if (how === 'geteilt') {
+              status.textContent = 'Foto geteilt. Prompt dazu einfügen und abschicken.';
+            }
+          },
+        },
+        'Foto teilen oder speichern'
+      )),
+
+    step(3, 'Antwort zurück einfügen',
+      el(
+        'div',
+        { class: 'stack-sm' },
+        answer,
+        el(
+          'button',
+          {
+            class: 'btn btn-primary btn-block',
+            type: 'button',
+            onClick: () => {
+              try {
+                const result = parseChatResponse(answer.value);
+
+                session.name = result.dish;
+                session.items = result.items.map((it) => ({ ...it }));
+                session.baseItems = result.items.map((it) => ({ ...it }));
+                session.portion = 100;
+                session.confidence = result.confidence;
+                session.aiNote = result.note;
+                session.source = 'chat';
+                session.error = null;
+                session.showBridge = false;
+
+                toast('Werte übernommen.');
+                rerender(ctx);
+              } catch (err) {
+                status.innerHTML = '';
+                status.append(
+                  el('span', {
+                    style: { color: 'var(--danger)' },
+                    text: err instanceof ApiError ? err.message : 'Die Antwort ließ sich nicht lesen.',
+                  })
+                );
+              }
+            },
+          },
+          'Werte übernehmen'
+        )
+      )),
+
+    status,
+
+    el(
+      'details',
+      { class: 'bridge-details' },
+      el('summary', { text: 'Prompt zum Selbst-Markieren anzeigen' }),
+      el('textarea', { class: 'input mt-16', rows: '6', readonly: true }, CHAT_PROMPT)
+    ),
+
+    el('p', { class: 'hint' },
+      'Chat öffnen: ',
+      el('a', {
+        href: 'https://claude.ai/new',
+        target: '_blank',
+        rel: 'noopener',
+        style: { color: 'var(--kcal)', fontWeight: '600' },
+        text: 'claude.ai',
+      }),
+      ' — oder die Claude-App auf dem Handy.')
+  );
+}
+
 function portionSlider(ctx, root) {
   if (!session.items.length) return null;
 
@@ -402,6 +569,12 @@ async function handleDelete(ctx) {
 function draw(container, ctx) {
   const root = el('div');
 
+  // Ohne API-Key ist die Chat-Brücke der einzige Weg zur Analyse — dann
+  // steht sie gleich offen statt hinter einem weiteren Tipp.
+  if (session.showBridge === undefined) {
+    session.showBridge = !ctx.settings.apiKey;
+  }
+
   const head = viewHead(
     session.mode === 'edit' ? 'Bearbeiten' : 'Neue Mahlzeit',
     null,
@@ -453,6 +626,28 @@ function draw(container, ctx) {
         `${confidenceText}${session.aiNote} Prüf die Werte kurz und korrigiere, was nicht passt.`
       )
     );
+  }
+
+  // Chat-Brücke: Analyse ohne API-Key
+  if (session.photoBlob && !session.analysing) {
+    if (session.showBridge) {
+      blocks.push(chatBridgeCard(ctx));
+    } else {
+      blocks.push(
+        el(
+          'button',
+          {
+            class: 'btn btn-ghost btn-block',
+            type: 'button',
+            onClick: () => {
+              session.showBridge = true;
+              rerender(ctx);
+            },
+          },
+          'Stattdessen über die Claude-App analysieren'
+        )
+      );
+    }
   }
 
   // Name
