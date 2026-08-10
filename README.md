@@ -43,6 +43,13 @@ korrigieren. Kostet kein Guthaben, dafür pro Mahlzeit etwas Kopierarbeit — gu
 geeignet, um die Schätzqualität zu beurteilen, bevor du dich entscheidest. Der Weg
 bleibt auch später verfügbar, etwa wenn das Guthaben mal leer ist.
 
+**Der Wechsel zwischen den Apps ist abgesichert.** Handys werfen Web-Apps beim
+Wegwechseln gern aus dem Speicher, besonders iPhones. Die angefangene Mahlzeit wird
+deshalb samt Foto gesichert und beim Zurückkommen wiederhergestellt — du landest
+wieder genau im Editor, auch wenn die App zwischendurch komplett neu gestartet ist.
+Nach dem Speichern oder Verwerfen ist der Entwurf weg, und liegengebliebene
+Entwürfe werden nach zwölf Stunden verworfen.
+
 ## Einrichten
 
 ### 1. API-Key holen (optional)

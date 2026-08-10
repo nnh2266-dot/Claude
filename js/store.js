@@ -80,6 +80,25 @@ export async function setSetting(key, value) {
   await tx('settings', 'readwrite', (s) => s.put({ key, value }));
 }
 
+/* ---------------- Entwurf ----------------
+   Eine angefangene Mahlzeit überlebt damit einen Neustart der App. Wichtig für
+   den Weg über die Claude-App: beim Wechseln in eine andere App wird eine
+   Web-App oft aus dem Speicher geworfen und startet beim Zurückkommen neu.
+-------------------------------------------- */
+
+export async function saveDraft(draft) {
+  await setSetting('draft', draft);
+}
+
+export async function loadDraft() {
+  const row = await tx('settings', 'readonly', (s) => s.get('draft'));
+  return row ? row.value : null;
+}
+
+export async function clearStoredDraft() {
+  await tx('settings', 'readwrite', (s) => s.delete('draft'));
+}
+
 /* ---------------- Mahlzeiten ---------------- */
 
 /** Normalisiert eine Mahlzeit und rechnet die Summen frisch nach. */

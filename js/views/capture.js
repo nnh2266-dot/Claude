@@ -12,7 +12,9 @@
  */
 
 import { el, mount, viewHead, iconButton, field, toast, confirmAction } from '../ui.js';
-import { saveMeal, deleteMeal, saveFavorite } from '../store.js';
+import {
+  saveMeal, deleteMeal, saveFavorite, saveDraft, loadDraft, clearStoredDraft,
+} from '../store.js';
 import { processPhoto, blobToBase64 } from '../image.js';
 import { analysePhoto, parseChatResponse, CHAT_PROMPT, ApiError } from '../claude.js';
 import {
@@ -24,6 +26,70 @@ import {
 let session = null;
 
 let photoUrl = null;
+
+/**
+ * Nach dieser Zeit gilt ein liegengebliebener Entwurf als vergessen und wird
+ * beim Start verworfen, statt den Nutzer wieder in den Editor zu werfen.
+ */
+const DRAFT_MAX_AGE_MS = 12 * 60 * 60 * 1000;
+
+/* ---------------- Entwurf sichern und wiederherstellen ---------------- */
+
+/** Schreibt die laufende Bearbeitung weg. Blobs überstehen IndexedDB. */
+export async function persistSession() {
+  if (!session) return;
+  const { draftRef, ...rest } = session;
+  try {
+    await saveDraft({ ...rest, analysing: false, savedAt: Date.now() });
+  } catch (err) {
+    // Kein Grund, die Bearbeitung abzubrechen — nur die Absicherung fehlt dann.
+    console.warn('Entwurf konnte nicht gesichert werden:', err);
+  }
+}
+
+/** Verwirft den gesicherten Entwurf. */
+async function forgetStoredDraft() {
+  try {
+    await clearStoredDraft();
+  } catch {
+    /* Nicht kritisch. */
+  }
+}
+
+/**
+ * Holt einen gesicherten Entwurf zurück, etwa nachdem die App beim Wechsel in
+ * die Claude-App aus dem Speicher geflogen ist.
+ * @returns {Promise<boolean>} ob etwas wiederhergestellt wurde
+ */
+export async function restoreDraft(ctx) {
+  let stored;
+  try {
+    stored = await loadDraft();
+  } catch {
+    return false;
+  }
+
+  if (!stored) return false;
+
+  if (!Number.isFinite(stored.savedAt) || Date.now() - stored.savedAt > DRAFT_MAX_AGE_MS) {
+    await forgetStoredDraft();
+    return false;
+  }
+
+  const marker = { mode: stored.mode, restored: true };
+  session = { ...stored, analysing: false, draftRef: marker };
+  ctx.state.draft = marker;
+  ctx.state.date = stored.dateKey || ctx.state.date;
+  return true;
+}
+
+/** Beendet die Bearbeitung und räumt alles auf. */
+async function endSession(ctx) {
+  ctx.clearDraft();
+  session = null;
+  releasePhotoUrl();
+  await forgetStoredDraft();
+}
 
 function releasePhotoUrl() {
   if (photoUrl) {
@@ -133,6 +199,7 @@ export async function startFromFile(file, ctx) {
   // draftRef und übernimmt sie, statt neu zu bauen.
   session = buildSession(draft);
   session.draftRef = draft;
+  await persistSession();
 
   ctx.openEditor(draft);
   await runAnalysis(ctx);
@@ -177,6 +244,8 @@ async function runAnalysis(ctx) {
   } finally {
     session.analysing = false;
     rerender(ctx);
+    // Ab hier steckt Arbeit im Entwurf, die nicht verloren gehen darf.
+    await persistSession();
   }
 }
 
@@ -338,6 +407,7 @@ function chatBridgeCard(ctx) {
       class: 'btn btn-block',
       type: 'button',
       onClick: async () => {
+        await persistSession();
         const ok = await copyToClipboard(CHAT_PROMPT);
         status.textContent = ok
           ? 'Prompt kopiert. Jetzt in der Claude-App einfügen.'
@@ -375,6 +445,9 @@ function chatBridgeCard(ctx) {
           type: 'button',
           onClick: async () => {
             if (!session.photoBlob) return;
+            // Vor dem Wechsel in die andere App sichern — von dort kommt der
+            // Nutzer unter Umständen in eine neu gestartete Seite zurück.
+            await persistSession();
             const how = await sharePhoto(session.photoBlob);
             if (how === 'heruntergeladen') {
               status.textContent = 'Foto gespeichert — häng es in der Claude-App an den Prompt.';
@@ -412,6 +485,7 @@ function chatBridgeCard(ctx) {
 
                 toast('Werte übernommen.');
                 rerender(ctx);
+                persistSession();
               } catch (err) {
                 status.innerHTML = '';
                 status.append(
@@ -542,9 +616,7 @@ async function handleSave(ctx) {
 
     const wasFavorite = session.makeFavorite;
     ctx.state.date = session.dateKey;
-    ctx.clearDraft();
-    session = null;
-    releasePhotoUrl();
+    await endSession(ctx);
     ctx.go('today');
     toast(wasFavorite ? 'Gespeichert und als Favorit gemerkt.' : 'Mahlzeit gespeichert.');
   } catch (err) {
@@ -559,9 +631,7 @@ async function handleDelete(ctx) {
 
   await deleteMeal(session.id);
   ctx.state.date = session.dateKey;
-  ctx.clearDraft();
-  session = null;
-  releasePhotoUrl();
+  await endSession(ctx);
   ctx.go('today');
   toast('Mahlzeit gelöscht.');
 }
@@ -581,10 +651,9 @@ function draw(container, ctx) {
     session.id
       ? iconButton('trash', 'Mahlzeit löschen', () => handleDelete(ctx))
       : null,
-    iconButton('close', 'Abbrechen', () => {
-      ctx.clearDraft();
-      session = null;
-      releasePhotoUrl();
+    iconButton('close', 'Abbrechen', async () => {
+      if (session.items.length && !confirmAction('Diese Mahlzeit verwerfen?')) return;
+      await endSession(ctx);
       ctx.go('today');
     })
   );

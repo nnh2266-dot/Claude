@@ -7,7 +7,7 @@
  * CACHE_VERSION bei jeder Änderung an den App-Dateien erhöhen.
  */
 
-const CACHE_VERSION = 'naehrwerte-v2';
+const CACHE_VERSION = 'naehrwerte-v3';
 
 const APP_SHELL = [
   './',

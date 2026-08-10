@@ -149,8 +149,23 @@ async function start() {
     if (file) captureView.startFromFile(file, ctx);
   });
 
-  if (!location.hash) location.hash = '#/today';
+  // Beim Wechsel in eine andere App wird eine Web-App oft aus dem Speicher
+  // geworfen. Deshalb die angefangene Mahlzeit sichern, sobald die Seite in den
+  // Hintergrund geht — das ist der letzte verlässliche Moment dafür.
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) captureView.persistSession();
+  });
+  window.addEventListener('pagehide', () => captureView.persistSession());
+
+  // Kam die App aus so einem Neustart zurück? Dann den Entwurf zurückholen.
+  const restored = await captureView.restoreDraft(ctx);
+
+  if (restored) location.hash = '#/capture';
+  else if (!location.hash) location.hash = '#/today';
+
   await handleRoute();
+
+  if (restored) toast('Angefangene Mahlzeit wiederhergestellt.');
 
   if ('serviceWorker' in navigator && location.protocol !== 'file:') {
     // Registrierung nach dem ersten Rendern, damit sie nichts blockiert.
