@@ -80,13 +80,22 @@ leer, hört die Analyse einfach auf — es wird nichts automatisch abgebucht.
 Die App braucht HTTPS — sonst erlaubt der Browser keinen Kamerazugriff.
 GitHub Pages liefert das kostenlos:
 
-1. Im Repository auf **Settings → Pages**
+1. In **diesem** Repository auf **Settings → Pages**
 2. Unter *Source* **Deploy from a branch** wählen
-3. Branch auf `main` (oder den Branch mit diesem Code), Ordner `/ (root)`
+3. Branch `main`, Ordner `/ (root)`
 4. Speichern und ein paar Minuten warten
 
 Danach ist die App erreichbar unter
-`https://<dein-benutzername>.github.io/<repo-name>/`
+**https://nnh2266-dot.github.io/naehrwerte/**
+
+> **Warum ein eigenes Repository?** GitHub Pages bedient pro Repository nur einen
+> Branch. Im Repository `Claude` liegt bereits die Beckenboden-Trainings-App auf
+> `nnh2266-dot.github.io/Claude/`. Beide Apps in einem Repository würden sich
+> gegenseitig verdrängen — deshalb wohnt die Nährwerte-App hier für sich, und beide
+> laufen unabhängig voneinander.
+
+Die App funktioniert in einem Unterordner genauso wie auf einer Domain-Wurzel: alle
+Pfade sind relativ, und der Service Worker beansprucht nur seinen eigenen Unterordner.
 
 ### 3. Aufs Handy legen
 

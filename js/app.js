@@ -167,14 +167,28 @@ async function start() {
 
   if (restored) toast('Angefangene Mahlzeit wiederhergestellt.');
 
-  if ('serviceWorker' in navigator && location.protocol !== 'file:') {
-    // Registrierung nach dem ersten Rendern, damit sie nichts blockiert.
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('sw.js').catch(() => {
-        /* Offline-Betrieb ist optional — Fehler hier sind unkritisch. */
-      });
+  registerServiceWorker();
+}
+
+/**
+ * Service Worker anmelden. Der Pfad ist bewusst relativ ('./sw.js'), damit der
+ * Geltungsbereich im Unterordner bleibt, wenn die App nicht auf der Wurzel der
+ * Domain liegt — sonst würde sie einer Nachbar-App dazwischenfunken.
+ */
+function registerServiceWorker() {
+  if (!('serviceWorker' in navigator) || location.protocol === 'file:') return;
+
+  const register = () => {
+    navigator.serviceWorker.register('./sw.js').catch(() => {
+      /* Offline-Betrieb ist eine Zugabe — Fehler hier sind unkritisch. */
     });
-  }
+  };
+
+  // Nicht blind an 'load' hängen: bis hierher ist das Ereignis längst gefeuert,
+  // ein danach angemeldeter Listener liefe nie und der Offline-Betrieb fiele
+  // still aus.
+  if (document.readyState === 'complete') register();
+  else window.addEventListener('load', register, { once: true });
 }
 
 start().catch((err) => {
