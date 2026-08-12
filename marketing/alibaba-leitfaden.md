@@ -257,6 +257,58 @@ Antwort hieß es noch, der Motortyp müsse erst geklärt werden.
 **Eigene Verpackung: Mindestmenge 1.000 Stück zu 5,50 $** ≈ 5.060 €. Logo allein ab
 500 Stück. Beides außerhalb der Startphase — Branding kommt nach der Validierung.
 
+### Angebot ScPanda (Stand 12. August 2026)
+
+| Menge | Stückpreis | Warenwert |
+|---|---|---|
+| 50 | 5,66 $ ≈ 5,21 € | ≈ 260 € |
+| 100 | 5,66 $ ≈ 5,21 € | ≈ 521 € |
+| 500 | 5,20 $ ≈ 4,78 € | ≈ 2.392 € |
+
+Kein Mengensprung zwischen 50 und 100. Der genannte „Rabattpreis" von 5,66 $ liegt
+zudem über dem eigenen Listenpreis von 4,96 € ab 1 Stück — angesprochen.
+
+**Der entscheidende Vorteil liegt aber nicht im Preis:**
+
+| | ScPanda | Youmei |
+|---|---|---|
+| Logo ab | **100 Stück** | 500 Stück |
+| Eigene Verpackung ab | **300 Stück** | 1.000 Stück |
+| Farbkarton | **37 × 26,5 × 6 cm** | 39 × 27 × 9 cm |
+| Volumengewicht je Stück | **1,18 kg** | 1,90 kg |
+| Bruttogewicht | 856 g | 900 g |
+| Lautstärke | **< 40 dB** (Angabe) | nicht genannt |
+| Schlagzahl | **2.000–3.200 RPM** | nicht genannt |
+
+**Die Verpackung ist der stille Gewinner.** 1,18 kg gegen 1,90 kg Volumengewicht sind
+bei 100 Stück rund 72 kg weniger Frachtgewicht — grob 300 € Unterschied. Das kehrt
+Youmeis Preisvorteil von 79 € um. Landepreis überschlägig:
+
+```
+ScPanda 100 Stück   Ware 521 € + Fracht ~420 € + EUSt ~179 €  ≈ 1.120 €  → 11,20 €/Stk
+Youmei  100 Stück   Ware 442 € + Fracht ~550 € + EUSt ~188 €  ≈ 1.180 €  → 11,80 €/Stk
+```
+
+Schätzungen — die echten Frachtangebote entscheiden. Die Richtung ist aber die
+umgekehrte dessen, was die Stückpreise nahelegen.
+
+### Ein Widerspruch bei ScPanda
+
+Das Listing nennt einen **Bürstenmotor**, die Auskunft nennt **unter 40 dB**. Beides
+zusammen ist unplausibel: RENPHO braucht für „unter 45 dB" einen bürstenlosen Motor.
+Entweder ist der Motor doch bürstenlos und das Listing falsch, oder die 40 dB sind
+geschönt. Am Muster mit einer Schallpegel-App messen.
+
+### Zwei bestätigte Werte für die Landingpage
+
+**Bruttogewicht 856 g** — jetzt ausdrücklich als *gross weight* bezeichnet, bei Youmei
+900 g brutto. Damit ist das Gerät allein deutlich leichter, und **die 590 g der
+Landingpage sind plausibel.**
+
+**2.000–3.200 RPM.** Beurer bewirbt beim MG 180 für 117 € „bis zu 3.200 Impulse pro
+Minute" — dieselbe Zahl. Das ist ein brauchbares Argument für die Seite und für den
+Vergleichsabschnitt, sobald es am Muster bestätigt ist.
+
 ### Das Frachtrisiko: Volumengewicht
 
 Die Einzelverpackung misst **39 × 27 × 9 cm** = 9.477 cm³. Daraus ergibt sich ein
