@@ -94,9 +94,32 @@ Das ist der Punkt, an dem die meisten Erstimporteure später Ärger bekommen.
       deine — auf dem Produkt oder der Verpackung stehen. Frag, ob sie das aufdrucken
       können. Sonst musst du in Deutschland etikettieren
 
-Viele CE-Zeichen auf Alibaba sind reine Behauptung. Prüfe, ob das Dokument eine
-benannte Stelle mit Nummer nennt und ob die Modellbezeichnung übereinstimmt. **„Wir
-haben CE" ohne Dokument heißt: kein CE.**
+Viele CE-Zeichen auf Alibaba sind reine Behauptung. **„Wir haben CE" ohne Dokument
+heißt: kein CE.**
+
+#### So prüfst du die Dokumente, wenn sie kommen
+
+Eine **CE-Konformitätserklärung** ist kein Zertifikat einer Prüfstelle, sondern eine
+Erklärung des Herstellers. Sie muss enthalten:
+
+- [ ] Die **exakte Modellbezeichnung** — GB-868 bzw. H8119-G3, nicht „massage gun series"
+- [ ] Hersteller mit vollständiger Anschrift
+- [ ] Die angewandten Rechtsakte, hier mindestens **EMV-Richtlinie 2014/30/EU** und
+      **RoHS-Richtlinie 2011/65/EU**
+- [ ] Die angewandten harmonisierten Normen, typisch **EN 55014-1**, **EN 55014-2**,
+      **EN IEC 63000**
+- [ ] Ort, Datum, Unterschrift, Name und Funktion des Unterzeichners
+
+Typische Wertlosigkeiten: ein „CE Certificate" eines beliebigen Labors ohne
+Konformitätserklärung; ein Dokument, das ein anderes Modell nennt; ein Scan ohne
+Unterschrift; ein Datum, das vor der Produkteinführung liegt.
+
+Beim **UN38.3-Prüfbericht** gehört seit 2020 zusätzlich eine **Test Summary** dazu, die
+Zelle und Batterie benennt und die Prüfungen T1 bis T8 ausweist. Ohne sie nimmt keine
+Airline die Sendung an.
+
+Und: Die Erklärung des Herstellers entbindet dich nicht. Als Importeur musst du die
+technischen Unterlagen zehn Jahre vorhalten und selbst prüfen, ob sie tragen.
 
 ---
 
