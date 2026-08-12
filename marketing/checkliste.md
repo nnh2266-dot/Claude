@@ -6,8 +6,37 @@ Einkauf und Papiere in `alibaba-leitfaden.md`.
 
 `(dort)` = von Thailand aus erledigbar · `(DE)` = braucht die Rückkehr
 
-**Grobe Zuordnung:** Block 0–3 in Woche 1 · Block 4–6 in Woche 2 ·
-Block 7–8 in Woche 3 · Block 9–10 nach Ankunft der Ware · Block 11–12 danach.
+## Zwei Stränge — was das Muster blockiert und was nicht
+
+Das Muster ist die längste Leitung im Plan: drei Wochen bis Deutschland, danach
+Sammelbestellung mit Produktion und Luftfracht. Bis dahin steht nichts still.
+
+**Strang A — läuft ohne Muster, ab sofort:**
+
+| Was | Warum jetzt |
+|---|---|
+| **Muster bei beiden bestellen** (Block 2) | Startet die drei Wochen. Jeder Tag Verzögerung hier ist ein Tag Verzögerung am Launch |
+| **Registrierungen** (Block 1) | Stiftung EAR, LUCID, Batterieregister — Bearbeitungszeiten, die niemand beschleunigt |
+| **USt-IdNr. und EORI** (Block 0, 3) | Kostenlos, online, aber ohne sie zahlst du Meta irische Steuer und bekommst die Ware nicht durch den Zoll |
+| **Verkaufspreis entscheiden** (Block 0) | Trägt jede weitere Zahl. Braucht keine Ware, nur eine Entscheidung |
+| **Rechtstexte beauftragen** (Block 1) | Vorlaufzeit beim Dienstleister |
+| **Shop aufsetzen** (Block 4) | Vollständig unabhängig vom Gerät |
+| **Landingpage-Platzhalter** (Block 5) | Bis auf die technischen Angaben alles ersetzbar |
+| **Meta-Konten, Pixel, CAPI, Testkauf** (Block 6) | Braucht den Shop, nicht das Produkt |
+| **Creatives erzeugen** (Block 7) | Startframe ist `produktfoto.png`, kein Foto vom echten Gerät nötig |
+| **Instagram aufbauen** (Block 8) | Neun Beiträge und vier Highlights brauchen Vorlauf — das Stopp-Schild vor der ersten Anzeige |
+
+**Strang B — wartet zwingend auf das Muster:**
+
+Lieferantenentscheidung und Sammelbestellung (Block 2, 3) · alle Messungen
+(Block 9) · die technischen Angaben auf der Seite: Lautstärke, Laufzeit, Gewicht,
+Anzahl Aufsätze (Block 5) · Lager und Versand (Block 10) · Kampagnenstart (Block 11).
+
+Wenn Strang A vollständig abgearbeitet ist, wenn die Ware ankommt, steht zwischen
+Wareneingang und erster Anzeige nur noch ein Nachmittag Messen und Korrigieren.
+
+**Grobe Zuordnung:** Block 0–2 sofort · Block 1, 3–6 in Woche 1–2 ·
+Block 7–8 in Woche 2–3 · Block 9–10 nach Ankunft · Block 11–12 danach.
 
 > **Stand 12. August 2026 — was sich geändert hat:** Der Weg ist nicht mehr
 > Dropshipping, sondern **Eigenimport von 100 Stück** über Alibaba. Damit entfallen
