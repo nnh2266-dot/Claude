@@ -213,6 +213,52 @@ Angabe „USB, 5 V–1 A" auf der Landingpage ist damit stimmig.**
 Rechnerisch: 1200 mAh × 7,4 V = 8,9 Wh, bei 20 W also rund 27 Minuten. Die
 Herstellerangabe ist unplausibel, die Seitenangabe die realistischere. Nachmessen.
 
+### Angebot Youmei (Stand 12. August 2026)
+
+Preise ab Werk, **Fracht noch nicht enthalten** — der DDP-Preis steht weiterhin aus.
+
+| Menge | Stückpreis | Warenwert |
+|---|---|---|
+| 50 | 5,95 $ ≈ 5,47 € | ≈ 274 € |
+| **100** | **4,80 $ ≈ 4,42 €** | **≈ 442 €** |
+| 500 | 4,70 $ ≈ 4,32 € | ≈ 2.162 € |
+
+**Der Sprung von 50 auf 100 Stück kostet nur 168 € mehr**, weil der Stückpreis um 19 %
+fällt. Bei 50 Stück gibt es faktisch keinen Mengenrabatt. 100 ist die sinnvolle
+Bestellmenge, sobald das Muster überzeugt.
+
+**Motor: bürstenlos** — laut zweiter Antwort. Das ist die entscheidende Auskunft, weil
+sie den Qualitätseinwand gegenüber RENPHO auflöst. Am Muster gegenprüfen: In der ersten
+Antwort hieß es noch, der Motortyp müsse erst geklärt werden.
+
+**Eigene Verpackung: Mindestmenge 1.000 Stück zu 5,50 $** ≈ 5.060 €. Logo allein ab
+500 Stück. Beides außerhalb der Startphase — Branding kommt nach der Validierung.
+
+### Das Frachtrisiko: Volumengewicht
+
+Die Einzelverpackung misst **39 × 27 × 9 cm** = 9.477 cm³. Daraus ergibt sich ein
+**Volumengewicht von 1,90 kg je Stück** — mehr als das doppelte tatsächliche Gewicht
+von 0,9 kg. Luftfracht wird nach dem höheren der beiden Werte berechnet.
+
+Bei 100 Stück in Einzelkartons wären das 190 kg Frachtgewicht und damit eine
+Frachtrechnung **über dem Warenwert**. Verschickt der Hersteller dagegen in
+Umkartons zu 10–20 Stück, sinkt das Volumengewicht auf etwa 1,1 kg je Stück.
+
+**Deshalb unbedingt erfragen: Stück je Umkarton und Maße des Umkartons.** Das ist bei
+dieser Warengruppe der größte einzelne Kostenhebel.
+
+Überschlag für 100 Stück mit Umkartons:
+
+```
+Ware                                   442 €
+Luftfracht (~110 kg Frachtgewicht)    ~500 €   Schätzung
+Einfuhrumsatzsteuer 19 %, nicht erstattbar  ~179 €
+= rund 1.120 €   →   ca. 11,20 € je Stück
+```
+
+Bei 79 € Verkaufspreis bleiben damit rund **58 € Deckungsbeitrag**, maximaler CPA 48 €,
+Break-even-ROAS 1,63.
+
 ### Ein Risiko, das im Listing steht
 
 ScPanda gibt **Bürstenmotor** an; Youmei nennt den Motortyp gar nicht. RENPHO wirbt bei
