@@ -15,8 +15,9 @@ Sammelbestellung mit Produktion und Luftfracht. Bis dahin steht nichts still.
 
 | Was | Warum jetzt |
 |---|---|
+| **Stiftung EAR anstoßen** (Block 1) | **Die längste Leitung im ganzen Projekt: 6–8 Wochen, teils über drei Monate.** Ohne WEEE-Nummer darf nicht verkauft und nicht angeboten werden — sie datiert den Launch, nicht das Muster. Siehe `registrierungen.md` |
 | **Muster bei beiden bestellen** (Block 2) | Startet die drei Wochen. Jeder Tag Verzögerung hier ist ein Tag Verzögerung am Launch |
-| **Registrierungen** (Block 1) | Stiftung EAR, LUCID, Batterieregister — Bearbeitungszeiten, die niemand beschleunigt |
+| **Übrige Registrierungen** (Block 1) | LUCID, Batterieregister, USt-IdNr., EORI — Bearbeitungszeiten, die niemand beschleunigt |
 | **USt-IdNr. und EORI** (Block 0, 3) | Kostenlos, online, aber ohne sie zahlst du Meta irische Steuer und bekommst die Ware nicht durch den Zoll |
 | **Verkaufspreis entscheiden** (Block 0) | Trägt jede weitere Zahl. Braucht keine Ware, nur eine Entscheidung |
 | **Rechtstexte beauftragen** (Block 1) | Vorlaufzeit beim Dienstleister |
@@ -132,14 +133,28 @@ ersten Anzeige, weil Muster und Instagram-Aufbau ohnehin drei Wochen brauchen.
 
 ## Block 1 — Recht und Registrierungen
 
-Alles vor dem ersten Verkauf, nicht vor der ersten Anzeige. Zuerst anstoßen,
-weil Bearbeitungszeiten dranhängen.
+> **Korrektur vom 12. August 2026:** Dieser Block hieß bisher „vor dem ersten Verkauf,
+> nicht vor der ersten Anzeige". Das war falsch. Die **EAR-Registrierung dauert 6–8
+> Wochen, in schlechten Zeiten über drei Monate**, und ohne WEEE-Nummer darf das Gerät
+> weder verkauft noch **angeboten** werden. Damit ist nicht das Muster die längste
+> Leitung des Projekts, sondern dieser Block. Einzelheiten in `registrierungen.md`.
 
-- [ ] **Stiftung EAR / ElektroG** — Registrierung als Hersteller. Dauert am längsten,
-      deshalb zuerst *(dort)*
-- [ ] **Batterierecht** — Batterien registrieren, Rücknahmepflicht klären *(dort)*
+Reihenfolge, Dauer, Kosten und benötigte Daten stehen vollständig in
+**`registrierungen.md`**. Hier nur die Haken.
+
+- [ ] **Stiftung EAR / ElektroG** — Registrierung als Hersteller, Marke NackenFrei,
+      Kategorie 5 (Kleingeräte). **Heute anstoßen** — 6–8 Wochen, blockiert Verkauf
+      *und* Angebot *(dort)*
+- [ ] **Insolvenzsichere Garantie stellen** — für B2C-Geräte laufend Pflicht, sonst
+      keine Registrierung. Für 100 Geräte (~90 kg) ist ein verpfändetes Sparbuch der
+      billigste Weg; kollektive Garantiesysteme ab rund 100 €/Jahr *(dort)*
+- [ ] **Batterieregistrierung nach BattDG** — Gerätebatterie, Marke NackenFrei, im
+      selben EAR-Portal. Das BattDG hat zum 7. Oktober 2025 das alte BattG abgelöst,
+      ältere Anleitungen im Netz sind überholt *(dort)*
+- [ ] **Rücknahmesystem für Altbatterien** klären *(dort)*
 - [ ] **VerpackG** — LUCID-Registrierung und Beteiligung an einem dualen System.
-      Betrifft jetzt auch deine **Versandverpackung**, nicht nur die Produktverpackung *(dort)*
+      Betrifft **beide** Verpackungen: die Produktverpackung aus China und deine
+      Versandverpackung. Ohne LUCID-Nummer ebenfalls Vertriebsverbot *(dort)*
 - [ ] **GPSR** — verantwortliche Person in der EU benennen; **Name und Anschrift des
       Importeurs müssen auf Produkt oder Verpackung stehen**. Beim Lieferanten erfragen,
       ob er das aufdruckt — sonst musst du in Deutschland etikettieren *(dort)*
