@@ -156,6 +156,56 @@ Bei diesen Punkten brichst du ab, ohne zu diskutieren:
 
 ---
 
+## Geprüfte Lieferanten (Stand 12. August 2026)
+
+Beide führen exakt die Bauform aus `produktfoto.png`.
+
+| | **Shenzhen ScPanda — GB-868** | Zhejiang Xingou — XO-8817 |
+|---|---|---|
+| Preis ab 1 Stück | **4,96 €** | 6,13 € (ab 5 Stück) |
+| Mindestmenge | **1** | 5 |
+| Staffeln | 4,56 € ab 200 · 4,21 € ab 1.000 · 3,50 € ab 10.000 | 5,69 € ab 1.000 · 5,26 € ab 5.000 |
+| Versand nach DE | **kostenlos**, garantiert 23. Aug – 7. Sept | 35 Tage |
+| Jahre auf Alibaba | **7** | 3 |
+| Bewertungen | **962** (4,5) | 41 (4,6) |
+| Positive Bewertungen | **89,6 %** | 85,7 % |
+| Pünktliche Versandquote | 94,4 % | 100 % |
+| Online-Umsatz | **590.000 US$** | nicht ausgewiesen |
+| Reaktionszeit | **≤ 2 h** | ≤ 4 h |
+| Hauptmärkte | **TR 49 %, PL 23 %, US, DE** | nicht ausgewiesen |
+| Sitz | Shenzhen, Guangdong | Wenzhou, Zhejiang |
+
+**ScPanda ist der bessere Lieferant.** 962 Bewertungen gegen 41 ist der Unterschied
+zwischen Aussage und Zufall; sieben Jahre gegen drei ebenso. Die Hauptmärkte Polen und
+Deutschland sprechen dafür, dass EU-taugliche Papiere tatsächlich existieren.
+
+### Was die Listings bestätigen
+
+Beide nennen 34 × 25 × 5 cm, vier Massageköpfe, ABS und Silikon, 1200 mAh, Schwarz
+lieferbar, eigenes Logo und eigene Verpackung möglich. Xingou nennt zusätzlich
+**9 Geschwindigkeitsstufen, 20 Watt, 7,4 V** — damit sind die neun Stufen und die
+20 Watt auf der Landingpage belegt.
+
+### Zwei offene Widersprüche zur Landingpage
+
+**Gewicht.** ScPanda nennt **856 g**, die Seite nennt **590 g**. Möglicherweise meint
+das eine das Gesamtpaket mit Aufsätzen, das andere das nackte Gerät. Bis das geklärt
+ist, sind die 590 g auf der Seite unbelegt — und sie stehen an drei Stellen.
+
+**Laufzeit.** ScPanda nennt **2–3 Stunden**, die Seite nennt **30–35 Minuten auf
+Stufe 1**. Rechnerisch: 1200 mAh × 7,4 V = 8,9 Wh; bei 20 W Nennleistung sind das
+rund 27 Minuten. Die Herstellerangabe ist unplausibel, die Seitenangabe die
+realistischere. Am Muster nachmessen.
+
+### Ein Risiko, das im Listing steht
+
+ScPanda gibt **Bürstenmotor** an. RENPHO wirbt bei 40 € mit bürstenlosem Motor unter
+45 dB. Bürstenmotoren sind lauter und verschleißen schneller — bei zwei Jahren
+Gewährleistung ist das dein Risiko, und Lautstärke ist das häufigste Retourenargument
+dieser Warengruppe. Nach einer bürstenlosen Variante desselben Gehäuses fragen.
+
+---
+
 ## Reihenfolge
 
 1. 3–5 Lieferanten anschreiben, gleiche Fragen (Vorlage steht im Chatverlauf)

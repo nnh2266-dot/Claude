@@ -215,10 +215,19 @@ Produktvideos per Image-to-Video nach `nackenfrei-video-prompt.md`
 Alles gegen das echte Gerät, nicht gegen das Datenblatt.
 
 - [ ] Auspacken und **Laufzeit der Lieferung** notieren *(DE)*
-- [ ] **Neun Kraftstufen** vorhanden? *(DE)*
-- [ ] **Gewicht 590 g** nachwiegen *(DE)*
+- [ ] ~~Neun Kraftstufen~~ — **durch das Xingou-Listing belegt (9 Geschwindigkeiten,
+      20 Watt, 7,4 V).** Trotzdem am Gerät gegenprüfen *(DE)*
+- [ ] **Gewicht nachwiegen — Konflikt.** Die Seite sagt 590 g an drei Stellen, ScPanda
+      nennt 856 g. Gerät ohne Zubehör wiegen, dann mit einem Aufsatz, dann das
+      Gesamtpaket. Danach die Seite korrigieren *(DE)*
 - [ ] **Akku 1200 mAh**, Ladung USB 5 V *(DE)*
-- [ ] **Laufzeit auf Stufe 1: 30–35 Minuten** messen *(DE)*
+- [ ] **Laufzeit auf Stufe 1 messen — Konflikt.** Die Seite sagt 30–35 Minuten,
+      ScPanda wirbt mit 2–3 Stunden. Rechnerisch (8,9 Wh bei 20 W) sind rund
+      27 Minuten plausibel, die Herstellerangabe also nicht. Auf Stufe 1 **und**
+      Stufe 9 messen *(DE)*
+- [ ] **Lautstärke in dB messen.** Der Motor ist ein Bürstenmotor; die Konkurrenz wirbt
+      mit bürstenlos unter 45 dB. Lautstärke ist der häufigste Retourengrund dieser
+      Warengruppe und steht bisher nirgends auf der Seite *(DE)*
 - [ ] **Ladezeit 3–4 Stunden** messen *(DE)*
 - [ ] **Leistung 20 Watt** plausibel? *(DE)*
 - [ ] **Anzahl und Form der Aufsätze** — vier oder fünf? *(DE)*
