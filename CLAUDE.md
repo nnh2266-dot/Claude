@@ -43,6 +43,11 @@ werden können, **(DE)** solche, die die Rückkehr brauchen.
 | `claude/massage-gun-website-e8aqp7` | Ältere Fassung der Produktseite |
 | `claude/install-frontend-design-skill-cs25u0` | Die fünf Design-Skills unter `.claude/skills/` |
 
+**Die abhakbare Fassung der Checkliste ist GitHub-Issue #1**
+(`nnh2266-dot/Claude`). Dort setzt er die Haken, dort steht der aktuelle Stand.
+Bei „Stand?" im Chat: Issue #1 lesen und offene Punkte zusammenfassen. Ändert sich
+der Plan, Issue **und** `marketing/checkliste.md` nachziehen.
+
 Die Dokumente in `marketing/`:
 
 - **`checkliste.md`** — die maßgebliche Liste bis zur ersten Anzeige, Block 0 bis 10
