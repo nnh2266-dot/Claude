@@ -160,49 +160,66 @@ Bei diesen Punkten brichst du ab, ohne zu diskutieren:
 
 Beide führen exakt die Bauform aus `produktfoto.png`.
 
-| | **Shenzhen ScPanda — GB-868** | Zhejiang Xingou — XO-8817 |
-|---|---|---|
-| Preis ab 1 Stück | **4,96 €** | 6,13 € (ab 5 Stück) |
-| Mindestmenge | **1** | 5 |
-| Staffeln | 4,56 € ab 200 · 4,21 € ab 1.000 · 3,50 € ab 10.000 | 5,69 € ab 1.000 · 5,26 € ab 5.000 |
-| Versand nach DE | **kostenlos**, garantiert 23. Aug – 7. Sept | 35 Tage |
-| Jahre auf Alibaba | **7** | 3 |
-| Bewertungen | **962** (4,5) | 41 (4,6) |
-| Positive Bewertungen | **89,6 %** | 85,7 % |
-| Pünktliche Versandquote | 94,4 % | 100 % |
-| Online-Umsatz | **590.000 US$** | nicht ausgewiesen |
-| Reaktionszeit | **≤ 2 h** | ≤ 4 h |
-| Hauptmärkte | **TR 49 %, PL 23 %, US, DE** | nicht ausgewiesen |
-| Sitz | Shenzhen, Guangdong | Wenzhou, Zhejiang |
+| | **ScPanda — GB-868** | **Youmei — H8119-G3** | Xingou — XO-8817 |
+|---|---|---|---|
+| Preis ab 1 Stück | **4,96 €** | 5,21 € | 6,13 € (ab 5) |
+| Mindestmenge | **1** | **1** | 5 |
+| Preis ab 200 | 4,56 € | **4,21 €** | — |
+| Preis ab 1.000 | 4,21 € | **4,12 €** | 5,69 € |
+| Versand nach DE | kostenlos, 23. Aug – 7. Sept | kostenlos, **22. Aug – 4. Sept** | 35 Tage |
+| Jahre auf Alibaba | **7** | 4 | 3 |
+| Bewertungen | 962 (4,5) | **1.292 (4,7)** | 41 (4,6) |
+| Positive Bewertungen | 89,6 % | **91,9 %** | 85,7 % |
+| Pünktliche Versandquote | 94,4 % | **96,8 %** | 100 % (auf 41 Fällen) |
+| Reaktionszeit | ≤ 2 h | ≤ 2 h | ≤ 4 h |
+| Gegründet | 2019 | 2022 | 2019 |
+| Sitz | Shenzhen | Huizhou | Wenzhou |
+| Besonderheit | 590.000 US$ Umsatz, Hauptmärkte TR/PL/DE | 40 Partnerfabriken | — |
 
-**ScPanda ist der bessere Lieferant.** 962 Bewertungen gegen 41 ist der Unterschied
-zwischen Aussage und Zufall; sieben Jahre gegen drei ebenso. Die Hauptmärkte Polen und
-Deutschland sprechen dafür, dass EU-taugliche Papiere tatsächlich existieren.
+**Xingou scheidet aus:** teuerster Preis, höchste Mindestmenge, längste Lieferzeit und
+41 Bewertungen, die statistisch nichts aussagen.
 
-### Was die Listings bestätigen
+**Zwischen ScPanda und Youmei entscheidet die Menge.** Unter 200 Stück ist ScPanda
+günstiger, ab 200 Youmei. Youmei hat das bessere Bewertungsprofil, ScPanda die längere
+Historie und nachweisliche EU-Erfahrung (Polen 23 %, Deutschland unter den Hauptmärkten).
 
-Beide nennen 34 × 25 × 5 cm, vier Massageköpfe, ABS und Silikon, 1200 mAh, Schwarz
-lieferbar, eigenes Logo und eigene Verpackung möglich. Xingou nennt zusätzlich
-**9 Geschwindigkeitsstufen, 20 Watt, 7,4 V** — damit sind die neun Stufen und die
-20 Watt auf der Landingpage belegt.
+**Ein Vorbehalt zu Youmei:** „30 Produktionsmaschinen" neben „40 Partnerfabriken", dazu
+ein sehr breites Wellness-Sortiment (Rückenbandagen, Kniemassagegeräte,
+Haltungskorrekturen). Das Muster deutet auf einen Zusammenbauer mit Zuliefernetz hin,
+nicht auf eine eigene Fertigung. Nicht disqualifizierend, aber bei Qualitätsproblemen
+sitzt der Ansprechpartner weiter weg von der Maschine.
 
-### Zwei offene Widersprüche zur Landingpage
+### Was drei Listings übereinstimmend bestätigen
 
-**Gewicht.** ScPanda nennt **856 g**, die Seite nennt **590 g**. Möglicherweise meint
-das eine das Gesamtpaket mit Aufsätzen, das andere das nackte Gerät. Bis das geklärt
-ist, sind die 590 g auf der Seite unbelegt — und sie stehen an drei Stellen.
+Neun Kraftstufen · 20 Watt · 1200 mAh · vier Massageköpfe · ABS und Silikon ·
+Schwarz lieferbar · eigenes Logo und eigene Verpackung möglich.
 
-**Laufzeit.** ScPanda nennt **2–3 Stunden**, die Seite nennt **30–35 Minuten auf
-Stufe 1**. Rechnerisch: 1200 mAh × 7,4 V = 8,9 Wh; bei 20 W Nennleistung sind das
-rund 27 Minuten. Die Herstellerangabe ist unplausibel, die Seitenangabe die
-realistischere. Am Muster nachmessen.
+**Damit sind die neun Stufen und die 20 Watt auf der Landingpage belegt.**
+
+### Was am Muster zu klären bleibt
+
+**Gewicht.** ScPanda nennt 856 g, Youmei 900 g — Youmei führt dieselben 900 g aber
+zugleich als *Bruttogewicht pro Stück* mit Verpackung. Das spricht dafür, dass die
+Herstellerangaben das Versandgewicht meinen und die **590 g der Landingpage das nackte
+Gerät** — Karton, vier Aufsätze, Kabel und Anleitung ergeben die Differenz von rund
+300 g zwanglos. Plausibel, aber ungewogen. Gerät ohne Zubehör, mit einem Aufsatz und
+als Gesamtpaket wiegen.
+
+**Spannung.** Xingou nennt 7,4 V Arbeitsspannung, Youmei 5 V Nennspannung. Das ist kein
+Widerspruch: 7,4 V ist der Akku (zwei Zellen in Reihe), 5 V der USB-Ladeeingang. **Die
+Angabe „USB, 5 V–1 A" auf der Landingpage ist damit stimmig.**
+
+**Laufzeit.** ScPanda wirbt mit 2–3 Stunden, die Seite nennt 30–35 Minuten auf Stufe 1.
+Rechnerisch: 1200 mAh × 7,4 V = 8,9 Wh, bei 20 W also rund 27 Minuten. Die
+Herstellerangabe ist unplausibel, die Seitenangabe die realistischere. Nachmessen.
 
 ### Ein Risiko, das im Listing steht
 
-ScPanda gibt **Bürstenmotor** an. RENPHO wirbt bei 40 € mit bürstenlosem Motor unter
-45 dB. Bürstenmotoren sind lauter und verschleißen schneller — bei zwei Jahren
-Gewährleistung ist das dein Risiko, und Lautstärke ist das häufigste Retourenargument
-dieser Warengruppe. Nach einer bürstenlosen Variante desselben Gehäuses fragen.
+ScPanda gibt **Bürstenmotor** an; Youmei nennt den Motortyp gar nicht. RENPHO wirbt bei
+40 € mit bürstenlosem Motor unter 45 dB. Bürstenmotoren sind lauter und verschleißen
+schneller — bei zwei Jahren Gewährleistung ist das dein Risiko, und Lautstärke ist das
+häufigste Retourenargument dieser Warengruppe. Beide nach einer bürstenlosen Variante
+desselben Gehäuses fragen.
 
 ---
 

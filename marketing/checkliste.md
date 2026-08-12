@@ -217,9 +217,10 @@ Alles gegen das echte Gerät, nicht gegen das Datenblatt.
 - [ ] Auspacken und **Laufzeit der Lieferung** notieren *(DE)*
 - [ ] ~~Neun Kraftstufen~~ — **durch das Xingou-Listing belegt (9 Geschwindigkeiten,
       20 Watt, 7,4 V).** Trotzdem am Gerät gegenprüfen *(DE)*
-- [ ] **Gewicht nachwiegen — Konflikt.** Die Seite sagt 590 g an drei Stellen, ScPanda
-      nennt 856 g. Gerät ohne Zubehör wiegen, dann mit einem Aufsatz, dann das
-      Gesamtpaket. Danach die Seite korrigieren *(DE)*
+- [ ] **Gewicht nachwiegen.** Hersteller nennen 856 g bzw. 900 g, Youmei führt die
+      900 g zugleich als Bruttogewicht mit Verpackung — die 590 g der Seite dürften
+      also das nackte Gerät meinen. Gerät ohne Zubehör wiegen, dann mit einem Aufsatz,
+      dann das Gesamtpaket *(DE)*
 - [ ] **Akku 1200 mAh**, Ladung USB 5 V *(DE)*
 - [ ] **Laufzeit auf Stufe 1 messen — Konflikt.** Die Seite sagt 30–35 Minuten,
       ScPanda wirbt mit 2–3 Stunden. Rechnerisch (8,9 Wh bei 20 W) sind rund
