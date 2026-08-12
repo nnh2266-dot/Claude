@@ -76,9 +76,12 @@ deutsche Adresse, Prüfpapiere (CE, EMV, RoHS, UN38.3).
 
 ## Offene Widersprüche
 
-- **Verkaufspreis:** Die Landingpage nennt **99,99 €**, die Deckungsbeitragsrechnung
-  in `alibaba-leitfaden.md` rechnet mit **79 €**. Eine der beiden Zahlen ist veraltet —
-  vor dem Shop-Aufbau klären, sie trägt die gesamte Kampagnenrechnung.
+- ~~Verkaufspreis 99,99 € gegen 79 €~~ — **entschieden am 12. August 2026:** regulär
+  **99,99 €**, Aktionspreis **79,99 €** (−20 %) ab Kampagnenstart. Beide Zahlen waren
+  richtig, es sind zwei verschiedene Preise. Deckungsbeitrag ~71 € regulär, ~54 € in
+  der Aktion; maximaler CPA 45 €, Break-even-ROAS 1,77. **Bedingung:** Der Shop muss
+  mindestens 30 Tage regulär bei 99,99 € gelaufen sein, bevor die Aktion ausgezeichnet
+  wird (§ 11 PAngV, EuGH C-330/23). Eine selbst gesetzte UVP ist keine Option.
 - **Aufsätze:** Seite nennt vier, das Video-Prompt-Dokument fünf. Foto zeigt vier Typen.
 - **Laufzeit:** Seite 30–35 Minuten, Hersteller 2–3 Stunden. Rechnerisch sind ~27
   Minuten plausibel. Am Muster messen.

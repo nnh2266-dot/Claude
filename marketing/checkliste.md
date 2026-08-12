@@ -60,23 +60,52 @@ Block 7–8 in Woche 2–3 · Block 9–10 nach Ankunft · Block 11–12 danach.
       168 € mehr, weil der Stückpreis um 19 % fällt. Bei 50 Stück gibt es faktisch
       keinen Mengenrabatt.
 
-**Noch offen und blockierend:**
+- [x] **Verkaufspreis: regulär 99,99 €, Aktionspreis 79,99 € (−20 %).** Damit ist der
+      alte Widerspruch aufgelöst — beide Zahlen waren richtig, die eine ist der
+      reguläre, die andere der Aktionspreis. Die Rechnung mit 79 € im
+      `alibaba-leitfaden.md` ist die Aktionsrechnung.
 
-- [ ] **Verkaufspreis final entscheiden — 99,99 € oder 79 €.** Der gesamte Plan rechnet
-      mit **99,99 €**; im `alibaba-leitfaden.md` steht an einer Stelle eine Rechnung mit
-      79 €. Eine der beiden Zahlen muss weg, sie tragen unterschiedliche Break-evens.
-      Hintergrund: RENPHO Reach liegt bei 39,99 €, No-Name-Ware bei 45–75 €, Beurer bei
-      117 €. 99,99 € ist verteidigbar, aber nur mit Sozialbeweis und einem klaren
-      Besser-Argument — nicht mit Neuheit *(dort)*
+**Die Rechnung, mit Eigenimport neu aufgestellt.** Die 66 € Deckungsbeitrag im
+`instagram-plan.md` stammen noch aus der Dropshipping-Kalkulation (15,91 €
+Wareneinsatz plus 6 € Versand). Mit einem Landepreis von 11,20 € liegt der
+Deckungsbeitrag höher:
 
-| | bei 99,99 € | bei 79 € |
+| | regulär 99,99 € | Aktion 79,99 € |
 |---|---|---|
-| Einnahme je Verkauf (§ 19, ohne USt.) | 99,99 € | 79,00 € |
-| Landepreis Ware | ~11,20 € | ~11,20 € |
-| Versand an den Kunden | ~5 € | ~5 € |
-| **Deckungsbeitrag** | **~66 €** | **~58 €** |
-| Maximaler CPA | ~55 € | ~48 € |
-| Break-even-ROAS | 1,52 | 1,63 |
+| Einnahme je Verkauf (§ 19, ohne USt.) | 99,99 € | 79,99 € |
+| ./. Landepreis | 11,20 € | 11,20 € |
+| ./. Versand und Versandmaterial | 5,50 € | 5,50 € |
+| ./. Zahlungsgebühr (2,3 % + 0,35 €) | 2,65 € | 2,19 € |
+| = Rohertrag | 80,64 € | 61,10 € |
+| **= Deckungsbeitrag nach 12 % Retouren** | **~71 €** | **~54 €** |
+| Maximaler CPA bei Break-even (mit § 13b) | 60 € | 45 € |
+| Break-even-ROAS | 1,68 | 1,77 |
+
+Tiefer als −20 % nicht: Bei −30 % fällt der maximale CPA auf 38 € und damit unter die
+42 €, die nach dem Wechsel in die Regelbesteuerung noch tragen müssen.
+
+### Wie der Rabatt rechtlich sauber bleibt
+
+Nach **§ 11 PAngV** muss bei jeder angekündigten Preisermäßigung der **niedrigste
+Preis der letzten 30 Tage** genannt werden, und seit dem EuGH-Urteil vom
+26. September 2024 (C-330/23, Aldi Süd) muss auch der **beworbene Prozentsatz von
+dieser Zahl** gerechnet sein. Eine selbst gesetzte UVP scheidet aus — als Importeur
+bist du der Hersteller, eine nie verlangte „UVP" ist irreführend nach § 5 UWG.
+
+Der Zeitplan liefert die nötige Historie von selbst: Der Shop steht Wochen vor der
+ersten Anzeige, weil Muster und Instagram-Aufbau ohnehin drei Wochen brauchen.
+
+- [ ] **Shop startet regulär bei 99,99 €**, ohne jede Rabattauszeichnung *(dort)*
+- [ ] **Datum notieren**, ab dem 99,99 € tatsächlich verlangt wird — das ist dein
+      Nachweis für die 30-Tage-Referenz *(dort)*
+- [ ] **Aktionspreis 79,99 € erst ab Kampagnenstart** und frühestens 30 Tage nach
+      Shop-Start, ausgezeichnet mit „Niedrigster Preis der letzten 30 Tage: 99,99 €" *(DE)*
+- [ ] **10-%-Newsletter-Code während der Aktion ausschließen** („nicht kombinierbar").
+      Sonst landest du bei 71,99 € und rund 46 € Deckungsbeitrag. Als personalisierter
+      Rabatt fällt der Code selbst nicht unter § 11 PAngV — er darf also vor der Aktion
+      unverändert weiterlaufen *(dort)*
+
+**Weiter offen:**
 
 - [ ] **USt-IdNr. beim Bundeszentralamt für Steuern beantragen** — online, kostenlos,
       auch als Kleinunternehmer. Ohne sie stellt dir Meta die Werbung mit irischer
@@ -218,7 +247,7 @@ Neu, weil selbst importiert wird. Vieles davon hat Vorlauf.
 
 ## Block 4 — Shop aufsetzen
 
-- [ ] Shopify-Konto, Produkt anlegen, Preis nach Block-0-Entscheidung *(dort)*
+- [ ] Shopify-Konto, Produkt anlegen, **Preis 99,99 €** *(dort)*
 - [ ] Versandzonen: **Deutschland und Österreich**, kostenfrei. **Schweiz nicht
       anbieten** *(dort)*
 - [ ] Zahlungsarten einrichten (Karte, PayPal, Klarna oder Kauf auf Rechnung) *(dort)*
@@ -258,6 +287,14 @@ Datei: `index.html` auf Branch `claude/side-landing-checklist-criteria-8rejna`.
       behaupten — siehe `wettbewerb.md` *(dort)*
 - [ ] **Lautstärke aufnehmen**, sobald am Muster gemessen. Steht bisher nirgends und ist
       das häufigste Retourenargument *(DE)*
+- [ ] **Strukturierte Daten** (Zeile 1050, `"price": "99.99"`) beim Aktionsstart auf
+      79,99 € nachziehen — sonst zeigt Google den falschen Preis *(DE)*
+- [ ] **Alle Preisstellen umstellen**, wenn die Aktion startet: Kopfzeilen-Button
+      (Zeile 1089), Kaufabschnitt (1481), Kaufleiste (1702), FAQ (1594) *(DE)*
+- [ ] **Rabatthinweis ergänzen:** „Niedrigster Preis der letzten 30 Tage: 99,99 €" —
+      Pflichtangabe nach § 11 PAngV, direkt beim Aktionspreis *(DE)*
+- [ ] **Newsletter-Zeile anpassen** (1492): Der 10-%-Satz rechnet dort gegen 99,99 €.
+      Während der Aktion gilt der Code nicht — Text und Fußnote (1672) nachziehen *(DE)*
 - [ ] Widerspruch klären: Seite nennt **vier** Aufsätze, das Video-Prompt-Dokument
       spricht von **fünf** *(DE)*
 
@@ -390,15 +427,16 @@ Neu — bei Dropshipping gab es das nicht.
 
 ## Block 12 — Auswerten und entscheiden
 
-Wöchentlich prüfen (Zielwerte für 99,99 €; bei 79 € rücken CPA und ROAS auf 48 € / 1,63):
+Wöchentlich prüfen. Die Kampagne läuft auf den **Aktionspreis 79,99 €** — dort liegt
+der maximale CPA bei 45 € und der Break-even-ROAS bei 1,77:
 
 | Kennzahl | Ziel | Wenn sie reißt |
 |---|---|---|
 | Hook-Rate (3-Sek.-Views ÷ Impressionen) | > 25 % | Neue erste drei Sekunden, Rest behalten |
 | Ausgehende Klickrate | > 1,0 % | Versprechen zu schwach oder unklar |
 | Kaufrate der Seite | > 1,5 % | Anzeige und Seite versprechen Verschiedenes |
-| Kosten pro Kauf | < 42 € | Break-even liegt bei 55 €, aber 42 € trägt auch nach dem Wechsel in die Regelbesteuerung |
-| ROAS | > 1,8 | Unter Break-even |
+| Kosten pro Kauf | < 42 € | Break-even liegt bei 45 €, aber 42 € trägt auch nach dem Wechsel in die Regelbesteuerung |
+| ROAS | > 1,9 | Unter Break-even (1,77) |
 | Meta-Kundenzufriedenheit | > 3,0 | Lieferzeit oder Produkt — sofort handeln |
 
 **Entscheidung nach vier Wochen und rund 700 € Budget (real 833 € mit § 13b):**
