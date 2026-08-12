@@ -439,6 +439,21 @@ der maximale CPA bei 45 € und der Break-even-ROAS bei 1,77:
 | ROAS | > 1,9 | Unter Break-even (1,77) |
 | Meta-Kundenzufriedenheit | > 3,0 | Lieferzeit oder Produkt — sofort handeln |
 
+### Der Preis-Hebel, falls es klemmt
+
+69,99 € (−30 %) ist geprüft und bewusst **nicht** der Startpreis: Der maximale CPA
+fiele auf 38 € und damit unter die 42 €, die nach dem Ende der
+Kleinunternehmerregelung noch tragen müssen; nötig wären rund 2,6 % Kaufrate statt
+2,2 %. Der Preis bleibt aber als **zweite Stufe** in der Hand — runter geht jederzeit,
+hoch praktisch nie.
+
+- [ ] **Wenn die Kaufrate nach zwei Wochen unter 2,0 % liegt** und Hook-Rate sowie
+      Klickrate ihre Ziele halten, ist der Preis das Problem und nicht die Anzeige.
+      Dann zweite Aktion auf **69,99 €** — mit eigener, sauberer 30-Tage-Referenz
+      auf 79,99 € *(DE)*
+- [ ] **Reißt dagegen schon die Hook-Rate**, ist es nicht der Preis. Erst die ersten
+      drei Sekunden reparieren, bevor am Preis gedreht wird *(DE)*
+
 **Entscheidung nach vier Wochen und rund 700 € Budget (real 833 € mit § 13b):**
 
 - [ ] **ROAS über 2,5** → skalieren. Budget alle 3–4 Tage um 20 %, Gewinner-Creative in
