@@ -116,9 +116,10 @@ ersten Anzeige, weil Muster und Instagram-Aufbau ohnehin drei Wochen brauchen.
       700 € Budget sind 833 € *(dort)*
 - [ ] **Umsatzsteuer-Voranmeldung** für diese § 13b-Umsätze einrichten. Gilt auch für
       Kleinunternehmer und wird regelmäßig übersehen *(dort)*
-- [ ] **§-19-Grenze im Blick behalten:** 25.000 € Vorjahresumsatz = **250 Geräte** bei
-      99,99 €. Danach Regelbesteuerung, Deckungsbeitrag fällt auf rund 50 €. Die
-      Kampagne muss auch damit funktionieren *(laufend)*
+- [ ] **§-19-Grenze im Blick behalten:** 25.000 € Vorjahresumsatz sind 250 Geräte zum
+      regulären Preis, aber rund **310 zum Aktionspreis** — verkauft wird überwiegend zu
+      79,99 €, also ist 310 die Zahl, die zählt. Danach Regelbesteuerung, der
+      Deckungsbeitrag fällt auf rund 41 €. Die Kampagne muss auch damit funktionieren *(laufend)*
 - [ ] **Steuerberater terminieren** *(dort)* — Agenda:
       USt-IdNr. und Reverse-Charge auf Werbeausgaben · § 13b-Voranmeldung ·
       Zeitpunkt des Wechsels in die Regelbesteuerung · Ansässigkeit bei längerem
