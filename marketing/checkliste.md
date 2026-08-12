@@ -1,45 +1,73 @@
 # NackenFrei — Checkliste bis zur ersten Anzeige
 
 Vollständige Abarbeitungsliste. Reihenfolge innerhalb eines Blocks egal,
-Reihenfolge der Blöcke nicht. Begründungen stehen in `instagram-plan.md`.
+Reihenfolge der Blöcke nicht. Begründungen stehen in `instagram-plan.md`,
+Einkauf und Papiere in `alibaba-leitfaden.md`.
 
 `(dort)` = von Thailand aus erledigbar · `(DE)` = braucht die Rückkehr
 
-**Grobe Zuordnung:** Block 0–2 in Woche 1 · Block 3–5 in Woche 2 ·
-Block 6–7 in Woche 3 · Block 8 nach Ankunft · Block 9–10 danach.
+**Grobe Zuordnung:** Block 0–3 in Woche 1 · Block 4–6 in Woche 2 ·
+Block 7–8 in Woche 3 · Block 9–10 nach Ankunft der Ware · Block 11–12 danach.
+
+> **Stand 12. August 2026 — was sich geändert hat:** Der Weg ist nicht mehr
+> Dropshipping, sondern **Eigenimport von 100 Stück** über Alibaba. Damit entfallen
+> IOSS und die Abhängigkeit von fremden Lagerbeständen; dafür kommen Einfuhr, eigenes
+> Lager und eigener Versand dazu (Block 3 und 10). Die alten Dropshipping-Quellen
+> (CJdropshipping, BigBuy, Spocket) sind gestrichen.
 
 ---
 
 ## Block 0 — Blockierende Entscheidungen
 
 - [x] **Verkaufende Firma:** deutsches Einzelunternehmen mit angemeldetem Gewerbe.
-      Damit entfallen EU-Bevollmächtigter, EAR-Bevollmächtigter und IOSS-Vermittler —
-      die brauchst du nicht. Der Aufenthalt in Thailand ändert daran nichts.
+      Damit entfallen EU-Bevollmächtigter, EAR-Bevollmächtigter und IOSS-Vermittler.
+      Der Aufenthalt in Thailand ändert daran nichts.
 - [x] **Umsatzsteuer:** Kleinunternehmer nach § 19 UStG. Keine MwSt. auf Rechnungen,
-      kein Vorsteuerabzug. Deckungsbeitrag rund **66 € je Verkauf**.
+      kein Vorsteuerabzug.
+- [x] **Bezugsweg:** Eigenimport statt Dropshipping. Begründung in `instagram-plan.md` —
+      Lieferzeit, Verpackung und der Meta-Kundenzufriedenheitswert tragen Dropshipping
+      bei diesem Preis nicht.
+- [x] **Bestellmenge: 100 Stück.** Der Sprung von 50 auf 100 kostet bei Youmei nur
+      168 € mehr, weil der Stückpreis um 19 % fällt. Bei 50 Stück gibt es faktisch
+      keinen Mengenrabatt.
 
-Daraus ergeben sich vier neue Punkte, die vorher nicht sichtbar waren:
+**Noch offen und blockierend:**
+
+- [ ] **Verkaufspreis final entscheiden — 99,99 € oder 79 €.** Der gesamte Plan rechnet
+      mit **99,99 €**; im `alibaba-leitfaden.md` steht an einer Stelle eine Rechnung mit
+      79 €. Eine der beiden Zahlen muss weg, sie tragen unterschiedliche Break-evens.
+      Hintergrund: RENPHO Reach liegt bei 39,99 €, No-Name-Ware bei 45–75 €, Beurer bei
+      117 €. 99,99 € ist verteidigbar, aber nur mit Sozialbeweis und einem klaren
+      Besser-Argument — nicht mit Neuheit *(dort)*
+
+| | bei 99,99 € | bei 79 € |
+|---|---|---|
+| Einnahme je Verkauf (§ 19, ohne USt.) | 99,99 € | 79,00 € |
+| Landepreis Ware | ~11,20 € | ~11,20 € |
+| Versand an den Kunden | ~5 € | ~5 € |
+| **Deckungsbeitrag** | **~66 €** | **~58 €** |
+| Maximaler CPA | ~55 € | ~48 € |
+| Break-even-ROAS | 1,52 | 1,63 |
 
 - [ ] **USt-IdNr. beim Bundeszentralamt für Steuern beantragen** — online, kostenlos,
       auch als Kleinunternehmer. Ohne sie stellt dir Meta die Werbung mit irischer
       Umsatzsteuer in Rechnung, die du nie wiedersiehst *(dort)*
 - [ ] **Reverse-Charge einplanen:** Meta Ireland und Shopify rechnen ohne Umsatzsteuer
       ab, du schuldest die deutschen 19 % nach § 13b UStG selbst und kannst sie als
-      Kleinunternehmer **nicht abziehen**. Werbung kostet dich real 19 % mehr als
-      angezeigt — 700 € Budget sind 833 € *(dort)*
+      Kleinunternehmer **nicht abziehen**. Werbung kostet real 19 % mehr als angezeigt —
+      700 € Budget sind 833 € *(dort)*
 - [ ] **Umsatzsteuer-Voranmeldung** für diese § 13b-Umsätze einrichten. Gilt auch für
       Kleinunternehmer und wird regelmäßig übersehen *(dort)*
-- [ ] **§-19-Grenze im Blick behalten:** 25.000 € Vorjahresumsatz = **250 Geräte**.
-      Danach Regelbesteuerung, Deckungsbeitrag fällt auf rund 50 €. Die Kampagne muss
-      auch damit funktionieren *(laufend)*
-
-Offen bleibt:
-
-- [ ] **AliExpress-Versandkosten beziffern.** In deiner Bestellübersicht steht der
-      Betrag je Stück — einsetzen und den Deckungsbeitrag nachrechnen *(dort)*
-- [ ] **Steuerberater terminieren** — Agenda: USt-IdNr. und Reverse-Charge auf
-      Werbeausgaben, § 13b-Voranmeldung, Zeitpunkt des Wechsels in die
-      Regelbesteuerung, Ansässigkeit bei längerem Auslandsaufenthalt *(dort)*
+- [ ] **§-19-Grenze im Blick behalten:** 25.000 € Vorjahresumsatz = **250 Geräte** bei
+      99,99 €. Danach Regelbesteuerung, Deckungsbeitrag fällt auf rund 50 €. Die
+      Kampagne muss auch damit funktionieren *(laufend)*
+- [ ] **Steuerberater terminieren** *(dort)* — Agenda:
+      USt-IdNr. und Reverse-Charge auf Werbeausgaben · § 13b-Voranmeldung ·
+      Zeitpunkt des Wechsels in die Regelbesteuerung · Ansässigkeit bei längerem
+      Auslandsaufenthalt · **nicht erstattungsfähige Einfuhrumsatzsteuer** ·
+      **Verkäufe nach Österreich**: ab 10.000 € grenzüberschreitendem B2C-Umsatz greift
+      die Besteuerung im Bestimmungsland; ob und wie die EU-Kleinunternehmerregelung
+      hier trägt, gehört geklärt, bevor Österreich nennenswert Umsatz macht
 
 ---
 
@@ -51,40 +79,78 @@ weil Bearbeitungszeiten dranhängen.
 - [ ] **Stiftung EAR / ElektroG** — Registrierung als Hersteller. Dauert am längsten,
       deshalb zuerst *(dort)*
 - [ ] **Batterierecht** — Batterien registrieren, Rücknahmepflicht klären *(dort)*
-- [ ] **VerpackG** — LUCID-Registrierung und Beteiligung an einem dualen System *(dort)*
-- [ ] **GPSR** — verantwortliche Person in der EU benennen; Hersteller- und
-      Importeurangaben für Produkt und Angebot vorbereiten *(dort)*
-- [ ] **CE-Konformitätserklärung** beim Lieferanten anfordern, auf EMV und RoHS prüfen *(dort)*
+- [ ] **VerpackG** — LUCID-Registrierung und Beteiligung an einem dualen System.
+      Betrifft jetzt auch deine **Versandverpackung**, nicht nur die Produktverpackung *(dort)*
+- [ ] **GPSR** — verantwortliche Person in der EU benennen; **Name und Anschrift des
+      Importeurs müssen auf Produkt oder Verpackung stehen**. Beim Lieferanten erfragen,
+      ob er das aufdruckt — sonst musst du in Deutschland etikettieren *(dort)*
+- [ ] **CE-Konformitätserklärung** anfordern und prüfen (Prüfschema in
+      `alibaba-leitfaden.md`, Abschnitt 5) *(dort)*
 - [ ] **Rechtstexte beauftragen**: Impressum, Datenschutzerklärung, Widerrufsbelehrung,
       AGB. Anwalt oder geprüfter Dienst, kein Gratisgenerator *(dort)*
-- [ ] **IOSS** klären: Umsatzsteuer beim Verkauf erheben und abführen, damit der Kunde
-      nicht beim Zoll nachzahlt *(dort)*
+- [x] ~~IOSS klären~~ — **entfällt.** IOSS gilt für Direktversand aus einem Drittland an
+      EU-Endkunden. Du importierst zuerst nach Deutschland und versendest dann
+      innergemeinschaftlich; die Einfuhr läuft über den Zoll, nicht über IOSS.
+- [ ] **Technische Unterlagen zehn Jahre archivieren** — als Importeur bist du dafür
+      verantwortlich. Ordner anlegen, sobald die Papiere kommen *(dort)*
 
 ---
 
-## Block 2 — Lieferant und Muster
+## Block 2 — Lieferant entscheiden und Muster
 
-Der wichtigste Block dieser Woche. Die Muster brauchen die drei Wochen Laufzeit.
+Der wichtigste Block. Die Muster brauchen drei Wochen Laufzeit und blockieren Block 9
+vollständig.
 
-Der ursprüngliche AliExpress-Artikel liefert nicht nach Deutschland. Die Bauform ist
-aber eine gängige OEM-Konstruktion und von mehreren Quellen zu bekommen.
+**Stand:** Drei Anbieter geprüft, alle führen exakt die Bauform aus `produktfoto.png`.
+**Xingou ist ausgeschieden** (teuerster Preis, höchste Mindestmenge, 35 Tage Laufzeit,
+41 Bewertungen ohne Aussagekraft). Es bleiben:
 
-**Suchbegriffe**, die diese Bauform treffen: „massage gun extended handle",
-„long handle massage gun", „curved handle back massage gun", „U-shaped extension
-handle massager". Deutsch: „Massagepistole mit Verlängerungsgriff".
+| | **ScPanda — GB-868** | **Youmei — H8119-G3** |
+|---|---|---|
+| Stückpreis bei 100 | 5,21 € | **4,42 €** |
+| Logo ab | **100 Stück** | 500 Stück |
+| Eigene Verpackung ab | **300 Stück** | 1.000 Stück |
+| Volumengewicht je Stück | **1,18 kg** | 1,90 kg |
+| Landepreis geschätzt | **~11,20 €** | ~11,80 € |
+| Jahre auf Alibaba | **7** | 4 |
+| Bewertungen | 962 (4,5) | **1.292 (4,7)** |
 
-**Bezugsquellen, in dieser Reihenfolge prüfen:**
+Youmei ist je Stück billiger, ScPanda packt dichter — und die Fracht frisst den
+Preisvorteil auf. **Die echten Frachtangebote entscheiden, nicht die Stückpreise.**
 
-- [ ] **CJdropshipping** — hat ein **Lager in Deutschland** mit 3–7 Tagen Laufzeit und
-      führt die meisten AliExpress-Designs. Erste Adresse, weil es die Anforderung aus
-      Abschnitt 3a direkt erfüllt *(dort)*
-- [ ] **BigBuy** (Spanien) und **Spocket** (EU-Händler) — europäische
-      Dropshipping-Anbieter mit Massagegeräte-Sortiment *(dort)*
-- [ ] **AliExpress erneut**, aber gefiltert auf andere Verkäufer derselben Bauform mit
-      Versand aus DE/PL/CZ *(dort)*
-- [ ] **Alibaba / Global Sources** für den OEM-Weg — dort gibt es die Konstruktion als
-      „extended-handle 4-head massage gun" mit CE-Listung und anpassbarem Griff.
-      Mindestabnahme beachten; erst nach erfolgreichem Test sinnvoll *(dort)*
+**Vor der Entscheidung noch zu klären:**
+
+- [ ] **DDP-Preis nach Deutschland von beiden beziffern lassen** — erst dann kennst du
+      deinen echten Stückpreis *(dort)*
+- [ ] **Stück je Umkarton und Maße des Umkartons erfragen.** Der größte einzelne
+      Kostenhebel: Einzelkartons ergeben bei 100 Stück rund 190 kg Frachtgewicht und
+      eine Frachtrechnung über dem Warenwert; Umkartons zu 10–20 Stück drücken das auf
+      etwa 110 kg *(dort)*
+- [ ] **Motortyp verbindlich klären.** Youmei sagt inzwischen bürstenlos; ScPandas
+      Listing sagt Bürstenmotor, die Auskunft nennt aber „unter 40 dB" — das passt nicht
+      zusammen. Beide nach einer **bürstenlosen** Variante desselben Gehäuses fragen.
+      Lautstärke ist der häufigste Retourengrund dieser Warengruppe *(dort)*
+- [ ] **ScPandas Preiswiderspruch ansprechen:** „Rabattpreis" 5,66 $ liegt über dem
+      eigenen Listenpreis von 4,96 € ab 1 Stück *(dort)*
+- [ ] **Papiere anfordern, bevor bestellt wird:** CE-Konformitätserklärung mit exakter
+      Modellbezeichnung, EMV-Bericht (EN 55014), RoHS, **UN38.3 mit Test Summary** und
+      MSDS. Ohne UN38.3 nimmt keine Airline den Akku — dann bleibt nur Seefracht und der
+      Zeitplan kippt *(dort)*
+- [ ] **Hochauflösende Produktfotos zur kommerziellen Nutzung** erbitten — für Seite und
+      als Startframe der Videogenerierung *(dort)*
+
+**Muster:**
+
+- [ ] **Von beiden ein Muster an die deutsche Heimatadresse bestellen** *(dort)*
+- [ ] Vorher erfragen: keine Rechnung, kein Preis, kein Werbematerial im Paket *(dort)*
+- [ ] **Golden Sample** festlegen: ein Muster bleibt versiegelt als Referenz für die
+      Serie *(DE)*
+- [ ] Fragen, ob Muster und Serienfertigung identisch sind *(dort)*
+- [ ] Bestelldatum je Lieferant notieren, um die echte Laufzeit zu messen *(dort)*
+- [ ] Nach Ankunft: jemanden vor Ort bitten, **Paket und Beilagen zu fotografieren**,
+      bevor du da bist *(dort)*
+- [ ] **Lieferant entscheiden** anhand Laufzeit, Verpackung, Verarbeitung, Lautstärke *(DE)*
+- [ ] Klären, wohin Retouren gehen und wer sie annimmt *(dort)*
 
 **Gegen `produktfoto.png` abgleichen** (Branch `claude/container-scroll-animation-3f0qs8`):
 
@@ -93,31 +159,37 @@ handle massager". Deutsch: „Massagepistole mit Verlängerungsgriff".
 - [ ] Gerauteter Griffbereich, Bedienfeld mit `+`, Wellensymbol, `−`
 - [ ] **Vier** Aufsatztypen: Kugel (beschichtet), Flach, U-Form, Spitz
 
-> Der Widerspruch „vier oder fünf Aufsätze" ist damit geklärt: Das Foto zeigt vier
-> Typen, einer davon zusätzlich montiert. Die Seite hat recht, das Prompt-Dokument
-> zählt den montierten doppelt.
-
-- [ ] **Achtung Spezifikationen:** Verbreitete Fassungen dieser Bauform haben
-      **12 Geschwindigkeitsstufen**, deine Seite nennt **neun Kraftstufen**. Nach der
-      Lieferantenwahl müssen Technikabschnitt, Zählerwerte und FAQ an das echte Gerät
-      angepasst werden *(dort/DE)*
-- [ ] **Preisprüfung:** Dieselbe Bauform liegt auf Amazon.de und Kaufland zwischen
-      etwa 46 € und 73 €. Bevor 99,99 € bleiben, prüfen, was die nächstliegenden
-      Angebote kosten — siehe Notiz unten *(dort)*
-- [ ] **Von jedem ein Muster an die deutsche Heimatadresse bestellen** *(dort)*
-- [ ] Beim Lieferanten **vor** der Bestellung erfragen: keine Rechnung, kein Preis,
-      kein Werbematerial im Paket *(dort)*
-- [ ] Bestelldatum je Lieferant notieren, um die echte Laufzeit zu messen *(dort)*
-- [ ] Nach Ankunft: jemanden vor Ort bitten, **Paket und Beilagen zu fotografieren**,
-      bevor du da bist *(dort)*
-- [ ] **Lieferant entscheiden** anhand Laufzeit, Verpackung, Verarbeitung *(dort)*
-- [ ] Klären, wohin Retouren gehen und wer sie annimmt *(dort)*
+> **Erledigt:** Der Verdacht, die Bauform habe 12 statt 9 Stufen, ist ausgeräumt —
+> drei Listings bestätigen übereinstimmend **neun Stufen, 20 Watt, 1200 mAh, vier
+> Massageköpfe**. Die Angaben der Landingpage stehen insoweit. Ebenso geklärt: „USB
+> 5 V" ist der Ladeeingang, „7,4 V" die Akkuspannung — kein Widerspruch.
 
 ---
 
-## Block 3 — Shop aufsetzen
+## Block 3 — Bestellung und Einfuhr
 
-- [ ] Shopify-Konto, Produkt anlegen, Preis 99,99 € *(dort)*
+Neu, weil selbst importiert wird. Vieles davon hat Vorlauf.
+
+- [ ] **EORI-Nummer beim Zoll beantragen** — kostenlos, aber ohne sie kommt die Sendung
+      nicht durch die gewerbliche Einfuhr *(dort)*
+- [ ] Zolltarifnummer klären (Massagegeräte, Position 9019) und Zollsatz erfragen *(dort)*
+- [ ] **Nur über Trade Assurance bezahlen.** Keine Abwicklung außerhalb der Plattform,
+      kein Privatkonto, keine 100 % Vorkasse — üblich sind **30 % Anzahlung, 70 % vor
+      Versand** *(dort)*
+- [ ] Kontoinhaber gegen Firmennamen prüfen. Ändern sich mitten im Vorgang die
+      Bankdaten: **anrufen, nicht mailen** *(dort)*
+- [ ] **Sammelbestellung 100 Stück auslösen**, erst nach bestandenem Muster *(DE)*
+- [ ] Luftfracht per Express buchen (10–15 Tage). Seefracht scheidet zeitlich aus *(dort)*
+- [ ] **Einfuhrumsatzsteuer einkalkulieren:** 19 % auf Warenwert plus Fracht plus Zoll,
+      als Kleinunternehmer **nicht erstattungsfähig**. Bei 100 Stück rund 180 € *(dort)*
+- [ ] Liquidität prüfen: rund **1.120 € Landekosten** plus Werbebudget müssen
+      gleichzeitig da sein *(dort)*
+
+---
+
+## Block 4 — Shop aufsetzen
+
+- [ ] Shopify-Konto, Produkt anlegen, Preis nach Block-0-Entscheidung *(dort)*
 - [ ] Versandzonen: **Deutschland und Österreich**, kostenfrei. **Schweiz nicht
       anbieten** *(dort)*
 - [ ] Zahlungsarten einrichten (Karte, PayPal, Klarna oder Kauf auf Rechnung) *(dort)*
@@ -127,35 +199,42 @@ handle massager". Deutsch: „Massagepistole mit Verlängerungsgriff".
       (10 % auf die erste Bestellung) *(dort)*
 - [ ] Domain `nackenfrei-shop.de` verbinden, `www` als kanonische Fassung *(dort)*
 - [ ] `og.jpg` im Wurzelverzeichnis der Domain ablegen — sonst zeigt kein Teilen ein Bild *(dort)*
+- [ ] **Bestandsführung aktivieren.** Bei 100 Stück eigenem Lager muss der Shop
+      ausverkaufte Ware sperren, sonst verkaufst du, was du nicht hast *(dort)*
 
 ---
 
-## Block 4 — Landingpage anpassen
+## Block 5 — Landingpage anpassen
 
 Datei: `index.html` auf Branch `claude/side-landing-checklist-criteria-8rejna`.
 
 - [ ] `SHOPIFY_PRODUKT_URL_EINTRAGEN` ersetzen — **2 Stellen** (Kopfzeilen-Button und
       „In den Warenkorb") *(dort)*
 - [ ] `SHOPIFY_SHOPDOMAIN_EINTRAGEN` im Newsletter-Formular ersetzen *(dort)*
-- [ ] `SHOPIFY_IMPRESSUM_URL` ersetzen *(dort)*
-- [ ] `SHOPIFY_DATENSCHUTZ_URL` ersetzen *(dort)*
-- [ ] `SHOPIFY_WIDERRUF_URL` ersetzen *(dort)*
-- [ ] `LIEFERZEIT_EINTRAGEN` ersetzen — **2 Stellen** (FAQ und strukturierte Daten) *(dort)*
+- [ ] `SHOPIFY_IMPRESSUM_URL`, `SHOPIFY_DATENSCHUTZ_URL`, `SHOPIFY_WIDERRUF_URL`
+      ersetzen *(dort)*
+- [ ] `LIEFERZEIT_EINTRAGEN` ersetzen — **2 Stellen** (FAQ und strukturierte Daten).
+      Jetzt Versand aus eigenem Lager: realistisch **1–3 Werktage** *(dort)*
 - [ ] **„Inkl. MwSt." entfernen** (Zeile 1139) und durch den Pflichthinweis ersetzen:
       „Gemäß § 19 UStG wird keine Umsatzsteuer berechnet." Als Kleinunternehmer MwSt.
       auszuweisen ist ein unberechtigter Steuerausweis nach § 14c UStG — du schuldest
       die ausgewiesene Steuer dann tatsächlich, und abmahnfähig ist es obendrein *(dort)*
 - [ ] **Rückgabefrist von 30 auf 14 Tage** ändern — an allen Stellen inklusive FAQ *(dort)*
 - [ ] **Schweiz entfernen** — Bestellabschnitt, Versandhinweis, FAQ, Zollhinweis *(dort)*
-- [ ] **Sozialbeweis-Abschnitt ergänzen** — Bewertungen und Kundenstimmen. Aufbau jetzt,
-      Inhalte nach den ersten Bestellungen. Größter Hebel auf die Kaufrate *(dort)*
+- [ ] **Sozialbeweis-Abschnitt ergänzen** — Aufbau jetzt, Inhalte nach den ersten
+      Bestellungen. Größter Hebel auf die Kaufrate *(dort)*
 - [ ] **Vergleichsabschnitt** gerade vs. gebogene Massagepistole wieder aufnehmen *(dort)*
+- [ ] **Neuheitsbehauptung streichen.** Sechs No-Name-Listings und zwei Marken haben
+      denselben Griff. Die Seite darf nicht *neu* behaupten, sondern muss *besser*
+      behaupten — siehe `wettbewerb.md` *(dort)*
+- [ ] **Lautstärke aufnehmen**, sobald am Muster gemessen. Steht bisher nirgends und ist
+      das häufigste Retourenargument *(DE)*
 - [ ] Widerspruch klären: Seite nennt **vier** Aufsätze, das Video-Prompt-Dokument
-      spricht von **fünf**. Gegen das echte Produkt prüfen *(DE)*
+      spricht von **fünf** *(DE)*
 
 ---
 
-## Block 5 — Messung und Meta-Konten
+## Block 6 — Messung und Meta-Konten
 
 Ohne diesen Block ist jede Anzeige Blindflug.
 
@@ -174,7 +253,7 @@ Ohne diesen Block ist jede Anzeige Blindflug.
 
 ---
 
-## Block 6 — Creatives
+## Block 7 — Creatives
 
 Produktvideos per Image-to-Video nach `nackenfrei-video-prompt.md`
 (Branch `claude/container-scroll-animation-3f0qs8`), Startframe `produktfoto.png`.
@@ -196,7 +275,7 @@ Produktvideos per Image-to-Video nach `nackenfrei-video-prompt.md`
 
 ---
 
-## Block 7 — Instagram-Kanal
+## Block 8 — Instagram-Kanal
 
 - [ ] Profi-Konto anlegen, mit Facebook-Seite und Business-Konto verbinden *(dort)*
 - [ ] Profilname „NackenFrei", Bio mit dem tragenden Satz, Link zum Shop *(dort)*
@@ -210,33 +289,29 @@ Produktvideos per Image-to-Video nach `nackenfrei-video-prompt.md`
 
 ---
 
-## Block 8 — Nach Ankunft: Produkt prüfen
+## Block 9 — Nach Ankunft: Produkt prüfen
 
 Alles gegen das echte Gerät, nicht gegen das Datenblatt.
 
 - [ ] Auspacken und **Laufzeit der Lieferung** notieren *(DE)*
-- [ ] ~~Neun Kraftstufen~~ — **durch das Xingou-Listing belegt (9 Geschwindigkeiten,
-      20 Watt, 7,4 V).** Trotzdem am Gerät gegenprüfen *(DE)*
-- [ ] **Gewicht nachwiegen.** Hersteller nennen 856 g bzw. 900 g, Youmei führt die
-      900 g zugleich als Bruttogewicht mit Verpackung — die 590 g der Seite dürften
-      also das nackte Gerät meinen. Gerät ohne Zubehör wiegen, dann mit einem Aufsatz,
-      dann das Gesamtpaket *(DE)*
-- [ ] **Akku 1200 mAh**, Ladung USB 5 V *(DE)*
-- [ ] **Laufzeit auf Stufe 1 messen — Konflikt.** Die Seite sagt 30–35 Minuten,
-      ScPanda wirbt mit 2–3 Stunden. Rechnerisch (8,9 Wh bei 20 W) sind rund
-      27 Minuten plausibel, die Herstellerangabe also nicht. Auf Stufe 1 **und**
-      Stufe 9 messen *(DE)*
-- [ ] **Lautstärke in dB messen.** Der Motor ist ein Bürstenmotor; die Konkurrenz wirbt
-      mit bürstenlos unter 45 dB. Lautstärke ist der häufigste Retourengrund dieser
-      Warengruppe und steht bisher nirgends auf der Seite *(DE)*
-- [ ] **Ladezeit 3–4 Stunden** messen *(DE)*
-- [ ] **Leistung 20 Watt** plausibel? *(DE)*
+- [ ] **Gewicht nachwiegen** — Gerät ohne Zubehör, mit einem Aufsatz, dann das
+      Gesamtpaket. Hersteller nennen 856 g bzw. 900 g, beides als *Bruttogewicht*;
+      die 590 g der Seite dürften das nackte Gerät meinen. Plausibel, aber ungewogen *(DE)*
+- [ ] **Laufzeit messen — Konflikt.** Seite sagt 30–35 Minuten, ScPanda wirbt mit
+      2–3 Stunden. Rechnerisch (8,9 Wh bei 20 W) sind rund 27 Minuten plausibel, die
+      Herstellerangabe also nicht. Auf **Stufe 1 und Stufe 9** messen *(DE)*
+- [ ] **Lautstärke in dB messen** (Schallpegel-App). Entscheidet über den
+      Vergleichsabschnitt gegen RENPHO und ist der häufigste Retourengrund *(DE)*
+- [ ] **Schlagzahl prüfen:** 2.000–3.200 RPM laut ScPanda. Beurer bewirbt beim MG 180
+      für 117 € dieselben 3.200 — ein starkes Argument, wenn es stimmt *(DE)*
+- [ ] Neun Stufen am Gerät gegenprüfen *(DE)*
+- [ ] **Ladezeit** (3–4 Stunden angegeben) und Leistung (20 Watt) prüfen *(DE)*
 - [ ] **Anzahl und Form der Aufsätze** — vier oder fünf? *(DE)*
-- [ ] **Kartonmaß 34 × 25 × 5 cm** *(DE)*
-- [ ] Material: ABS-Gehäuse, Silikonaufsätze *(DE)*
+- [ ] Material prüfen: ABS-Gehäuse, Silikonaufsätze *(DE)*
 - [ ] **Kernversprechen selbst testen:** Kommt man mit dem Bogengriff allein zwischen
       die eigenen Schulterblätter? *(DE)*
-- [ ] Lautstärke beurteilen — das häufigste Retourenargument bei Massagepistolen *(DE)*
+- [ ] **Importeurangabe kontrollieren** — steht dein Name und deine Anschrift auf Gerät
+      oder Verpackung? Wenn nein: etikettieren, bevor verkauft wird *(DE)*
 - [ ] **Jede abweichende Angabe auf der Seite korrigieren** *(DE)*
 - [ ] Fehlende Handyaufnahmen nachholen, falls die Generierung nicht getragen hat *(DE)*
 
@@ -245,7 +320,28 @@ Alles gegen das echte Gerät, nicht gegen das Datenblatt.
 
 ---
 
-## Block 9 — Kampagne starten
+## Block 10 — Versand und Abwicklung aus eigenem Bestand
+
+Neu — bei Dropshipping gab es das nicht.
+
+- [ ] **Lagerort festlegen** und 100 Kartons unterbringen. Bei ScPanda-Maßen
+      (37 × 26,5 × 6 cm) sind das rund 0,6 m³ *(DE)*
+- [ ] **Wareneingang zählen** und gegen die Bestellung abgleichen *(DE)*
+- [ ] Versandpartner wählen und Konditionen vergleichen (DHL Geschäftskunden, DPD, GLS) *(DE)*
+- [ ] **Versandmaterial bestellen**: Umkartons, Füllmaterial, Klebeband,
+      Etikettendrucker *(DE)*
+- [ ] **Packprozess einmal durchspielen** und die echte Zeit je Bestellung messen *(DE)*
+- [ ] **Rechnungsvorlage** mit allen Pflichtangaben und dem § 19-Hinweis *(dort)*
+- [ ] **Retourenprozess** definieren: Adresse, Label, Prüfung, Wiedereinlagerung,
+      Erstattung binnen 14 Tagen *(DE)*
+- [ ] **Kundenservice**: Kanal, Antwortzeit, Standardantworten für die fünf häufigsten
+      Fragen *(dort)*
+- [ ] **Meldebestand festlegen** — ab wann wird nachbestellt? Bei 15–20 Tagen
+      Nachlieferzeit muss die Zweitbestellung raus, bevor das Lager leer ist *(DE)*
+
+---
+
+## Block 11 — Kampagne starten
 
 - [ ] **Eine** Kampagne, Ziel Verkäufe *(DE)*
 - [ ] Advantage+ Shopping oder breite Zielgruppe **DE, 30–65, alle Geschlechter** —
@@ -253,31 +349,34 @@ Alles gegen das echte Gerät, nicht gegen das Datenblatt.
 - [ ] Platzierungen automatisch — **Instagram und Facebook**, Reels, Feed, Stories *(DE)*
 - [ ] Budget **25 €/Tag** *(DE)*
 - [ ] **4–6 Creatives** gleichzeitig, Konzepte A und B vorn *(DE)*
-- [ ] **Ab Tag 10:** Retargeting auf Besucher der letzten 30 Tage, Konzepte C und G,
+- [ ] **Ab Tag 10:** Retargeting auf Besucher der letzten 30 Tage, Konzepte C und E,
       8 €/Tag *(DE)*
 - [ ] **Auswertung nur montags.** Jede Änderung setzt die Lernphase zurück *(DE)*
 - [ ] Ab der ersten Bestellung **systematisch Rückmeldungen einsammeln** für den
       Sozialbeweis-Abschnitt *(DE)*
+- [ ] **Bestand im Blick:** 100 Stück sind bei guter Kampagne in wenigen Wochen weg.
+      Ausverkauft mitten in der Lernphase ist teuer *(DE)*
 
 ---
 
-## Block 10 — Auswerten und entscheiden
+## Block 12 — Auswerten und entscheiden
 
-Wöchentlich prüfen:
+Wöchentlich prüfen (Zielwerte für 99,99 €; bei 79 € rücken CPA und ROAS auf 48 € / 1,63):
 
 | Kennzahl | Ziel | Wenn sie reißt |
 |---|---|---|
 | Hook-Rate (3-Sek.-Views ÷ Impressionen) | > 25 % | Neue erste drei Sekunden, Rest behalten |
 | Ausgehende Klickrate | > 1,0 % | Versprechen zu schwach oder unklar |
 | Kaufrate der Seite | > 1,5 % | Anzeige und Seite versprechen Verschiedenes |
-| Kosten pro Kauf | < 42 € | Break-even liegt zwar bei 55 €, aber 42 € ist der Wert, der auch nach dem Wechsel in die Regelbesteuerung trägt |
+| Kosten pro Kauf | < 42 € | Break-even liegt bei 55 €, aber 42 € trägt auch nach dem Wechsel in die Regelbesteuerung |
 | ROAS | > 1,8 | Unter Break-even |
 | Meta-Kundenzufriedenheit | > 3,0 | Lieferzeit oder Produkt — sofort handeln |
 
-**Entscheidung nach vier Wochen und rund 700 € Budget:**
+**Entscheidung nach vier Wochen und rund 700 € Budget (real 833 € mit § 13b):**
 
 - [ ] **ROAS über 2,5** → skalieren. Budget alle 3–4 Tage um 20 %, Gewinner-Creative in
-      fünf Varianten weiterbauen, Österreich dazunehmen
+      fünf Varianten weiterbauen, Österreich dazunehmen, **Nachbestellung 300 Stück**
+      (dort greift bei ScPanda die eigene Verpackung)
 - [ ] **ROAS 1,3–2,5** → reparieren statt skalieren. Schwächste Kennzahl zuerst, meist
       die Hook-Rate, danach die Kaufrate der Seite
 - [ ] **ROAS unter 1,3** → Meta aussetzen. Stattdessen Google Shopping und Suchanzeigen,
@@ -290,6 +389,7 @@ Wöchentlich prüfen:
 - [ ] **Meta-Kundenzufriedenheitswert** im Commerce Manager. Unter 2,0 werden Anzeigen
       eingeschränkt, unter 1,0 wird das Konto gesperrt. Der wahrscheinlichste Weg, dieses
       Geschäft zu verlieren
-- [ ] **Tatsächliche Lieferzeiten** je Bestellung — die Zahl, die alles andere treibt
+- [ ] **Tatsächliche Lieferzeiten** je Bestellung
 - [ ] **Retourenquote** — über 12 % stimmt etwas mit Produkt oder Erwartung nicht
-- [ ] **Lagerbestand beim Lieferanten** — bei Dropshipping der blinde Fleck
+- [ ] **Eigener Lagerbestand** und Nachlieferzeit des Lieferanten
+- [ ] **§-19-Umsatzgrenze** — bei 250 verkauften Geräten kippt die Rechnung
