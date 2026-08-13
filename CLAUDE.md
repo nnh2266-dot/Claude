@@ -52,6 +52,7 @@ Die Dokumente in `marketing/`:
 
 - **`checkliste.md`** — die maßgebliche Liste bis zur ersten Anzeige, Block 0 bis 12
 - **`kosten.md`** — was der Start kostet, Deckungsbeitrag, Break-even bei 50 Stück
+- **`prognose.md`** — Trichterrechnung, Erfolgswahrscheinlichkeit, drei Startwege im Vergleich
 - **`registrierungen.md`** — EAR, BattDG, LUCID, EORI: Reihenfolge, Dauer, Kosten
 - **`alibaba-leitfaden.md`** — Einkauf, Papiere, Zoll, plus die geprüften Lieferanten
 - **`wettbewerb.md`** — deutscher Wettbewerb
