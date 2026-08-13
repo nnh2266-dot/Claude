@@ -26,7 +26,7 @@ auf Alibaba**.
 | Firma | Deutsches Einzelunternehmen, Gewerbe angemeldet |
 | Steuer | Kleinunternehmer nach § 19 UStG — keine MwSt., kein Vorsteuerabzug |
 | Standort | Aufenthalt in Thailand; Rückkehr nach Deutschland steht aus |
-| Erstbestellung | 100 Stück, Landepreis rund 11,20 € je Gerät |
+| Erstbestellung | 50 Stück, Landepreis rund 12,90 € je Gerät (ScPanda) |
 | Werbebudget | 25 €/Tag, Entscheidung nach ~700 € über vier Wochen |
 
 In `marketing/checkliste.md` markiert **(dort)** Aufgaben, die aus Thailand erledigt
@@ -50,7 +50,9 @@ der Plan, Issue **und** `marketing/checkliste.md` nachziehen.
 
 Die Dokumente in `marketing/`:
 
-- **`checkliste.md`** — die maßgebliche Liste bis zur ersten Anzeige, Block 0 bis 10
+- **`checkliste.md`** — die maßgebliche Liste bis zur ersten Anzeige, Block 0 bis 12
+- **`kosten.md`** — was der Start kostet, Deckungsbeitrag, Break-even bei 50 Stück
+- **`registrierungen.md`** — EAR, BattDG, LUCID, EORI: Reihenfolge, Dauer, Kosten
 - **`alibaba-leitfaden.md`** — Einkauf, Papiere, Zoll, plus die geprüften Lieferanten
 - **`wettbewerb.md`** — deutscher Wettbewerb
 - **`instagram-plan.md`** — Begründungen zur Kampagne
@@ -61,14 +63,17 @@ Beide führen exakt die Bauform aus `produktfoto.png`. Xingou ist ausgeschieden.
 
 | | ScPanda (GB-868) | Youmei (H8119-G3) |
 |---|---|---|
+| **Stückpreis bei 50** | **5,21 €** | 5,47 € |
 | Stückpreis bei 100 | 5,21 € | 4,42 € |
 | Logo ab | 100 Stück | 500 Stück |
 | Eigene Verpackung ab | 300 Stück | 1.000 Stück |
 | Volumengewicht/Stück | 1,18 kg | 1,90 kg |
-| Landepreis (Schätzung) | ~11,20 € | ~11,80 € |
+| **Landepreis bei 50 (Schätzung)** | **~12,90 €** | ~15,60 € |
 
-Der niedrigere Stückpreis bei Youmei wird durch die voluminösere Verpackung wieder
-aufgefressen — die Frachtangebote entscheiden, nicht die Stückpreise.
+**Bei der beschlossenen Menge von 50 Stück ist ScPanda auf beiden Achsen vorn.**
+Youmeis Preisvorteil entsteht erst ab 100 Stück; bei 50 liegt Youmei darüber, und
+ScPandas dichtere Verpackung senkt zusätzlich die Fracht. Die echten DDP-Angebote
+stehen weiterhin aus und können das noch bewegen.
 
 **Offen:** DDP-/Frachtangebote, Stück je Umkarton, Motortyp (ScPanda-Listing sagt
 Bürstenmotor, Auskunft sagt < 40 dB — das passt nicht zusammen), Muster an die
@@ -89,12 +94,18 @@ deutsche Adresse, Prüfpapiere (CE, EMV, RoHS, UN38.3).
 
 ## Nächste Schritte
 
-1. Muster von ScPanda und Youmei an die deutsche Adresse bestellen — sie brauchen drei
-   Wochen und blockieren alles Weitere
-2. Registrierungen anstoßen, die Bearbeitungszeit haben: Stiftung EAR, LUCID, USt-IdNr.,
-   EORI
-3. Verkaufspreis final entscheiden
-4. Shop aufsetzen und Landingpage-Platzhalter ersetzen (Block 3 und 4 der Checkliste)
+1. **Stiftung EAR anstoßen** — 6–8 Wochen, teils über drei Monate, und ohne WEEE-Nummer
+   darf nicht verkauft und nicht angeboten werden. Das ist die längste Leitung im
+   Projekt, nicht das Muster
+2. Muster von ScPanda und Youmei an die deutsche Adresse bestellen — drei Wochen
+3. Übrige Registrierungen: Batterie (BattDG), LUCID, USt-IdNr., EORI — alle kostenlos
+   oder fast
+4. Nach Musterprüfung: 50 Stück bestellen, voraussichtlich bei ScPanda
+5. Shop aufsetzen und Landingpage-Platzhalter ersetzen (Block 4 und 5 der Checkliste)
+
+**Beschlossene Konfiguration:** 50 Stück Erstbestellung, volles Werbebudget 700 €
+(real 833 € mit § 13b). Gesamteinsatz rund **2.500 €**. Break-even bei **36 der 50
+Geräte**. Einzelheiten in `kosten.md`.
 
 ## Arbeitsweise
 

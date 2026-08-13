@@ -40,7 +40,7 @@ Wareneingang und erster Anzeige nur noch ein Nachmittag Messen und Korrigieren.
 Block 7–8 in Woche 2–3 · Block 9–10 nach Ankunft · Block 11–12 danach.
 
 > **Stand 12. August 2026 — was sich geändert hat:** Der Weg ist nicht mehr
-> Dropshipping, sondern **Eigenimport von 100 Stück** über Alibaba. Damit entfallen
+> Dropshipping, sondern **Eigenimport von 50 Stück** über Alibaba. Damit entfallen
 > IOSS und die Abhängigkeit von fremden Lagerbeständen; dafür kommen Einfuhr, eigenes
 > Lager und eigener Versand dazu (Block 3 und 10). Die alten Dropshipping-Quellen
 > (CJdropshipping, BigBuy, Spocket) sind gestrichen.
@@ -57,30 +57,33 @@ Block 7–8 in Woche 2–3 · Block 9–10 nach Ankunft · Block 11–12 danach.
 - [x] **Bezugsweg:** Eigenimport statt Dropshipping. Begründung in `instagram-plan.md` —
       Lieferzeit, Verpackung und der Meta-Kundenzufriedenheitswert tragen Dropshipping
       bei diesem Preis nicht.
-- [x] **Bestellmenge: 100 Stück.** Der Sprung von 50 auf 100 kostet bei Youmei nur
-      168 € mehr, weil der Stückpreis um 19 % fällt. Bei 50 Stück gibt es faktisch
-      keinen Mengenrabatt.
+- [x] **Bestellmenge: 50 Stück**, entschieden am 12. August 2026. Bewusst gegen die
+      bessere Stückkostenrechnung bei 100: Der Landepreis steigt dadurch von 11,20 €
+      auf rund 12,90 €, aber der Kapitaleinsatz für die Ware halbiert sich von ~1.120 €
+      auf ~645 €. Bei ScPanda kostet das Gerät bei 50 und 100 Stück ohnehin denselben
+      Stückpreis — nur die Frachtausnutzung ist schlechter. Vollständige Rechnung in
+      `kosten.md`.
 
 - [x] **Verkaufspreis: regulär 99,99 €, Aktionspreis 79,99 € (−20 %).** Damit ist der
       alte Widerspruch aufgelöst — beide Zahlen waren richtig, die eine ist der
       reguläre, die andere der Aktionspreis. Die Rechnung mit 79 € im
       `alibaba-leitfaden.md` ist die Aktionsrechnung.
 
-**Die Rechnung, mit Eigenimport neu aufgestellt.** Die 66 € Deckungsbeitrag im
+**Die Rechnung, mit Eigenimport und 50 Stück.** Die 66 € Deckungsbeitrag im
 `instagram-plan.md` stammen noch aus der Dropshipping-Kalkulation (15,91 €
-Wareneinsatz plus 6 € Versand). Mit einem Landepreis von 11,20 € liegt der
-Deckungsbeitrag höher:
+Wareneinsatz plus 6 € Versand). Mit einem Landepreis von 12,90 € liegt der
+Deckungsbeitrag trotz kleinerer Menge höher:
 
 | | regulär 99,99 € | Aktion 79,99 € |
 |---|---|---|
 | Einnahme je Verkauf (§ 19, ohne USt.) | 99,99 € | 79,99 € |
-| ./. Landepreis | 11,20 € | 11,20 € |
+| ./. Landepreis bei 50 Stück | 12,90 € | 12,90 € |
 | ./. Versand und Versandmaterial | 5,50 € | 5,50 € |
 | ./. Zahlungsgebühr (2,3 % + 0,35 €) | 2,65 € | 2,19 € |
-| = Rohertrag | 80,64 € | 61,10 € |
-| **= Deckungsbeitrag nach 12 % Retouren** | **~71 €** | **~54 €** |
-| Maximaler CPA bei Break-even (mit § 13b) | 60 € | 45 € |
-| Break-even-ROAS | 1,68 | 1,77 |
+| = Rohertrag | 78,94 € | 59,40 € |
+| **= Deckungsbeitrag nach 12 % Retouren** | **~69 €** | **~52 €** |
+| Maximaler CPA bei Break-even (mit § 13b) | 58 € | 44 € |
+| Break-even-ROAS | 1,72 | 1,82 |
 
 Tiefer als −20 % nicht: Bei −30 % fällt der maximale CPA auf 38 € und damit unter die
 42 €, die nach dem Wechsel in die Regelbesteuerung noch tragen müssen.
@@ -181,11 +184,12 @@ vollständig.
 
 | | **ScPanda — GB-868** | **Youmei — H8119-G3** |
 |---|---|---|
-| Stückpreis bei 100 | 5,21 € | **4,42 €** |
+| **Stückpreis bei 50** | **5,21 €** | 5,47 € |
+| Stückpreis bei 100 | 5,21 € | 4,42 € |
 | Logo ab | **100 Stück** | 500 Stück |
 | Eigene Verpackung ab | **300 Stück** | 1.000 Stück |
 | Volumengewicht je Stück | **1,18 kg** | 1,90 kg |
-| Landepreis geschätzt | **~11,20 €** | ~11,80 € |
+| **Landepreis bei 50 (Schätzung)** | **~12,90 €** | ~15,60 € |
 | Jahre auf Alibaba | **7** | 4 |
 | Bewertungen | 962 (4,5) | **1.292 (4,7)** |
 
@@ -197,9 +201,8 @@ Preisvorteil auf. **Die echten Frachtangebote entscheiden, nicht die Stückpreis
 - [ ] **DDP-Preis nach Deutschland von beiden beziffern lassen** — erst dann kennst du
       deinen echten Stückpreis *(dort)*
 - [ ] **Stück je Umkarton und Maße des Umkartons erfragen.** Der größte einzelne
-      Kostenhebel: Einzelkartons ergeben bei 100 Stück rund 190 kg Frachtgewicht und
-      eine Frachtrechnung über dem Warenwert; Umkartons zu 10–20 Stück drücken das auf
-      etwa 110 kg *(dort)*
+      Kostenhebel: Einzelkartons ergeben bei 50 Stück rund 95 kg Frachtgewicht (Youmei)
+      bzw. 59 kg (ScPanda); Umkartons zu 10–20 Stück drücken das noch einmal deutlich *(dort)*
 - [ ] **Motortyp verbindlich klären.** Youmei sagt inzwischen bürstenlos; ScPandas
       Listing sagt Bürstenmotor, die Auskunft nennt aber „unter 40 dB" — das passt nicht
       zusammen. Beide nach einer **bürstenlosen** Variante desselben Gehäuses fragen.
@@ -252,12 +255,12 @@ Neu, weil selbst importiert wird. Vieles davon hat Vorlauf.
       Versand** *(dort)*
 - [ ] Kontoinhaber gegen Firmennamen prüfen. Ändern sich mitten im Vorgang die
       Bankdaten: **anrufen, nicht mailen** *(dort)*
-- [ ] **Sammelbestellung 100 Stück auslösen**, erst nach bestandenem Muster *(DE)*
+- [ ] **Sammelbestellung 50 Stück auslösen**, erst nach bestandenem Muster *(DE)*
 - [ ] Luftfracht per Express buchen (10–15 Tage). Seefracht scheidet zeitlich aus *(dort)*
 - [ ] **Einfuhrumsatzsteuer einkalkulieren:** 19 % auf Warenwert plus Fracht plus Zoll,
-      als Kleinunternehmer **nicht erstattungsfähig**. Bei 100 Stück rund 180 € *(dort)*
-- [ ] Liquidität prüfen: rund **1.120 € Landekosten** plus Werbebudget müssen
-      gleichzeitig da sein *(dort)*
+      als Kleinunternehmer **nicht erstattungsfähig**. Bei 50 Stück rund 103 € *(dort)*
+- [ ] Liquidität prüfen: rund **645 € Landekosten** plus Registrierungen, Shop und
+      Werbebudget — Gesamteinsatz rund **2.500 €**, siehe `kosten.md` *(dort)*
 
 ---
 
@@ -273,7 +276,7 @@ Neu, weil selbst importiert wird. Vieles davon hat Vorlauf.
       (10 % auf die erste Bestellung) *(dort)*
 - [ ] Domain `nackenfrei-shop.de` verbinden, `www` als kanonische Fassung *(dort)*
 - [ ] `og.jpg` im Wurzelverzeichnis der Domain ablegen — sonst zeigt kein Teilen ein Bild *(dort)*
-- [ ] **Bestandsführung aktivieren.** Bei 100 Stück eigenem Lager muss der Shop
+- [ ] **Bestandsführung aktivieren.** Bei 50 Stück eigenem Lager muss der Shop
       ausverkaufte Ware sperren, sonst verkaufst du, was du nicht hast *(dort)*
 
 ---
@@ -406,8 +409,8 @@ Alles gegen das echte Gerät, nicht gegen das Datenblatt.
 
 Neu — bei Dropshipping gab es das nicht.
 
-- [ ] **Lagerort festlegen** und 100 Kartons unterbringen. Bei ScPanda-Maßen
-      (37 × 26,5 × 6 cm) sind das rund 0,6 m³ *(DE)*
+- [ ] **Lagerort festlegen** und 50 Kartons unterbringen. Bei ScPanda-Maßen
+      (37 × 26,5 × 6 cm) sind das rund 0,3 m³ *(DE)*
 - [ ] **Wareneingang zählen** und gegen die Bestellung abgleichen *(DE)*
 - [ ] Versandpartner wählen und Konditionen vergleichen (DHL Geschäftskunden, DPD, GLS) *(DE)*
 - [ ] **Versandmaterial bestellen**: Umkartons, Füllmaterial, Klebeband,
@@ -436,7 +439,7 @@ Neu — bei Dropshipping gab es das nicht.
 - [ ] **Auswertung nur montags.** Jede Änderung setzt die Lernphase zurück *(DE)*
 - [ ] Ab der ersten Bestellung **systematisch Rückmeldungen einsammeln** für den
       Sozialbeweis-Abschnitt *(DE)*
-- [ ] **Bestand im Blick:** 100 Stück sind bei guter Kampagne in wenigen Wochen weg.
+- [ ] **Bestand im Blick:** 50 Stück sind bei guter Kampagne in wenigen Wochen weg.
       Ausverkauft mitten in der Lernphase ist teuer *(DE)*
 
 ---
@@ -444,15 +447,16 @@ Neu — bei Dropshipping gab es das nicht.
 ## Block 12 — Auswerten und entscheiden
 
 Wöchentlich prüfen. Die Kampagne läuft auf den **Aktionspreis 79,99 €** — dort liegt
-der maximale CPA bei 45 € und der Break-even-ROAS bei 1,77:
+der maximale CPA bei 44 € und der Break-even-ROAS bei 1,82. **Break-even des ganzen
+Einsatzes: 36 der 50 Geräte** (siehe `kosten.md`):
 
 | Kennzahl | Ziel | Wenn sie reißt |
 |---|---|---|
 | Hook-Rate (3-Sek.-Views ÷ Impressionen) | > 25 % | Neue erste drei Sekunden, Rest behalten |
 | Ausgehende Klickrate | > 1,0 % | Versprechen zu schwach oder unklar |
 | Kaufrate der Seite | > 1,5 % | Anzeige und Seite versprechen Verschiedenes |
-| Kosten pro Kauf | < 42 € | Break-even liegt bei 45 €, aber 42 € trägt auch nach dem Wechsel in die Regelbesteuerung |
-| ROAS | > 1,9 | Unter Break-even (1,77) |
+| Kosten pro Kauf | < 42 € | Break-even liegt bei 44 €, aber 42 € trägt auch nach dem Wechsel in die Regelbesteuerung |
+| ROAS | > 1,9 | Unter Break-even (1,82) |
 | Meta-Kundenzufriedenheit | > 3,0 | Lieferzeit oder Produkt — sofort handeln |
 
 ### Der Preis-Hebel, falls es klemmt
@@ -474,7 +478,7 @@ hoch praktisch nie.
 
 - [ ] **ROAS über 2,5** → skalieren. Budget alle 3–4 Tage um 20 %, Gewinner-Creative in
       fünf Varianten weiterbauen, Österreich dazunehmen, **Nachbestellung 300 Stück**
-      (dort greift bei ScPanda die eigene Verpackung)
+      (dort greift bei ScPanda die eigene Verpackung, und der Landepreis fällt deutlich)
 - [ ] **ROAS 1,3–2,5** → reparieren statt skalieren. Schwächste Kennzahl zuerst, meist
       die Hook-Rate, danach die Kaufrate der Seite
 - [ ] **ROAS unter 1,3** → Meta aussetzen. Stattdessen Google Shopping und Suchanzeigen,
