@@ -54,6 +54,7 @@ Die Dokumente in `marketing/`:
 - **`kosten.md`** — was der Start kostet, Deckungsbeitrag, Break-even bei 50 Stück
 - **`prognose.md`** — Trichterrechnung, Erfolgswahrscheinlichkeit, drei Startwege im Vergleich
 - **`registrierungen.md`** — EAR, BattDG, LUCID, EORI: Reihenfolge, Dauer, Kosten
+- **`lieferanten-nachrichten.md`** — fertige Anfragen an ScPanda und Youmei zum Kopieren
 - **`alibaba-leitfaden.md`** — Einkauf, Papiere, Zoll, plus die geprüften Lieferanten
 - **`wettbewerb.md`** — deutscher Wettbewerb
 - **`instagram-plan.md`** — Begründungen zur Kampagne
