@@ -45,13 +45,30 @@ Offen bleibt:
 
 ## Block 1 — Recht und Registrierungen
 
-Alles vor dem ersten Verkauf, nicht vor der ersten Anzeige. Zuerst anstoßen,
-weil Bearbeitungszeiten dranhängen.
+**Das ist kein Vorsorgeblock mehr, sondern der Engpass.** Alibaba hat die
+Musterbestellung nach Deutschland blockiert, weil die EPR-Nummern fehlen — die
+erweiterte Herstellerverantwortung. Ohne diese Registrierungen kannst du nicht
+bestellen, nicht importieren und nicht verkaufen.
 
-- [ ] **Stiftung EAR / ElektroG** — Registrierung als Hersteller. Dauert am längsten,
-      deshalb zuerst *(dort)*
-- [ ] **Batterierecht** — Batterien registrieren, Rücknahmepflicht klären *(dort)*
-- [ ] **VerpackG** — LUCID-Registrierung und Beteiligung an einem dualen System *(dort)*
+Wichtig: **Das sind deine Registrierungen, nicht die des Lieferanten.** Wer die Ware
+nach Deutschland einführt und in Verkehr bringt, ist im Rechtssinn Hersteller. Weder
+die Plattform noch die Fabrik können das für dich erledigen.
+
+- [ ] **LUCID / VerpackG** — Registrierung bei der Zentralen Stelle
+      Verpackungsregister. Kostenlos, online, Nummer meist am selben Tag. **Zuerst,
+      weil sofort erledigt** *(dort)*
+- [ ] **Systembeteiligung** bei einem dualen System, mit der LUCID-Nummer melden.
+      Bei kleinen Mengen im niedrigen zweistelligen Bereich pro Jahr *(dort)*
+- [ ] **Stiftung EAR / ElektroG** — Registrierung als Hersteller, Geräteart prüfen
+      (Massagegerät fällt üblicherweise unter Kleingeräte). Braucht eine
+      **insolvenzsichere Garantie**, bevor die Registrierung erteilt wird. Dauert
+      Wochen — **der eigentliche Engpass, deshalb parallel sofort starten** *(dort)*
+- [ ] **Batterieregister** — ebenfalls über die Stiftung EAR, plus Anschluss an ein
+      Rücknahmesystem für Gerätebatterien *(dort)*
+
+**Kostenrahmen erstes Jahr: 400 bis 800 €.** Fixkosten, unabhängig von der Menge —
+verteilt auf 100 Stück sind das 4 bis 8 € je Gerät, auf 500 Stück 1 bis 2 €. Ein
+weiteres Argument für die größere Erstbestellung.
 - [ ] **GPSR** — verantwortliche Person in der EU benennen; Hersteller- und
       Importeurangaben für Produkt und Angebot vorbereiten *(dort)*
 - [ ] **CE-Konformitätserklärung** beim Lieferanten anfordern, auf EMV und RoHS prüfen *(dort)*
