@@ -4,7 +4,7 @@ Stand: 13. August 2026. Alle Kosten, die im Verlauf der Lieferantenrecherche
 dazugekommen sind, sind eingearbeitet.
 
 Grundlage: deutsches Einzelunternehmen, Kleinunternehmer nach § 19 UStG, Lieferant
-ScPanda GB-868 zu 5,66 $ ab 50 Stück, eigener Versand aus Deutschland.
+ScPanda GB-868 zu 5,66 $, eigener Versand aus Deutschland, Verkaufspreis 79 €.
 
 ---
 
@@ -13,43 +13,62 @@ ScPanda GB-868 zu 5,66 $ ab 50 Stück, eigener Versand aus Deutschland.
 | | erste Schätzung | heute |
 |---|---|---|
 | Einkaufspreis je Stück | 15,91 € | **4,96 €** |
-| Fracht je Stück | im Preis enthalten | **+ 5,50 €** |
-| Einfuhrumsatzsteuer, nicht erstattbar | nicht bedacht | **+ 1,99 €** |
+| Fracht je Stück | im Preis enthalten | **+ 5,50 bis 7,83 €** |
+| Einfuhrumsatzsteuer, nicht erstattbar | nicht bedacht | **+ 2 bis 2,43 €** |
 | Versand an den Kunden | entfiel beim Dropshipping | **+ 5,30 €** |
 | Werbekosten | wie ausgewiesen | **× 1,19** wegen Reverse Charge |
 | EPR-Registrierungen | nicht bedacht | **+ 600 € fix** |
 
-**Der Wareneinsatz ist deutlich besser geworden, die Nebenkosten deutlich schlechter.**
-Unterm Strich ist der Deckungsbeitrag je Stück höher als anfangs gerechnet — aber es
-sind Fixkosten dazugekommen, die eine kleine Erstbestellung nicht tragen kann.
+Der Wareneinsatz ist deutlich besser geworden, die Nebenkosten deutlich schlechter.
 
 ---
 
-## 2. Kosten je verkauftem Gerät
+## 2. Bestellmenge: 60 Stück
 
-Bei 100 Stück Bestellmenge, Verkaufspreis 79 €:
+**Der Test verkauft ohnehin nur 15 bis 25 Geräte.**
+
+```
+Werbebudget 700 €  ÷  CPA 35 €  ≈  20 Verkäufe
+Werbebudget 700 €  ÷  CPA 45 €  ≈  15 Verkäufe
+```
+
+Eine größere Bestellung verbessert zwar die Stückkosten, verkauft aber kein einziges
+Gerät mehr. Sie erhöht nur den Restbestand im Fall des Scheiterns. Deshalb ist die
+kleinere Menge die richtige — die guten Stückkosten kommen bei der Nachbestellung,
+wenn der CPA bekannt ist.
+
+| | **60 Stück** | 100 Stück |
+|---|---|---|
+| Ware | 298 € | 496 € |
+| Luftfracht | 470 € (3 Kartons, 79 kg) | 550 € (5 Kartons, 132 kg) |
+| Einfuhrumsatzsteuer | 146 € | 199 € |
+| Logo inkl. Klischee | 68 € | 80 € |
+| **Kapitaleinsatz** | **982 €** | 1.325 € |
+| Einstandspreis je Stück | 16,37 € | 13,25 € |
+| Restbestand nach 20 Verkäufen | 40 Stück | 80 Stück |
+
+---
+
+## 3. Kosten je verkauftem Gerät
+
+Bei 60 Stück Bestellmenge, Verkaufspreis 79 €:
 
 ```
 Einnahme (ohne USt., § 19)                    79,00 €
 
-./. Wareneinsatz                               4,96 €
-./. Luftfracht (5 Kartons, ~132 kg Frachtgew.) 5,50 €
-./. Einfuhrumsatzsteuer 19 %, nicht erstattbar 1,99 €
-./. Logo inkl. Klischee                        0,60 €
+./. Einstandspreis (Ware, Fracht, EUSt, Logo) 16,37 €
 ./. Versand an den Kunden (DHL + Verpackung)   5,30 €
 ./. Zahlungsgebühr (2,3 % + 0,35 €)            2,17 €
-= Rohertrag                                   58,48 €
+= Rohertrag                                   55,16 €
 
 ./. Retouren (12 %, je Fall ~11 € — die Ware
     kommt zurück und ist wieder verkäuflich)
-= Deckungsbeitrag je Netto-Verkauf       rund 57 €
+= Deckungsbeitrag je Netto-Verkauf       rund 54 €
 ```
-
-Bei 99,99 € Verkaufspreis liegt der Deckungsbeitrag entsprechend bei rund **77,50 €**.
 
 ---
 
-## 3. Fixkosten
+## 4. Fixkosten
 
 | Posten | Testphase (3 Monate) | Jahr 1 |
 |---|---|---|
@@ -66,56 +85,74 @@ Sie sind nicht an dieses Produkt gebunden.
 
 ---
 
-## 4. Die entscheidende Größe: Werbekosten je Verkauf
+## 5. Die entscheidende Größe: Werbekosten je Verkauf
 
 Als Kleinunternehmer zahlst du auf Meta-Werbung 19 % Reverse Charge, die du nicht
 abziehen kannst. **Was Meta als CPA ausweist, kostet dich das 1,19-fache.**
 
 Der CPA hängt fast vollständig an der Kaufrate der Landingpage. Bei einem CPC um 1 €:
 
-| Kaufrate der Seite | CPA laut Meta | tatsächliche Kosten |
-|---|---|---|
-| 1,5 % | 67 € | 79 € |
-| 2,0 % | 50 € | 60 € |
-| 2,5 % | 40 € | 48 € |
-| 3,0 % | 33 € | 40 € |
-| 4,0 % | 25 € | 30 € |
+| Kaufrate der Seite | CPA laut Meta | tatsächliche Kosten | Deckung bei 54 € |
+|---|---|---|---|
+| 1,5 % | 67 € | 79 € | −25 € je Verkauf |
+| 2,0 % | 50 € | 60 € | −6 € je Verkauf |
+| 2,5 % | 40 € | 48 € | **+6 € je Verkauf** |
+| 3,0 % | 33 € | 40 € | **+14 € je Verkauf** |
+| 4,0 % | 25 € | 30 € | **+24 € je Verkauf** |
+
+**Die Schwelle liegt bei etwa 2,3 % Kaufrate.** Darunter verliert jeder Verkauf Geld,
+darüber verdient er.
 
 ---
 
-## 5. Szenarien mit 100 Stück
+## 6. Die Testphase, ehrlich als Kassenrechnung
 
-Angenommen, alle 100 werden verkauft:
-
-| | Preis | CPA | Gewinn je Stück | 100 Stück | ./. Fixkosten | **Ergebnis** |
-|---|---|---|---|---|---|---|
-| **A** | 79 € | 35 € | 15,35 € | 1.535 € | −1.050 € | **+485 €** |
-| **B** | 79 € | 45 € | 3,45 € | 345 € | −1.050 € | **−705 €** |
-| **C** | 99 € | 50 € | 18,00 € | 1.800 € | −1.050 € | **+750 €** |
-| **D** | 79 € | 55 € | −8,45 € | −845 € | −1.050 € | **−1.895 €** |
-
-**Kernaussage: Mit 100 Stück verdienst du in keinem Szenario nennenswert Geld.** Im
-besten Fall deckst du die Anlaufkosten, im schlechtesten verlierst du knapp 2.000 €.
-
-Das ist keine Schwäche der Rechnung — es liegt daran, dass 1.050 € Fixkosten auf
-100 Stück verteilt 10,50 € je Gerät ausmachen.
-
----
-
-## 6. Dieselbe Rechnung mit 500 Stück
-
-Bei 500 Stück sinken Fracht und Einfuhrsteuer je Stück, und die Fixkosten verteilen
-sich:
+Drei Monate, 700 € Werbebudget, 60 Stück Bestand, CPA 35 € (guter Fall):
 
 ```
-Wareneinsatz                    4,78 €   (5,20 $ ab 500)
-Luftfracht                      3,50 €   (bessere Frachtrate)
+AUSGABEN
+  Fixkosten                                   1.050 €
+  Ware inkl. Fracht, Zoll, Logo                 982 €
+  Werbung (700 € × 1,19 Reverse Charge)         833 €
+  Kundenversand und Zahlungsgebühren, 20 Stk    149 €
+                                            = 3.014 €
+
+EINNAHMEN
+  20 Verkäufe à 79 €                          1.580 €
+
+  Restbestand 40 Geräte, Einstand 655 €
+```
+
+**Die Testphase endet in jedem Fall mit einem Minus.** Das ist keine Schwäche des
+Produkts — es ist die Definition eines Tests. Er kauft eine Zahl, keinen Gewinn.
+
+Was am Ende wirklich verloren ist, hängt am Restbestand:
+
+| | Ergebnis |
+|---|---|
+| Restbestand über Kleinanzeigen zu ~35 € verkauft | **rund −35 €** |
+| Restbestand zu ~25 € abverkauft | **rund −435 €** |
+| Restbestand abgeschrieben | **rund −1.435 €** |
+
+**Das echte Risiko liegt also zwischen 400 und 1.400 €**, nicht bei 3.000. Der Grund:
+Bei 16,37 € Einstandspreis behält die Ware auch im Notverkauf ihren Wert. Verloren
+sind die Fixkosten und das Werbebudget — die Ware nicht.
+
+---
+
+## 7. Was danach kommt, wenn der Test funktioniert
+
+Nachbestellung 500 Stück, Verkaufspreis 79 €:
+
+```
+Wareneinsatz                    4,78 €   (5,20 $ ab 500 Stück)
+Luftfracht                      3,50 €   (besserer Kilosatz)
 Einfuhrumsatzsteuer             1,58 €
 Logo                            0,30 €
 Kundenversand                   5,30 €
 Zahlungsgebühr                  2,17 €
 = Kosten                       17,63 €
-Deckungsbeitrag bei 79 €  rund 59,50 €
+Deckungsbeitrag           rund 59,50 €
 ```
 
 | Preis | CPA | Gewinn je Stück | 500 Stück | ./. Fixkosten Jahr 1 | **Ergebnis** |
@@ -128,46 +165,28 @@ Deckungsbeitrag bei 79 €  rund 59,50 €
 
 ---
 
-## 7. Ehrliche Einordnung
+## 8. Ehrliche Einordnung
 
-**Die erste Bestellung ist kein Geschäft, sondern ein Test.** Ihr einziger Zweck ist,
-eine Zahl zu ermitteln: den CPA. Liegt er unter 40 €, trägt das Produkt und du
-skalierst. Liegt er über 50 €, trägt es nicht und du hörst auf.
+Die erste Bestellung ist kein Geschäft, sondern der Kauf **einer einzigen Zahl: des
+CPA.** Liegt er unter 40 €, trägt das Produkt und du skalierst. Liegt er über 50 €,
+trägt es nicht und du hörst auf.
 
-Diese Zahl lässt sich **durch keine Recherche ersetzen.** Kein Wettbewerbsvergleich,
-kein Lieferantengespräch und keine weitere Rechnung beantwortet sie. Nur eine
-laufende Kampagne.
+Diese Zahl lässt sich durch keine Recherche ersetzen. Kein Wettbewerbsvergleich, kein
+Lieferantengespräch und keine weitere Rechnung beantwortet sie. Nur eine laufende
+Kampagne.
 
-**Was der Test kostet:**
-
-```
-EPR-Registrierungen             600 €
-Rechtstexte                     200 €
-Shopify, Domain, Muster         150 €
-Ware 100 Stück inkl. Fracht   1.250 €
-Werbebudget                     700 €   (real 833 € mit Reverse Charge)
-= rund                        3.000 €
-```
-
-Davon sind **rund 1.250 € Warenwert**, die als Bestand erhalten bleiben und sich zur
-Not verkaufen lassen. Das tatsächliche Verlustrisiko liegt bei etwa **1.800 €**.
-
-**Was du im Erfolgsfall bekommst:** ein Produkt mit rund 57 € Deckungsbeitrag, das bei
-500 Stück im Jahr etwa 7.000 € Gewinn abwirft — und Registrierungen, eine Marke und
-eine funktionierende Seite, auf denen weitere Produkte aufsetzen können.
+Und sie hängt fast vollständig an der **Kaufrate der Landingpage** — also am
+Sozialbeweis, der dort bis heute fehlt. Das ist der einzige Hebel, an dem du vor dem
+Start noch drehen kannst.
 
 ---
 
-## 8. Der letzte günstige Ausstieg
+## 9. Der letzte günstige Ausstieg
 
 Bisher ausgegeben: rund **50 € für Muster.**
 
 Die nächsten Schritte sind die teuren: EPR-Registrierungen, Warenbestellung,
 Werbebudget. **Jetzt ist der Punkt, an dem ein Abbruch fast nichts kostet.**
 
-Wer nicht bereit ist, rund 1.800 € zu riskieren, um eine Kennzahl zu erfahren, sollte
-hier aufhören — nicht nach der Warenbestellung.
-
-Wer bereit ist: Die Rechnung trägt, aber nur mit Volumen und nur bei einem CPA unter
-40 €. Und der wiederum hängt an der Kaufrate der Landingpage, also am Sozialbeweis,
-der dort bis heute fehlt.
+Wer nicht bereit ist, 400 bis 1.400 € zu riskieren, um eine Kennzahl zu erfahren,
+sollte hier aufhören — nicht nach der Warenbestellung.
