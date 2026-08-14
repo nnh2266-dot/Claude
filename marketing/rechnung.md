@@ -72,13 +72,14 @@ Einnahme (ohne USt., § 19)                    79,00 €
 
 | Posten | Testphase (3 Monate) | Jahr 1 |
 |---|---|---|
-| EPR: EAR, Garantie, Batterieregister, LUCID, Systembeteiligung | 600 € | 600 € |
-| Rechtstexte | 200 € | 200 € |
-| Shopify | 81 € | 324 € |
+| Stiftung EAR, Garantie, Batterieregister | 500 € | 500 € |
+| LUCID (kostenlos) + Systembeteiligung | 50 € | 80 € |
+| Rechtstexte (Mitgliedschaft statt Anwalt) | 50 € | 200 € |
+| Shopify (Aktionspreis ~1 €/Monat) | 3 € | 200 € |
 | Domain | 15 € | 15 € |
 | Muster | 50 € | 50 € |
 | Steuerberater (anteilig) | 100 € | 400 € |
-| **Summe** | **≈ 1.050 €** | **≈ 1.600 €** |
+| **Summe** | **≈ 768 €** | **≈ 1.445 €** |
 
 Die EPR-Registrierungen gelten für **jedes** Elektrogerät, das du künftig importierst.
 Sie sind nicht an dieses Produkt gebunden.
@@ -111,11 +112,11 @@ Drei Monate, 700 € Werbebudget, 60 Stück Bestand, CPA 35 € (guter Fall):
 
 ```
 AUSGABEN
-  Fixkosten                                   1.050 €
+  Fixkosten                                     768 €
   Ware inkl. Fracht, Zoll, Logo                 982 €
   Werbung (700 € × 1,19 Reverse Charge)         833 €
-  Kundenversand und Zahlungsgebühren, 20 Stk    149 €
-                                            = 3.014 €
+  Kundenversand und Zahlungsgebühren, 20 Stk    150 €
+                                            = 2.733 €
 
 EINNAHMEN
   20 Verkäufe à 79 €                          1.580 €
@@ -123,20 +124,22 @@ EINNAHMEN
   Restbestand 40 Geräte, Einstand 655 €
 ```
 
-**Die Testphase endet in jedem Fall mit einem Minus.** Das ist keine Schwäche des
-Produkts — es ist die Definition eines Tests. Er kauft eine Zahl, keinen Gewinn.
+Was am Ende bleibt, hängt weniger am Kampagnenverlauf als am Restbestand:
 
-Was am Ende wirklich verloren ist, hängt am Restbestand:
+| CPA | Verkäufe | Rest zu 35 € | Rest zu 25 € | abgeschrieben |
+|---|---|---|---|---|
+| **35 €** | 20 | **+247 €** | −153 € | −1.153 € |
+| **45 €** | 15 | **+84 €** | −361 € | −1.474 € |
+| **55 €** | 13 | **−19 €** | −492 € | −1.675 € |
 
-| | Ergebnis |
-|---|---|
-| Restbestand über Kleinanzeigen zu ~35 € verkauft | **rund −35 €** |
-| Restbestand zu ~25 € abverkauft | **rund −435 €** |
-| Restbestand abgeschrieben | **rund −1.435 €** |
+**Mit abverkauftem Restbestand endet der Test bei plus/minus null** — selbst im
+schlechten Fall. Der Grund: Bei 16,36 € Einstandspreis behält die Ware auch im
+Notverkauf ihren Wert.
 
-**Das echte Risiko liegt also zwischen 400 und 1.400 €**, nicht bei 3.000. Der Grund:
-Bei 16,37 € Einstandspreis behält die Ware auch im Notverkauf ihren Wert. Verloren
-sind die Fixkosten und das Werbebudget — die Ware nicht.
+Das reale Risiko ist also nicht die Ware, sondern die **Bereitschaft, 40 Restgeräte
+tatsächlich abzuverkaufen.** Wer sie liegen lässt, verliert 1.100 bis 1.700 €. Wer sie
+über Kleinanzeigen oder eBay abgibt, kommt mit einer schwarzen Null heraus und hat die
+Antwort auf die CPA-Frage geschenkt bekommen.
 
 ---
 
