@@ -325,6 +325,12 @@ Antworte AUSSCHLIESSLICH mit einem JSON-Objekt in genau diesem Format — ohne E
 Das habe ich gegessen: ${String(description ?? '').trim()}`;
 }
 
+/** Foto-Prompt für den Chat, mit dem Zusatzhinweis falls einer eingetippt wurde. */
+export function photoChatPrompt(hint) {
+  const text = String(hint ?? '').trim();
+  return text ? `${CHAT_PROMPT}\n\nZusatzinfo von mir zum Foto: ${text}` : CHAT_PROMPT;
+}
+
 /**
  * Liest die Antwort aus dem Chat. Toleriert Code-Blöcke und Text drumherum,
  * weil ein Chatfenster kein garantiertes Format liefert.

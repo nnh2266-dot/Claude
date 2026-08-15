@@ -17,7 +17,7 @@ import {
 } from '../store.js';
 import { processPhoto, blobToBase64 } from '../image.js';
 import {
-  analysePhoto, analyseText, parseChatResponse, ApiError, CHAT_PROMPT, textChatPrompt,
+  analysePhoto, analyseText, parseChatResponse, ApiError, textChatPrompt, photoChatPrompt,
 } from '../claude.js';
 import {
   MEAL_TYPES, sumItems, scaleItems, parseNumber, formatGram,
@@ -225,6 +225,9 @@ async function runAnalysis(ctx) {
       model: settings.model,
       base64,
       mediaType: 'image/jpeg',
+      // Was der Nutzer dazugeschrieben hat — „im Restaurant", „mit viel Öl",
+      // „das ist Dinkel". Beim ersten Durchlauf leer.
+      hint: session.description || '',
     });
 
     session.name = result.dish;
@@ -403,37 +406,56 @@ function photoSection() {
   );
 }
 
-/** Eingabefeld für den Textweg, mitsamt Schätzknopf. */
+/**
+ * Textfeld für beide Wege. Beim Textweg ist es die Mahlzeit selbst, beim Foto
+ * der Zusatzhinweis — ein Bild zeigt nicht, ob im Öl gebraten wurde, ob das
+ * Brot Dinkel ist oder wie groß die Schüssel wirklich war.
+ */
 function descriptionCard(ctx) {
-  if (session.mode !== 'text') return null;
+  const perText = session.mode === 'text';
+  const perFoto = !!session.photoBlob;
+  if (!perText && !perFoto) return null;
 
   const field = el('textarea', {
     class: 'input',
-    rows: '3',
-    placeholder: 'z. B. zwei Scheiben Vollkornbrot mit Butter und Gouda, dazu ein Apfel',
+    rows: perText ? '3' : '2',
+    placeholder: perText
+      ? 'z. B. zwei Scheiben Vollkornbrot mit Butter und Gouda, dazu ein Apfel'
+      : 'z. B. in Olivenöl gebraten · große Portion · Reis ist Vollkorn',
   });
   // Bei einem textarea kommt der Inhalt aus dem Textknoten — ein value-Attribut
-  // bliebe wirkungslos, und die Beschreibung wäre nach dem Schätzen verschwunden.
+  // bliebe wirkungslos, und der Text wäre nach dem Schätzen verschwunden.
   field.value = session.description || '';
   field.addEventListener('input', () => { session.description = field.value; });
 
+  const beschriftung = () => {
+    if (session.analysing) return 'Wird geschätzt …';
+    if (perText) return session.items.length ? 'Neu schätzen' : 'Nährwerte schätzen';
+    return 'Mit Hinweis neu schätzen';
+  };
+
   const button = el('button', {
-    class: 'btn btn-primary btn-block',
+    class: `btn btn-block${perText ? ' btn-primary' : ''}`,
     type: 'button',
     disabled: session.analysing,
     onClick: () => {
       session.description = field.value;
-      runTextAnalysis(ctx);
+      if (perText) runTextAnalysis(ctx);
+      else runAnalysis(ctx);
     },
-  }, session.analysing ? 'Wird geschätzt …' : session.items.length ? 'Neu schätzen' : 'Nährwerte schätzen');
+  }, beschriftung());
 
   return el('div', { class: 'card stack' },
-    el('h3', { class: 'bridge-title', text: 'Was hast du gegessen?' }),
+    el('h3', { class: 'bridge-title',
+      text: perText ? 'Was hast du gegessen?' : 'Etwas dazuschreiben?' }),
     field,
     button,
     el('p', { class: 'hint',
-      text: 'Je genauer die Mengen, desto besser die Schätzung. Ohne Mengenangabe wird '
-        + 'eine übliche Portion angenommen. Danach lässt sich jede Zahl von Hand ändern.' }));
+      text: perText
+        ? 'Je genauer die Mengen, desto besser die Schätzung. Ohne Mengenangabe wird '
+          + 'eine übliche Portion angenommen. Danach lässt sich jede Zahl von Hand ändern.'
+        : 'Alles, was man dem Foto nicht ansieht: Zubereitungsfett, Portionsgröße, '
+          + 'Zutaten unter der Sauce. Der Knopf schätzt mit dem Hinweis neu.' }));
 }
 
 /* ---------------- Chat-Brücke ---------------- */
@@ -498,7 +520,9 @@ function chatBridgeCard(ctx) {
   // Der Textweg braucht kein Foto: die Beschreibung steckt schon im Prompt,
   // damit im Chat nur eingefügt und abgeschickt werden muss.
   const perText = session.mode === 'text';
-  const promptText = () => (perText ? textChatPrompt(session.description) : CHAT_PROMPT);
+  const promptText = () => (perText
+    ? textChatPrompt(session.description)
+    : photoChatPrompt(session.description));
 
   const answer = el('textarea', {
     class: 'input',
@@ -935,13 +959,16 @@ function draw(container, ctx) {
       'div',
       { class: 'card mt-16 stack' },
       field(
-        'Notiz',
+        'Notiz für dich',
         el('textarea', {
           class: 'input',
           rows: '2',
-          placeholder: 'optional — z. B. „im Restaurant, etwas mehr Öl"',
+          placeholder: 'optional — z. B. „hat lange gesättigt" oder „nächstes Mal weniger"',
           onInput: (event) => { session.note = event.target.value; },
-        }, session.note)
+        }, session.note),
+        // Ohne diesen Satz sieht die Notiz aus wie das Hinweisfeld weiter oben,
+        // beeinflusst die Zahlen aber nicht.
+        'Wird mit der Mahlzeit gespeichert und ändert die Schätzung nicht.'
       ),
       el(
         'label',

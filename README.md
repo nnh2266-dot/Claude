@@ -17,6 +17,9 @@ anzeigt.
 
 - **Foto → Nährwerte**: Mahlzeit fotografieren, Claude zerlegt sie in Komponenten und
   schätzt Menge, Kalorien, Eiweiß, Kohlenhydrate und Fett
+- **Hinweis zum Foto**: unter dem Bild lässt sich dazuschreiben, was man ihm nicht
+  ansieht — „in Olivenöl gebraten", „große Portion", „Nudeln sind Vollkorn". Ein Tipp
+  auf *Mit Hinweis neu schätzen*, und die Schätzung läuft mit dieser Zusatzinfo
 - **Text → Nährwerte**: statt zu fotografieren einfach beschreiben — „zwei Scheiben
   Vollkornbrot mit Butter und Gouda, dazu ein Apfel". Genannte Mengen werden
   übernommen, fehlende als übliche Portion angenommen und im Hinweis genannt.
