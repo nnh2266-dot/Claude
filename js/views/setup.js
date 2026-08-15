@@ -7,7 +7,9 @@
 import { el, mount, viewHead, field, toast } from '../ui.js';
 import { parseNumber, localDateKey } from '../nutrition.js';
 import { setTrainingProfile, setPlan, saveWeight, listWeights } from '../store.js';
-import { buildPlan, EQUIPMENT_LABEL, LIMIT_LABEL, FOCUS_LABEL, LEVEL_LABEL } from '../training.js';
+import {
+  buildPlan, EQUIPMENT_LABEL, LIMIT_LABEL, FOCUS_LABEL, LEVEL_LABEL, GEAR_LABEL,
+} from '../training.js';
 import { SKILLS, MINUTES_PER_SKILL } from '../skills.js';
 
 /** Zwischenstand des Fragebogens. Überlebt den Wechsel zwischen den Schritten. */
@@ -23,8 +25,9 @@ export function begin(profile) {
         limits: [...(profile.limits || [])],
         focus: [...(profile.focus || [])],
         skills: [...(profile.skills || [])],
+        gear: [...(profile.gear || [])],
       }
-    : { weekdays: [], limits: [], focus: [], skills: [], sessionLength: 60 };
+    : { weekdays: [], limits: [], focus: [], skills: [], gear: [], sessionLength: 60 };
   step = 0;
 }
 
@@ -187,6 +190,11 @@ const STEPS = [
         ['band', EQUIPMENT_LABEL.band, 'Bänder plus Körpergewicht.'],
         ['bw', EQUIPMENT_LABEL.bw, 'Ohne Geräte, überall machbar.'],
       ]),
+      field('Hast du davon etwas?',
+        chipGroup('gear', Object.entries(GEAR_LABEL), { multi: true }),
+        'Ein Klimmzug braucht kein Gewicht, aber eine Stange. Ohne Kreuz hier kommen '
+        + 'Klimmzüge, Dips und hängendes Beinheben gar nicht erst in den Plan. '
+        + 'Im Fitnessstudio ist beides ohnehin da.'),
     ],
     check: () => (draft.equipment ? null : 'Bitte deine Ausrüstung wählen.'),
   },
@@ -237,7 +245,13 @@ const STEPS = [
 function skillPicker() {
   const list = el('div', { class: 'optcards' });
 
-  for (const skill of SKILLS) {
+  // Was ohne die nötige Stange nicht übbar ist, wird gar nicht erst angeboten —
+  // ein ausgegrauter Wunsch hilft niemandem.
+  const gear = draft.equipment === 'studio' ? ['stange', 'barren'] : (draft.gear || []);
+  const moeglich = SKILLS.filter((s) => !s.gear || gear.includes(s.gear));
+  const fehlend = SKILLS.length - moeglich.length;
+
+  for (const skill of moeglich) {
     const chosen = () => (draft.skills || []).includes(skill.id);
     const card = el(
       'button',
@@ -261,6 +275,13 @@ function skillPicker() {
         `${skill.levels.length} Stufen · braucht ${skill.needs}`)
     );
     list.append(card);
+  }
+
+  if (fehlend) {
+    list.append(el('p', { class: 'hint',
+      text: `${fehlend} weitere ${fehlend === 1 ? 'Fähigkeit braucht' : 'Fähigkeiten brauchen'} `
+        + 'eine Klimmzugstange oder einen Barren und sind deshalb nicht dabei. '
+        + 'Sobald du das Gerät hast, tauchen sie hier auf.' }));
   }
   return list;
 }
@@ -325,6 +346,7 @@ async function finish(ctx) {
     limits: draft.limits || [],
     focus: (draft.focus || []).slice(0, 2),
     skills: (draft.skills || []).slice(0, 2),
+    gear: draft.equipment === 'studio' ? ['stange', 'barren'] : (draft.gear || []),
   };
 
   const plan = buildPlan(profile, 0);

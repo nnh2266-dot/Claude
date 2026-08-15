@@ -7,7 +7,7 @@
  * CACHE_VERSION bei jeder Änderung an den App-Dateien erhöhen.
  */
 
-const CACHE_VERSION = 'naehrwerte-v6';
+const CACHE_VERSION = 'naehrwerte-v7';   // muss zu APP_VERSION in js/version.js passen
 
 const APP_SHELL = [
   './',
@@ -23,6 +23,7 @@ const APP_SHELL = [
   './js/training.js',
   './js/energy.js',
   './js/skills.js',
+  './js/version.js',
   './js/views/today.js',
   './js/views/capture.js',
   './js/views/history.js',

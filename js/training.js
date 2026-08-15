@@ -36,8 +36,12 @@ const RAW = [
   ['tbar','T-Bar Rudern','ruecken','c','g','ruecken','Neutraler Rücken, kein Schwung.'],
   ['brow','Band-Rudern','ruecken','c','b','','Band um die Füße, Ellbogen nach hinten.'],
   ['invrow','Sling- oder Schrägrudern','ruecken','c','gw','','Je flacher der Körper, desto schwerer.'],
+  ['tablerow','Rudern unter dem Tisch','ruecken','c','w','','Unter einen stabilen Tisch legen, an der Kante hochziehen. Körper bleibt gerade.'],
+  ['towelrow','Handtuch-Rudern am Türrahmen','ruecken','c','w','','Handtuch um den Türgriff, zurücklehnen und zur Tür ziehen. Über die Fußstellung dosieren.'],
+  ['superman','Superman am Boden','ruecken','i','w','ruecken','Bauchlage, Arme und Beine anheben, zwei Sekunden halten.'],
   ['facep','Face Pull','rdelt','i','gb','','Auf Augenhöhe ziehen, Daumen nach hinten.'],
   ['revfly','Reverse Fly','rdelt','i','gd','','Leicht vorgebeugt, Arme fast gestreckt.'],
+  ['ytw','Y-T-W am Boden','rdelt','i','w','','Bauchlage, Arme nacheinander in Y-, T- und W-Form anheben. Daumen zeigen nach oben.'],
   // Beine, Vorderseite
   ['squat','Kniebeuge Langhantel','quad','c','g','knie,ruecken','Knie folgen den Fußspitzen, Tiefe nach Beweglichkeit.'],
   ['goblet','Goblet Squat','quad','c','gd','knie','Gewicht vor der Brust, Oberkörper aufrecht.'],
@@ -113,6 +117,22 @@ export const GROUP_LABEL = {
   waden: 'Waden', core: 'Rumpf',
 };
 
+/**
+ * Übungen, die ein Gerät brauchen, das nicht jeder zuhause hat.
+ * Das ist unabhängig von der Hantelfrage: ein Klimmzug braucht kein Gewicht,
+ * aber sehr wohl eine Stange. Bank und Stuhl stehen hier nicht — irgendeine
+ * Sitzgelegenheit gibt es überall.
+ */
+export const GEAR = {
+  pullup: 'stange', negpull: 'stange', chinup: 'stange', hlr: 'stange', invrow: 'stange',
+  dips: 'barren',
+};
+
+export const GEAR_LABEL = {
+  stange: 'Klimmzugstange',
+  barren: 'Dip-Barren oder zwei stabile Stühle',
+};
+
 /** Welche Umgebungscodes eine Ausrüstung freischaltet.
  *  Wer ein Studio hat, bekommt keine Band-Übungen vorgeschlagen — dort steht
  *  für dieselbe Bewegung immer das bessere Gerät. */
@@ -130,7 +150,12 @@ export const LIMIT_LABEL = {
 
 /** Ersatzgruppe, wenn eine Muskelgruppe mit der vorhandenen Ausrüstung gar
  *  nicht trainierbar ist — etwa die seitliche Schulter ohne jedes Gerät. */
-const FALLBACK_GROUP = { sdelt: 'schulter', rdelt: 'ruecken', glute: 'ham', waden: 'quad', ham: 'glute' };
+const FALLBACK_GROUP = {
+  sdelt: 'schulter', rdelt: 'ruecken', glute: 'ham', waden: 'quad', ham: 'glute',
+  // Ohne Stange und Hanteln bleibt für die Arme nichts Eigenes übrig. Rudern
+  // trainiert den Bizeps mit, Drücken den Trizeps — besser als ein leerer Slot.
+  bizeps: 'ruecken', trizeps: 'brust',
+};
 
 /* ---------------- Splits ---------------- */
 
@@ -224,8 +249,13 @@ export function buildPlan(profile, seed = 0) {
   const codes = EQUIPMENT_CODES[profile.equipment] || EQUIPMENT_CODES.studio;
   const limits = profile.limits || [];
 
+  // Im Studio ist alles da; sonst zählt, was im Fragebogen angekreuzt wurde.
+  const gear = profile.equipment === 'studio' ? Object.keys(GEAR_LABEL) : (profile.gear || []);
+
   const usable = EXERCISES.filter(
-    (e) => [...e.env].some((c) => codes.includes(c)) && !e.avoid.some((a) => limits.includes(a))
+    (e) => [...e.env].some((c) => codes.includes(c))
+      && !e.avoid.some((a) => limits.includes(a))
+      && (!GEAR[e.id] || gear.includes(GEAR[e.id]))
   );
 
   let key = profile.days;

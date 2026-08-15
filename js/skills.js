@@ -67,6 +67,7 @@ const CATALOG = [
     id: 'pullup',
     name: 'Erster Klimmzug',
     blurb: 'Von aktivem Hängen bis zum sauberen Klimmzug.',
+    gear: 'stange',
     needs: 'eine Klimmzugstange',
     warmup: 'Schultern kreisen, ein paar Scapula Pulls als Aufwärmsatz.',
     levels: [
@@ -88,6 +89,7 @@ const CATALOG = [
     id: 'dip',
     name: 'Erster Dip',
     blurb: 'Stützkraft für Brust, Schulter und Trizeps.',
+    gear: 'barren',
     needs: 'einen Dip-Barren oder zwei stabile Stühle',
     warmup: 'Handgelenke und Schultern lockern, ein Satz Stützhalten.',
     levels: [
@@ -126,6 +128,7 @@ const CATALOG = [
     id: 'muscleup',
     name: 'Muscle-Up',
     blurb: 'Über die Stange — Klimmzug und Dip in einer Bewegung.',
+    gear: 'stange',
     needs: 'eine Klimmzugstange',
     warmup: 'Erst ab etwa acht sauberen Klimmzügen und acht Dips sinnvoll.',
     levels: [
@@ -145,6 +148,7 @@ const CATALOG = [
     id: 'frontlever',
     name: 'Front Lever',
     blurb: 'Waagerecht unter der Stange, Körper gestreckt.',
+    gear: 'stange',
     needs: 'eine Klimmzugstange',
     warmup: 'Lange Rumpfspannung vorher, sonst kippt die Hüfte durch.',
     levels: [

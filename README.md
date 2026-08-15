@@ -178,6 +178,7 @@ js/store.js              IndexedDB: Mahlzeiten, Favoriten, Einheiten, Gewichte, 
 js/nutrition.js          Summen, Datumslogik, Portionsskalierung
 js/training.js           Übungsdatenbank, Plangenerator, Satzvorgaben, Progression
 js/skills.js             Fähigkeiten: Stufenleitern, Ziele, Freischaltregeln
+js/version.js            Fassungsnummer, muss zur CACHE_VERSION in sw.js passen
 js/energy.js             Grundumsatz, Tagesziele, Gewichtstrend, Kalorienkorrektur
 js/claude.js             Anthropic-API + Chat-Brücke: Prompts, Schema, Fehlertexte
 js/image.js              Kamera-Foto verkleinern, Thumbnail, Base64
@@ -237,8 +238,15 @@ drei Tagen Push/Pull/Beine), vier Tage Oberkörper/Unterkörper, fünf gemischt,
 Push/Pull/Beine doppelt. Die Übungszahl folgt der Zeit pro Einheit, Sätze und RIR der
 Erfahrungsstufe.
 
-Aus 72 Übungen wird nach Ausrüstung und Beschwerden gefiltert; gesperrte Übungen
-werden gar nicht erst eingeplant. Bleibt eine Muskelgruppe ohne Option, greift eine
+Aus 76 Übungen wird nach Ausrüstung, vorhandenem Gerät und Beschwerden gefiltert;
+gesperrte Übungen werden gar nicht erst eingeplant.
+
+**Gerät ist dabei etwas anderes als Gewicht.** Ein Klimmzug braucht keine Hantel, aber
+sehr wohl eine Stange — deshalb fragt der Fragebogen getrennt nach Klimmzugstange und
+Dip-Barren. Ohne Kreuz dort erscheinen Klimmzüge, Dips und hängendes Beinheben gar
+nicht im Plan, und für den Rücken stehen stattdessen Rudern unter dem Tisch und
+Handtuch-Rudern am Türrahmen bereit. Fähigkeiten, die eine Stange verlangen, werden
+bei der Auswahl gar nicht erst angeboten. Bleibt eine Muskelgruppe ohne Option, greift eine
 Ersatzgruppe. Bleibt ein Tag trotzdem kurz — etwa nur Körpergewicht plus
 Schulterbeschwerden —, sagt der Plan das offen, statt die Liste aufzufüllen.
 

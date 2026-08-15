@@ -252,6 +252,11 @@ export async function render(container, ctx) {
     return;
   }
 
+  // Profile von vor der Gerätefrage haben kein `gear`. Ihr gespeicherter Plan
+  // kann Klimmzüge oder Dips enthalten, obwohl weder Stange noch Barren da ist —
+  // deshalb einmal nachfragen, statt den Plan hinter dem Rücken umzuschreiben.
+  const gearUnbeantwortet = profile.gear === undefined && profile.equipment !== 'studio';
+
   const week = blockWeek(plan, dateKey);
   const weekday = new Date(`${dateKey}T12:00:00`).getDay();
   const day = dayForWeekday(plan, weekday);
@@ -264,6 +269,21 @@ export async function render(container, ctx) {
   );
 
   const body = [];
+
+  if (gearUnbeantwortet) {
+    body.push(el('div', { class: 'card stack' },
+      el('div', { class: 'row-between' },
+        el('h2', { class: 'card-title', text: 'Kurze Rückfrage' }),
+        el('span', { class: 'pill pill-kcal', text: 'neu' })),
+      el('p', { class: 'small' },
+        'Bisher hat die App Klimmzüge und Dips eingeplant, sobald du „ohne Gewichte" '
+        + 'gewählt hast — dabei brauchen die eine Stange beziehungsweise einen Barren. '
+        + 'Sie fragt das jetzt getrennt ab.'),
+      el('button', {
+        class: 'btn btn-primary btn-block', type: 'button',
+        onClick: () => ctx.startSetup(profile),
+      }, 'Gerät nachtragen und Plan neu bauen')));
+  }
 
   if (!day) {
     // Nächste Einheit suchen, damit der Ruhetag nicht im Leeren endet.

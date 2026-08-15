@@ -9,6 +9,7 @@ import {
 import { MODELS, testConnection, ApiError } from '../claude.js';
 import { macrosFromKcal, parseNumber, DEFAULT_GOALS } from '../nutrition.js';
 import { energyPlan } from '../energy.js';
+import { APP_VERSION, APP_DATE } from '../version.js';
 
 const CONSOLE_URL = 'https://console.anthropic.com/settings/keys';
 
@@ -372,7 +373,8 @@ export async function render(container, ctx) {
       el(
         'p',
         { class: 'hint', style: { padding: '18px 4px 0', textAlign: 'center' } },
-        'Alle Mahlzeiten, Fotos und Trainingsdaten bleiben auf diesem Gerät. ' +
+        `Fassung ${APP_VERSION} vom ${APP_DATE}. `
+        + 'Alle Mahlzeiten, Fotos und Trainingsdaten bleiben auf diesem Gerät. ' +
         'Nur das jeweils analysierte Foto wird an die Anthropic-API geschickt.'
       )
     )
