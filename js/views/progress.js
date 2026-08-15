@@ -8,6 +8,7 @@ import { localDateKey, formatDateKey, shiftDateKey } from '../nutrition.js';
 import { setKcalAdjust } from '../store.js';
 import { personalBests, weeklyVolume, GOAL_LABEL } from '../training.js';
 import { calorieAdvice } from '../energy.js';
+import { skillById, currentLevel, levelIndex, skillHistory } from '../skills.js';
 
 const CHART_W = 320;
 const CHART_H = 150;
@@ -196,6 +197,35 @@ export async function render(container, ctx) {
     }
 
     body.push(card);
+  }
+
+  /* Fähigkeiten */
+  const skillIds = profile.skills || [];
+  if (skillIds.length) {
+    body.push(el('h2', { class: 'section-title', text: 'Fähigkeiten' }));
+    body.push(el('div', { class: 'card card-flush' },
+      ...skillIds.map((id) => {
+        const skill = skillById(id);
+        if (!skill) return null;
+        const index = levelIndex(skill, ctx.state.skillLevels);
+        const level = currentLevel(skill, ctx.state.skillLevels);
+        const unit = level.measure === 'sec' ? 's' : 'Wdh.';
+        const history = skillHistory(sessions, id);
+        const best = history.length ? Math.max(...history.map((h) => h.best)) : 0;
+
+        return el('div', { class: 'skillrow' },
+          el('div', { class: 'row-between' },
+            el('span', { class: 'exblock-name', text: skill.name }),
+            el('span', { class: 'muted small tabular', text: `Stufe ${index + 1} / ${skill.levels.length}` })),
+          el('div', { class: 'ladder' },
+            ...skill.levels.map((_, i) =>
+              el('span', { class: `rung${i < index ? ' done' : i === index ? ' on' : ''}` }))),
+          el('p', { class: 'muted small', text: level.name }),
+          el('p', { class: 'small tabular',
+            text: best
+              ? `Bester Satz bisher: ${best} ${unit} — Ziel dieser Stufe: ${level.target} ${unit}`
+              : `Noch nichts aufgezeichnet. Ziel dieser Stufe: ${level.target} ${unit}` }));
+      }).filter(Boolean)));
   }
 
   /* Kraft */

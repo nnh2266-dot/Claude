@@ -3,6 +3,8 @@
  * Wie nutrition.js bewusst ohne DOM-Zugriff, damit alles einzeln prüfbar bleibt.
  */
 
+import { MINUTES_PER_SKILL } from './skills.js';
+
 /* ---------------- Übungsdatenbank ----------------
    [id, Name, Muskelgruppe, c|i, Umgebung, Einschränkungen, Ausführungshinweis]
    Umgebung: g = Studio, d = Kurzhanteln, b = Bänder, w = Körpergewicht
@@ -231,7 +233,14 @@ export function buildPlan(profile, seed = 0) {
   const split = SPLITS[key] || SPLITS[3];
 
   // Die Übungszahl folgt der Zeit pro Einheit: grob acht Minuten je Übung.
-  const perSession = Math.min(9, Math.max(4, Math.round((profile.sessionLength - 8) / 8)));
+  // Technikarbeit läuft vor dem Krafttraining und braucht ihren eigenen Anteil —
+  // sonst wird die Einheit heimlich länger, als sie angesagt war.
+  const skillMinutes = (profile.skills || []).length * MINUTES_PER_SKILL;
+  const strengthMinutes = Math.max(20, profile.sessionLength - skillMinutes);
+  // Ohne Technik bleibt es bei mindestens vier Übungen. Mit Technik darf es eine
+  // weniger sein — die Einheit ist dann trotzdem voll.
+  const fewest = skillMinutes > 0 ? 3 : 4;
+  const perSession = Math.min(9, Math.max(fewest, Math.round((strengthMinutes - 8) / 8)));
 
   const rotation = {};
   const pick = (spec, usedToday) => {
@@ -307,6 +316,7 @@ export function buildPlan(profile, seed = 0) {
     splitKey: String(key),
     splitName: split.name,
     perSession,
+    skillMinutes,
     days,
   };
 }

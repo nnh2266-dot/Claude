@@ -6,7 +6,8 @@
  *   favorites — wiederverwendbare Mahlzeiten
  *   sessions  — Trainingseinheiten, ein Eintrag je Tag
  *   weights   — Körpergewicht, ein Eintrag je Tag
- *   settings  — Key/Value (apiKey, model, goals, profile, plan, kcalAdjust)
+ *   settings  — Key/Value (apiKey, model, goals, profile, plan, kcalAdjust,
+ *               skillLevels)
  */
 
 import { DEFAULT_GOALS, sumItems, newId, localDateKey } from './nutrition.js';
@@ -237,6 +238,19 @@ export async function setPlan(plan) {
   await setSetting('plan', plan);
 }
 
+/** Erreichte Stufe je Fähigkeit: { handstand: 2, lsit: 0 }. */
+export async function getSkillLevels() {
+  const row = await tx('settings', 'readonly', (s) => s.get('skillLevels'));
+  return (row && row.value) || {};
+}
+
+export async function setSkillLevel(skillId, index) {
+  const levels = await getSkillLevels();
+  levels[skillId] = Math.max(0, Number(index) || 0);
+  await setSetting('skillLevels', levels);
+  return levels;
+}
+
 export async function getKcalAdjust() {
   const row = await tx('settings', 'readonly', (s) => s.get('kcalAdjust'));
   return Number(row ? row.value : 0) || 0;
@@ -262,6 +276,8 @@ export async function saveSession(session) {
     dayName: String(session.dayName || ''),
     template: session.template || null,
     entries: session.entries || {},
+    // Technikarbeit: je Fähigkeit eine Liste aus Sekunden oder Wiederholungen
+    skills: session.skills || {},
     done: !!session.done,
     updatedAt: Date.now(),
   };
@@ -313,6 +329,7 @@ export async function exportData() {
       listSessions(),
       listWeights(),
     ]);
+  const skillLevels = await getSkillLevels();
 
   return {
     format: 'naehrwert-export',
@@ -324,6 +341,7 @@ export async function exportData() {
     profile,
     plan,
     kcalAdjust,
+    skillLevels,
     sessions,
     weights,
   };
@@ -371,6 +389,9 @@ export async function importData(data) {
   if (data.profile && typeof data.profile === 'object') await setTrainingProfile(data.profile);
   if (data.plan && typeof data.plan === 'object') await setPlan(data.plan);
   if (typeof data.kcalAdjust === 'number') await setKcalAdjust(data.kcalAdjust);
+  if (data.skillLevels && typeof data.skillLevels === 'object') {
+    await setSetting('skillLevels', data.skillLevels);
+  }
 
   return { meals, favorites, sessions, weights };
 }
@@ -389,6 +410,7 @@ export async function clearTraining() {
     s.delete('profile');
     s.delete('plan');
     s.delete('kcalAdjust');
+    s.delete('skillLevels');
   });
 }
 

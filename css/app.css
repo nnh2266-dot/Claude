@@ -928,3 +928,39 @@ input[type="range"] {
 .chart .trend-line  { fill: none; stroke: var(--kcal); stroke-width: 2; stroke-linejoin: round; }
 .chart .trend-end   { fill: var(--surface); stroke: var(--kcal); stroke-width: 2.2; }
 .chart .day-dot     { fill: var(--text-faint); }
+
+/* ---------- Fähigkeiten: Stufenleiter und Technikeingabe ---------- */
+
+.ladder { display: flex; gap: 3px; margin: 8px 0 9px; }
+
+.rung {
+  flex: 1;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--border);
+}
+
+.rung.done { background: var(--kcal); opacity: .42; }
+.rung.on   { background: var(--kcal); }
+
+/* Technik hat nur einen Wert je Satz, nicht Gewicht und Wiederholungen */
+.setlabels-skill, .setrow-skill {
+  grid-template-columns: 20px 1fr 34px;
+}
+
+.setwide { min-width: 0; }
+
+.skillrow { padding: 14px; border-bottom: 1px solid var(--border); }
+.skillrow:last-child { border-bottom: 0; }
+.skillrow p { margin: 0 0 3px; }
+.skillrow p:last-child { margin-bottom: 0; }
+
+.optcard-meta {
+  display: block;
+  font-size: 11.5px;
+  color: var(--text-faint);
+  margin-top: 6px;
+  font-weight: 550;
+}
+
+.optcard[aria-pressed="true"] .optcard-meta { color: var(--kcal); }

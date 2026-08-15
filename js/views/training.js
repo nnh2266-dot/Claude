@@ -6,11 +6,14 @@
 
 import { el, mount, viewHead, emptyState, toast, iconButton } from '../ui.js';
 import { localDateKey, formatDateKey, parseNumber, shiftDateKey } from '../nutrition.js';
-import { getSession, saveSession, saveWeight, listWeights } from '../store.js';
+import { getSession, saveSession, saveWeight, setSkillLevel } from '../store.js';
 import {
   exerciseById, GROUP_LABEL, blockWeek, forWeek, dayForWeekday, nextStep, BLOCK_WEEKS,
 } from '../training.js';
 import { energyPlan, weightTrend } from '../energy.js';
+import {
+  skillById, currentLevel, levelIndex, setsNeeded, levelCleared, hasNextLevel, MEASURE,
+} from '../skills.js';
 
 /** Letzte aufgezeichnete Leistung einer Übung vor einem Datum. */
 function lastPerformance(sessions, exerciseId, beforeDate) {
@@ -27,6 +30,103 @@ function formatSets(sets) {
     .filter((s) => s && s.reps)
     .map((s) => (Number(s.weight) > 0 ? `${String(s.weight).replace('.', ',')} kg × ${s.reps}` : `${s.reps} Wdh.`))
     .join('  ·  ');
+}
+
+/* ---------------- Technikblock ----------------
+   Fähigkeiten stehen vor dem Krafttraining: Technik braucht frische Schultern
+   und einen wachen Kopf, nach dem Krafttraining wäre beides weg.
+------------------------------------------------ */
+
+function skillBlock(skillId, session, ctx, onChange) {
+  const skill = skillById(skillId);
+  if (!skill) return null;
+
+  const index = levelIndex(skill, ctx.state.skillLevels);
+  const level = currentLevel(skill, ctx.state.skillLevels);
+  const unit = level.measure === 'sec' ? 's' : 'Wdh.';
+  const values = session.skills[skillId] || (session.skills[skillId] = []);
+
+  const block = el('div', { class: 'exblock' });
+  const status = el('div');
+
+  const paint = () => {
+    status.replaceChildren();
+    if (!levelCleared(level, values)) return;
+
+    if (!hasNextLevel(skill, ctx.state.skillLevels)) {
+      status.append(el('p', { class: 'note',
+        text: 'Oberste Stufe geschafft. Ab hier gilt: halten und sauberer machen.' }));
+      return;
+    }
+
+    const next = skill.levels[index + 1];
+    status.append(
+      el('p', { class: 'note' },
+        el('strong', { text: 'Stufe geschafft. ' }),
+        `Als Nächstes: ${next.name}, ${next.target} ${unitFor(next)} in ${next.sets} Sätzen.`),
+      el('button', {
+        class: 'btn btn-primary btn-block', type: 'button',
+        onClick: async () => {
+          await setSkillLevel(skill.id, index + 1);
+          await ctx.refreshTraining();
+          ctx.reload();
+          toast(`${skill.name}: Stufe ${index + 2} freigeschaltet.`);
+        },
+      }, 'Nächste Stufe freischalten')
+    );
+  };
+
+  const rows = [];
+  for (let i = 0; i < level.sets; i++) {
+    const input = el('input', {
+      class: 'input setinput', type: 'text', inputmode: 'numeric',
+      'aria-label': `${skill.name}, Satz ${i + 1}`,
+      placeholder: String(level.target),
+      value: values[i] != null ? String(values[i]) : '',
+    });
+
+    const tick = el('div', {
+      class: `settick${Number(values[i]) >= level.target ? ' on' : ''}`, 'aria-hidden': 'true',
+    }, '✓');
+
+    input.addEventListener('change', () => {
+      values[i] = input.value.trim() === '' ? null : Math.round(parseNumber(input.value));
+      tick.classList.toggle('on', Number(values[i]) >= level.target);
+      paint();
+      onChange();
+    });
+
+    rows.push(el('div', { class: 'setrow setrow-skill' },
+      el('span', { class: 'setnum tabular', text: String(i + 1) }),
+      input,
+      tick));
+  }
+
+  block.append(
+    el('div', { class: 'exblock-head' },
+      el('span', { class: 'exblock-name', text: skill.name }),
+      el('span', { class: 'exblock-group', text: `Stufe ${index + 1} von ${skill.levels.length}` })),
+    el('div', { class: 'ladder', 'aria-hidden': 'true' },
+      ...skill.levels.map((_, i) =>
+        el('span', { class: `rung${i < index ? ' done' : i === index ? ' on' : ''}` }))),
+    el('p', { class: 'exblock-rx', text: level.name }),
+    el('p', { class: 'exblock-last tabular',
+      text: `${level.sets} Sätze · Ziel ${level.target} ${unit} je Satz · weiter, wenn ${setsNeeded(level)} Sätze das Ziel treffen` }),
+    el('div', { class: 'setlabels setlabels-skill' },
+      el('span'), el('span', { text: MEASURE[level.measure] }), el('span')),
+    ...rows,
+    status,
+    el('p', { class: 'exblock-cue' },
+      el('strong', { text: 'Ausführung: ' }), level.cue,
+      el('span', { class: 'exblock-hint', text: skill.warmup }))
+  );
+
+  paint();
+  return block;
+}
+
+function unitFor(level) {
+  return level.measure === 'sec' ? 's' : 'Wdh.';
 }
 
 /* ---------------- Übungsblock mit Satzeingabe ---------------- */
@@ -143,7 +243,8 @@ export async function render(container, ctx) {
       viewHead('Training', 'noch kein Plan'),
       el('div', { class: 'card' },
         emptyState('Noch kein Trainingsplan',
-          'Sieben Fragen, dann steht dein Plan — und die Kalorienziele passen sich automatisch an Trainings- und Ruhetage an.'),
+          'Acht Fragen, dann steht dein Plan — die Kalorienziele passen sich an Trainings- und '
+          + 'Ruhetage an, und auf Wunsch übst du Fähigkeiten wie Handstand oder L-Sit mit.'),
         el('button', {
           class: 'btn btn-primary btn-block btn-lg', type: 'button',
           onClick: () => ctx.startSetup(),
@@ -177,13 +278,19 @@ export async function render(container, ctx) {
       el('p', null, 'Heute ist Erholung — da passiert der Muskelaufbau.'),
       next ? el('p', { class: 'muted small',
         text: `Nächste Einheit: ${next.day.name}, ${formatDateKey(next.key)}.` }) : null,
+      (profile.skills || []).length
+        ? el('p', { class: 'muted small',
+            text: 'Technik darf auch heute — locker und ohne bis ans Limit zu gehen. ' +
+                  'Aufgezeichnet wird sie nur an Trainingstagen.' })
+        : null,
       el('div', { class: 'note' },
         el('strong', { text: `${energy.rest.kcal} kcal statt ${energy.training.kcal}. ` }),
         `Ruhetage brauchen weniger Energie, weil die Einheit fehlt. Das Eiweiß bleibt mit ${energy.rest.protein} g gleich hoch — daran hängt der Muskelerhalt.`)));
   } else {
     const session = (await getSession(dateKey)) || {
-      date: dateKey, dayName: day.name, template: day.template, entries: {}, done: false,
+      date: dateKey, dayName: day.name, template: day.template, entries: {}, skills: {}, done: false,
     };
+    if (!session.skills) session.skills = {};   // Einheiten von vor den Fähigkeiten
 
     let pending = null;
     const persist = () => {
@@ -191,6 +298,17 @@ export async function render(container, ctx) {
       clearTimeout(pending);
       pending = setTimeout(() => { saveSession(session).then(() => ctx.refreshTraining()); }, 400);
     };
+
+    // Technik zuerst, danach die Kraftübungen.
+    const skillBlocks = (profile.skills || [])
+      .map((id) => skillBlock(id, session, ctx, persist))
+      .filter(Boolean);
+
+    if (skillBlocks.length) {
+      body.push(el('h2', { class: 'section-title', text: 'Technik zuerst' }));
+      body.push(el('div', { class: 'card card-flush' }, ...skillBlocks));
+      body.push(el('h2', { class: 'section-title', text: 'Krafttraining' }));
+    }
 
     const blocks = day.exercises
       .map((p) => exerciseBlock(p, week, session, sessions, dateKey, persist))

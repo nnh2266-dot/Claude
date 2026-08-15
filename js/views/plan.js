@@ -11,6 +11,7 @@ import {
   blockWeek, forWeek, buildPlan, BLOCK_WEEKS,
 } from '../training.js';
 import { energyPlan, energyBreakdown, ACTIVITY_LABEL } from '../energy.js';
+import { skillById, currentLevel, levelIndex, MINUTES_PER_SKILL } from '../skills.js';
 
 const WEEKDAY_SHORT = ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'];
 
@@ -99,6 +100,33 @@ export async function render(container, ctx) {
 
   const days = plan.days.map((day) => dayCard(day, week, profile.equipment));
 
+  // Fähigkeiten stehen über den Tagen: sie laufen an jedem Trainingstag,
+  // nicht an einem bestimmten.
+  const skillIds = profile.skills || [];
+  const skillSection = skillIds.length
+    ? el('div', null,
+        el('h2', { class: 'section-title', text: 'Technik an jedem Trainingstag' }),
+        el('div', { class: 'card card-flush' },
+          ...skillIds.map((id) => {
+            const skill = skillById(id);
+            if (!skill) return null;
+            const index = levelIndex(skill, ctx.state.skillLevels);
+            const level = currentLevel(skill, ctx.state.skillLevels);
+            const unit = level.measure === 'sec' ? 's' : 'Wdh.';
+            return el('div', { class: 'exrow' },
+              el('div', { class: 'grow' },
+                el('div', { class: 'exrow-name', text: skill.name }),
+                el('div', { class: 'exrow-tag',
+                  text: `Stufe ${index + 1} von ${skill.levels.length} · ${level.name}` })),
+              el('div', { class: 'exrow-rx tabular' },
+                el('strong', { text: `${level.sets} × ${level.target} ${unit}` }),
+                el('span', { text: 'vor dem Krafttraining' })));
+          }).filter(Boolean)),
+        el('p', { class: 'note mt-16',
+          text: `Zusammen rund ${skillIds.length * MINUTES_PER_SKILL} Minuten je Einheit. `
+            + 'Diese Zeit ist vom Krafttraining abgezogen, damit die Einheit so lang bleibt wie angesagt.' }))
+    : null;
+
   const nutrition = el('div', null,
     el('h2', { class: 'section-title', text: 'Kalorien zum Plan' }),
     el('div', { class: 'targetgrid' },
@@ -130,5 +158,5 @@ export async function render(container, ctx) {
       },
     }, 'Training zurücksetzen'));
 
-  mount(container, head, summary, ...days, nutrition, breakdown, reset);
+  mount(container, head, summary, skillSection, ...days, nutrition, breakdown, reset);
 }

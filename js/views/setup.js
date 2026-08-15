@@ -8,6 +8,7 @@ import { el, mount, viewHead, field, toast } from '../ui.js';
 import { parseNumber, localDateKey } from '../nutrition.js';
 import { setTrainingProfile, setPlan, saveWeight, listWeights } from '../store.js';
 import { buildPlan, EQUIPMENT_LABEL, LIMIT_LABEL, FOCUS_LABEL, LEVEL_LABEL } from '../training.js';
+import { SKILLS, MINUTES_PER_SKILL } from '../skills.js';
 
 /** Zwischenstand des Fragebogens. Überlebt den Wechsel zwischen den Schritten. */
 let draft = null;
@@ -16,8 +17,14 @@ let step = 0;
 /** Startet den Fragebogen — leer oder mit den Werten eines bestehenden Profils. */
 export function begin(profile) {
   draft = profile
-    ? { ...profile, weekdays: [...(profile.weekdays || [])], limits: [...(profile.limits || [])], focus: [...(profile.focus || [])] }
-    : { weekdays: [], limits: [], focus: [], sessionLength: 60 };
+    ? {
+        ...profile,
+        weekdays: [...(profile.weekdays || [])],
+        limits: [...(profile.limits || [])],
+        focus: [...(profile.focus || [])],
+        skills: [...(profile.skills || [])],
+      }
+    : { weekdays: [], limits: [], focus: [], skills: [], sessionLength: 60 };
   step = 0;
 }
 
@@ -209,7 +216,54 @@ const STEPS = [
     ],
     check: () => null,
   },
+  {
+    title: 'Fähigkeiten',
+    note: 'Optional',
+    build: () => [
+      el('p', { class: 'small muted' },
+        'Kunststücke wie Handstand oder L-Sit lernt man nicht über Gewicht, sondern über ' +
+        'Vorstufen: eine Haltung wird sauber und lange genug gehalten, dann kommt die nächste. ' +
+        'Geübt wird am Anfang der Einheit, solange Kopf und Schultern frisch sind.'),
+      skillPicker(),
+      el('p', { class: 'hint' },
+        `Bis zu zwei. Jede kostet rund ${MINUTES_PER_SKILL} Minuten pro Einheit — die Zeit ` +
+        'wird vom Krafttraining abgezogen, damit die Einheit nicht heimlich länger wird.'),
+    ],
+    check: () => null,
+  },
 ];
+
+/** Auswahlkarten für die Fähigkeiten, mit Stufenzahl und nötigem Gerät. */
+function skillPicker() {
+  const list = el('div', { class: 'optcards' });
+
+  for (const skill of SKILLS) {
+    const chosen = () => (draft.skills || []).includes(skill.id);
+    const card = el(
+      'button',
+      {
+        class: 'optcard', type: 'button',
+        'aria-pressed': chosen() ? 'true' : 'false',
+        onClick: () => {
+          const current = draft.skills || [];
+          if (chosen()) {
+            draft.skills = current.filter((id) => id !== skill.id);
+          } else {
+            if (current.length >= 2) { toast('Höchstens zwei Fähigkeiten auf einmal.'); return; }
+            draft.skills = [...current, skill.id];
+          }
+          card.setAttribute('aria-pressed', chosen() ? 'true' : 'false');
+        },
+      },
+      el('span', { class: 'optcard-title', text: skill.name }),
+      el('span', { class: 'optcard-desc', text: skill.blurb }),
+      el('span', { class: 'optcard-meta' },
+        `${skill.levels.length} Stufen · braucht ${skill.needs}`)
+    );
+    list.append(card);
+  }
+  return list;
+}
 
 /* ---------------- Ansicht ---------------- */
 
@@ -270,6 +324,7 @@ async function finish(ctx) {
     activity: draft.activity,
     limits: draft.limits || [],
     focus: (draft.focus || []).slice(0, 2),
+    skills: (draft.skills || []).slice(0, 2),
   };
 
   const plan = buildPlan(profile, 0);

@@ -30,8 +30,12 @@ anzeigt.
 
 ### Training
 
-- **Sieben Fragen, ein Plan**: Basisdaten, Ziel, Erfahrung, Zeit, Ausrüstung, Alltag
-  und Beschwerden, Schwerpunkte — daraus entstehen Split, Übungen und Kalorienziele
+- **Acht Fragen, ein Plan**: Basisdaten, Ziel, Erfahrung, Zeit, Ausrüstung, Alltag
+  und Beschwerden, Schwerpunkte, Fähigkeiten — daraus entstehen Split, Übungen und
+  Kalorienziele
+- **Fähigkeiten lernen**: Handstand, L-Sit, erster Klimmzug, erster Dip, Pistol Squat,
+  Muscle-Up, Front Lever — jeweils als Leiter aus Vorstufen, die sich freischalten,
+  sobald eine Stufe sauber gehalten wird
 - **Einheit mitschreiben**: Gewicht und Wiederholungen je Satz, mit den Werten vom
   letzten Mal als Vorgabe und einem konkreten nächsten Schritt je Übung
 - **Vier-Wochen-Block**: Woche 1 mit mehr Reserve, Woche 3 schwer, Woche 4 Deload
@@ -119,7 +123,7 @@ Pfade sind relativ, und der Service Worker beansprucht nur seinen eigenen Untero
 ### 3. Beim ersten Start: Fragebogen
 
 Ohne Trainingsplan ist die App ein reiner Kalorienzähler mit von Hand gesetzten
-Zielen. Unter *Training → Fragebogen starten* entstehen aus sieben Fragen der Plan
+Zielen. Unter *Training → Fragebogen starten* entstehen aus acht Fragen der Plan
 und die Kalorienziele dazu — ab dann rechnet der Ring auf der Startseite gegen das
 Ziel des jeweiligen Tages statt gegen einen festen Wert.
 
@@ -173,6 +177,7 @@ js/app.js                Routing, gemeinsamer Zustand, Bootstrap
 js/store.js              IndexedDB: Mahlzeiten, Favoriten, Einheiten, Gewichte, Einstellungen
 js/nutrition.js          Summen, Datumslogik, Portionsskalierung
 js/training.js           Übungsdatenbank, Plangenerator, Satzvorgaben, Progression
+js/skills.js             Fähigkeiten: Stufenleitern, Ziele, Freischaltregeln
 js/energy.js             Grundumsatz, Tagesziele, Gewichtstrend, Kalorienkorrektur
 js/claude.js             Anthropic-API + Chat-Brücke: Prompts, Schema, Fehlertexte
 js/image.js              Kamera-Foto verkleinern, Thumbnail, Base64
@@ -186,7 +191,7 @@ manifest.webmanifest     PWA-Manifest
 Reine ES-Module, keine Abhängigkeiten, kein Build. Änderungen an den App-Dateien
 brauchen eine neue `CACHE_VERSION` in `sw.js`, damit Geräte die neue Fassung laden.
 
-`training.js` und `energy.js` fassen kein DOM an — die Rechnerei ist damit einzeln
+`training.js`, `skills.js` und `energy.js` fassen kein DOM an — die Rechnerei ist damit einzeln
 prüfbar, so wie `nutrition.js` es schon vorher war.
 
 ## Wie die Zahlen entstehen
@@ -210,6 +215,20 @@ der Rest Kohlenhydrate — an Trainingstagen entsprechend mehr.
 sich die tatsächliche Veränderung in Prozent Körpergewicht pro Woche. Weicht sie um
 mehr als 0,22 Prozentpunkte vom Ziel ab, schlägt die App eine Korrektur vor
 (1 kg ≈ 7700 kcal, gedeckelt auf ±300 kcal pro Tag).
+
+## Wie Fähigkeiten funktionieren
+
+Handstand, L-Sit, erster Klimmzug, erster Dip, Pistol Squat, Muscle-Up und Front
+Lever stehen zur Wahl — bis zu zwei gleichzeitig. Jede ist eine Leiter aus fünf bis
+sieben Vorstufen mit einem Ziel je Stufe, etwa „Hollow Hold, 40 Sekunden, drei Sätze".
+Treffen zwei der drei Sätze das Ziel, geht die nächste Stufe auf; freigeschaltet wird
+per Knopfdruck, nicht automatisch — die Entscheidung, ob eine Haltung wirklich sauber
+war, trifft niemand außer dir.
+
+Geübt wird **vor** dem Krafttraining: Technik braucht einen frischen Kopf und frische
+Schultern, danach wäre beides weg. Jede gewählte Fähigkeit kostet rund sechs Minuten,
+und diese Zeit wird von der Kraftplanung abgezogen — sonst würde die Einheit still und
+heimlich länger, als im Fragebogen angesagt.
 
 ## Wie der Plan entsteht
 

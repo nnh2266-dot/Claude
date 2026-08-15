@@ -7,7 +7,8 @@
 
 import { localDateKey } from './nutrition.js';
 import {
-  getSettings, getTrainingProfile, getPlan, getKcalAdjust, listSessions, listWeights,
+  getSettings, getTrainingProfile, getPlan, getKcalAdjust, getSkillLevels,
+  listSessions, listWeights,
 } from './store.js';
 import { targetsForDate } from './energy.js';
 import { toast } from './ui.js';
@@ -43,6 +44,7 @@ const state = {
   profile: null,
   plan: null,
   kcalAdjust: 0,
+  skillLevels: {},
   sessions: [],
   weights: [],
 };
@@ -130,10 +132,11 @@ const ctx = {
 
   /** Lädt Profil, Plan, Einheiten und Gewichte neu. */
   async refreshTraining() {
-    const [profile, plan, kcalAdjust, sessions, weights] = await Promise.all([
-      getTrainingProfile(), getPlan(), getKcalAdjust(), listSessions(), listWeights(),
+    const [profile, plan, kcalAdjust, skillLevels, sessions, weights] = await Promise.all([
+      getTrainingProfile(), getPlan(), getKcalAdjust(), getSkillLevels(),
+      listSessions(), listWeights(),
     ]);
-    Object.assign(state, { profile, plan, kcalAdjust, sessions, weights });
+    Object.assign(state, { profile, plan, kcalAdjust, skillLevels, sessions, weights });
   },
 
   /**
