@@ -376,7 +376,7 @@ aus dem Research-Playbook praktisch umsonst zu haben.
 **Sitzung 5 — Schnitt** (~2 Std.)
 - [ ] Einblendungen, Untertitel, Wortmarke, KI-Kennzeichnung
 - [ ] Fünf Hook-Varianten schneiden
-- [ ] 9:16 und 4:5 exportieren
+- [ ] 9:16 und 4:5 exportieren (Maße und Exporteinstellungen: Abschnitt 11)
 
 **Danach:** Spot 2 und Spot 3 aus denselben Nodes — Spot 2 braucht nur Bild 5 und die
 Silhouette, Spot 3 nur die Silhouette in drei Zuständen. Beide sind fast reine
@@ -384,7 +384,83 @@ Schnittarbeit.
 
 ---
 
-## 11. Was das nicht ersetzt
+## 11. Maße und Qualität
+
+### Die Zielformate
+
+| | **Reels / Stories** (Hauptformat) | **Feed 4:5** |
+|---|---|---|
+| Auflösung | **1080 × 1920 px** | **1080 × 1350 px** |
+| Seitenverhältnis | 9:16 | 4:5 |
+| Safe Area | zentrale **1080 × 1420 px** | **972 × 1215 px** |
+| Bildrate | **30 fps** | 30 fps |
+| Container / Codec | **MP4, H.264** | MP4, H.264 |
+| Videobitrate | **10–12 Mbit/s** | 10–12 Mbit/s |
+| Audio | **AAC, 128 kbit/s oder höher, 48 kHz** | ebd. |
+| Lautheit | ~ −14 LUFS integriert | ebd. |
+| Dateigröße | unter 250 MB (real: ~20 MB) | ebd. |
+| Länge | 15 s | 15 s |
+
+**1080 px Breite ist die Untergrenze, nicht das Ziel.** Alles darunter wird von Meta
+hochskaliert und sieht auf modernen Displays weich aus. Alles darüber wird ohnehin auf
+1080 heruntergerechnet — das schadet nicht, es schärft sogar. Also: so groß generieren
+wie der Node hergibt, am Ende auf 1080 × 1920 exportieren, den größeren Master archivieren.
+
+### Safe Area — was das praktisch heißt
+
+Bei 9:16 liegt über und unter dem Bild die Plattform-Oberfläche: oben der Kopfbereich,
+unten Profilname, Bildunterschrift, Ton-Zeile und die Schaltflächen. **Der untere Rand
+frisst deutlich mehr als der obere.** Rechne konservativ mit **250 px oben und 420 px
+unten** — nichts Wichtiges gehört dorthin.
+
+Betroffen sind konkret:
+
+- die fünf Texteinblendungen → in die mittleren zwei Drittel
+- die Untertitel → nicht am unteren Rand, sondern etwa auf 60 % Höhe
+- das Overlay **„KI-generiert"** → oben links, aber unterhalb der 250-px-Zone
+- die Wortmarke bei 13,0 s → mittig, nicht unten
+
+### Der 4:5-Schnitt ist kein Beschnitt
+
+1080 × 1350 aus 1080 × 1920 bedeutet, dass oben und unten zusammen 570 px wegfallen.
+Das funktioniert nur, weil die Bild-Prompts durchgehend **großzügigen Rand über und unter
+dem Gerät** verlangen — genau dafür steht der Halbsatz in Bild 6.
+
+**Aber die Texte müssen für 4:5 neu gesetzt werden, nicht mitgeschnitten.** Wer die
+9:16-Fassung einfach beschneidet, schneidet die Einblendungen an. Im Studio zwei
+Sequenzen anlegen, gleiche Clips, eigene Textebenen.
+
+### Bildrate — der eine Punkt, an dem es schiefgehen kann
+
+Die Prompts in `werbevideos.md` nennen 24 fps. Das ist ein **stilistischer Hinweis an das
+Modell, keine technische Einstellung** — welche Bildrate tatsächlich herauskommt, hängt
+am Modell.
+
+**Die einzige harte Regel: nicht mischen.** Prüfe nach den ersten Generierungen, was die
+Clips wirklich haben, und fahre die gesamte Sequenz auf einer Rate.
+
+- Kommen sie mit **30 fps** → Timeline auf 30, exportieren mit 30. Ideal.
+- Kommen sie mit **24 fps** → Timeline auf 24, exportieren mit 24. Meta akzeptiert das
+  problemlos.
+- **Nicht** 24-fps-Clips auf eine 30-fps-Timeline legen. Bei Video 3, der langsamen
+  Kamerafahrt am Bogen, erzeugt das sichtbares Ruckeln — ausgerechnet im Hero-Shot.
+
+### Wo im Flow die Qualität entsteht
+
+| Stufe | Was zu tun ist |
+|---|---|
+| **Image-Node** | höchste verfügbare Auflösung, 9:16 von Anfang an. Hier entsteht die Schärfe — ein weiches Ausgangsbild wird durch keinen Video-Node besser |
+| **Video-Node** | die höchste Auflösung wählen, die das Modell ohne Aufpreis liefert |
+| **Upscale-Node** | nur auf Video 3 und Video 6 — die beiden Clips mit scharfem Produkt. Diagramm-Clips brauchen es nicht, das sind Flächen und Linien |
+| **Export aus Studio** | 1080 × 1920, H.264, 10–12 Mbit/s, AAC 128 kbit/s |
+
+Bei 15 Sekunden und 12 Mbit/s liegt die Datei bei rund **20 MB** — weit unter jeder
+Grenze. An der Bitrate zu sparen gibt es hier keinen Grund; Meta rechnet ohnehin nach,
+und je besser das Ausgangsmaterial, desto weniger sichtbar ist diese zweite Kompression.
+
+---
+
+## 12. Was das nicht ersetzt
 
 Eine Sache bleibt trotz allem besser, sobald sie möglich ist: **eine echte Aufnahme, wie
 das Gerät an der Stelle ankommt.** Sie ist der einzige Beweis, den niemand nachbauen
