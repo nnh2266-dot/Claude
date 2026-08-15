@@ -224,8 +224,25 @@ async function start() {
 function registerServiceWorker() {
   if (!('serviceWorker' in navigator) || location.protocol === 'file:') return;
 
+  // Übernimmt ein neuer Service Worker das Ruder, zeigt die Seite noch die
+  // alte Fassung. Einmal neu laden, dann stimmt es — sonst müsste man die App
+  // von Hand zweimal starten, um eine Änderung zu sehen.
+  let schonNeugeladen = false;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (schonNeugeladen) return;
+    schonNeugeladen = true;
+    location.reload();
+  });
+
   const register = () => {
-    navigator.serviceWorker.register('./sw.js').catch(() => {
+    navigator.serviceWorker.register('./sw.js').then((reg) => {
+      // Beim Start und bei jeder Rückkehr in den Vordergrund nachsehen, ob es
+      // eine neue Fassung gibt.
+      reg.update().catch(() => {});
+      document.addEventListener('visibilitychange', () => {
+        if (!document.hidden) reg.update().catch(() => {});
+      });
+    }).catch(() => {
       /* Offline-Betrieb ist eine Zugabe — Fehler hier sind unkritisch. */
     });
   };

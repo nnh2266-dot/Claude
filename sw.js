@@ -7,7 +7,7 @@
  * CACHE_VERSION bei jeder Änderung an den App-Dateien erhöhen.
  */
 
-const CACHE_VERSION = 'naehrwerte-v7';   // muss zu APP_VERSION in js/version.js passen
+const CACHE_VERSION = 'naehrwerte-v8';   // muss zu APP_VERSION in js/version.js passen
 
 const APP_SHELL = [
   './',
@@ -82,20 +82,23 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Statische Dateien: aus dem Cache, im Hintergrund auffrischen.
+  // Statische Dateien: erst das Netz, der Cache ist die Rückfalllösung.
+  //
+  // Vorher lief das andersherum — aus dem Cache und im Hintergrund auffrischen.
+  // Das ist schneller, hat aber eine unangenehme Folge: eine neue Fassung wird
+  // beim Öffnen zwar geladen, aber erst beim übernächsten Start angezeigt. Auf
+  // einem Handy, das die App tagelang im Hintergrund hält, kann das ewig dauern.
+  // Die App ist klein genug, dass der Netzweg nicht auffällt, und ohne Netz
+  // greift weiterhin der Cache.
   event.respondWith(
-    caches.match(request).then((cached) => {
-      const network = fetch(request)
-        .then((response) => {
-          if (response && response.ok) {
-            const copy = response.clone();
-            caches.open(CACHE_VERSION).then((cache) => cache.put(request, copy));
-          }
-          return response;
-        })
-        .catch(() => cached);
-
-      return cached || network;
-    })
+    fetch(request)
+      .then((response) => {
+        if (response && response.ok) {
+          const copy = response.clone();
+          caches.open(CACHE_VERSION).then((cache) => cache.put(request, copy));
+        }
+        return response;
+      })
+      .catch(() => caches.match(request))
   );
 });

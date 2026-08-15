@@ -190,7 +190,18 @@ manifest.webmanifest     PWA-Manifest
 ```
 
 Reine ES-Module, keine Abhängigkeiten, kein Build. Änderungen an den App-Dateien
-brauchen eine neue `CACHE_VERSION` in `sw.js`, damit Geräte die neue Fassung laden.
+brauchen eine neue `CACHE_VERSION` in `sw.js` **und** eine neue `APP_VERSION` in
+`js/version.js` — beide gehören zusammen, die eine wirft den Offline-Speicher weg,
+die andere macht in der App sichtbar, welcher Stand läuft.
+
+**Zur Aktualisierung:** Der Service Worker holt statische Dateien erst aus dem Netz
+und nutzt den Cache nur als Rückfalllösung. Andersherum wäre es schneller, hätte aber
+zur Folge, dass eine neue Fassung erst beim übernächsten Start erscheint — auf einem
+Handy, das die App tagelang im Hintergrund hält, kann das ewig dauern. Zusätzlich
+prüft die App beim Start und bei jeder Rückkehr in den Vordergrund auf eine neue
+Fassung und lädt einmal neu, sobald ein neuer Service Worker übernimmt. Bleibt ein
+Gerät trotzdem hängen, gibt es unter *Mehr → Fassung* den Knopf
+*Offline-Speicher leeren und neu laden*.
 
 `training.js`, `skills.js` und `energy.js` fassen kein DOM an — die Rechnerei ist damit einzeln
 prüfbar, so wie `nutrition.js` es schon vorher war.

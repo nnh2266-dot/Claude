@@ -353,6 +353,52 @@ function dataSection(ctx, mealCount) {
 
 /* ---------------- Ansicht ---------------- */
 
+/* ---------------- Fassung ---------------- */
+
+/**
+ * Zeigt, welche Fassung gerade läuft, und bietet den Notausgang: Offline-Speicher
+ * wegwerfen und neu laden. Nötig, wenn ein Gerät hartnäckig eine alte Fassung
+ * festhält — die eingetragenen Daten bleiben davon unberührt, die liegen in der
+ * Datenbank und nicht im Zwischenspeicher.
+ */
+function versionSection() {
+  const status = el('p', { class: 'hint' });
+
+  return el('div', { class: 'card stack' },
+    el('div', { class: 'row-between' },
+      el('span', { class: 'd-name', text: `Fassung ${APP_VERSION}` }),
+      el('span', { class: 'muted small', text: APP_DATE })),
+    el('button', {
+      class: 'btn', type: 'button',
+      onClick: async (event) => {
+        const button = event.currentTarget;
+        button.disabled = true;
+        status.textContent = 'Suche …';
+        try {
+          if ('caches' in window) {
+            const keys = await caches.keys();
+            await Promise.all(keys.map((k) => caches.delete(k)));
+          }
+          if ('serviceWorker' in navigator) {
+            const regs = await navigator.serviceWorker.getRegistrations();
+            await Promise.all(regs.map((r) => r.unregister()));
+          }
+          status.textContent = 'Lade neu …';
+          // Ohne kurze Pause startet der Neuladevorgang, bevor das Aufräumen
+          // beim Browser angekommen ist.
+          setTimeout(() => location.reload(), 300);
+        } catch (err) {
+          button.disabled = false;
+          status.textContent = 'Hat nicht geklappt. Schließ die App ganz und öffne sie neu.';
+        }
+      },
+    }, 'Offline-Speicher leeren und neu laden'),
+    status,
+    el('p', { class: 'hint',
+      text: 'Zeigt die App eine veraltete Fassung, hilft das hier. Mahlzeiten, '
+        + 'Trainingsdaten und Gewichte bleiben erhalten.' }));
+}
+
 export async function render(container, ctx) {
   const mealCount = await countMeals();
 
@@ -370,11 +416,12 @@ export async function render(container, ctx) {
       goalsSection(ctx),
       el('h2', { class: 'section-title', text: 'Daten' }),
       dataSection(ctx, mealCount),
+      el('h2', { class: 'section-title', text: 'Fassung' }),
+      versionSection(),
       el(
         'p',
         { class: 'hint', style: { padding: '18px 4px 0', textAlign: 'center' } },
-        `Fassung ${APP_VERSION} vom ${APP_DATE}. `
-        + 'Alle Mahlzeiten, Fotos und Trainingsdaten bleiben auf diesem Gerät. ' +
+        'Alle Mahlzeiten, Fotos und Trainingsdaten bleiben auf diesem Gerät. ' +
         'Nur das jeweils analysierte Foto wird an die Anthropic-API geschickt.'
       )
     )
