@@ -6,9 +6,12 @@
 
 import { el, mount, viewHead, emptyState, toast, iconButton } from '../ui.js';
 import { localDateKey, formatDateKey, parseNumber, shiftDateKey } from '../nutrition.js';
-import { getSession, saveSession, saveWeight, setSkillLevel } from '../store.js';
+import {
+  getSession, saveSession, saveWeight, setSkillLevel, setPlan, setTrainingProfile,
+} from '../store.js';
 import {
   exerciseById, GROUP_LABEL, blockWeek, forWeek, dayForWeekday, nextStep, BLOCK_WEEKS,
+  replaceExercise,
 } from '../training.js';
 import { energyPlan, weightTrend } from '../energy.js';
 import {
@@ -228,9 +231,17 @@ function skillBlock(skillId, session, ctx, onChange) {
     });
     input.value = values[i] != null ? String(values[i]) : '';
 
-    const tick = el('div', {
-      class: `settick${Number(values[i]) >= level.target ? ' on' : ''}`, 'aria-hidden': 'true',
+    const tick = el('button', {
+      class: `settick${Number(values[i]) >= level.target ? ' on' : ''}`,
+      type: 'button',
+      'aria-label': `Satz ${i + 1} als geschafft markieren`,
     }, '✓');
+
+    // Tippen trägt die Zielvorgabe ein, nochmal tippen leert den Satz.
+    tick.addEventListener('click', () => {
+      input.value = values[i] != null ? '' : String(level.target);
+      input.dispatchEvent(new Event('change'));
+    });
 
     input.addEventListener('change', () => {
       values[i] = input.value.trim() === '' ? null : Math.round(parseNumber(input.value));
@@ -268,6 +279,16 @@ function skillBlock(skillId, session, ctx, onChange) {
     ? holdTimer({ target: level.target, sets: level.sets, nextEmpty, write: (i, sek) => writeSeconds(i, sek) })
     : null;
 
+  /** Stufe von Hand verschieben — die App kann nicht wissen, was schon sitzt. */
+  const stufeWechseln = async (delta) => {
+    const ziel = Math.min(Math.max(index + delta, 0), skill.levels.length - 1);
+    if (ziel === index) return;
+    await setSkillLevel(skill.id, ziel);
+    await ctx.refreshTraining();
+    ctx.reload();
+    toast(`${skill.name}: Stufe ${ziel + 1} von ${skill.levels.length}.`);
+  };
+
   block.append(
     el('div', { class: 'exblock-head' },
       el('span', { class: 'exblock-name', text: skill.name }),
@@ -285,7 +306,18 @@ function skillBlock(skillId, session, ctx, onChange) {
     status,
     el('p', { class: 'exblock-cue' },
       el('strong', { text: 'Ausführung: ' }), level.cue,
-      el('span', { class: 'exblock-hint', text: skill.warmup }))
+      el('span', { class: 'exblock-hint', text: skill.warmup })),
+    el('div', { class: 'stufenwahl' },
+      el('button', {
+        class: 'btn btn-ghost btn-sm', type: 'button',
+        disabled: index === 0,
+        onClick: () => stufeWechseln(-1),
+      }, '← Zu schwer'),
+      el('button', {
+        class: 'btn btn-ghost btn-sm', type: 'button',
+        disabled: index >= skill.levels.length - 1,
+        onClick: () => stufeWechseln(1),
+      }, 'Zu leicht →'))
   );
 
   paint();
@@ -298,7 +330,7 @@ function unitFor(level) {
 
 /* ---------------- Übungsblock mit Satzeingabe ---------------- */
 
-function exerciseBlock(prescription, week, session, sessions, dateKey, onChange) {
+function exerciseBlock(prescription, week, session, sessions, dateKey, onChange, tauschen) {
   const exercise = exerciseById(prescription.id);
   if (!exercise) return null;
 
@@ -313,7 +345,15 @@ function exerciseBlock(prescription, week, session, sessions, dateKey, onChange)
     // Bei Körpergewichtsübungen zählt die Wiederholung; das Zusatzgewicht darf leer bleiben.
     const isComplete = (set) => !!set.reps && (prescription.loadless || set.weight != null);
 
-    const tick = el('div', { class: `settick${isComplete(stored) ? ' on' : ''}`, 'aria-hidden': 'true' }, '✓');
+    // Der Haken sieht aus wie ein Kästchen — also muss er sich auch wie eines
+    // verhalten. Tippen übernimmt die Vorschläge aus den Platzhaltern: das
+    // Gewicht vom letzten Mal und die untere Wiederholungszahl. Nochmal tippen
+    // leert den Satz wieder.
+    const tick = el('button', {
+      class: `settick${isComplete(stored) ? ' on' : ''}`,
+      type: 'button',
+      'aria-label': `Satz ${i + 1} als geschafft markieren`,
+    }, '✓');
 
     const update = () => {
       entries[i] = {
@@ -323,6 +363,31 @@ function exerciseBlock(prescription, week, session, sessions, dateKey, onChange)
       tick.classList.toggle('on', isComplete(entries[i]));
       onChange();
     };
+
+    tick.addEventListener('click', () => {
+      if (isComplete(entries[i] || {})) {
+        weightInput.value = '';
+        repsInput.value = '';
+        update();
+        return;
+      }
+
+      // Leere Felder mit dem füllen, was ohnehin als Vorschlag dort steht.
+      if (!repsInput.value.trim()) repsInput.value = repsInput.placeholder;
+      if (!weightInput.value.trim()) {
+        const vorschlag = parseNumber(weightInput.placeholder);
+        if (vorschlag > 0) weightInput.value = String(vorschlag).replace('.', ',');
+      }
+      update();
+
+      // Beim ersten Mal gibt es noch kein Gewicht vom letzten Mal. Dann bleibt
+      // der Satz offen — also gleich ins fehlende Feld springen, statt den
+      // Nutzer raten zu lassen, warum der Haken nicht angeht.
+      if (!isComplete(entries[i] || {}) && !weightInput.value.trim()) {
+        weightInput.focus();
+        weightInput.select?.();
+      }
+    });
 
     const weightInput = el('input', {
       class: 'input setinput', type: 'text', inputmode: 'decimal',
@@ -360,7 +425,11 @@ function exerciseBlock(prescription, week, session, sessions, dateKey, onChange)
     el('p', { class: 'exblock-cue' },
       el('strong', { text: 'Nächster Schritt: ' }),
       nextStep(prescription, last ? last.sets : null, adjusted.rir),
-      el('span', { class: 'exblock-hint', text: exercise.cue })));
+      el('span', { class: 'exblock-hint', text: exercise.cue })),
+    el('div', { class: 'stufenwahl' },
+      el('button', {
+        class: 'btn btn-ghost btn-sm', type: 'button', onClick: tauschen,
+      }, 'Zu schwer — andere Übung')));
 }
 
 /* ---------------- Gewichtskarte ---------------- */
@@ -498,8 +567,38 @@ export async function render(container, ctx) {
       body.push(el('h2', { class: 'section-title', text: 'Krafttraining' }));
     }
 
+    const dayIndex = plan.days.indexOf(day);
+
+    /**
+     * Übung austauschen. Die abgelehnte wird gemerkt, damit sie auch bei einem
+     * späteren Neubau des Plans nicht zurückkommt.
+     */
+    const tauschen = async (exerciseIndex) => {
+      const alteId = day.exercises[exerciseIndex].id;
+      const { plan: neuerPlan, ersatz } = replaceExercise(plan, profile, dayIndex, exerciseIndex);
+
+      if (!ersatz) {
+        toast('Dafür gibt es mit deiner Ausrüstung keinen Ersatz mehr.');
+        return;
+      }
+
+      const blocked = [...new Set([...(profile.blocked || []), alteId])];
+      await setTrainingProfile({ ...profile, blocked });
+      await setPlan(neuerPlan);
+
+      // Aufgezeichnete Sätze der alten Übung gehören nicht zur neuen.
+      if (session.entries[alteId]) {
+        delete session.entries[alteId];
+        await saveSession(session);
+      }
+
+      await ctx.refreshTraining();
+      ctx.reload();
+      toast(`Getauscht: ${exerciseById(ersatz.id).name}.`);
+    };
+
     const blocks = day.exercises
-      .map((p) => exerciseBlock(p, week, session, sessions, dateKey, persist))
+      .map((p, i) => exerciseBlock(p, week, session, sessions, dateKey, persist, () => tauschen(i)))
       .filter(Boolean);
 
     body.push(el('div', { class: 'card card-flush' }, ...blocks));

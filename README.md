@@ -237,6 +237,10 @@ mehr als 0,22 Prozentpunkte vom Ziel ab, schlägt die App eine Korrektur vor
 Handstand, L-Sit, erster Klimmzug, erster Dip, Pistol Squat, Muscle-Up und Front
 Lever stehen zur Wahl — bis zu zwei gleichzeitig. Jede ist eine Leiter aus fünf bis
 sieben Vorstufen mit einem Ziel je Stufe, etwa „Hollow Hold, 40 Sekunden, drei Sätze".
+Beim Anlegen wird gefragt, auf welcher Stufe man schon steht — wer den Wandhandstand
+zwanzig Sekunden hält, fängt nicht bei „Hollow Hold" an. Im Training verschieben
+*Zu leicht* und *Zu schwer* die Stufe jederzeit.
+
 Treffen zwei der drei Sätze das Ziel, geht die nächste Stufe auf; freigeschaltet wird
 per Knopfdruck, nicht automatisch — die Entscheidung, ob eine Haltung wirklich sauber
 war, trifft niemand außer dir.
@@ -274,6 +278,12 @@ Schulterbeschwerden —, sagt der Plan das offen, statt die Liste aufzufüllen.
 
 Übungen ohne Zusatzgewicht bekommen höhere Wiederholungszahlen (10–20 statt 5–8),
 weil der Fortschritt dort über Wiederholungen und schwerere Varianten läuft.
+
+**Passt eine Übung nicht, fliegt sie raus.** Unter jeder Übung steht im Training
+*Zu schwer — andere Übung*: die App tauscht sofort gegen eine andere aus derselben
+Muskelgruppe und merkt sich die abgelehnte, damit sie auch bei einem neuen Plan nicht
+zurückkommt. Im Plan stehen die aussortierten Übungen mit einem Knopf zum
+Wiederzulassen.
 
 Fortschritt je Übung nach doppelter Progression: sitzen alle Sätze am oberen Ende des
 Wiederholungsbereichs, steigt das Gewicht um 2,5 kg (Grundübung) oder 1,25 kg

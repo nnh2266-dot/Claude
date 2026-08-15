@@ -252,10 +252,14 @@ export function buildPlan(profile, seed = 0) {
   // Im Studio ist alles da; sonst zählt, was im Fragebogen angekreuzt wurde.
   const gear = profile.equipment === 'studio' ? Object.keys(GEAR_LABEL) : (profile.gear || []);
 
+  // Im Training als zu schwer aussortierte Übungen bleiben draußen.
+  const blocked = new Set(profile.blocked || []);
+
   const usable = EXERCISES.filter(
     (e) => [...e.env].some((c) => codes.includes(c))
       && !e.avoid.some((a) => limits.includes(a))
       && (!GEAR[e.id] || gear.includes(GEAR[e.id]))
+      && !blocked.has(e.id)
   );
 
   let key = profile.days;
@@ -349,6 +353,54 @@ export function buildPlan(profile, seed = 0) {
     skillMinutes,
     days,
   };
+}
+
+/**
+ * Tauscht eine Übung gegen eine andere aus derselben Muskelgruppe.
+ *
+ * Gebraucht, wenn eine Übung im Training nicht geht — zu schwer, schmerzhaft,
+ * Gerät belegt. Die abgelehnte wandert in `profile.blocked` und kommt auch bei
+ * späteren Neubauten des Plans nicht wieder.
+ *
+ * @returns {{plan: object, ersatz: object|null}} neuer Plan und die neue Übung
+ */
+export function replaceExercise(plan, profile, dayIndex, exerciseIndex) {
+  const day = plan.days[dayIndex];
+  const alt = day && day.exercises[exerciseIndex];
+  if (!alt) return { plan, ersatz: null };
+
+  const altExercise = exerciseById(alt.id);
+  if (!altExercise) return { plan, ersatz: null };
+
+  const codes = EQUIPMENT_CODES[profile.equipment] || EQUIPMENT_CODES.studio;
+  const limits = profile.limits || [];
+  const gear = profile.equipment === 'studio' ? Object.keys(GEAR_LABEL) : (profile.gear || []);
+  const blocked = new Set([...(profile.blocked || []), alt.id]);
+  const imTag = new Set(day.exercises.map((e) => e.id));
+
+  const passt = (e) => [...e.env].some((c) => codes.includes(c))
+    && !e.avoid.some((a) => limits.includes(a))
+    && (!GEAR[e.id] || gear.includes(GEAR[e.id]))
+    && !blocked.has(e.id)
+    && !imTag.has(e.id);
+
+  // Erst dieselbe Gruppe und Art, dann nur die Gruppe, dann die Ersatzgruppe.
+  let auswahl = EXERCISES.filter((e) => passt(e) && e.group === altExercise.group && e.type === altExercise.type);
+  if (!auswahl.length) auswahl = EXERCISES.filter((e) => passt(e) && e.group === altExercise.group);
+  if (!auswahl.length && FALLBACK_GROUP[altExercise.group]) {
+    auswahl = EXERCISES.filter((e) => passt(e) && e.group === FALLBACK_GROUP[altExercise.group]);
+  }
+  if (!auswahl.length) return { plan, ersatz: null };
+
+  const ersatz = auswahl[0];
+  const neueVorgabe = prescribe(ersatz, profile, exerciseIndex === 0);
+
+  const days = plan.days.map((d, i) => (i !== dayIndex ? d : {
+    ...d,
+    exercises: d.exercises.map((e, j) => (j === exerciseIndex ? neueVorgabe : e)),
+  }));
+
+  return { plan: { ...plan, days }, ersatz };
 }
 
 /* ---------------- 4-Wochen-Block ----------------

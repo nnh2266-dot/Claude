@@ -6,11 +6,11 @@
 
 import { el, mount, viewHead, field, toast } from '../ui.js';
 import { parseNumber, localDateKey } from '../nutrition.js';
-import { setTrainingProfile, setPlan, saveWeight, listWeights } from '../store.js';
+import { setTrainingProfile, setPlan, saveWeight, listWeights, setSkillLevel } from '../store.js';
 import {
   buildPlan, EQUIPMENT_LABEL, LIMIT_LABEL, FOCUS_LABEL, LEVEL_LABEL, GEAR_LABEL,
 } from '../training.js';
-import { SKILLS, MINUTES_PER_SKILL } from '../skills.js';
+import { SKILLS, MINUTES_PER_SKILL, skillById } from '../skills.js';
 
 /** Zwischenstand des Fragebogens. Überlebt den Wechsel zwischen den Schritten. */
 let draft = null;
@@ -26,6 +26,7 @@ export function begin(profile) {
         focus: [...(profile.focus || [])],
         skills: [...(profile.skills || [])],
         gear: [...(profile.gear || [])],
+        blocked: [...(profile.blocked || [])],
       }
     : { weekdays: [], limits: [], focus: [], skills: [], gear: [], sessionLength: 60 };
   step = 0;
@@ -236,10 +237,51 @@ const STEPS = [
       el('p', { class: 'hint' },
         `Bis zu zwei. Jede kostet rund ${MINUTES_PER_SKILL} Minuten pro Einheit — die Zeit ` +
         'wird vom Krafttraining abgezogen, damit die Einheit nicht heimlich länger wird.'),
+      startstufen(),
     ],
     check: () => null,
   },
 ];
+
+/**
+ * Einstiegsstufe je gewählter Fähigkeit. Wer den Wandhandstand schon zwanzig
+ * Sekunden hält, soll nicht bei „Hollow Hold" anfangen müssen — die App kann
+ * das nicht wissen, also wird gefragt.
+ */
+function startstufen() {
+  const box = el('div', { class: 'stack mt-16' });
+
+  const zeichnen = () => {
+    box.replaceChildren();
+    const gewaehlt = (draft.skills || []).map(skillById).filter(Boolean);
+    if (!gewaehlt.length) return;
+
+    box.append(el('h3', { class: 'bridge-title', text: 'Wo stehst du schon?' }));
+
+    for (const skill of gewaehlt) {
+      const select = el('select', { class: 'input' });
+      for (const [i, stufe] of skill.levels.entries()) {
+        const einheit = stufe.measure === 'sec' ? 's' : 'Wdh.';
+        select.append(el('option', { value: String(i) },
+          `Stufe ${i + 1}: ${stufe.name} (${stufe.target} ${einheit})`));
+      }
+      select.value = String((draft.skillStart || {})[skill.id] ?? 0);
+      select.addEventListener('change', () => {
+        draft.skillStart = { ...(draft.skillStart || {}), [skill.id]: Number(select.value) };
+      });
+      box.append(field(skill.name, select,
+        'Wähl die Stufe, die du gerade sauber schaffst. Später lässt sie sich im '
+        + 'Training mit „Zu leicht" oder „Zu schwer" verschieben.'));
+    }
+  };
+
+  zeichnen();
+  neuZeichnenStartstufen = zeichnen;
+  return box;
+}
+
+/** Damit die Auswahlkarten die Stufenliste darunter aktualisieren können. */
+let neuZeichnenStartstufen = () => {};
 
 /** Auswahlkarten für die Fähigkeiten, mit Stufenzahl und nötigem Gerät. */
 function skillPicker() {
@@ -267,6 +309,7 @@ function skillPicker() {
             draft.skills = [...current, skill.id];
           }
           card.setAttribute('aria-pressed', chosen() ? 'true' : 'false');
+          neuZeichnenStartstufen();
         },
       },
       el('span', { class: 'optcard-title', text: skill.name }),
@@ -347,12 +390,19 @@ async function finish(ctx) {
     focus: (draft.focus || []).slice(0, 2),
     skills: (draft.skills || []).slice(0, 2),
     gear: draft.equipment === 'studio' ? ['stange', 'barren'] : (draft.gear || []),
+    // Aussortierte Übungen überleben eine Änderung der Angaben.
+    blocked: draft.blocked || [],
   };
 
   const plan = buildPlan(profile, 0);
 
   await setTrainingProfile(profile);
   await setPlan(plan);
+
+  // Einstiegsstufen übernehmen, damit niemand bei null anfängt, der weiter ist.
+  for (const [id, stufe] of Object.entries(draft.skillStart || {})) {
+    if (profile.skills.includes(id)) await setSkillLevel(id, stufe);
+  }
 
   // Ohne Startwert kann der Verlauf später nichts vergleichen.
   const weights = await listWeights();

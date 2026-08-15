@@ -5,7 +5,7 @@
 
 import { el, mount, viewHead, iconButton, toast, confirmAction } from '../ui.js';
 import { localDateKey } from '../nutrition.js';
-import { setPlan, clearTraining } from '../store.js';
+import { setPlan, clearTraining, setTrainingProfile } from '../store.js';
 import {
   exerciseById, GROUP_LABEL, EQUIPMENT_LABEL, GOAL_LABEL, LEVEL_LABEL,
   blockWeek, forWeek, buildPlan, BLOCK_WEEKS,
@@ -146,6 +146,32 @@ export async function render(container, ctx) {
             el('div', { class: 'muted small', text: note })),
           el('div', { class: 'tabular', text: value })))));
 
+  const gesperrt = profile.blocked || [];
+  const sperrliste = gesperrt.length
+    ? el('div', null,
+        el('h2', { class: 'section-title', text: 'Aussortierte Übungen' }),
+        el('div', { class: 'card stack' },
+          el('p', { class: 'small muted',
+            text: 'Im Training als zu schwer gemeldet. Sie kommen auch bei einem neuen '
+              + 'Plan nicht zurück.' }),
+          ...gesperrt.map((id) => {
+            const e = exerciseById(id);
+            return el('div', { class: 'row-between' },
+              el('span', { text: e ? e.name : id }),
+              el('button', {
+                class: 'btn btn-sm', type: 'button',
+                onClick: async () => {
+                  await setTrainingProfile({
+                    ...profile, blocked: gesperrt.filter((x) => x !== id),
+                  });
+                  await ctx.refreshTraining();
+                  ctx.reload();
+                  toast('Wieder freigegeben — beim nächsten Planbau ist sie dabei.');
+                },
+              }, 'Wieder zulassen'));
+          })))
+    : null;
+
   const reset = el('div', { class: 'mt-24' },
     el('button', {
       class: 'btn btn-danger btn-block', type: 'button',
@@ -158,5 +184,5 @@ export async function render(container, ctx) {
       },
     }, 'Training zurücksetzen'));
 
-  mount(container, head, summary, skillSection, ...days, nutrition, breakdown, reset);
+  mount(container, head, summary, skillSection, ...days, sperrliste, nutrition, breakdown, reset);
 }
