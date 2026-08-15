@@ -241,6 +241,13 @@ Treffen zwei der drei Sätze das Ziel, geht die nächste Stufe auf; freigeschalt
 per Knopfdruck, nicht automatisch — die Entscheidung, ob eine Haltung wirklich sauber
 war, trifft niemand außer dir.
 
+**Haltezeiten misst die App selbst.** Bei jeder Stufe, die in Sekunden zählt, steht
+über den Satzfeldern eine Stoppuhr: einmal tippen zum Starten, beim Runterkommen
+wieder — der Wert landet direkt im nächsten leeren Satz. Ist die Zielzeit erreicht,
+vibriert das Gerät und gibt zwei Töne aus; kopfüber sieht man den Bildschirm nicht.
+Solange gemessen wird, bleibt der Bildschirm an. Bei Stufen, die Wiederholungen
+zählen, erscheint keine Uhr.
+
 Geübt wird **vor** dem Krafttraining: Technik braucht einen frischen Kopf und frische
 Schultern, danach wäre beides weg. Jede gewählte Fähigkeit kostet rund sechs Minuten,
 und diese Zeit wird von der Kraftplanung abgezogen — sonst würde die Einheit still und

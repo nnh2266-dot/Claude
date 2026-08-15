@@ -32,6 +32,146 @@ function formatSets(sets) {
     .join('  ·  ');
 }
 
+/* ---------------- Stoppuhr für Haltezeiten ----------------
+   Kopfüber lässt sich kein Bildschirm ablesen und keine zweite App bedienen.
+   Deshalb: ein großer Knopf zum Starten und Stoppen, ein Signal beim Erreichen
+   der Zielzeit — und der Wert landet direkt im richtigen Satz.
+------------------------------------------------------------ */
+
+/**
+ * Laufende Uhren, damit sie beim Neuzeichnen der Ansicht angehalten werden.
+ * Sonst tickt eine vergessene Uhr in einem längst ersetzten Block weiter.
+ */
+const laufendeUhren = new Set();
+
+function stoppeAlleUhren() {
+  for (const abbrechen of laufendeUhren) abbrechen();
+  laufendeUhren.clear();
+}
+
+/** Kurzer Ton. Läuft nur nach einer Nutzergeste, deshalb erst beim Start erzeugt. */
+function beep(context, dauer = 0.18, frequenz = 880) {
+  try {
+    const osc = context.createOscillator();
+    const gain = context.createGain();
+    osc.frequency.value = frequenz;
+    osc.type = 'sine';
+    // Sanft ein- und ausblenden, sonst knackt es.
+    gain.gain.setValueAtTime(0, context.currentTime);
+    gain.gain.linearRampToValueAtTime(0.35, context.currentTime + 0.01);
+    gain.gain.linearRampToValueAtTime(0, context.currentTime + dauer);
+    osc.connect(gain).connect(context.destination);
+    osc.start();
+    osc.stop(context.currentTime + dauer);
+  } catch { /* Ton ist Zugabe. */ }
+}
+
+function mmss(sekunden) {
+  const m = Math.floor(sekunden / 60);
+  const s = sekunden % 60;
+  return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+}
+
+/**
+ * @param {object} o
+ * @param {number} o.target     Zielzeit in Sekunden
+ * @param {number} o.sets       Anzahl Sätze
+ * @param {Function} o.nextEmpty  Liefert den Index des nächsten leeren Satzes
+ * @param {Function} o.write    (index, sekunden) => void
+ */
+function holdTimer({ target, sets, nextEmpty, write }) {
+  let startedAt = null;
+  let ticker = null;
+  let zielGemeldet = false;
+  let audio = null;
+  let wakeLock = null;
+  let index = null;
+
+  const clock = el('div', { class: 'timer-clock tabular', text: '00:00' });
+  const hint = el('div', { class: 'timer-hint' });
+  const button = el('button', { class: 'btn btn-primary btn-lg timer-btn', type: 'button' });
+
+  const setHint = () => {
+    const frei = nextEmpty();
+    hint.textContent = frei === null
+      ? 'Alle Sätze eingetragen — Feld leeren, um neu zu messen.'
+      : `Satz ${frei + 1} von ${sets} · Ziel ${target} s`;
+    button.disabled = frei === null;
+    button.textContent = 'Start';
+  };
+
+  const signal = () => {
+    // Beides bestenfalls verfügbar: Vibration kennt iOS nicht, Ton kann
+    // stummgeschaltet sein. Zusammen erwischt man die meisten Fälle.
+    try { navigator.vibrate?.([160, 90, 160]); } catch { /* egal */ }
+    if (audio) { beep(audio); setTimeout(() => beep(audio), 260); }
+  };
+
+  /** Bricht ohne Eintrag ab — für den Fall, dass die Ansicht neu gezeichnet wird. */
+  const abbrechen = () => {
+    if (ticker) clearInterval(ticker);
+    ticker = null;
+    startedAt = null;
+    try { wakeLock?.release(); } catch { /* egal */ }
+    wakeLock = null;
+  };
+
+  const stop = () => {
+    if (startedAt === null) return;
+    laufendeUhren.delete(abbrechen);
+    const sekunden = Math.max(1, Math.round((Date.now() - startedAt) / 1000));
+    clearInterval(ticker);
+    ticker = null;
+    startedAt = null;
+
+    try { wakeLock?.release(); } catch { /* egal */ }
+    wakeLock = null;
+
+    if (audio) beep(audio, 0.12, 520);
+    if (index !== null) write(index, sekunden);
+
+    clock.classList.remove('reached');
+    clock.textContent = mmss(sekunden);
+    setHint();
+  };
+
+  const start = () => {
+    index = nextEmpty();
+    if (index === null) return;
+
+    zielGemeldet = false;
+    startedAt = Date.now();
+    clock.textContent = '00:00';
+    clock.classList.remove('reached');
+    button.textContent = 'Stopp';
+    hint.textContent = `Läuft — Satz ${index + 1}. Beim Runterkommen wieder tippen.`;
+
+    try {
+      audio = audio || new (window.AudioContext || window.webkitAudioContext)();
+      audio.resume?.();
+    } catch { audio = null; }
+
+    // Bildschirm wach halten, solange gemessen wird.
+    navigator.wakeLock?.request('screen').then((lock) => { wakeLock = lock; }).catch(() => {});
+
+    laufendeUhren.add(abbrechen);
+    ticker = setInterval(() => {
+      const sekunden = Math.round((Date.now() - startedAt) / 1000);
+      clock.textContent = mmss(sekunden);
+      if (!zielGemeldet && sekunden >= target) {
+        zielGemeldet = true;
+        clock.classList.add('reached');
+        signal();
+      }
+    }, 200);
+  };
+
+  button.addEventListener('click', () => (startedAt === null ? start() : stop()));
+  setHint();
+
+  return { node: el('div', { class: 'timer' }, clock, button, hint), refresh: setHint };
+}
+
 /* ---------------- Technikblock ----------------
    Fähigkeiten stehen vor dem Krafttraining: Technik braucht frische Schultern
    und einen wachen Kopf, nach dem Krafttraining wäre beides weg.
@@ -77,13 +217,16 @@ function skillBlock(skillId, session, ctx, onChange) {
   };
 
   const rows = [];
+  const inputs = [];
+  const ticks = [];
+
   for (let i = 0; i < level.sets; i++) {
     const input = el('input', {
       class: 'input setinput', type: 'text', inputmode: 'numeric',
       'aria-label': `${skill.name}, Satz ${i + 1}`,
       placeholder: String(level.target),
-      value: values[i] != null ? String(values[i]) : '',
     });
+    input.value = values[i] != null ? String(values[i]) : '';
 
     const tick = el('div', {
       class: `settick${Number(values[i]) >= level.target ? ' on' : ''}`, 'aria-hidden': 'true',
@@ -93,14 +236,37 @@ function skillBlock(skillId, session, ctx, onChange) {
       values[i] = input.value.trim() === '' ? null : Math.round(parseNumber(input.value));
       tick.classList.toggle('on', Number(values[i]) >= level.target);
       paint();
+      timer?.refresh();
       onChange();
     });
 
+    inputs.push(input);
+    ticks.push(tick);
     rows.push(el('div', { class: 'setrow setrow-skill' },
       el('span', { class: 'setnum tabular', text: String(i + 1) }),
       input,
       tick));
   }
+
+  /** Schreibt eine gestoppte Zeit in einen Satz — als käme sie aus dem Feld. */
+  const writeSeconds = (index, seconds) => {
+    values[index] = seconds;
+    inputs[index].value = String(seconds);
+    ticks[index].classList.toggle('on', seconds >= level.target);
+    paint();
+    onChange();
+  };
+
+  /** Erster noch leerer Satz, oder null wenn alle stehen. */
+  const nextEmpty = () => {
+    for (let i = 0; i < level.sets; i++) if (values[i] == null) return i;
+    return null;
+  };
+
+  // Gemessen wird nur, wo es Sekunden sind. Wiederholungen zählt man selbst.
+  const timer = level.measure === 'sec'
+    ? holdTimer({ target: level.target, sets: level.sets, nextEmpty, write: (i, sek) => writeSeconds(i, sek) })
+    : null;
 
   block.append(
     el('div', { class: 'exblock-head' },
@@ -112,6 +278,7 @@ function skillBlock(skillId, session, ctx, onChange) {
     el('p', { class: 'exblock-rx', text: level.name }),
     el('p', { class: 'exblock-last tabular',
       text: `${level.sets} Sätze · Ziel ${level.target} ${unit} je Satz · weiter, wenn ${setsNeeded(level)} Sätze das Ziel treffen` }),
+    timer ? timer.node : null,
     el('div', { class: 'setlabels setlabels-skill' },
       el('span'), el('span', { text: MEASURE[level.measure] }), el('span')),
     ...rows,
@@ -235,6 +402,7 @@ function weightCard(weights, dateKey, ctx) {
 /* ---------------- Ansicht ---------------- */
 
 export async function render(container, ctx) {
+  stoppeAlleUhren();
   const dateKey = localDateKey();
   const { profile, plan, sessions, weights } = ctx.state;
 
