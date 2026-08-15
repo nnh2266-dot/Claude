@@ -1,5 +1,32 @@
 # NackenFrei — Checkliste bis zur ersten Anzeige
 
+## Stand: 15. August 2026
+
+**Erledigt**
+
+- [x] Produkt identifiziert: **ScPanda GB-868**, gebogener Griff, vier Aufsätze
+- [x] Drei Lieferanten verglichen, Xingou ausgeschieden, Youmei antwortet nicht mehr
+- [x] Verkaufspreis festgelegt: **79 €**
+- [x] Bestellmenge festgelegt: **60 Stück**, drei Kartons
+- [x] Landingpage angepasst: 79 €, § 19 statt MwSt., 14 Tage Widerruf, DE und AT,
+      Reichweiten-Abschnitt, Vergleichsabschnitt, falsche 20-Watt-Angabe entfernt
+- [x] Wortmarke als Druckdatei gebaut (SVG, PDF, PNG)
+- [x] Anzeigenkonzepte, Prompts und Sprechertexte geschrieben
+- [x] **Muster bestellt** — 2 Stück, rund 69 €, DDP per Luft, Ankunft Ende August
+      bis Anfang September
+
+**Wartet auf ScPanda**
+
+- [ ] UN38.3 mit Test Summary und MSDS — **ohne das keine Luftfracht**
+- [ ] EMV- und RoHS-Bericht, CE-Konformitätserklärung als Datei
+- [ ] Laufzeit auf Stufe 1 und Stufe 9
+- [ ] Ob die Sammelbestellung auf die eigene EORI-Nummer angemeldet werden kann
+
+**Nächster Meilenstein:** Muster prüfen. Erst danach fließt Geld für Registrierungen
+oder Ware — das Muster ist der letzte günstige Ausstieg.
+
+---
+
 Vollständige Abarbeitungsliste. Reihenfolge innerhalb eines Blocks egal,
 Reihenfolge der Blöcke nicht. Begründungen stehen in `instagram-plan.md`.
 
