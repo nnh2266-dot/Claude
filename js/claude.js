@@ -220,6 +220,85 @@ function normaliseResult(parsed) {
   };
 }
 
+/**
+ * Zweiter Weg zur Schätzung: die Mahlzeit in Worten beschreiben. Braucht kein
+ * Foto, keine Kamera und deutlich weniger Rechenzeit als ein Bild — dafür hängt
+ * die Genauigkeit daran, wie genau beschrieben wird.
+ */
+const TEXT_SYSTEM_PROMPT = `Du bist Ernährungsexperte und schätzt Nährwerte von Mahlzeiten anhand einer Beschreibung in Worten.
+
+Vorgehen:
+1. Zerlege die Mahlzeit in ihre einzelnen Komponenten (z. B. "Vollkornbrot", "Butter", "Gouda"). Fasse nicht alles zu einem Eintrag zusammen.
+2. Übernimm genannte Mengen unverändert — "zwei Scheiben", "200 g", "ein großer Teller". Fehlt eine Mengenangabe, nimm eine übliche Portion an und schreib in "note", wovon du ausgegangen bist.
+3. Gib für jede Komponente Kalorien, Eiweiß, Kohlenhydrate und Fett an — passend zur geschätzten Grammzahl, nicht pro 100 g.
+4. Achte darauf, dass die Werte zusammenpassen: Kalorien entsprechen ungefähr Eiweiß × 4 + Kohlenhydrate × 4 + Fett × 9.
+5. Zubereitungsfett (Öl, Butter) gehört dazu, auch wenn es nicht erwähnt wird — außer die Beschreibung schließt es aus.
+6. Bei Marken- oder Restaurantnamen die dort übliche Portionsgröße annehmen.
+
+Feld "dish": kurzer, alltagsnaher Name der Mahlzeit auf Deutsch.
+Feld "confidence": "hoch", wenn Mengen genannt sind; "mittel", wenn du übliche Portionen angenommen hast; "niedrig" bei sehr vager Beschreibung.
+Feld "note": ein kurzer Satz auf Deutsch dazu, welche Annahmen du getroffen hast.
+
+Beschreibt der Text kein Essen: "dish" auf "Kein Essen erkannt" setzen, "items" leer lassen, "confidence" auf "niedrig".`;
+
+/**
+ * Schätzt Nährwerte aus einer Beschreibung.
+ *
+ * @param {object} options
+ * @param {string} options.apiKey
+ * @param {string} options.model
+ * @param {string} options.description  Was gegessen wurde, in Worten
+ * @returns {Promise<{dish: string, confidence: string, note: string, items: Array}>}
+ */
+export async function analyseText({ apiKey, model, description }) {
+  const text = String(description ?? '').trim();
+
+  if (!text) {
+    throw new ApiError('Beschreib zuerst, was du gegessen hast.', { kind: 'input' });
+  }
+  if (!apiKey) {
+    throw new ApiError(
+      'Es ist kein API-Key hinterlegt. Entweder du trägst unter „Mehr" einen ein — ' +
+        'oder du nutzt gleich hier unten die Claude-App, das kostet kein Guthaben.',
+      { kind: 'auth' }
+    );
+  }
+
+  const message = await callApi(apiKey, {
+    model,
+    max_tokens: 2000,
+    system: TEXT_SYSTEM_PROMPT,
+    output_config: {
+      format: { type: 'json_schema', schema: RESULT_SCHEMA },
+    },
+    messages: [{ role: 'user', content: `Das habe ich gegessen: ${text}` }],
+  });
+
+  if (message.stop_reason === 'refusal') {
+    throw new ApiError('Die Schätzung wurde abgelehnt. Bitte trage die Mahlzeit von Hand ein.', {
+      kind: 'refusal',
+    });
+  }
+  if (message.stop_reason === 'max_tokens') {
+    throw new ApiError(
+      'Die Antwort war zu lang und wurde abgeschnitten. Beschreib die Mahlzeit etwas knapper.',
+      { kind: 'truncated', retriable: true }
+    );
+  }
+
+  let parsed;
+  try {
+    parsed = JSON.parse(firstText(message));
+  } catch {
+    throw new ApiError('Die Antwort der API war unverständlich. Bitte nochmal versuchen.', {
+      kind: 'parse',
+      retriable: true,
+    });
+  }
+
+  return normaliseResult(parsed);
+}
+
 /* ---------------- Chat-Brücke ----------------
    Weg ohne API-Key: der Nutzer schickt Prompt und Foto selbst durch die
    Claude-App und fügt die Antwort hier wieder ein. Kostet nichts extra, wenn
@@ -233,6 +312,18 @@ export const CHAT_PROMPT = `${SYSTEM_PROMPT}
 Antworte AUSSCHLIESSLICH mit einem JSON-Objekt in genau diesem Format — ohne Einleitung, ohne Erklärung davor oder danach, ohne Code-Block:
 
 {"dish":"Name der Mahlzeit","confidence":"hoch","items":[{"name":"Komponente","grams":100,"kcal":150,"protein":5,"carbs":20,"fat":4}],"note":"kurzer Hinweis"}`;
+
+/** Prompt für den Textweg — die Beschreibung steckt schon drin, damit im Chat
+    nur noch eingefügt und abgeschickt werden muss. */
+export function textChatPrompt(description) {
+  return `${TEXT_SYSTEM_PROMPT}
+
+Antworte AUSSCHLIESSLICH mit einem JSON-Objekt in genau diesem Format — ohne Einleitung, ohne Erklärung davor oder danach, ohne Code-Block:
+
+{"dish":"Name der Mahlzeit","confidence":"hoch","items":[{"name":"Komponente","grams":100,"kcal":150,"protein":5,"carbs":20,"fat":4}],"note":"kurzer Hinweis"}
+
+Das habe ich gegessen: ${String(description ?? '').trim()}`;
+}
 
 /**
  * Liest die Antwort aus dem Chat. Toleriert Code-Blöcke und Text drumherum,

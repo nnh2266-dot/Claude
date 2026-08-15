@@ -176,7 +176,8 @@ export async function render(container, ctx, param) {
         { class: 'card mt-16' },
         emptyState(
           'Noch keine Mahlzeit',
-          'Tippe unten rechts auf die Kamera, um dein Essen zu fotografieren — oder trage es von Hand ein.'
+          'Tippe unten rechts auf die Kamera, um dein Essen zu fotografieren — oder beschreib '
+          + 'es mit Worten, das geht auch ohne Foto.'
         )
       )
     );
@@ -202,6 +203,15 @@ export async function render(container, ctx, param) {
     el(
       'div',
       { class: 'mt-24 stack-sm' },
+      el(
+        'button',
+        {
+          class: 'btn btn-block',
+          type: 'button',
+          onClick: () => ctx.openEditor({ mode: 'text', dateKey }),
+        },
+        'Mit Worten beschreiben'
+      ),
       el(
         'button',
         {

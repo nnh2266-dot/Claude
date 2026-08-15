@@ -16,7 +16,9 @@ import {
   saveMeal, deleteMeal, saveFavorite, saveDraft, loadDraft, clearStoredDraft,
 } from '../store.js';
 import { processPhoto, blobToBase64 } from '../image.js';
-import { analysePhoto, parseChatResponse, CHAT_PROMPT, ApiError } from '../claude.js';
+import {
+  analysePhoto, analyseText, parseChatResponse, ApiError, CHAT_PROMPT, textChatPrompt,
+} from '../claude.js';
 import {
   MEAL_TYPES, sumItems, scaleItems, parseNumber, formatGram,
   localDateKey, newId,
@@ -137,6 +139,7 @@ function buildSession(draft) {
       portion: 100,
       photoBlob: meal.photo || null,
       thumbBlob: meal.thumb || null,
+      description: '',
       source: meal.source || 'manual',
       confidence: meal.confidence || null,
       analysing: false,
@@ -163,6 +166,7 @@ function buildSession(draft) {
     portion: 100,
     photoBlob: draft.photoBlob || null,
     thumbBlob: draft.thumbBlob || null,
+    description: draft.description || '',
     source: mode === 'photo' ? 'ai' : mode === 'favorite' ? 'favorite' : 'manual',
     confidence: null,
     analysing: mode === 'photo',
@@ -245,6 +249,54 @@ async function runAnalysis(ctx) {
     session.analysing = false;
     rerender(ctx);
     // Ab hier steckt Arbeit im Entwurf, die nicht verloren gehen darf.
+    await persistSession();
+  }
+}
+
+/** Schätzt aus der Beschreibung und schreibt das Ergebnis in die Sitzung. */
+async function runTextAnalysis(ctx) {
+  if (!session) return;
+
+  const description = String(session.description || '').trim();
+  if (!description) {
+    session.error = { message: 'Beschreib zuerst, was du gegessen hast.', retriable: false };
+    rerender(ctx);
+    return;
+  }
+
+  session.analysing = true;
+  session.error = null;
+  rerender(ctx);
+
+  try {
+    const result = await analyseText({
+      apiKey: ctx.settings.apiKey,
+      model: ctx.settings.model,
+      description,
+    });
+
+    session.name = result.dish;
+    session.items = result.items.map((it) => ({ ...it }));
+    session.baseItems = result.items.map((it) => ({ ...it }));
+    session.portion = 100;
+    session.confidence = result.confidence;
+    session.aiNote = result.note;
+    session.source = 'ai';
+
+    if (!result.items.length) {
+      session.error = {
+        message: 'Daraus ließ sich keine Mahlzeit lesen. Beschreib es etwas genauer '
+          + 'oder trag die Werte von Hand ein.',
+        retriable: true,
+      };
+    }
+  } catch (err) {
+    const message = err instanceof ApiError ? err.message : 'Die Schätzung ist fehlgeschlagen.';
+    // Die Beschreibung bleibt stehen — nichts von der Eingabe geht verloren.
+    session.error = { message, retriable: err instanceof ApiError ? err.retriable !== false : true };
+  } finally {
+    session.analysing = false;
+    rerender(ctx);
     await persistSession();
   }
 }
@@ -351,7 +403,59 @@ function photoSection() {
   );
 }
 
+/** Eingabefeld für den Textweg, mitsamt Schätzknopf. */
+function descriptionCard(ctx) {
+  if (session.mode !== 'text') return null;
+
+  const field = el('textarea', {
+    class: 'input',
+    rows: '3',
+    placeholder: 'z. B. zwei Scheiben Vollkornbrot mit Butter und Gouda, dazu ein Apfel',
+  });
+  // Bei einem textarea kommt der Inhalt aus dem Textknoten — ein value-Attribut
+  // bliebe wirkungslos, und die Beschreibung wäre nach dem Schätzen verschwunden.
+  field.value = session.description || '';
+  field.addEventListener('input', () => { session.description = field.value; });
+
+  const button = el('button', {
+    class: 'btn btn-primary btn-block',
+    type: 'button',
+    disabled: session.analysing,
+    onClick: () => {
+      session.description = field.value;
+      runTextAnalysis(ctx);
+    },
+  }, session.analysing ? 'Wird geschätzt …' : session.items.length ? 'Neu schätzen' : 'Nährwerte schätzen');
+
+  return el('div', { class: 'card stack' },
+    el('h3', { class: 'bridge-title', text: 'Was hast du gegessen?' }),
+    field,
+    button,
+    el('p', { class: 'hint',
+      text: 'Je genauer die Mengen, desto besser die Schätzung. Ohne Mengenangabe wird '
+        + 'eine übliche Portion angenommen. Danach lässt sich jede Zahl von Hand ändern.' }));
+}
+
 /* ---------------- Chat-Brücke ---------------- */
+
+/**
+ * Aufklappbares Prompt-Feld. Der Inhalt wird erst beim Aufklappen gesetzt:
+ * beim Textweg steckt die Beschreibung im Prompt, und die tippt der Nutzer
+ * erst ein, nachdem die Karte gezeichnet wurde.
+ */
+function promptDetails(promptText) {
+  const field = el('textarea', { class: 'input mt-16', rows: '6', readonly: true });
+  const details = el(
+    'details',
+    { class: 'bridge-details' },
+    el('summary', { text: 'Prompt zum Selbst-Markieren anzeigen' }),
+    field
+  );
+  const fill = () => { field.value = promptText(); };
+  details.addEventListener('toggle', () => { if (details.open) fill(); });
+  fill();
+  return details;
+}
 
 /** Kopiert Text, mit Rückmeldung ob es geklappt hat. */
 async function copyToClipboard(text) {
@@ -391,6 +495,11 @@ async function sharePhoto(blob) {
  * die Antwort kommt hier wieder herein.
  */
 function chatBridgeCard(ctx) {
+  // Der Textweg braucht kein Foto: die Beschreibung steckt schon im Prompt,
+  // damit im Chat nur eingefügt und abgeschickt werden muss.
+  const perText = session.mode === 'text';
+  const promptText = () => (perText ? textChatPrompt(session.description) : CHAT_PROMPT);
+
   const answer = el('textarea', {
     class: 'input',
     rows: '4',
@@ -408,9 +517,15 @@ function chatBridgeCard(ctx) {
       type: 'button',
       onClick: async () => {
         await persistSession();
-        const ok = await copyToClipboard(CHAT_PROMPT);
+        if (perText && !String(session.description || '').trim()) {
+          status.textContent = 'Beschreib zuerst oben, was du gegessen hast.';
+          return;
+        }
+        const ok = await copyToClipboard(promptText());
         status.textContent = ok
-          ? 'Prompt kopiert. Jetzt in der Claude-App einfügen.'
+          ? (perText
+              ? 'Prompt samt Beschreibung kopiert. In der Claude-App einfügen und abschicken.'
+              : 'Prompt kopiert. Jetzt in der Claude-App einfügen.')
           : 'Kopieren ging nicht — nimm den Prompt aus dem Feld unten.';
         if (ok) copyButton.textContent = 'Prompt kopiert ✓';
       },
@@ -433,11 +548,12 @@ function chatBridgeCard(ctx) {
     el('p', { class: 'hint' },
       'Kostet nichts extra, wenn du ohnehin ein Claude-Abo hast — dafür etwas ' +
       'Kopierarbeit pro Mahlzeit. Gut geeignet, um die Schätzqualität auszuprobieren, ' +
-      'bevor du Guthaben auflädst.'),
+      'bevor du Guthaben auflädst.'
+      + (perText ? ' Beim Textweg reicht Kopieren und Einfügen, ein Foto braucht es nicht.' : '')),
 
-    step(1, 'Anweisung für Claude kopieren', copyButton),
+    step(1, perText ? 'Anweisung samt Beschreibung kopieren' : 'Anweisung für Claude kopieren', copyButton),
 
-    step(2, 'Foto an die Claude-App geben',
+    perText ? null : step(2, 'Foto an die Claude-App geben',
       el(
         'button',
         {
@@ -459,7 +575,7 @@ function chatBridgeCard(ctx) {
         'Foto teilen oder speichern'
       )),
 
-    step(3, 'Antwort zurück einfügen',
+    step(perText ? 2 : 3, 'Antwort zurück einfügen',
       el(
         'div',
         { class: 'stack-sm' },
@@ -503,12 +619,7 @@ function chatBridgeCard(ctx) {
 
     status,
 
-    el(
-      'details',
-      { class: 'bridge-details' },
-      el('summary', { text: 'Prompt zum Selbst-Markieren anzeigen' }),
-      el('textarea', { class: 'input mt-16', rows: '6', readonly: true }, CHAT_PROMPT)
-    ),
+    promptDetails(promptText),
 
     el('p', { class: 'hint' },
       'Chat öffnen: ',
@@ -663,6 +774,9 @@ function draw(container, ctx) {
   const photo = photoSection();
   if (photo) blocks.push(photo);
 
+  const description = descriptionCard(ctx);
+  if (description) blocks.push(description);
+
   if (session.error) {
     blocks.push(
       el(
@@ -670,13 +784,16 @@ function draw(container, ctx) {
         { class: 'banner banner-error' },
         el('strong', { text: 'Analyse nicht möglich' }),
         session.error.message,
-        session.error.retriable && session.photoBlob
+        session.error.retriable && (session.photoBlob || session.mode === 'text')
           ? el(
               'div',
               { class: 'mt-16' },
               el(
                 'button',
-                { class: 'btn', type: 'button', onClick: () => runAnalysis(ctx) },
+                {
+                  class: 'btn', type: 'button',
+                  onClick: () => (session.mode === 'text' ? runTextAnalysis(ctx) : runAnalysis(ctx)),
+                },
                 'Nochmal versuchen'
               )
             )
@@ -697,8 +814,8 @@ function draw(container, ctx) {
     );
   }
 
-  // Chat-Brücke: Analyse ohne API-Key
-  if (session.photoBlob && !session.analysing) {
+  // Chat-Brücke: Analyse ohne API-Key — für Foto wie für Beschreibung
+  if ((session.photoBlob || session.mode === 'text') && !session.analysing) {
     if (session.showBridge) {
       blocks.push(chatBridgeCard(ctx));
     } else {

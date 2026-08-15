@@ -17,6 +17,10 @@ anzeigt.
 
 - **Foto → Nährwerte**: Mahlzeit fotografieren, Claude zerlegt sie in Komponenten und
   schätzt Menge, Kalorien, Eiweiß, Kohlenhydrate und Fett
+- **Text → Nährwerte**: statt zu fotografieren einfach beschreiben — „zwei Scheiben
+  Vollkornbrot mit Butter und Gouda, dazu ein Apfel". Genannte Mengen werden
+  übernommen, fehlende als übliche Portion angenommen und im Hinweis genannt.
+  Braucht keine Kamera und kostet weniger als ein Bild
 - **Zwei Wege dorthin**: automatisch über einen eigenen API-Key, oder kostenlos über
   die Claude-App (siehe *Ohne API-Key ausprobieren*)
 - **Alles korrigierbar**: jede Zahl ist editierbar, ein Portionsregler skaliert die
@@ -180,7 +184,7 @@ js/training.js           Übungsdatenbank, Plangenerator, Satzvorgaben, Progress
 js/skills.js             Fähigkeiten: Stufenleitern, Ziele, Freischaltregeln
 js/version.js            Fassungsnummer, muss zur CACHE_VERSION in sw.js passen
 js/energy.js             Grundumsatz, Tagesziele, Gewichtstrend, Kalorienkorrektur
-js/claude.js             Anthropic-API + Chat-Brücke: Prompts, Schema, Fehlertexte
+js/claude.js             Anthropic-API + Chat-Brücke: Prompts (Foto und Text), Schema
 js/image.js              Kamera-Foto verkleinern, Thumbnail, Base64
 js/ui.js                 DOM-Helfer
 js/views/                today · capture · history · favorites · settings
