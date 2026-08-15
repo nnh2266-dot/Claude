@@ -1,0 +1,203 @@
+/**
+ * Verlauf: Balkendiagramm der letzten Tage gegen das Kalorienziel,
+ * Durchschnittswerte und eine antippbare Tagesliste.
+ */
+
+import { el, svg, mount, viewHead, emptyState } from '../ui.js';
+import { getMealsInRange } from '../store.js';
+import {
+  localDateKey, lastNDays, formatDateKey, weekdayShort,
+  sumMeals, averageTotals, formatGram,
+} from '../nutrition.js';
+
+/** Zeitraum bleibt über Ansichtswechsel hinweg erhalten. */
+let rangeDays = 7;
+
+const CHART_W = 320;
+const BAR_AREA_H = 132;
+const LABEL_H = 18;
+const CHART_H = BAR_AREA_H + LABEL_H;
+
+/**
+ * Balken je Tag gegen das Tagesziel. Mit Trainingsplan ist das Ziel nicht
+ * jeden Tag gleich — deshalb bekommt jeder Tag seine eigene Ziellinie statt
+ * einer durchgehenden. Das Auf und Ab zeigt Trainings- gegen Ruhetage.
+ */
+function chart(days) {
+  const maxValue = Math.max(...days.map((d) => Math.max(d.goal, d.totals.kcal)), 1) * 1.12;
+  const slot = CHART_W / days.length;
+  const barWidth = Math.max(3, Math.min(26, slot * 0.62));
+  const labelEvery = days.length <= 10 ? 1 : Math.ceil(days.length / 6);
+
+  const parts = [];
+
+  for (const [i, day] of days.entries()) {
+    const x = slot * i + (slot - barWidth) / 2;
+    const height = (day.totals.kcal / maxValue) * BAR_AREA_H;
+    const over = day.totals.kcal > day.goal;
+
+    // Grauer Hintergrundbalken, damit auch leere Tage sichtbar sind.
+    parts.push(
+      svg('rect', {
+        class: 'bar-bg', x, y: 0, width: barWidth, height: BAR_AREA_H, rx: Math.min(4, barWidth / 2),
+      })
+    );
+
+    if (height > 0) {
+      parts.push(
+        svg('rect', {
+          class: over ? 'bar-over' : 'bar-fill',
+          x,
+          y: BAR_AREA_H - height,
+          width: barWidth,
+          height,
+          rx: Math.min(4, barWidth / 2),
+        })
+      );
+    }
+
+    if (i % labelEvery === 0) {
+      parts.push(
+        svg('text', {
+          class: 'x-label',
+          x: slot * i + slot / 2,
+          y: BAR_AREA_H + 13,
+        }, weekdayShort(day.key))
+      );
+    }
+  }
+
+  // Ziellinien zuletzt, damit sie über den Balken liegen.
+  for (const [i, day] of days.entries()) {
+    const y = BAR_AREA_H - (day.goal / maxValue) * BAR_AREA_H;
+    parts.push(svg('line', {
+      class: 'goal-line', x1: slot * i, y1: y, x2: slot * (i + 1), y2: y,
+    }));
+  }
+
+  return svg(
+    'svg',
+    {
+      class: 'chart',
+      viewBox: `0 0 ${CHART_W} ${CHART_H}`,
+      preserveAspectRatio: 'none',
+      role: 'img',
+      'aria-label': `Kalorien der letzten ${days.length} Tage im Vergleich zum jeweiligen Tagesziel`,
+    },
+    ...parts
+  );
+}
+
+function statCard(value, label) {
+  return el('div', { class: 'stat' }, el('b', { class: 'tabular', text: value }), el('span', { text: label }));
+}
+
+export async function render(container, ctx) {
+  const today = localDateKey();
+  const keys = lastNDays(rangeDays, today);
+  const meals = await getMealsInRange(keys[0], today);
+
+  const byDate = new Map(keys.map((k) => [k, []]));
+  for (const meal of meals) {
+    if (byDate.has(meal.date)) byDate.get(meal.date).push(meal);
+  }
+
+  const days = keys.map((key) => {
+    const list = byDate.get(key) || [];
+    // Jeder Tag hat sein eigenes Ziel: an Trainingstagen liegt es höher.
+    return { key, meals: list, totals: sumMeals(list), goal: ctx.goalsFor(key).kcal };
+  });
+
+  // Für den Durchschnitt zählen nur Tage mit Einträgen — sonst zieht jeder
+  // Tag ohne Nutzung den Schnitt künstlich nach unten.
+  const trackedDays = days.filter((d) => d.meals.length > 0);
+  const average = averageTotals(trackedDays.map((d) => d.totals));
+  const onTarget = trackedDays.filter((d) => d.totals.kcal <= d.goal).length;
+  const averageGoal = Math.round(days.reduce((sum, d) => sum + d.goal, 0) / days.length);
+
+  const rangeSwitch = el(
+    'div',
+    { class: 'chips' },
+    ...[7, 30].map((n) =>
+      el('button', {
+        class: 'chip',
+        type: 'button',
+        'aria-pressed': String(rangeDays === n),
+        text: `${n} Tage`,
+        onClick: () => {
+          rangeDays = n;
+          ctx.reload();
+        },
+      })
+    )
+  );
+
+  const head = viewHead('Verlauf', `letzte ${rangeDays} Tage`);
+
+  if (!trackedDays.length) {
+    mount(
+      container,
+      head,
+      el('div', null,
+        rangeSwitch,
+        el('div', { class: 'card mt-16' },
+          emptyState(
+            'Noch keine Daten',
+            'Sobald du Mahlzeiten einträgst, siehst du hier deinen Verlauf und die Durchschnittswerte.'
+          )
+        )
+      )
+    );
+    return;
+  }
+
+  const dayList = el(
+    'div',
+    { class: 'card' },
+    ...[...days].reverse().map((day) =>
+      el(
+        'button',
+        {
+          class: 'day-row',
+          type: 'button',
+          onClick: () => ctx.setDate(day.key),
+        },
+        el('span', { class: 'd-name', text: formatDateKey(day.key, today) }),
+        el('span', {
+          class: 'small muted',
+          text: day.meals.length
+            ? `${day.meals.length} ${day.meals.length === 1 ? 'Eintrag' : 'Einträge'}`
+            : '—',
+        }),
+        el('span', {
+          class: `d-kcal tabular${day.totals.kcal > day.goal ? ' over' : ''}`,
+          text: day.meals.length ? `${day.totals.kcal} kcal` : '',
+        })
+      )
+    )
+  );
+
+  mount(
+    container,
+    head,
+    el(
+      'div',
+      null,
+      rangeSwitch,
+      el('div', { class: 'card mt-16' }, chart(days)),
+      el('h2', { class: 'section-title', text: `Durchschnitt an ${trackedDays.length} erfassten Tagen` }),
+      el(
+        'div',
+        { class: 'stat-grid' },
+        statCard(`${average.kcal} kcal`, `Ziel: ${averageGoal} kcal im Schnitt`),
+        statCard(`${onTarget} von ${trackedDays.length}`, 'Tage im Ziel'),
+        statCard(`${formatGram(average.protein)} g`, 'Eiweiß pro Tag'),
+        statCard(`${formatGram(average.carbs)} g`, 'Kohlenhydrate pro Tag'),
+        statCard(`${formatGram(average.fat)} g`, 'Fett pro Tag'),
+        statCard(String(meals.length), 'Mahlzeiten insgesamt')
+      ),
+      el('h2', { class: 'section-title', text: 'Tage' }),
+      dayList
+    )
+  );
+}
