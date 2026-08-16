@@ -515,8 +515,13 @@ at the far end of the arc, with a polished chrome ring and a round black foam
 head pointing down. One continuous rigid piece - no hinge, no joint, no
 removable section.
 
-Scale check: the bottom end of the shaft ends around her lower ribs, well above
-her waist. It never reaches her hip, her leg or the floor.
+Scale check, measured against her own hand: the shaft is slim, about 3 cm
+thick, so her fingers wrap completely around it and her fingertips touch her
+palm. The motor housing at the end of the arc is no larger than her closed
+fist. The round foam head is about the size of a plum. The bottom end of the
+shaft ends around her lower ribs, well above her waist - it never reaches her
+hip, her leg or the floor. It is a light handheld appliance, not a piece of
+gym equipment.
 
 Her hand grips the straight lower shaft at about chest height, her elbow low
 and close to her body, forearm relaxed. The arc alone reaches up and over her
@@ -533,7 +538,8 @@ Negativ-Prompt für dieses Bild:
 ```
 pistol-shaped massage gun, T-shaped massage gun, straight massage gun, power
 drill shape, long pole, staff, broom handle, walking stick, cane, barbell,
-telescopic pole, floor-length shaft, oversized device, gym, fitness studio,
+telescopic pole, floor-length shaft, oversized device, chunky, bulky housing,
+thick tube, exaggerated proportions, prop-sized, gym, fitness studio,
 sports bra, athletic wear, bare midriff, brand logos, text, watermark, raised
 elbow, arm above head, twisted torso, extra fingers, deformed hands, second
 device, two devices
@@ -548,6 +554,13 @@ Zentimeterangabe, weil das Modell sie im Bild überprüfen kann.
 Die 35 cm sind aus den Kartonmaßen des Lieferanten abgeleitet: 37 × 26,5 × 6 cm. Länger
 als die Diagonale des Kartons kann das Gerät nicht sein. Am Muster nachmessen und den
 Wert hier korrigieren.
+
+**Der beste Maßstab steht im Bild: ihre Hand.** Absolute Angaben in Zentimetern
+ignorieren Modelle gern, weil sie keinen Bezugspunkt haben. „So dick, dass ihre Finger
+sich ganz darum schließen" und „nicht größer als ihre Faust" sind dagegen im selben Bild
+überprüfbar — und genau solche Bezüge setzen Modelle zuverlässig um. Ein zweiter Versuch
+am 16. August hatte die Geometrie korrekt, wirkte aber überdimensioniert: nicht wegen der
+Länge, sondern wegen der Rohrstärke und des Gehäusevolumens.
 
 ⚠️ **Analogien bestimmen die Größe, nicht die Adjektive.** Eine frühere Fassung dieses
 Prompts sagte `like a walking cane` — das Modell baute daraufhin einen bodenlangen Stab,
