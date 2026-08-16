@@ -523,11 +523,13 @@ shaft ends around her lower ribs, well above her waist - it never reaches her
 hip, her leg or the floor. It is a light handheld appliance, not a piece of
 gym equipment.
 
-Her hand grips the straight lower shaft at about chest height, her elbow low
-and close to her body, forearm relaxed. The arc alone reaches up and over her
-right shoulder, and the round head rests on the muscle between neck and
-shoulder. Her shoulder is relaxed. Her arm is NOT raised above her head, her
-torso is NOT twisted.
+Her hand grips the straight lower shaft at about the height of her lower ribs,
+her elbow down and close to her side, forearm relaxed. The arc alone reaches up
+and over her right shoulder. The round foam head rests on the muscle over her
+right shoulder blade, about a hand's width below the top of her shoulder -
+clearly on her back, not on her neck and not on top of her shoulder. It stays
+to the right of her spine and never touches the spine itself. Her shoulder is
+relaxed. Her arm is NOT raised above her head, her torso is NOT twisted.
 
 Soft daylight from a window on the left. Photographic, natural skin texture,
 50 mm, shallow depth of field. Calm and everyday. Not a gym, not a studio.
@@ -542,7 +544,8 @@ telescopic pole, floor-length shaft, oversized device, chunky, bulky housing,
 thick tube, exaggerated proportions, prop-sized, gym, fitness studio,
 sports bra, athletic wear, bare midriff, brand logos, text, watermark, raised
 elbow, arm above head, twisted torso, extra fingers, deformed hands, second
-device, two devices
+device, two devices, head on the neck, head on top of the shoulder, head on the
+spine, head on the vertebrae, device touching her hair
 ```
 
 **Zur Größenangabe:** Modelle haben kein absolutes Maß — „lang" und „kurz" sind für sie
@@ -554,6 +557,14 @@ Zentimeterangabe, weil das Modell sie im Bild überprüfen kann.
 Die 35 cm sind aus den Kartonmaßen des Lieferanten abgeleitet: 37 × 26,5 × 6 cm. Länger
 als die Diagonale des Kartons kann das Gerät nicht sein. Am Muster nachmessen und den
 Wert hier korrigieren.
+
+**Die Kontaktstelle anatomisch benennen, nicht als Richtung.** „Etwas tiefer" hat für ein
+Modell keine Bedeutung. „Auf dem Muskel über dem rechten Schulterblatt, eine Handbreit
+unter der Schulterhöhe" schon — das ist ein Ort, kein Vektor. Und der Zusatz *rechts der
+Wirbelsäule, nie auf ihr* ist doppelt nötig: Er verhindert, dass das Modell den Kopf
+mittig auf die Wirbel setzt, und er hält die Aufnahme deckungsgleich mit Spot 3, der
+„zwei Finger Abstand zur Wirbelsäule" als Vertrauensargument führt. Eine Anzeige, die
+zeigt, was der andere Spot verbietet, beschädigt beide.
 
 **Der beste Maßstab steht im Bild: ihre Hand.** Absolute Angaben in Zentimetern
 ignorieren Modelle gern, weil sie keinen Bezugspunkt haben. „So dick, dass ihre Finger
