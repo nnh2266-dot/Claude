@@ -507,11 +507,16 @@ living room. Plain light-grey cotton t-shirt, dark trousers, hair loosely tied
 up. No brand logos anywhere on her clothing.
 
 She holds the massage device from the reference image. The device shape is
-critical: a long straight matte-black shaft, held in her hand like a walking
-cane, which at its upper end bends over in one single smooth gooseneck curve,
-like a kitchen tap, so that the motor housing hangs downward at the far end of
-the arc, with a polished chrome ring and a round black foam head pointing down.
-One continuous rigid piece - no hinge, no joint, no removable section.
+critical: a small handheld device, about 35 cm long in total, roughly the
+length of her forearm. A short straight matte-black shaft, held in one hand
+like a hairdryer, which at its upper end bends over in one single smooth
+gooseneck curve, like a kitchen tap, so that the motor housing hangs downward
+at the far end of the arc, with a polished chrome ring and a round black foam
+head pointing down. One continuous rigid piece - no hinge, no joint, no
+removable section.
+
+Scale check: the bottom end of the shaft ends around her lower ribs, well above
+her waist. It never reaches her hip, her leg or the floor.
 
 Her hand grips the straight lower shaft at about chest height, her elbow low
 and close to her body, forearm relaxed. The arc alone reaches up and over her
@@ -527,10 +532,27 @@ Negativ-Prompt für dieses Bild:
 
 ```
 pistol-shaped massage gun, T-shaped massage gun, straight massage gun, power
-drill shape, gym, fitness studio, sports bra, athletic wear, bare midriff,
-brand logos, text, watermark, raised elbow, arm above head, twisted torso,
-extra fingers, deformed hands, second device, two devices
+drill shape, long pole, staff, broom handle, walking stick, cane, barbell,
+telescopic pole, floor-length shaft, oversized device, gym, fitness studio,
+sports bra, athletic wear, bare midriff, brand logos, text, watermark, raised
+elbow, arm above head, twisted torso, extra fingers, deformed hands, second
+device, two devices
 ```
+
+**Zur Größenangabe:** Modelle haben kein absolutes Maß — „lang" und „kurz" sind für sie
+bedeutungslos, solange nichts zum Vergleich dasteht. Deshalb zwei Anker: eine
+**Körperproportion** („so lang wie ihr Unterarm") und eine **harte geometrische Grenze**
+(„das untere Ende endet an den unteren Rippen"). Die Grenze wirkt stärker als die
+Zentimeterangabe, weil das Modell sie im Bild überprüfen kann.
+
+Die 35 cm sind aus den Kartonmaßen des Lieferanten abgeleitet: 37 × 26,5 × 6 cm. Länger
+als die Diagonale des Kartons kann das Gerät nicht sein. Am Muster nachmessen und den
+Wert hier korrigieren.
+
+⚠️ **Analogien bestimmen die Größe, nicht die Adjektive.** Eine frühere Fassung dieses
+Prompts sagte `like a walking cane` — das Modell baute daraufhin einen bodenlangen Stab,
+weil ein Spazierstock nun einmal 90 cm hat. `like a hairdryer` liefert die richtige
+Größenordnung. Bei jeder Analogie mitdenken, wie groß das Vergleichsobjekt wirklich ist.
 
 **Stufe 2 — erst wenn das Standbild sitzt, daraus das Video:**
 
