@@ -34,6 +34,10 @@ Nur der letzte Baustein kann scheitern, er macht drei Sekunden aus, und für ihn
 in H3 einen fertigen Ersatz. **Der Spot ist damit nicht davon abhängig, dass irgendetwas
 Schwieriges gelingt.**
 
+> **Nachtrag vom 16. August:** Eine Person *mit* dem Gerät zu generieren ist machbar —
+> aber nur zweistufig und mit einer Formbeschreibung in Worten. Wie das geht und woran
+> der erste Versuch gescheitert ist, steht in **Abschnitt 12**.
+
 ---
 
 ## 1. Farben und Format — einmal festlegen, überall verwenden
@@ -460,7 +464,127 @@ und je besser das Ausgangsmaterial, desto weniger sichtbar ist diese zweite Komp
 
 ---
 
-## 12. Was das nicht ersetzt
+## 12. Menschaufnahmen mit dem Gerät — wenn du es doch generierst
+
+Abschnitt 0 rät davon ab, eine Person mit dem Gerät zu generieren. Das bleibt der
+sicherere Weg — aber es ist machbar, wenn man weiß, woran es scheitert. Ein erster
+Versuch am 16. August lieferte eine saubere Frau, eine saubere Szene und ein **falsches
+Produkt**: eine gewöhnliche pistolenförmige Massagepistole statt des Bogens.
+
+### Warum das Referenzfoto allein nicht reicht
+
+Das Modell hat im Training Millionen pistolenförmiger Massagepistolen gesehen und
+praktisch keine mit Schwanenhals. **Gegen diesen Prior verliert ein einzelnes
+Referenzbild.** Bei zwei Referenzen kommt hinzu, dass die meisten Modelle genau *eine*
+Identität stabil halten — die ging hier an die Frau, das Gerät wurde zur Gattung
+gemittelt. Der Satz „achte darauf, dass die Massage Gun genau so aussieht" hilft nicht,
+weil er keine Form beschreibt, sondern nur Treue einfordert.
+
+### Die Form in Worten — der eigentliche Hebel
+
+Was das Referenzbild zeigt, muss zusätzlich **sprachlich** dastehen, und zwar über
+**Analogien zu Objekten, die das Modell sicher kennt**. Adjektive wie „gebogen" sind zu
+schwach.
+
+> **Ein langer gerader mattschwarzer Schaft, in der Hand gehalten wie ein Spazierstock.
+> Am oberen Ende biegt er sich in einer einzigen weichen Kurve nach vorn und wieder nach
+> unten — wie ein Küchenwasserhahn, wie ein Hirtenstab. Am Ende des Bogens hängt das
+> Motorgehäuse nach unten, mit einem Chromring und einem runden schwarzen Schaumkopf,
+> der nach unten zeigt.**
+
+Englisch für den Prompt: `like a walking cane` · `gooseneck curve like a kitchen tap` ·
+`shepherd's crook` · `the head hangs downward at the far end of the arc`.
+
+### Das zweistufige Verfahren
+
+Ein Video-Node soll das Produkt **nie erfinden**. Er soll nur bewegen, was schon da ist.
+
+**Stufe 1 — Standbild, hier wird iteriert:**
+
+```
+A woman in her mid-fifties seen from behind, standing in a bright ordinary
+living room. Plain light-grey cotton t-shirt, dark trousers, hair loosely tied
+up. No brand logos anywhere on her clothing.
+
+She holds the massage device from the reference image. The device shape is
+critical: a long straight matte-black shaft, held in her hand like a walking
+cane, which at its upper end bends over in one single smooth gooseneck curve,
+like a kitchen tap, so that the motor housing hangs downward at the far end of
+the arc, with a polished chrome ring and a round black foam head pointing down.
+One continuous rigid piece - no hinge, no joint, no removable section.
+
+Her hand grips the straight lower shaft at about chest height, her elbow low
+and close to her body, forearm relaxed. The arc alone reaches up and over her
+right shoulder, and the round head rests on the muscle between neck and
+shoulder. Her shoulder is relaxed. Her arm is NOT raised above her head, her
+torso is NOT twisted.
+
+Soft daylight from a window on the left. Photographic, natural skin texture,
+50 mm, shallow depth of field. Calm and everyday. Not a gym, not a studio.
+```
+
+Negativ-Prompt für dieses Bild:
+
+```
+pistol-shaped massage gun, T-shaped massage gun, straight massage gun, power
+drill shape, gym, fitness studio, sports bra, athletic wear, bare midriff,
+brand logos, text, watermark, raised elbow, arm above head, twisted torso,
+extra fingers, deformed hands, second device, two devices
+```
+
+**Stufe 2 — erst wenn das Standbild sitzt, daraus das Video:**
+
+```
+Motion only. The round head presses gently into the muscle and vibrates with a
+tight percussive micro-movement of 2-3 mm, motion blur on the head alone. Her
+shoulder lowers slightly as she relaxes. Her hand and the device stay exactly
+where they are. Camera locked, no zoom, no cut.
+```
+
+Negativ zusätzlich: `changing shape, telescoping, bending handle, straightening
+handle, morphing geometry, device transforming`.
+
+### Der sicherste Weg von allen
+
+`produkt-freigestellt.png` ist ein Freisteller. **Die Person ohne Gerät generieren, den
+Freisteller im Bildbearbeitungsprogramm an die richtige Stelle setzen, dann
+Image-to-Video.** Dann ist die Geometrie zu hundert Prozent korrekt, weil sie nicht
+generiert, sondern montiert wurde. Fünf Minuten Arbeit, null Credits, kein Risiko.
+
+### Modellwahl
+
+Für Stufe 1 **kein schnelles Modell.** Die Flash-/Fast-Varianten haben die schwächste
+Objekttreue — genau die Eigenschaft, auf die es hier ankommt. Das stärkste verfügbare
+Bildmodell nehmen, dafür an anderer Stelle sparen.
+
+### Drei Dinge, die im Testvideo zusätzlich falsch waren
+
+1. **Fitnessstudio, Sport-BH, sportliche Frau.** Das ist exakt das Segment, das
+   `wettbewerb.md` als überlaufen benennt. Der Algorithmus liest die Bildsprache und
+   liefert die Anzeige an Fitness-Konten aus — vorbei an Frauen 45–70. Wohnzimmer,
+   T-Shirt, Alltag.
+2. **Sichtbare Fremdlogos** auf Sport-BH und Hose. Markenzeichen Dritter in der eigenen
+   Werbung sind ein vermeidbares Risiko. Wegprompten und jeden Frame prüfen.
+3. **720 × 1280.** Unter der 1080er-Grenze aus Abschnitt 11. Höher generieren oder
+   upscalen.
+
+Und der wichtigste Punkt: Im Testvideo hat die Frau **den Arm über den Kopf gehoben und
+verdreht** — also genau die Verrenkung, die das Produkt überflüssig machen soll. Das lag
+an der falschen Form: Eine Pistolenform *erzwingt* diese Haltung. **Sitzt der
+Schwanenhals, korrigiert sich die Haltung von selbst** — und erst dann zeigt der Spot,
+was er behaupten soll.
+
+> ⚠️ **Vorher klären:** Issue #1 führt „Kernversprechen selbst testen — kommt man mit dem
+> Bogengriff allein zwischen die eigenen Schulterblätter?" als **offenen** Punkt. Solange
+> das nicht am Muster gemessen ist, sollte die Aufnahme den **Trapezmuskel zwischen Hals
+> und Schulter** zeigen, den der Bogen sicher erreicht — nicht die Fläche zwischen den
+> Schulterblättern. Eine Demonstration einer Reichweite, die das Gerät nicht hat, ist
+> irreführend nach § 5 UWG, und sie erzeugt genau die Retouren, die den Deckungsbeitrag
+> auffressen.
+
+---
+
+## 13. Was das nicht ersetzt
 
 Eine Sache bleibt trotz allem besser, sobald sie möglich ist: **eine echte Aufnahme, wie
 das Gerät an der Stelle ankommt.** Sie ist der einzige Beweis, den niemand nachbauen
