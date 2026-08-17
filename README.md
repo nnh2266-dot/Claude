@@ -46,6 +46,14 @@ anzeigt.
 - **Einheit mitschreiben**: Gewicht und Wiederholungen je Satz, mit den Werten vom
   letzten Mal als Vorgabe und einem konkreten nächsten Schritt je Übung
 - **Vier-Wochen-Block**: Woche 1 mit mehr Reserve, Woche 3 schwer, Woche 4 Deload
+- **Aufwärmen**: eine kurze Liste, die sich aus dem Tag ergibt — Kreislauf, dann
+  Mobilisation für genau die Gelenke, die gleich arbeiten, dazu ein Aufwärmsatz an
+  der ersten Übung. Etwa vier bis fünf Minuten
+- **Pausenuhr**: läuft von selbst los, sobald ein Satz abgehakt ist, mit der Zeit aus
+  der Vorgabe — 150 Sekunden nach einer Grundübung, 75 nach einer Isolationsübung.
+  Die Leiste klebt unten und meldet sich am Ende
+- **Beweglichkeitstest**: fünf Prüfungen mit Maßband und Wand, alle paar Wochen zu
+  wiederholen. Die App merkt sich jede Messung und zeigt die Veränderung
 - **Fortschritt**: Gewichtsverlauf mit Sieben-Tage-Schnitt, Kraftentwicklung je Übung,
   bewegte Last pro Woche
 - **Kalorien nachsteuern**: weicht die gemessene Gewichtsveränderung vom Ziel ab,
@@ -185,13 +193,15 @@ js/store.js              IndexedDB: Mahlzeiten, Favoriten, Einheiten, Gewichte, 
 js/nutrition.js          Summen, Datumslogik, Portionsskalierung
 js/training.js           Übungsdatenbank, Plangenerator, Satzvorgaben, Progression
 js/skills.js             Fähigkeiten: Stufenleitern, Ziele, Freischaltregeln
+js/warmup.js             Aufwärmen, zusammengestellt aus den Gruppen des Tages
+js/mobility.js           Beweglichkeitstests: Anleitung, Einheiten, Vergleich
 js/version.js            Fassungsnummer, muss zur CACHE_VERSION in sw.js passen
 js/energy.js             Grundumsatz, Tagesziele, Gewichtstrend, Kalorienkorrektur
 js/claude.js             Anthropic-API + Chat-Brücke: Prompts (Foto und Text), Schema
 js/image.js              Kamera-Foto verkleinern, Thumbnail, Base64
 js/ui.js                 DOM-Helfer
 js/views/                today · capture · history · favorites · settings
-                         training · plan · progress · setup
+                         training · plan · progress · setup · mobility
 sw.js                    Service Worker (Offline-Betrieb)
 manifest.webmanifest     PWA-Manifest
 ```
@@ -234,6 +244,20 @@ der Rest Kohlenhydrate — an Trainingstagen entsprechend mehr.
 sich die tatsächliche Veränderung in Prozent Körpergewicht pro Woche. Weicht sie um
 mehr als 0,22 Prozentpunkte vom Ziel ab, schlägt die App eine Korrektur vor
 (1 kg ≈ 7700 kcal, gedeckelt auf ±300 kcal pro Tag).
+
+## Der Beweglichkeitstest
+
+Fünf Prüfungen, alle allein mit Maßband und Wand machbar: Sitzen und reichen,
+Knie zur Wand, Schulterhaken hinter dem Rücken, Schmetterling, tiefe Hocke halten.
+Zu jeder steht in der App, wie gemessen und was abgelesen wird — ohne das misst man
+beim zweiten Mal anders als beim ersten, und der Vergleich wäre wertlos.
+
+Minuswerte sind normal und gewollt: Finger vor den Zehen, Hände hinter dem Rücken
+überlappend. Bei zwei Prüfungen ist ein kleinerer Wert besser, bei dreien ein
+größerer — die Richtung steckt je Test in `betterWhen`, damit der Vergleich nicht
+in die falsche Richtung zeigt.
+
+Empfohlener Abstand: 28 Tage. Öfter zu messen zeigt vor allem Tagesform.
 
 ## Wie Fähigkeiten funktionieren
 

@@ -14,6 +14,7 @@ import {
   replaceExercise,
 } from '../training.js';
 import { energyPlan, weightTrend } from '../energy.js';
+import { warmupFor, warmupMinutes } from '../warmup.js';
 import {
   skillById, currentLevel, levelIndex, setsNeeded, levelCleared, hasNextLevel, MEASURE,
 } from '../skills.js';
@@ -33,6 +34,111 @@ function formatSets(sets) {
     .filter((s) => s && s.reps)
     .map((s) => (Number(s.weight) > 0 ? `${String(s.weight).replace('.', ',')} kg × ${s.reps}` : `${s.reps} Wdh.`))
     .join('  ·  ');
+}
+
+/* ---------------- Aufwärmen ----------------
+   Aufgeklappt beim ersten Blick, danach eingeklappt — wer die Liste kennt,
+   will sie nicht jedes Mal wegscrollen.
+--------------------------------------------- */
+
+function warmupCard(day, hatTechnik) {
+  const items = warmupFor(day, hatTechnik);
+  if (!items.length) return null;
+
+  const details = el('details', { class: 'card warmup' },
+    el('summary', null,
+      el('span', { class: 'warmup-title', text: 'Aufwärmen' }),
+      el('span', { class: 'warmup-time', text: `${warmupMinutes(items)} Min` })),
+    ...items.map((item) => el('div', { class: 'warmup-item' },
+      el('div', { class: 'warmup-name', text: item.name }),
+      el('div', { class: 'warmup-detail', text: item.detail }))));
+
+  // Beim ersten Öffnen an einem Tag offen, danach zugeklappt.
+  const schluessel = 'warmup-zu';
+  details.open = sessionStorage.getItem(schluessel) !== '1';
+  details.addEventListener('toggle', () => {
+    try { sessionStorage.setItem(schluessel, details.open ? '0' : '1'); } catch { /* egal */ }
+  });
+
+  return details;
+}
+
+/* ---------------- Pausenuhr ----------------
+   Die Pause steht in der Vorgabe — 150 Sekunden nach einer Grundübung, 75 nach
+   einer Isolationsübung. Wer sie schätzt, macht sie fast immer zu kurz. Deshalb
+   läuft sie automatisch los, sobald ein Satz abgehakt ist, und meldet sich am
+   Ende. Die Leiste klebt unten, damit sie beim Scrollen nicht verschwindet.
+--------------------------------------------- */
+
+let pausenLeiste = null;
+
+function pauseStoppen() {
+  if (!pausenLeiste) return;
+  clearInterval(pausenLeiste.ticker);
+  try { pausenLeiste.wakeLock?.release(); } catch { /* egal */ }
+  pausenLeiste.node.remove();
+  pausenLeiste = null;
+}
+
+/**
+ * Startet die Pause. Läuft schon eine, wird sie ersetzt — der zuletzt
+ * abgehakte Satz bestimmt, worauf gewartet wird.
+ */
+function pauseStarten(sekunden, uebungsname, audioAn = true) {
+  pauseStoppen();
+
+  const ende = Date.now() + sekunden * 1000;
+  let gemeldet = false;
+  let audio = null;
+
+  const clock = el('div', { class: 'pause-clock tabular' });
+  const label = el('div', { class: 'pause-label' }, uebungsname);
+
+  const zeichnen = () => {
+    const rest = Math.max(0, Math.round((ende - Date.now()) / 1000));
+    clock.textContent = `${String(Math.floor(rest / 60)).padStart(2, '0')}:${String(rest % 60).padStart(2, '0')}`;
+    if (rest === 0 && !gemeldet) {
+      gemeldet = true;
+      clock.classList.add('vorbei');
+      label.textContent = 'Pause vorbei — nächster Satz';
+      try { navigator.vibrate?.([200, 100, 200]); } catch { /* egal */ }
+      if (audio) { beep(audio, 0.2, 660); setTimeout(() => beep(audio, 0.2, 880), 280); }
+      // Nach dem Signal noch kurz stehen lassen, dann verschwinden.
+      setTimeout(() => { if (pausenLeiste && pausenLeiste.ende === ende) pauseStoppen(); }, 8000);
+    }
+  };
+
+  if (audioAn) {
+    try {
+      audio = new (window.AudioContext || window.webkitAudioContext)();
+      audio.resume?.();
+    } catch { audio = null; }
+  }
+
+  const node = el('div', { class: 'pausenleiste' },
+    el('div', { class: 'grow' }, label, el('div', { class: 'pause-hint', text: 'Pause läuft' })),
+    clock,
+    el('button', {
+      class: 'btn btn-sm', type: 'button',
+      onClick: () => { pauseStarten(Math.max(0, Math.round((ende - Date.now()) / 1000)) + 30, uebungsname, false); },
+    }, '+30 s'),
+    // Kein aria-label hier: es würde den sichtbaren Text überschreiben, und
+    // Vorlesesoftware sagte dann etwas anderes, als danebensteht.
+    el('button', {
+      class: 'btn btn-sm', type: 'button',
+      onClick: () => pauseStoppen(),
+    }, 'Fertig'));
+
+  document.body.append(node);
+  zeichnen();
+
+  const ticker = setInterval(zeichnen, 250);
+  pausenLeiste = { node, ticker, ende, wakeLock: null };
+  laufendeUhren.add(pauseStoppen);
+
+  navigator.wakeLock?.request('screen')
+    .then((lock) => { if (pausenLeiste) pausenLeiste.wakeLock = lock; })
+    .catch(() => {});
 }
 
 /* ---------------- Stoppuhr für Haltezeiten ----------------
@@ -355,12 +461,19 @@ function exerciseBlock(prescription, week, session, sessions, dateKey, onChange,
       'aria-label': `Satz ${i + 1} als geschafft markieren`,
     }, '✓');
 
-    const update = () => {
+    const update = (ausGeste = false) => {
+      const warVoll = isComplete(entries[i] || {});
       entries[i] = {
         weight: weightInput.value.trim() === '' ? null : parseNumber(weightInput.value),
         reps: repsInput.value.trim() === '' ? null : Math.round(parseNumber(repsInput.value)),
       };
-      tick.classList.toggle('on', isComplete(entries[i]));
+      const istVoll = isComplete(entries[i]);
+      tick.classList.toggle('on', istVoll);
+
+      // Frisch abgehakt und nicht der letzte Satz? Dann beginnt jetzt die Pause.
+      if (istVoll && !warVoll && i < adjusted.sets - 1) {
+        pauseStarten(prescription.rest, exercise.name, ausGeste);
+      }
       onChange();
     };
 
@@ -368,7 +481,7 @@ function exerciseBlock(prescription, week, session, sessions, dateKey, onChange,
       if (isComplete(entries[i] || {})) {
         weightInput.value = '';
         repsInput.value = '';
-        update();
+        update(true);
         return;
       }
 
@@ -378,7 +491,7 @@ function exerciseBlock(prescription, week, session, sessions, dateKey, onChange,
         const vorschlag = parseNumber(weightInput.placeholder);
         if (vorschlag > 0) weightInput.value = String(vorschlag).replace('.', ',');
       }
-      update();
+      update(true);
 
       // Beim ersten Mal gibt es noch kein Gewicht vom letzten Mal. Dann bleibt
       // der Satz offen — also gleich ins fehlende Feld springen, statt den
@@ -560,6 +673,9 @@ export async function render(container, ctx) {
     const skillBlocks = (profile.skills || [])
       .map((id) => skillBlock(id, session, ctx, persist))
       .filter(Boolean);
+
+    const warmup = warmupCard(day, skillBlocks.length > 0);
+    if (warmup) body.push(warmup);
 
     if (skillBlocks.length) {
       body.push(el('h2', { class: 'section-title', text: 'Technik zuerst' }));

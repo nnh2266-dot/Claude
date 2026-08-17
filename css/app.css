@@ -1005,3 +1005,48 @@ input[type="range"] {
 .stufenwahl { display: flex; gap: 8px; margin-top: 10px; }
 .stufenwahl .btn { flex: 1; }
 .btn-sm { padding: 7px 10px; font-size: 13px; }
+
+/* ---------- Aufwärmen ---------- */
+
+.warmup { padding: 0; overflow: hidden; }
+.warmup > summary {
+  display: flex; align-items: baseline; gap: 10px;
+  padding: 14px 16px; cursor: pointer; list-style: none;
+}
+.warmup > summary::-webkit-details-marker { display: none; }
+.warmup > summary::after {
+  content: "▾"; margin-left: auto; color: var(--text-faint); font-size: 13px;
+}
+.warmup[open] > summary::after { content: "▴"; }
+.warmup-title { font-size: 15px; font-weight: 680; }
+.warmup-time { font-size: 12.5px; color: var(--text-muted); }
+.warmup-item { padding: 11px 16px; border-top: 1px solid var(--border); }
+.warmup-name { font-size: 14px; font-weight: 600; }
+.warmup-detail { font-size: 12.5px; color: var(--text-muted); line-height: 1.5; margin-top: 2px; }
+
+/* ---------- Pausenleiste ---------- */
+
+.pausenleiste {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom) + 10px);
+  z-index: 46;
+  width: min(calc(100vw - 24px), calc(var(--maxw) - 24px));
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-2);
+  padding: 10px 12px;
+}
+
+.pause-label { font-size: 13.5px; font-weight: 650; line-height: 1.25; }
+.pause-hint  { font-size: 11.5px; color: var(--text-muted); }
+.pause-clock {
+  font-size: 24px; font-weight: 700; letter-spacing: -.01em;
+  font-variant-numeric: tabular-nums; min-width: 62px; text-align: right;
+}
+.pause-clock.vorbei { color: var(--ok); }

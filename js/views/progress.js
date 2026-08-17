@@ -9,6 +9,7 @@ import { setKcalAdjust } from '../store.js';
 import { personalBests, weeklyVolume, GOAL_LABEL } from '../training.js';
 import { calorieAdvice } from '../energy.js';
 import { skillById, currentLevel, levelIndex, skillHistory } from '../skills.js';
+import { mobilitySection } from './mobility.js';
 
 const CHART_W = 320;
 const CHART_H = 150;
@@ -227,6 +228,10 @@ export async function render(container, ctx) {
               : `Noch nichts aufgezeichnet. Ziel dieser Stufe: ${level.target} ${unit}` }));
       }).filter(Boolean)));
   }
+
+  /* Beweglichkeit */
+  body.push(el('h2', { class: 'section-title', text: 'Beweglichkeit' }));
+  body.push(mobilitySection(ctx));
 
   /* Kraft */
   body.push(el('h2', { class: 'section-title', text: 'Kraftentwicklung' }));

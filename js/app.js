@@ -8,7 +8,7 @@
 import { localDateKey } from './nutrition.js';
 import {
   getSettings, getTrainingProfile, getPlan, getKcalAdjust, getSkillLevels,
-  listSessions, listWeights,
+  listSessions, listWeights, listMobilityTests,
 } from './store.js';
 import { targetsForDate } from './energy.js';
 import { toast } from './ui.js';
@@ -22,6 +22,7 @@ import * as trainingView from './views/training.js';
 import * as planView from './views/plan.js';
 import * as progressView from './views/progress.js';
 import * as setupView from './views/setup.js';
+import * as mobilityView from './views/mobility.js';
 
 const VIEWS = {
   today: todayView,
@@ -33,6 +34,7 @@ const VIEWS = {
   plan: planView,
   progress: progressView,
   setup: setupView,
+  mobility: mobilityView,
 };
 
 const state = {
@@ -47,6 +49,7 @@ const state = {
   skillLevels: {},
   sessions: [],
   weights: [],
+  mobility: [],
 };
 
 let current = { name: null, param: null };
@@ -85,7 +88,9 @@ async function handleRoute() {
 
   // Der Reiter „Training" bleibt auch auf Plan, Fortschritt und Fragebogen
   // markiert — sonst sähe die Leiste unten aus, als wäre man nirgends.
-  const TAB_OF = { plan: 'training', progress: 'training', setup: 'training' };
+  const TAB_OF = {
+    plan: 'training', progress: 'training', setup: 'training', mobility: 'training',
+  };
   const activeTab = TAB_OF[route.name] || route.name;
   for (const tab of document.querySelectorAll('.tab')) {
     if (tab.dataset.tab === activeTab) tab.setAttribute('aria-current', 'page');
@@ -132,11 +137,14 @@ const ctx = {
 
   /** Lädt Profil, Plan, Einheiten und Gewichte neu. */
   async refreshTraining() {
-    const [profile, plan, kcalAdjust, skillLevels, sessions, weights] = await Promise.all([
-      getTrainingProfile(), getPlan(), getKcalAdjust(), getSkillLevels(),
-      listSessions(), listWeights(),
-    ]);
-    Object.assign(state, { profile, plan, kcalAdjust, skillLevels, sessions, weights });
+    const [profile, plan, kcalAdjust, skillLevels, sessions, weights, mobility] =
+      await Promise.all([
+        getTrainingProfile(), getPlan(), getKcalAdjust(), getSkillLevels(),
+        listSessions(), listWeights(), listMobilityTests(),
+      ]);
+    Object.assign(state, {
+      profile, plan, kcalAdjust, skillLevels, sessions, weights, mobility,
+    });
   },
 
   /**
@@ -145,6 +153,12 @@ const ctx = {
    */
   goalsFor(dateKey) {
     return targetsForDate(state.profile, state.plan, state.kcalAdjust, dateKey, state.settings.goals);
+  },
+
+  /** Startet eine Beweglichkeitsmessung. */
+  startMobility() {
+    mobilityView.begin();
+    go('mobility');
   },
 
   /** Öffnet den Fragebogen, wahlweise mit den Werten eines bestehenden Profils. */

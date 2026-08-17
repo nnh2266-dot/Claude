@@ -6,6 +6,7 @@
  *   favorites — wiederverwendbare Mahlzeiten
  *   sessions  — Trainingseinheiten, ein Eintrag je Tag
  *   weights   — Körpergewicht, ein Eintrag je Tag
+ *   mobility  — Beweglichkeitstests, ein Eintrag je Messtag
  *   settings  — Key/Value (apiKey, model, goals, profile, plan, kcalAdjust,
  *               skillLevels)
  */
@@ -13,7 +14,7 @@
 import { DEFAULT_GOALS, sumItems, newId, localDateKey } from './nutrition.js';
 
 const DB_NAME = 'naehrwert';
-const DB_VERSION = 2;
+const DB_VERSION = 3;
 
 export const DEFAULT_MODEL = 'claude-haiku-4-5';
 
@@ -44,6 +45,11 @@ function openDB() {
       }
       if (!db.objectStoreNames.contains('weights')) {
         db.createObjectStore('weights', { keyPath: 'date' });
+      }
+      // Ab Version 3: Beweglichkeitstests. Wieder nur ein zusätzlicher Store,
+      // alles Bestehende bleibt unangetastet.
+      if (!db.objectStoreNames.contains('mobility')) {
+        db.createObjectStore('mobility', { keyPath: 'date' });
       }
     };
 
@@ -310,6 +316,25 @@ export async function deleteWeight(dateKey) {
   await tx('weights', 'readwrite', (s) => s.delete(dateKey));
 }
 
+/* ---------------- Beweglichkeit ----------------
+   Ein Eintrag je Messtag: { date, results: { testId: { links, rechts } } }
+------------------------------------------------- */
+
+export async function saveMobilityTest(dateKey, results) {
+  const record = { date: dateKey, results: results || {}, savedAt: Date.now() };
+  await tx('mobility', 'readwrite', (s) => s.put(record));
+  return record;
+}
+
+export async function listMobilityTests() {
+  const rows = await tx('mobility', 'readonly', (s) => s.getAll());
+  return (rows || []).sort((a, b) => (a.date < b.date ? -1 : 1));
+}
+
+export async function deleteMobilityTest(dateKey) {
+  await tx('mobility', 'readwrite', (s) => s.delete(dateKey));
+}
+
 /* ---------------- Export / Import / Löschen ---------------- */
 
 /**
@@ -330,6 +355,7 @@ export async function exportData() {
       listWeights(),
     ]);
   const skillLevels = await getSkillLevels();
+  const mobility = await listMobilityTests();
 
   return {
     format: 'naehrwert-export',
@@ -344,6 +370,7 @@ export async function exportData() {
     skillLevels,
     sessions,
     weights,
+    mobility,
   };
 }
 
@@ -392,6 +419,9 @@ export async function importData(data) {
   if (data.skillLevels && typeof data.skillLevels === 'object') {
     await setSetting('skillLevels', data.skillLevels);
   }
+  for (const eintrag of Array.isArray(data.mobility) ? data.mobility : []) {
+    if (eintrag && eintrag.date) await saveMobilityTest(eintrag.date, eintrag.results);
+  }
 
   return { meals, favorites, sessions, weights };
 }
@@ -406,6 +436,7 @@ export async function clearEntries() {
 export async function clearTraining() {
   await tx('sessions', 'readwrite', (s) => s.clear());
   await tx('weights', 'readwrite', (s) => s.clear());
+  await tx('mobility', 'readwrite', (s) => s.clear());
   await tx('settings', 'readwrite', (s) => {
     s.delete('profile');
     s.delete('plan');
@@ -419,5 +450,6 @@ export async function clearEverything() {
   await clearEntries();
   await tx('sessions', 'readwrite', (s) => s.clear());
   await tx('weights', 'readwrite', (s) => s.clear());
+  await tx('mobility', 'readwrite', (s) => s.clear());
   await tx('settings', 'readwrite', (s) => s.clear());
 }
