@@ -45,6 +45,7 @@ export const MOBILITY_TESTS = [
       ['Hände fassen die Fußsohlen', 'Die Finger greifen um die Füße herum.'],
       ['Bauch liegt auf den Oberschenkeln', 'Der Oberkörper liegt auf den Beinen, die Ellbogen kommen neben die Waden.'],
     ],
+    norm: [15, 35, 55, 75, 90, 100],
   },
   {
     id: 'knieWand',
@@ -73,6 +74,7 @@ export const MOBILITY_TESTS = [
       ['Vier Finger breit', 'Etwa eine Handbreit ohne Daumen.'],
       ['Mehr als eine Handbreit', ''],
     ],
+    norm: [10, 30, 45, 60, 85, 100],
   },
   {
     id: 'schulterGriff',
@@ -101,6 +103,7 @@ export const MOBILITY_TESTS = [
       ['Darunter auf den Rippen', ''],
       ['Bis zur Taille', ''],
     ],
+    norm: [15, 40, 65, 85, 95, 100],
   },
   {
     id: 'schmetterling',
@@ -129,6 +132,7 @@ export const MOBILITY_TESTS = [
       ['Ein Finger', 'Das Knie schwebt knapp über dem Boden.'],
       ['Knie liegt am Boden', ''],
     ],
+    norm: [15, 35, 55, 75, 90, 100],
   },
   {
     id: 'hocke',
@@ -136,6 +140,7 @@ export const MOBILITY_TESTS = [
     why: 'Hüfte, Knie und Sprunggelenk zusammen.',
     kind: 'zeit',
     maxSeconds: 180,
+    zeitNorm: [[0, 0], [10, 20], [30, 45], [60, 70], [120, 90], [180, 100]],
     setup: [
       'Barfuß hinstellen, die Füße etwa schulterbreit, die Zehen leicht nach außen.',
       'So tief in die Hocke gehen, wie du kommst, das Gesäß Richtung Fersen.',
@@ -243,6 +248,112 @@ export function filledSides(test, werte) {
 export function hasResults(record) {
   if (!record || !record.results) return false;
   return MOBILITY_TESTS.some((test) => summarise(test, record.results[test.id]) != null);
+}
+
+/* ---------------- Auswertung ---------------- */
+
+/**
+ * Was die Punktzahl bedeutet.
+ *
+ * Die Grenzen sind an gängigen Richtwerten ausgerichtet, nicht an einer
+ * Rangliste: Zehenspitzen erreichen, das Knie eine Handbreit vor der Wand, die
+ * Fingerspitzen an der unteren Schulterblattspitze — das gilt jeweils als
+ * unauffällig bis gut, und genau dort liegt die Grenze zu „gut".
+ */
+export const SCORE_BANDS = [
+  { ab: 85, name: 'Sehr gut', text: 'Da ist wenig Luft nach oben. Halten genügt.' },
+  { ab: 70, name: 'Gut', text: 'Über den üblichen Richtwerten. Nichts, was dich einschränkt.' },
+  { ab: 55, name: 'Brauchbar', text: 'Reicht für Alltag und Training, mit Luft nach oben.' },
+  { ab: 35, name: 'Eingeschränkt', text: 'Merkbar eingeschränkt — hier bringt Dehnen am meisten.' },
+  { ab: 0, name: 'Deutlich eingeschränkt', text: 'Weit von den Richtwerten entfernt. Dafür ist es der größte Hebel, den du hast.' },
+];
+
+export function bandFor(punkte) {
+  return SCORE_BANDS.find((b) => punkte >= b.ab) || SCORE_BANDS[SCORE_BANDS.length - 1];
+}
+
+/** Linear zwischen Stützpunkten, damit auch halbe Stufen zählen. */
+function interpolieren(punkte, x) {
+  if (x <= punkte[0][0]) return punkte[0][1];
+  const letzte = punkte[punkte.length - 1];
+  if (x >= letzte[0]) return letzte[1];
+
+  for (let i = 1; i < punkte.length; i += 1) {
+    const [x0, y0] = punkte[i - 1];
+    const [x1, y1] = punkte[i];
+    if (x <= x1) return y0 + ((x - x0) / (x1 - x0)) * (y1 - y0);
+  }
+  return letzte[1];
+}
+
+/** Punkte für eine Prüfung, 0 bis 100, oder null wenn sie nicht gemessen wurde. */
+export function testScore(test, werte) {
+  const wert = summarise(test, werte);
+  if (wert == null) return null;
+
+  const stuetzen = test.kind === 'zeit'
+    ? test.zeitNorm
+    : test.norm.map((p, i) => [i, p]);
+
+  return Math.round(interpolieren(stuetzen, wert));
+}
+
+/**
+ * Gesamtauswertung einer Messung.
+ *
+ * Gewertet wird nur, was auch gemessen wurde — wer zwei Prüfungen überspringt,
+ * bekommt keine schlechtere Zahl, sondern eine aus drei Prüfungen. Deshalb steht
+ * `anzahl` mit dabei: ohne die wäre der Wert nicht einzuordnen.
+ */
+export function overallScore(record) {
+  if (!record || !record.results) return null;
+
+  const einzeln = MOBILITY_TESTS
+    .map((test) => ({ test, punkte: testScore(test, record.results[test.id]) }))
+    .filter((e) => e.punkte != null);
+
+  if (!einzeln.length) return null;
+
+  const punkte = Math.round(einzeln.reduce((a, e) => a + e.punkte, 0) / einzeln.length);
+  const sortiert = [...einzeln].sort((a, b) => a.punkte - b.punkte);
+
+  return {
+    punkte,
+    band: bandFor(punkte),
+    anzahl: einzeln.length,
+    von: MOBILITY_TESTS.length,
+    einzeln,
+    schwaechste: sortiert[0],
+    staerkste: sortiert[sortiert.length - 1],
+  };
+}
+
+/**
+ * Seitenunterschiede ab einer halben Stufe.
+ *
+ * Das ist der Befund, den ein Gesamtwert verschluckt: zwei Seiten, die sich um
+ * zwei Stufen unterscheiden, ergeben im Mittel einen unauffälligen Wert.
+ */
+export function asymmetries(record, schwelle = 1) {
+  if (!record || !record.results) return [];
+
+  return MOBILITY_TESTS.flatMap((test) => {
+    if (!test.perSide) return [];
+    const werte = record.results[test.id];
+    if (!werte) return [];
+    const { links, rechts } = werte;
+    if (typeof links !== 'number' || typeof rechts !== 'number') return [];
+
+    const unterschied = Math.round(Math.abs(links - rechts) * 10) / 10;
+    if (unterschied < schwelle) return [];
+
+    return [{
+      test,
+      unterschied,
+      schwaecher: links < rechts ? 'links' : 'rechts',
+      staerker: links < rechts ? 'rechts' : 'links',
+    }];
+  });
 }
 
 /** Empfohlener Abstand zwischen zwei Messungen. */

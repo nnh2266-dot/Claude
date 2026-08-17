@@ -54,7 +54,8 @@ anzeigt.
   Die Leiste klebt unten und meldet sich am Ende
 - **Beweglichkeitstest**: fünf Prüfungen ohne Hilfsmittel, Schritt für Schritt
   angeleitet, alle paar Wochen zu wiederholen. Gemessen wird in Stufen, nicht in
-  Zentimetern. Die App merkt sich jede Messung und zeigt die Veränderung
+  Zentimetern. Am Ende steht eine Auswertung von 0 bis 100 gegen gängige Richtwerte,
+  mit der schwächsten Prüfung und ungleichen Seiten als Befund
 - **Fortschritt**: Gewichtsverlauf mit Sieben-Tage-Schnitt, Kraftentwicklung je Übung,
   bewegte Last pro Woche
 - **Kalorien nachsteuern**: weicht die gemessene Gewichtsveränderung vom Ziel ab,
@@ -195,7 +196,7 @@ js/nutrition.js          Summen, Datumslogik, Portionsskalierung
 js/training.js           Übungsdatenbank, Plangenerator, Satzvorgaben, Progression
 js/skills.js             Fähigkeiten: Stufenleitern, Ziele, Freischaltregeln
 js/warmup.js             Aufwärmen, zusammengestellt aus den Gruppen des Tages
-js/mobility.js           Beweglichkeitstest: Prüfungen, Stufen, Vergleich
+js/mobility.js           Beweglichkeitstest: Prüfungen, Stufen, Punkte, Vergleich
 js/version.js            Fassungsnummer, muss zur CACHE_VERSION in sw.js passen
 js/energy.js             Grundumsatz, Tagesziele, Gewichtstrend, Kalorienkorrektur
 js/claude.js             Anthropic-API + Chat-Brücke: Prompts (Foto und Text), Schema
@@ -276,6 +277,38 @@ beider Seiten; nach der ersten Wahl springt er von allein auf die andere Seite.
 Im Fortschritt steht danach je Prüfung die Stufe samt Beschreibung und die Veränderung
 zur Messung davor. Sind die Seiten ungleich, entfällt die Beschreibung: der Mittelwert
 von Stufe 4 und Stufe 2 ist Stufe 3, und auf der steht keine der beiden Seiten.
+
+### Die Auswertung
+
+Nach dem Speichern kommt zuerst eine Auswertung, nicht der Fortschritt: zehn Minuten
+Messen sollen mit einer Zahl enden, die man nicht suchen muss.
+
+Jede Stufe hat einen Punktwert von 0 bis 100 (`norm` je Prüfung, `zeitNorm` für die
+Hocke, dazwischen linear interpoliert, damit auch halbe Stufen zählen). Die
+Stützpunkte sind an gängigen Richtwerten ausgerichtet, nicht an einer Rangliste: die
+Zehen erreichen, das Knie eine Handbreit vor der Wand, die Fingerspitzen an der
+unteren Schulterblattspitze — das gilt jeweils als unauffällig bis gut, und dort liegt
+die Grenze zu „gut" (70 Punkte).
+
+Der Gesamtwert ist der Mittelwert der Prüfungen, **die auch gemessen wurden**. Wer
+zwei überspringt, bekommt keine schlechtere Zahl, sondern eine aus drei Prüfungen —
+deshalb steht immer dabei, aus wie vielen sie gerechnet ist.
+
+| Punkte | Einordnung |
+| --- | --- |
+| 85–100 | Sehr gut |
+| 70–84 | Gut |
+| 55–69 | Brauchbar |
+| 35–54 | Eingeschränkt |
+| 0–34 | Deutlich eingeschränkt |
+
+Dazu kommen zwei Dinge, die ein Mittelwert verschluckt: die **schwächste Prüfung** als
+größter Hebel, und **ungleiche Seiten** ab einer Stufe Unterschied — zwei Seiten, die
+weit auseinanderliegen, ergeben im Mittel einen unauffälligen Wert. Liegt eine frühere
+Messung vor, steht neben jeder Zahl die Veränderung in Punkten.
+
+Im Fortschritt steht die Punktzahl als Karte; ein Tipp darauf öffnet die ganze
+Auswertung erneut.
 
 Empfohlener Abstand: 28 Tage. Öfter zu messen zeigt vor allem Tagesform.
 

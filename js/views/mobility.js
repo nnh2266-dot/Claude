@@ -16,6 +16,7 @@ import { saveMobilityTest } from '../store.js';
 import {
   MOBILITY_TESTS, fieldsFor, compare, summarise, standLabel, deltaUnit, topStage,
   filledSides, hasResults, daysSince, RETEST_DAYS, KNAPP,
+  overallScore, testScore, bandFor, asymmetries,
 } from '../mobility.js';
 
 /** Läuft gerade eine Messung? Dann stehen hier die Werte und der Schritt. */
@@ -27,9 +28,19 @@ let aktiveSeite = {};
 /** Abbruchfunktion der Stoppuhr, damit sie beim Neuzeichnen nicht weiterläuft. */
 let uhrAbbrechen = null;
 
+/** Datum der Messung, deren Auswertung gerade gezeigt wird. */
+let ergebnisVon = null;
+
 export function begin() {
   messung = { werte: {}, schritt: 0 };
   aktiveSeite = {};
+  ergebnisVon = null;
+}
+
+/** Öffnet die Auswertung einer bereits gespeicherten Messung. */
+export function showResult(dateKey) {
+  messung = null;
+  ergebnisVon = dateKey;
 }
 
 const einsNach = (n) => String(Math.round(n * 10) / 10).replace('.', ',');
@@ -206,10 +217,117 @@ function stoppuhr(test, neuZeichnen) {
       tippen));
 }
 
+/* ---------------- Auswertung ---------------- */
+
+/** Balken mit Punktzahl für eine einzelne Prüfung. */
+function punktZeile(test, punkte, vorher) {
+  const band = bandFor(punkte);
+  const vergleich = typeof vorher === 'number' ? punkte - vorher : null;
+
+  return el('div', { class: 'scorerow' },
+    el('div', { class: 'row-between' },
+      el('div', { class: 'grow' },
+        el('div', { class: 'scorerow-name', text: test.name }),
+        el('div', { class: 'muted small', text: band.name })),
+      vergleich
+        ? el('span', {
+            class: `pill ${vergleich > 0 ? 'pill-ok' : 'pill-kcal'} tabular`,
+            text: `${mitVorzeichen(vergleich)}`,
+          })
+        : null,
+      el('div', { class: 'scorerow-num tabular', text: String(punkte) })),
+    el('div', { class: 'scorebar' },
+      el('i', { style: { width: `${Math.max(2, punkte)}%` } })));
+}
+
+function ergebnisAnsicht(container, ctx, record) {
+  const alle = (ctx.state.mobility || []).filter(hasResults);
+  const davor = vorherige(alle, record.date);
+  const jetzt = overallScore(record);
+  const alt = davor ? overallScore(davor) : null;
+
+  const head = viewHead('Auswertung',
+    formatDateKey(record.date),
+    iconButton('back', 'Zurück', () => { ergebnisVon = null; ctx.go('progress'); }));
+
+  const gesamtDelta = alt ? jetzt.punkte - alt.punkte : null;
+
+  const kopf = el('div', { class: 'card stack' },
+    el('div', { class: 'score' },
+      el('div', { class: 'score-num tabular', text: String(jetzt.punkte) },
+        el('span', { class: 'score-of', text: ' / 100' })),
+      el('div', { class: 'score-band', text: jetzt.band.name }),
+      gesamtDelta
+        ? el('span', {
+            class: `pill ${gesamtDelta > 0 ? 'pill-ok' : 'pill-kcal'} tabular`,
+            text: `${mitVorzeichen(gesamtDelta)} Punkte gegenüber ${formatDateKey(davor.date)}`,
+          })
+        : null),
+    el('p', { class: 'small', text: jetzt.band.text }),
+    el('p', { class: 'hint',
+      text: jetzt.anzahl === jetzt.von
+        ? 'Gerechnet aus allen fünf Prüfungen.'
+        : `Gerechnet aus ${jetzt.anzahl} von ${jetzt.von} Prüfungen — übersprungene zählen nicht mit.` }));
+
+  const zeilen = el('div', { class: 'card stack' },
+    el('h3', { class: 'card-title', text: 'Die einzelnen Prüfungen' }),
+    ...jetzt.einzeln.map(({ test, punkte }) =>
+      punktZeile(test, punkte, davor ? testScore(test, davor.results[test.id]) : null)));
+
+  const hebel = jetzt.anzahl > 1
+    ? el('div', { class: 'note' },
+        el('strong', { text: `Größter Hebel: ${jetzt.schwaechste.test.name}. ` }),
+        `${jetzt.schwaechste.test.why} Am anderen Ende steht `
+        + `${jetzt.staerkste.test.name} mit ${jetzt.staerkste.punkte} Punkten.`)
+    : null;
+
+  const schief = asymmetries(record);
+  const seiten = schief.length
+    ? el('div', { class: 'card stack' },
+        el('h3', { class: 'card-title', text: 'Ungleiche Seiten' }),
+        el('p', { class: 'muted small' },
+          'Das verschluckt die Gesamtzahl: im Mittel sieht ein Unterschied '
+          + 'unauffällig aus. Beim Dehnen lohnt es, die schwächere Seite länger zu halten.'),
+        ...schief.map((s) => el('div', { class: 'calcrow' },
+          el('div', { class: 'grow' },
+            el('div', { text: s.test.name }),
+            el('div', { class: 'muted small', text: `${s.schwaecher} ist die schwächere Seite` })),
+          el('div', { class: 'tabular',
+            text: `${einsNach(s.unterschied)} ${s.unterschied === 1 ? 'Stufe' : 'Stufen'}` }))))
+    : null;
+
+  const einordnung = el('p', { class: 'hint' },
+    'Die Punkte vergleichen dich mit gängigen Richtwerten, nicht mit anderen Menschen: '
+    + 'die Zehen erreichen, das Knie eine Handbreit vor der Wand, die Finger an der '
+    + 'unteren Schulterblattspitze — dort liegt jeweils die Grenze zu „gut". Ihr '
+    + 'eigentlicher Wert liegt darin, dass du sie in vier Wochen wieder ausrechnen kannst.');
+
+  const fertig = el('button', {
+    class: 'btn btn-primary btn-block btn-lg mt-16', type: 'button',
+    onClick: () => { ergebnisVon = null; ctx.go('progress'); },
+  }, 'Fertig');
+
+  mount(container, head, el('div', null,
+    kopf,
+    el('div', { class: 'mt-16' }, zeilen),
+    hebel ? el('div', { class: 'mt-16' }, hebel) : null,
+    seiten ? el('div', { class: 'mt-16' }, seiten) : null,
+    el('div', { class: 'mt-16' }, einordnung),
+    fertig));
+}
+
 /* ---------------- Ansicht ---------------- */
 
 export async function render(container, ctx) {
   if (uhrAbbrechen) { uhrAbbrechen(); uhrAbbrechen = null; }
+
+  // Auswertung einer gespeicherten Messung — nicht der Test selbst.
+  if (ergebnisVon) {
+    const record = (ctx.state.mobility || []).find((t) => t.date === ergebnisVon);
+    if (record && hasResults(record)) { ergebnisAnsicht(container, ctx, record); return; }
+    ergebnisVon = null;
+  }
+
   if (!messung) messung = { werte: {}, schritt: 0 };
 
   const heute = localDateKey();
@@ -307,8 +425,11 @@ export async function render(container, ctx) {
 
       await saveMobilityTest(heute, ergebnisse);
       await ctx.refreshTraining();
+      // Erst die Auswertung, dann der Fortschritt. Die Zahl ist der Lohn für
+      // zehn Minuten Messen — die soll man nicht suchen müssen.
       messung = null;
-      ctx.go('progress');
+      ergebnisVon = heute;
+      neuZeichnen();
       toast('Messung gespeichert.');
     },
   }, letzterSchritt ? 'Messung speichern' : schritt === 0 ? 'Los gehts' : 'Weiter');
@@ -381,10 +502,37 @@ export function mobilitySection(ctx) {
       el('div', { class: 'tabular', text: stand }));
   }).filter(Boolean);
 
+  const punkte = overallScore(letzte);
+  const altePunkte = davor ? overallScore(davor) : null;
+  const gesamtDelta = punkte && altePunkte ? punkte.punkte - altePunkte.punkte : null;
+
+  const kopf = punkte
+    ? el('button', {
+        class: 'card scorecard', type: 'button',
+        onClick: () => { showResult(letzte.date); ctx.go('mobility'); },
+      },
+        el('div', { class: 'score-num tabular', text: String(punkte.punkte) },
+          el('span', { class: 'score-of', text: ' / 100' })),
+        el('div', { class: 'grow' },
+          el('div', { class: 'score-band', text: punkte.band.name }),
+          el('div', { class: 'muted small',
+            text: punkte.anzahl === punkte.von
+              ? 'Aus allen fünf Prüfungen'
+              : `Aus ${punkte.anzahl} von ${punkte.von} Prüfungen` })),
+        gesamtDelta
+          ? el('span', {
+              class: `pill ${gesamtDelta > 0 ? 'pill-ok' : 'pill-kcal'} tabular`,
+              text: mitVorzeichen(gesamtDelta),
+            })
+          : null)
+    : null;
+
   return el('div', null,
-    el('div', { class: 'card card-flush' }, ...zeilen),
+    kopf,
+    el('div', { class: kopf ? 'card card-flush mt-16' : 'card card-flush' }, ...zeilen),
     el('p', { class: 'hint mt-16',
       text: (tage === 0 ? 'Heute gemessen' : `Letzte Messung vor ${tage} ${tage === 1 ? 'Tag' : 'Tagen'}`)
-        + (davor ? ', verglichen mit der Messung davor.' : '. Beim nächsten Mal gibt es einen Vergleich.') }),
+        + (davor ? ', verglichen mit der Messung davor.' : '. Beim nächsten Mal gibt es einen Vergleich.')
+        + (punkte ? ' Tipp auf die Punktzahl für die ganze Auswertung.' : '') }),
     el('div', { class: 'mt-16' }, knopf));
 }
