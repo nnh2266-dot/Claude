@@ -52,8 +52,9 @@ anzeigt.
 - **Pausenuhr**: läuft von selbst los, sobald ein Satz abgehakt ist, mit der Zeit aus
   der Vorgabe — 150 Sekunden nach einer Grundübung, 75 nach einer Isolationsübung.
   Die Leiste klebt unten und meldet sich am Ende
-- **Beweglichkeitstest**: fünf Prüfungen mit Maßband und Wand, alle paar Wochen zu
-  wiederholen. Die App merkt sich jede Messung und zeigt die Veränderung
+- **Beweglichkeitstest**: fünf Prüfungen ohne Hilfsmittel, Schritt für Schritt
+  angeleitet, alle paar Wochen zu wiederholen. Gemessen wird in Stufen, nicht in
+  Zentimetern. Die App merkt sich jede Messung und zeigt die Veränderung
 - **Fortschritt**: Gewichtsverlauf mit Sieben-Tage-Schnitt, Kraftentwicklung je Übung,
   bewegte Last pro Woche
 - **Kalorien nachsteuern**: weicht die gemessene Gewichtsveränderung vom Ziel ab,
@@ -194,7 +195,7 @@ js/nutrition.js          Summen, Datumslogik, Portionsskalierung
 js/training.js           Übungsdatenbank, Plangenerator, Satzvorgaben, Progression
 js/skills.js             Fähigkeiten: Stufenleitern, Ziele, Freischaltregeln
 js/warmup.js             Aufwärmen, zusammengestellt aus den Gruppen des Tages
-js/mobility.js           Beweglichkeitstests: Anleitung, Einheiten, Vergleich
+js/mobility.js           Beweglichkeitstest: Prüfungen, Stufen, Vergleich
 js/version.js            Fassungsnummer, muss zur CACHE_VERSION in sw.js passen
 js/energy.js             Grundumsatz, Tagesziele, Gewichtstrend, Kalorienkorrektur
 js/claude.js             Anthropic-API + Chat-Brücke: Prompts (Foto und Text), Schema
@@ -247,17 +248,40 @@ mehr als 0,22 Prozentpunkte vom Ziel ab, schlägt die App eine Korrektur vor
 
 ## Der Beweglichkeitstest
 
-Fünf Prüfungen, alle allein mit Maßband und Wand machbar: Sitzen und reichen,
-Knie zur Wand, Schulterhaken hinter dem Rücken, Schmetterling, tiefe Hocke halten.
-Zu jeder steht in der App, wie gemessen und was abgelesen wird — ohne das misst man
-beim zweiten Mal anders als beim ersten, und der Vergleich wäre wertlos.
+Fünf Prüfungen: Vorbeugen im Sitzen, Knie zur Wand, Hand über die Schulter,
+Schmetterling, tiefe Hocke halten. Gebraucht wird nichts außer einer Wand und etwas
+Boden.
 
-Minuswerte sind normal und gewollt: Finger vor den Zehen, Hände hinter dem Rücken
-überlappend. Bei zwei Prüfungen ist ein kleinerer Wert besser, bei dreien ein
-größerer — die Richtung steckt je Test in `betterWhen`, damit der Vergleich nicht
-in die falsche Richtung zeigt.
+**Gemessen wird in Stufen, nicht in Zentimetern.** Ein Maßband hat man selten dabei,
+und an sich selbst angelegt verrutscht es ohnehin. Stattdessen hat jede Prüfung sechs
+Stufen, beschrieben mit Anhaltspunkten, die immer da sind: die eigenen Finger quer als
+Lineal, die Knöchel, die Zehen, die tastbare Spitze des Schulterblatts. Man schaut
+nach, wie weit man kommt, und tippt die Beschreibung an, die passt. Für den Fall
+dazwischen gibt es *Hat gerade so gereicht* — das zählt als halbe Stufe, damit auch
+langsamer Fortschritt sichtbar wird.
+
+Die Stufen sind aufsteigend sortiert, von unbeweglich zu beweglich. Damit ist überall
+mehr besser und der Vergleich braucht keine Sonderfälle. Die tiefe Hocke zählt in
+Sekunden und bringt ihre eigene Stoppuhr mit; der Bildschirm bleibt dabei an.
+
+Der Test läuft **Schritt für Schritt, eine Prüfung pro Bildschirm**. Zu jeder steht
+offen sichtbar, wie sie aufgebaut wird — nummeriert, in der Reihenfolge, in der man es
+tut — und was nicht zählt, also die üblichen Selbstbetrügereien: Wippen, gebeugte
+Knie, mit der zweiten Hand nachhelfen. Ohne das misst man beim zweiten Mal anders als
+beim ersten, und der Vergleich wäre wertlos.
+
+Drei Prüfungen laufen je Seite. Der Chip darüber schaltet um und zeigt den Stand
+beider Seiten; nach der ersten Wahl springt er von allein auf die andere Seite.
+
+Im Fortschritt steht danach je Prüfung die Stufe samt Beschreibung und die Veränderung
+zur Messung davor. Sind die Seiten ungleich, entfällt die Beschreibung: der Mittelwert
+von Stufe 4 und Stufe 2 ist Stufe 3, und auf der steht keine der beiden Seiten.
 
 Empfohlener Abstand: 28 Tage. Öfter zu messen zeigt vor allem Tagesform.
+
+Messungen aus der ersten Fassung des Tests lagen in Zentimetern vor und sind mit den
+Stufen nicht vergleichbar. Sie bleiben gespeichert, tauchen aber nicht mehr auf —
+`hasResults()` erkennt sie an den alten Kennungen und lässt sie liegen.
 
 ## Wie Fähigkeiten funktionieren
 

@@ -1050,3 +1050,39 @@ input[type="range"] {
   font-variant-numeric: tabular-nums; min-width: 62px; text-align: right;
 }
 .pause-clock.vorbei { color: var(--ok); }
+
+/* ---------- Beweglichkeitstest ---------- */
+
+/* Wie weit man ist — ohne Zahlen, die man erst lesen müsste */
+.stepbar { display: flex; gap: 5px; margin-bottom: 14px; }
+.stepbar i {
+  flex: 1; height: 4px; border-radius: 2px;
+  background: var(--border-strong);
+}
+.stepbar i.on { background: var(--kcal); }
+
+.howto-head {
+  font-size: 12px; font-weight: 700; letter-spacing: .04em;
+  text-transform: uppercase; color: var(--text-faint); margin: 4px 0 0;
+}
+
+.howto {
+  margin: 0; padding-left: 22px;
+  display: flex; flex-direction: column; gap: 8px;
+  font-size: 13.5px; line-height: 1.5;
+}
+.howto li::marker { color: var(--kcal); font-weight: 700; }
+
+.nogo {
+  margin: 0; padding: 0; list-style: none;
+  display: flex; flex-direction: column; gap: 6px;
+  font-size: 12.5px; line-height: 1.45; color: var(--text-muted);
+}
+.nogo li { position: relative; padding-left: 20px; }
+.nogo li::before {
+  content: '×';
+  position: absolute; left: 5px; top: -1px;
+  color: var(--danger); font-weight: 700; font-size: 14px;
+}
+
+.chip:disabled { opacity: .4; cursor: default; }
