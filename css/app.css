@@ -1175,3 +1175,15 @@ input[type="range"] {
   width: 34px; height: 45px; object-fit: cover;
   border-radius: 5px; background: var(--surface-2);
 }
+
+/* Einschränkungen sind Hinweise, keine Verbote — deshalb kein rotes Kreuz */
+.caveats {
+  margin: 0; padding: 0; list-style: none;
+  display: flex; flex-direction: column; gap: 8px;
+  font-size: 12.5px; line-height: 1.45; color: var(--text-muted);
+}
+.caveats li { position: relative; padding-left: 18px; }
+.caveats li::before {
+  content: '–'; position: absolute; left: 4px;
+  color: var(--text-faint); font-weight: 700;
+}

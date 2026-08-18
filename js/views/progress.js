@@ -11,6 +11,7 @@ import { calorieAdvice } from '../energy.js';
 import { skillById, currentLevel, levelIndex, skillHistory } from '../skills.js';
 import { mobilitySection } from './mobility.js';
 import { photoSection } from './photos.js';
+import { strengthSection } from './strength.js';
 
 const CHART_W = 320;
 const CHART_H = 150;
@@ -200,6 +201,10 @@ export async function render(container, ctx) {
 
     body.push(card);
   }
+
+  /* Einordnung je Muskelgruppe */
+  body.push(el('h2', { class: 'section-title', text: 'Muskelgruppen' }));
+  body.push(strengthSection(ctx));
 
   /* Kraft */
   body.push(el('h2', { class: 'section-title', text: 'Kraftentwicklung' }));

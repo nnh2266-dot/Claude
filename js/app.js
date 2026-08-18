@@ -25,6 +25,7 @@ import * as setupView from './views/setup.js';
 import * as mobilityView from './views/mobility.js';
 import * as reportView from './views/report.js';
 import * as photosView from './views/photos.js';
+import * as strengthView from './views/strength.js';
 
 const VIEWS = {
   today: todayView,
@@ -39,6 +40,7 @@ const VIEWS = {
   mobility: mobilityView,
   report: reportView,
   photos: photosView,
+  strength: strengthView,
 };
 
 const state = {
@@ -95,7 +97,7 @@ async function handleRoute() {
   // markiert — sonst sähe die Leiste unten aus, als wäre man nirgends.
   const TAB_OF = {
     plan: 'training', progress: 'training', setup: 'training', mobility: 'training',
-    photos: 'training', report: 'today',
+    photos: 'training', strength: 'training', report: 'today',
   };
   const activeTab = TAB_OF[route.name] || route.name;
   for (const tab of document.querySelectorAll('.tab')) {

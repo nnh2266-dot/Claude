@@ -66,6 +66,9 @@ anzeigt.
 - **Fortschritt**: Gewichtsverlauf mit Sieben-Tage-Schnitt, dann Kraftentwicklung je
   Übung und bewegte Last pro Woche — die Kraftwerte stehen oben, weil sie sich nach
   jeder Einheit ändern, Fotos und Beweglichkeit nur alle paar Wochen
+- **Krafteinordnung**: je Muskelgruppe ein Wert von 0 bis 100, gemessen an Richtwerten,
+  die auf das eigene Körpergewicht bezogen sind, dazu die Verhältnisse Drücken/Ziehen
+  und Oberkörper/Beine
 - **Kalorien nachsteuern**: weicht die gemessene Gewichtsveränderung vom Ziel ab,
   schlägt die App eine Korrektur vor — auf Knopfdruck übernommen
 
@@ -206,6 +209,7 @@ js/skills.js             Fähigkeiten: Stufenleitern, Ziele, Freischaltregeln
 js/warmup.js             Aufwärmen, zusammengestellt aus den Gruppen des Tages
 js/mobility.js           Beweglichkeitstest: Prüfungen, Stufen, Punkte, Vergleich
 js/report.js             Tages- und Wochenbericht: Befunde aus den eigenen Daten
+js/strength.js           Krafteinordnung: Richtwerte je Übung, Gruppen, Verhältnisse
 js/version.js            Fassungsnummer, muss zur CACHE_VERSION in sw.js passen
 js/energy.js             Grundumsatz, Tagesziele, Gewichtstrend, Kalorienkorrektur
 js/claude.js             Anthropic-API + Chat-Brücke: Prompts (Foto und Text), Schema
@@ -213,7 +217,7 @@ js/image.js              Kamera-Foto verkleinern, Thumbnail, Base64
 js/ui.js                 DOM-Helfer
 js/views/                today · capture · history · favorites · settings
                          training · plan · progress · setup · mobility
-                         report · photos
+                         report · photos · strength
 sw.js                    Service Worker (Offline-Betrieb)
 manifest.webmanifest     PWA-Manifest
 ```
@@ -325,6 +329,47 @@ Empfohlener Abstand: 28 Tage. Öfter zu messen zeigt vor allem Tagesform.
 Messungen aus der ersten Fassung des Tests lagen in Zentimetern vor und sind mit den
 Stufen nicht vergleichbar. Sie bleiben gespeichert, tauchen aber nicht mehr auf —
 `hasResults()` erkennt sie an den alten Kennungen und lässt sie liegen.
+
+## Krafteinordnung je Muskelgruppe
+
+Zwei Fragen: Wie stark ist eine Gruppe gemessen am eigenen Körpergewicht, und wie
+stehen die Gruppen zueinander?
+
+**Der Bezug aufs Körpergewicht ist der Kern.** 80 kg Bankdrücken heißt bei 60 kg
+Körpergewicht etwas anderes als bei 100 kg. `STANDARDS` in `strength.js` hält deshalb
+je Übung fünf Stützpunkte für 0, 25, 50, 75 und 100 Punkte, in zwei Bauarten:
+
+- `art: 'last'` — geschätztes Einwiederholungsmaximum geteilt durchs Körpergewicht.
+  Bankdrücken etwa 0,5 / 0,75 / 1,0 / 1,25 / 1,5. Bei Kurzhanteln gilt die Zahl je Hantel.
+- `art: 'wdh'` — Wiederholungen eines sauberen Satzes ohne Zusatzgewicht. Liegestütze
+  5 / 15 / 25 / 40 / 60. Hier steckt der Körpergewichtsbezug schon in der Übung.
+
+Dazwischen wird linear interpoliert. Die Niveaus heißen Anfang, Geübt,
+Fortgeschritten, Stark und Sehr stark. Für Frauen werden die `last`-Richtwerte
+skaliert (Oberkörper 0,65, Beine 0,80) — ohne das stünde bei gleicher Leistung eine
+schlechtere Einordnung, und die wäre schlicht falsch.
+
+Maßgeblich für eine Gruppe ist die **bestbewertete Übung**, nicht der Durchschnitt: wer
+schwer Bankdrücken kann, hat eine starke Brust, auch wenn daneben ein halbherziger Satz
+Fliegende steht.
+
+**Verhältnisse** vergleichen Drücken (Brust, Schultern) mit Ziehen (Rücken, hintere
+Schulter) und Oberkörper mit Beinen; ab zwölf Punkten Unterschied gilt das als schief.
+Die Arme bleiben bewusst draußen — ein starker Curl würde sonst die ganze Seite
+„Ziehen" hochziehen, obwohl der Rücken schwach ist. Fehlt eine Seite ganz, kommt kein
+Befund: ein Ungleichgewicht zwischen einer gemessenen und einer nie trainierten Seite
+wäre keine Erkenntnis, sondern eine Datenlücke.
+
+Dazu kommt die **Satzverteilung der letzten vier Wochen** und, welche Gruppen im Plan
+stehen, aber keinen einzigen Satz gesehen haben.
+
+Am Ende steht, was die Zahlen wert sind, und das gehört dazu: die Richtwerte sind grobe
+Erfahrungswerte und schwanken mit Hebeln, Alter und Trainingsjahren um zehn bis zwanzig
+Punkte; nur ein Teil der Übungen hat überhaupt einen; die Epley-Schätzung wird bei zwölf
+Wiederholungen gedeckelt, weil sie darüber deutlich überschätzt; und gerechnet wird mit
+dem besten Satz überhaupt, nicht dem der laufenden Woche. Wo kein Richtwert existiert —
+etwa beim Handtuch-Rudern im Sitzen, wo der Widerstand aus den eigenen Beinen kommt —
+steht ausdrücklich keine Zahl statt einer erfundenen.
 
 ## Die Berichte
 
