@@ -1118,3 +1118,60 @@ input[type="range"] {
 
 /* Getauschte Übungen im Unterwegs-Betrieb: Liste ohne das Kreuz der Verbotsliste */
 .swaps li::before { content: '→'; color: var(--kcal); font-size: 12px; top: 0; }
+
+/* Pausenlänge: eingeklappt, damit sie nicht jedes Mal im Weg steht */
+.pausenwahl > summary {
+  display: flex; align-items: center; gap: 10px;
+  cursor: pointer; list-style: none; font-size: 14.5px; font-weight: 600;
+}
+.pausenwahl > summary::-webkit-details-marker { display: none; }
+.pausenwahl > summary::after {
+  content: '▾'; color: var(--text-faint); font-size: 12px;
+}
+.pausenwahl[open] > summary::after { content: '▴'; }
+
+/* ---------- Bericht ---------- */
+
+.befunde { display: flex; flex-direction: column; gap: 9px; }
+
+.befund { display: flex; gap: 9px; align-items: flex-start; }
+.befund-icon {
+  flex: 0 0 18px; height: 18px; border-radius: 50%;
+  display: grid; place-items: center;
+  font-size: 11px; font-weight: 700; line-height: 1;
+  margin-top: 1px;
+}
+.befund-text { font-size: 13.5px; line-height: 1.5; }
+
+.befund-gut .befund-icon      { background: color-mix(in srgb, var(--ok) 18%, transparent); color: var(--ok); }
+.befund-schlecht .befund-icon { background: var(--danger-soft); color: var(--danger); }
+.befund-neutral .befund-icon  { background: var(--surface-2); color: var(--text-faint); }
+
+.reportcard {
+  display: block; width: 100%; text-align: left;
+  font: inherit; color: inherit; cursor: pointer;
+}
+
+/* ---------- Fortschrittsfotos ---------- */
+
+.vergleich { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.vglseite { margin: 0; display: flex; flex-direction: column; gap: 6px; }
+.vglbild {
+  width: 100%; aspect-ratio: 3 / 4; object-fit: cover;
+  border-radius: var(--radius-sm); background: var(--surface-2);
+}
+
+.fotogitter { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.fotokachel { display: flex; flex-direction: column; gap: 6px; align-items: stretch; }
+.fotoknopf {
+  padding: 0; border: 2px solid transparent; border-radius: var(--radius-sm);
+  background: none; cursor: pointer; overflow: hidden; line-height: 0;
+}
+.fotoknopf[aria-pressed="true"] { border-color: var(--kcal); }
+.fotoknopf img { width: 100%; aspect-ratio: 3 / 4; object-fit: cover; display: block; }
+
+.fotostreifen { display: flex; gap: 5px; }
+.fotomini {
+  width: 34px; height: 45px; object-fit: cover;
+  border-radius: 5px; background: var(--surface-2);
+}

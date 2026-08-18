@@ -5,6 +5,7 @@
 
 import { el, svg, mount, viewHead, iconButton, emptyState } from '../ui.js';
 import { getMealsByDate } from '../store.js';
+import { reportTeaser } from './report.js';
 import {
   localDateKey, shiftDateKey, formatDateKey, formatTime,
   sumMeals, groupByMealType, MEAL_TYPE_LABEL,
@@ -168,6 +169,13 @@ export async function render(container, ctx, param) {
   );
 
   const body = [progressCard(totals, goals, ctx)];
+
+  // Der Bericht gehört nach oben, nicht ans Ende: er sagt, was heute noch
+  // fehlt, und das nützt am Morgen mehr als am Abend.
+  if (dateKey === today) {
+    const bericht = reportTeaser(ctx, meals);
+    if (bericht) body.push(el('div', { class: 'mt-16' }, bericht));
+  }
 
   if (!meals.length) {
     body.push(

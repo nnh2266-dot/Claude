@@ -7,6 +7,7 @@
  *   sessions  — Trainingseinheiten, ein Eintrag je Tag
  *   weights   — Körpergewicht, ein Eintrag je Tag
  *   mobility  — Beweglichkeitstests, ein Eintrag je Messtag
+ *   photos    — Fortschrittsfotos, ein Eintrag je Aufnahmetag
  *   settings  — Key/Value (apiKey, model, goals, profile, plan, kcalAdjust,
  *               skillLevels)
  */
@@ -14,7 +15,7 @@
 import { DEFAULT_GOALS, sumItems, newId, localDateKey } from './nutrition.js';
 
 const DB_NAME = 'naehrwert';
-const DB_VERSION = 3;
+const DB_VERSION = 4;
 
 export const DEFAULT_MODEL = 'claude-haiku-4-5';
 
@@ -50,6 +51,12 @@ function openDB() {
       // alles Bestehende bleibt unangetastet.
       if (!db.objectStoreNames.contains('mobility')) {
         db.createObjectStore('mobility', { keyPath: 'date' });
+      }
+      // Ab Version 4: Fortschrittsfotos. Die Bilder liegen als Blob daneben,
+      // nicht in den Mahlzeiten — sie haben mit Essen nichts zu tun und sollen
+      // beim Aufräumen der Einträge nicht mit verschwinden.
+      if (!db.objectStoreNames.contains('photos')) {
+        db.createObjectStore('photos', { keyPath: 'date' });
       }
     };
 
@@ -95,6 +102,8 @@ export async function getSettings() {
     goals: { ...DEFAULT_GOALS, ...(raw.goals && typeof raw.goals === 'object' ? raw.goals : {}) },
     // Unterwegs: der Plan wird auf das umgerechnet, was in einem leeren Zimmer geht.
     unterwegs: raw.unterwegs === true,
+    // Pausenlänge: kurz, normal oder lang.
+    pausen: ['kurz', 'normal', 'lang'].includes(raw.pausen) ? raw.pausen : 'normal',
   };
 }
 
@@ -333,6 +342,33 @@ export async function listMobilityTests() {
   return (rows || []).sort((a, b) => (a.date < b.date ? -1 : 1));
 }
 
+/* ---------------- Fortschrittsfotos ---------------- */
+
+/**
+ * Ein Foto je Tag. Ein zweites am selben Tag ersetzt das erste — sonst sammeln
+ * sich zehn Aufnahmen einer Pose, und der Vergleich wird zur Suche.
+ */
+export async function saveProgressPhoto(dateKey, blob, thumbBlob, note = '') {
+  const record = {
+    date: dateKey, blob, thumb: thumbBlob || blob, note, savedAt: Date.now(),
+  };
+  await tx('photos', 'readwrite', (s) => s.put(record));
+  return record;
+}
+
+export async function listProgressPhotos() {
+  const rows = await tx('photos', 'readonly', (s) => s.getAll());
+  return (rows || []).sort((a, b) => (a.date < b.date ? -1 : 1));
+}
+
+export async function getProgressPhoto(dateKey) {
+  return tx('photos', 'readonly', (s) => s.get(dateKey));
+}
+
+export async function deleteProgressPhoto(dateKey) {
+  await tx('photos', 'readwrite', (s) => s.delete(dateKey));
+}
+
 export async function deleteMobilityTest(dateKey) {
   await tx('mobility', 'readwrite', (s) => s.delete(dateKey));
 }
@@ -439,6 +475,7 @@ export async function clearTraining() {
   await tx('sessions', 'readwrite', (s) => s.clear());
   await tx('weights', 'readwrite', (s) => s.clear());
   await tx('mobility', 'readwrite', (s) => s.clear());
+  await tx('photos', 'readwrite', (s) => s.clear());
   await tx('settings', 'readwrite', (s) => {
     s.delete('profile');
     s.delete('plan');
@@ -453,5 +490,6 @@ export async function clearEverything() {
   await tx('sessions', 'readwrite', (s) => s.clear());
   await tx('weights', 'readwrite', (s) => s.clear());
   await tx('mobility', 'readwrite', (s) => s.clear());
+  await tx('photos', 'readwrite', (s) => s.clear());
   await tx('settings', 'readwrite', (s) => s.clear());
 }

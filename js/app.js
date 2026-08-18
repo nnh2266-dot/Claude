@@ -8,7 +8,7 @@
 import { localDateKey } from './nutrition.js';
 import {
   getSettings, getTrainingProfile, getPlan, getKcalAdjust, getSkillLevels,
-  listSessions, listWeights, listMobilityTests,
+  listSessions, listWeights, listMobilityTests, listProgressPhotos,
 } from './store.js';
 import { targetsForDate } from './energy.js';
 import { toast } from './ui.js';
@@ -23,6 +23,8 @@ import * as planView from './views/plan.js';
 import * as progressView from './views/progress.js';
 import * as setupView from './views/setup.js';
 import * as mobilityView from './views/mobility.js';
+import * as reportView from './views/report.js';
+import * as photosView from './views/photos.js';
 
 const VIEWS = {
   today: todayView,
@@ -35,6 +37,8 @@ const VIEWS = {
   progress: progressView,
   setup: setupView,
   mobility: mobilityView,
+  report: reportView,
+  photos: photosView,
 };
 
 const state = {
@@ -50,6 +54,7 @@ const state = {
   sessions: [],
   weights: [],
   mobility: [],
+  photos: [],
 };
 
 let current = { name: null, param: null };
@@ -90,6 +95,7 @@ async function handleRoute() {
   // markiert — sonst sähe die Leiste unten aus, als wäre man nirgends.
   const TAB_OF = {
     plan: 'training', progress: 'training', setup: 'training', mobility: 'training',
+    photos: 'training', report: 'today',
   };
   const activeTab = TAB_OF[route.name] || route.name;
   for (const tab of document.querySelectorAll('.tab')) {
@@ -137,14 +143,20 @@ const ctx = {
 
   /** Lädt Profil, Plan, Einheiten und Gewichte neu. */
   async refreshTraining() {
-    const [profile, plan, kcalAdjust, skillLevels, sessions, weights, mobility] =
+    const [profile, plan, kcalAdjust, skillLevels, sessions, weights, mobility, photos] =
       await Promise.all([
         getTrainingProfile(), getPlan(), getKcalAdjust(), getSkillLevels(),
-        listSessions(), listWeights(), listMobilityTests(),
+        listSessions(), listWeights(), listMobilityTests(), listProgressPhotos(),
       ]);
     Object.assign(state, {
-      profile, plan, kcalAdjust, skillLevels, sessions, weights, mobility,
+      profile, plan, kcalAdjust, skillLevels, sessions, weights, mobility, photos,
     });
+  },
+
+  /** Lädt nur die Fotos neu — die Blobs sind groß, der Rest kann bleiben. */
+  async refreshPhotos() {
+    state.photos = await listProgressPhotos();
+    return state.photos;
   },
 
   /**

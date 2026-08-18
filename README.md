@@ -52,9 +52,13 @@ anzeigt.
 - **Unterwegs**: ein Schalter rechnet den Tag auf ein leeres Hotelzimmer um — nur
   Übungen, die mit Boden und Wand auskommen, ohne Tisch, Türrahmen oder Erhöhung.
   Der gespeicherte Plan bleibt unverändert
-- **Pausenuhr**: läuft von selbst los, sobald ein Satz abgehakt ist, mit der Zeit aus
-  der Vorgabe — 150 Sekunden nach einer Grundübung, 75 nach einer Isolationsübung.
-  Die Leiste klebt unten und meldet sich am Ende
+- **Pausenuhr**: läuft von selbst los, sobald ein Satz abgehakt ist. Die Länge richtet
+  sich nach Last und Übung, und ein Regler stellt sie kurz, normal oder lang — mit der
+  Dauer der ganzen Einheit als sichtbarer Folge
+- **Tagesbericht und Wochenbericht**: jeden Tag die dringendsten Befunde, sonntags die
+  ganze Woche — Training, Ernährung, Gewicht, Fähigkeiten. Konkret und ohne Schönreden
+- **Fortschrittsfotos**: alle paar Wochen eine Aufnahme, zwei davon nebeneinander im
+  Vergleich. Bleiben auf dem Gerät und gehen an keine API
 - **Beweglichkeitstest**: fünf Prüfungen ohne Hilfsmittel, Schritt für Schritt
   angeleitet, alle paar Wochen zu wiederholen. Gemessen wird in Stufen, nicht in
   Zentimetern. Am Ende steht eine Auswertung von 0 bis 100 gegen gängige Richtwerte,
@@ -200,6 +204,7 @@ js/training.js           Übungsdatenbank, Plangenerator, Satzvorgaben, Progress
 js/skills.js             Fähigkeiten: Stufenleitern, Ziele, Freischaltregeln
 js/warmup.js             Aufwärmen, zusammengestellt aus den Gruppen des Tages
 js/mobility.js           Beweglichkeitstest: Prüfungen, Stufen, Punkte, Vergleich
+js/report.js             Tages- und Wochenbericht: Befunde aus den eigenen Daten
 js/version.js            Fassungsnummer, muss zur CACHE_VERSION in sw.js passen
 js/energy.js             Grundumsatz, Tagesziele, Gewichtstrend, Kalorienkorrektur
 js/claude.js             Anthropic-API + Chat-Brücke: Prompts (Foto und Text), Schema
@@ -207,6 +212,7 @@ js/image.js              Kamera-Foto verkleinern, Thumbnail, Base64
 js/ui.js                 DOM-Helfer
 js/views/                today · capture · history · favorites · settings
                          training · plan · progress · setup · mobility
+                         report · photos
 sw.js                    Service Worker (Offline-Betrieb)
 manifest.webmanifest     PWA-Manifest
 ```
@@ -319,6 +325,50 @@ Messungen aus der ersten Fassung des Tests lagen in Zentimetern vor und sind mit
 Stufen nicht vergleichbar. Sie bleiben gespeichert, tauchen aber nicht mehr auf —
 `hasResults()` erkennt sie an den alten Kennungen und lässt sie liegen.
 
+## Die Berichte
+
+Ehrlich heißt konkret. „Bleib dran!" ist keine Rückmeldung, „drei von vier Einheiten,
+die vom Donnerstag fehlt" ist eine. `report.js` erzeugt deshalb keinen Fließtext aus
+Bausteinen, sondern eine Liste von Befunden mit je einer Bewertung: **gut**,
+**schlecht** oder schlicht eine **Tatsache**. Alles wird lokal gerechnet — der Bericht
+läuft offline, kostet nichts und sagt zu denselben Zahlen jeden Tag dasselbe.
+
+Der **Tagesbericht** steht als Karte oben auf der Tagesansicht, mit den zwei
+dringendsten Zeilen zuerst; Schlechtes steht vor Gutem, dafür ist er da. Er prüft die
+Einheit des Tages, die Kalorien, das Eiweiß und ob gewogen wurde.
+
+Der **Wochenbericht** läuft von Montag bis Sonntag und deckt Training (Einheiten,
+Ausfälle, bewegte Last gegen die Vorwoche), einzelne Übungen (bester Satz gegen den
+besten Satz der Vorwoche), Ernährung, Gewicht samt Korrekturvorschlag sowie
+Fähigkeiten und Beweglichkeit ab. Am Ende steht ein Fazit-Satz.
+
+**Mitten in der Woche urteilt er anteilig.** Am Dienstag ist eine Einheit vom Freitag
+nicht versäumt, der laufende Tag ist keine Erfassungslücke, und die Vier-Werte-Regel
+fürs Wiegen gilt anteilig zu den vergangenen Tagen. Ohne das stünde am Dienstagmorgen
+eine Liste von Vorwürfen, die keine sind.
+
+Was die App **nicht** weiß, sagt sie auch: eine Woche ohne eingetragene Gewichte ist
+ein Befund, kein Loch zum Überspielen. Und wo ein Durchschnitt nur die erfassten Tage
+abdeckt, steht das dabei — sonst sieht die Woche besser aus, als sie war. Genauso beim
+Volumenvergleich: hat die Woche mehr oder weniger Einheiten als die Vorwoche, sagt der
+Bericht das dazu, weil der Prozentwert sonst wie Fortschritt aussieht.
+
+## Fortschrittsfotos
+
+Die Waage misst eine Zahl, das Foto misst, was die Zahl nicht zeigt — bei
+gleichbleibendem Gewicht kann sich die Form deutlich ändern. Ein Bild je Tag, ein
+zweites am selben Tag ersetzt das erste; sonst sammeln sich zehn Aufnahmen einer Pose
+und der Vergleich wird zur Suche.
+
+Die Ansicht zeigt zuerst zwei Aufnahmen nebeneinander — ältestes gegen neuestes, per
+Tipp auf eine Kachel änderbar, wobei die ältere immer links landet. Beim ersten Öffnen
+steht dort stattdessen, worauf es ankommt: gleiche Stelle, gleiches Licht, gleicher
+Abstand, gleiche Haltung, morgens vor dem Frühstück. Ohne das vergleicht man Posen.
+
+Die Bilder liegen im Store `photos`, getrennt von den Mahlzeiten, und **verlassen das
+Gerät nicht** — anders als die Essensfotos werden sie ausdrücklich nicht an die API
+geschickt. Im Export sind sie deshalb auch nicht enthalten.
+
 ## Wie Fähigkeiten funktionieren
 
 Handstand, L-Sit, erster Klimmzug, erster Dip, Pistol Squat, Muscle-Up und Front
@@ -365,6 +415,28 @@ Schulterbeschwerden —, sagt der Plan das offen, statt die Liste aufzufüllen.
 
 Übungen ohne Zusatzgewicht bekommen höhere Wiederholungszahlen (10–20 statt 5–8),
 weil der Fortschritt dort über Wiederholungen und schwerere Varianten läuft.
+
+### Die Pausen
+
+Die Pause richtet sich danach, was sie erholen muss. Eine schwere Kniebeuge mit der
+Langhantel braucht das Kreislaufsystem zurück — zweieinhalb Minuten. Zwanzig
+Liegestütze bei vier Wiederholungen Reserve brauchen das nicht; dort ist nach
+anderthalb Minuten zurück, was zurückkommt, und der Rest ist Wartezeit.
+
+| | Grundübung | Isolation |
+| --- | --- | --- |
+| mit Gewicht | 150 s | 75 s |
+| ohne Zusatzgewicht | 90 s | 60 s |
+| Rumpf | 45 s | 45 s |
+
+Darüber liegt ein Regler mit den Faktoren 0,7 / 1,0 / 1,3, mindestens aber 30 Sekunden.
+Daneben steht die **geschätzte Dauer der ganzen Einheit** — eine Pause von zweieinhalb
+Minuten klingt nach nichts, aber vierzehn davon sind eine halbe Stunde Dastehen, und
+erst die Gesamtzahl macht die Entscheidung entscheidbar.
+
+`restSeconds()` rechnet das bei der Anzeige, nicht beim Bauen des Plans. Sonst müsste
+der Plan neu gebaut werden, nur weil jemand am Regler dreht, und bestehende Pläne
+behielten ihre alten Werte.
 
 ### Unterwegs
 

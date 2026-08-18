@@ -270,8 +270,69 @@ function prescribe(exercise, profile, isFirst) {
     reps,
     rir: level.rir,
     loadless,
-    rest: exercise.type === 'c' ? 150 : 75,
+    rest: baseRest(exercise, loadless),
   };
+}
+
+/* ---------------- Pausen ---------------- */
+
+/**
+ * Grundpause einer Übung in Sekunden.
+ *
+ * Die Pause richtet sich danach, was sie erholen muss. Eine schwere Kniebeuge
+ * mit der Langhantel braucht das Kreislaufsystem zurück — zweieinhalb Minuten.
+ * Zwanzig Liegestütze bei vier Wiederholungen Reserve brauchen das nicht: dort
+ * ist nach anderthalb Minuten alles zurück, was zurückkommt, und der Rest ist
+ * Wartezeit. Bei Rumpfübungen noch weniger.
+ *
+ * Vorher stand hier pauschal 150 beziehungsweise 75 Sekunden, unabhängig von
+ * Last und Übung. Bei sieben Übungen ohne Gewicht summierte sich das auf über
+ * eine halbe Stunde bloßes Dastehen.
+ */
+export function baseRest(exercise, loadless) {
+  if (exercise.group === 'core') return 45;
+  if (loadless) return exercise.type === 'c' ? 90 : 60;
+  return exercise.type === 'c' ? 150 : 75;
+}
+
+/** Wie lang die Pausen insgesamt ausfallen sollen. */
+export const REST_TEMPO = {
+  kurz:   { faktor: 0.7, label: 'Kurz', hint: 'Dichter dran, mehr Puls. Die letzten Sätze werden zäher.' },
+  normal: { faktor: 1,   label: 'Normal', hint: 'Genug Erholung für saubere Sätze, ohne Leerlauf.' },
+  lang:   { faktor: 1.3, label: 'Lang', hint: 'Für schwere Sätze nahe am Versagen.' },
+};
+
+/**
+ * Die tatsächliche Pause: Grundwert mal gewähltem Tempo, auf fünf Sekunden
+ * gerundet und nach unten begrenzt.
+ *
+ * Bewusst hier gerechnet und nicht im Plan gespeichert — sonst müsste der Plan
+ * neu gebaut werden, nur weil jemand am Tempo dreht, und bestehende Pläne
+ * behielten ihre alten, zu langen Werte.
+ */
+export function restSeconds(prescription, tempo = 'normal') {
+  const exercise = exerciseById(prescription.id);
+  const basis = exercise
+    ? baseRest(exercise, prescription.loadless)
+    : (prescription.rest || 90);
+  const faktor = (REST_TEMPO[tempo] || REST_TEMPO.normal).faktor;
+  return Math.max(30, Math.round((basis * faktor) / 5) * 5);
+}
+
+/**
+ * Geschätzte Dauer einer Einheit in Minuten: Arbeitszeit plus Pausen.
+ *
+ * Ein Satz dauert grob so lange, wie er Wiederholungen hat, mal drei Sekunden,
+ * plus etwas Aufbau. Nach dem letzten Satz einer Übung läuft keine Pause.
+ */
+export function sessionMinutes(exercises, tempo = 'normal') {
+  let sekunden = 0;
+  for (const p of exercises || []) {
+    const wdh = (p.reps[0] + p.reps[1]) / 2;
+    const satz = Math.round(wdh * 3) + 15;
+    sekunden += p.sets * satz + Math.max(0, p.sets - 1) * restSeconds(p, tempo);
+  }
+  return Math.round(sekunden / 60);
 }
 
 /* ---------------- Plangenerator ---------------- */

@@ -12,7 +12,7 @@ import {
 } from '../store.js';
 import {
   exerciseById, GROUP_LABEL, blockWeek, forWeek, dayForWeekday, nextStep, BLOCK_WEEKS,
-  travelDay,
+  travelDay, restSeconds, sessionMinutes, REST_TEMPO,
   replaceExercise,
 } from '../training.js';
 import { energyPlan, weightTrend } from '../energy.js';
@@ -20,6 +20,40 @@ import { warmupFor, warmupMinutes } from '../warmup.js';
 import {
   skillById, currentLevel, levelIndex, setsNeeded, levelCleared, hasNextLevel, MEASURE,
 } from '../skills.js';
+
+/**
+ * Pausenlänge einstellen, mit der Dauer der Einheit als Folge daneben.
+ *
+ * Die Zahl steht bewusst dabei: eine Pause von zweieinhalb Minuten klingt nach
+ * nichts, aber vierzehn davon sind eine halbe Stunde Dastehen. Erst die
+ * Gesamtdauer macht die Entscheidung entscheidbar.
+ */
+function pausenKarte(ctx, tempo, exercises) {
+  const waehlen = async (wert) => {
+    await setSetting('pausen', wert);
+    await ctx.refreshSettings();
+    ctx.reload();
+  };
+
+  const chips = el('div', { class: 'chips' },
+    ...Object.entries(REST_TEMPO).map(([wert, t]) => el('button', {
+      class: 'chip', type: 'button',
+      'aria-pressed': tempo === wert ? 'true' : 'false',
+      onClick: () => waehlen(wert),
+    }, `${t.label} · ${sessionMinutes(exercises, wert)} Min`)));
+
+  return el('details', { class: 'card pausenwahl' },
+    el('summary', null,
+      el('span', { class: 'grow', text: 'Pausen' }),
+      el('span', { class: 'muted small',
+        text: `${REST_TEMPO[tempo].label} · rund ${sessionMinutes(exercises, tempo)} Min` })),
+    el('div', { class: 'stack mt-16' },
+      chips,
+      el('p', { class: 'hint', text: REST_TEMPO[tempo].hint }),
+      el('p', { class: 'hint' },
+        'Die angegebene Dauer ist die ganze Einheit samt Pausen — Aufwärmen und '
+        + 'Technik kommen obendrauf.')));
+}
 
 /**
  * Schalter für den Unterwegs-Betrieb, samt Liste der getauschten Übungen.
@@ -485,11 +519,12 @@ function unitFor(level) {
 
 /* ---------------- Übungsblock mit Satzeingabe ---------------- */
 
-function exerciseBlock(prescription, week, session, sessions, dateKey, onChange, tauschen) {
+function exerciseBlock(prescription, week, session, sessions, dateKey, onChange, tauschen, tempo) {
   const exercise = exerciseById(prescription.id);
   if (!exercise) return null;
 
   const adjusted = forWeek(prescription, week);
+  const pause = restSeconds(prescription, tempo);
   const last = lastPerformance(sessions, prescription.id, dateKey);
   const entries = session.entries[prescription.id] || (session.entries[prescription.id] = []);
 
@@ -521,7 +556,7 @@ function exerciseBlock(prescription, week, session, sessions, dateKey, onChange,
 
       // Frisch abgehakt und nicht der letzte Satz? Dann beginnt jetzt die Pause.
       if (istVoll && !warVoll && i < adjusted.sets - 1) {
-        pauseStarten(prescription.rest, exercise.name, ausGeste);
+        pauseStarten(pause, exercise.name, ausGeste);
       }
       onChange();
     };
@@ -577,7 +612,7 @@ function exerciseBlock(prescription, week, session, sessions, dateKey, onChange,
       el('span', { class: 'exblock-name', text: exercise.name }),
       el('span', { class: 'exblock-group', text: GROUP_LABEL[exercise.group] || exercise.group })),
     el('p', { class: 'exblock-rx tabular',
-      text: `${adjusted.sets} Sätze · ${prescription.reps[0]}–${prescription.reps[1]} Wdh. · RIR ${adjusted.rir} · ${prescription.rest} s Pause` }),
+      text: `${adjusted.sets} Sätze · ${prescription.reps[0]}–${prescription.reps[1]} Wdh. · RIR ${adjusted.rir} · ${pause} s Pause` }),
     el('p', { class: 'exblock-last',
       text: last ? `Zuletzt ${formatDateKey(last.date)}: ${formatSets(last.sets)}` : 'Noch keine Werte aufgezeichnet.' }),
     el('div', { class: 'setlabels' },
@@ -663,6 +698,7 @@ export async function render(container, ctx) {
 
   // Unterwegs zählt nicht der gespeicherte Plan, sondern das, was im Zimmer
   // geht. Der Plan selbst bleibt unangetastet — der Schalter ist umkehrbar.
+  const tempo = ctx.settings.pausen || 'normal';
   const unterwegs = ctx.settings.unterwegs === true;
   const umgerechnet = unterwegs && geplanterTag ? travelDay(geplanterTag, profile) : null;
   const day = umgerechnet
@@ -802,10 +838,11 @@ export async function render(container, ctx) {
     };
 
     const blocks = day.exercises
-      .map((p, i) => exerciseBlock(p, week, session, sessions, dateKey, persist, () => tauschen(i)))
+      .map((p, i) => exerciseBlock(p, week, session, sessions, dateKey, persist, () => tauschen(i), tempo))
       .filter(Boolean);
 
-    body.push(el('div', { class: 'card card-flush' }, ...blocks));
+    body.push(pausenKarte(ctx, tempo, day.exercises));
+    body.push(el('div', { class: 'card card-flush mt-16' }, ...blocks));
 
     body.push(el('button', {
       class: 'btn btn-primary btn-block btn-lg mt-16', type: 'button',

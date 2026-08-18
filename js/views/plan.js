@@ -8,14 +8,14 @@ import { localDateKey } from '../nutrition.js';
 import { setPlan, clearTraining, setTrainingProfile } from '../store.js';
 import {
   exerciseById, GROUP_LABEL, EQUIPMENT_LABEL, GOAL_LABEL, LEVEL_LABEL,
-  blockWeek, forWeek, buildPlan, BLOCK_WEEKS,
+  blockWeek, forWeek, buildPlan, BLOCK_WEEKS, restSeconds, sessionMinutes,
 } from '../training.js';
 import { energyPlan, energyBreakdown, ACTIVITY_LABEL } from '../energy.js';
 import { skillById, currentLevel, levelIndex, MINUTES_PER_SKILL } from '../skills.js';
 
 const WEEKDAY_SHORT = ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'];
 
-function dayCard(day, week, equipment) {
+function dayCard(day, week, equipment, tempo) {
   const rows = day.exercises.map((prescription) => {
     const exercise = exerciseById(prescription.id);
     if (!exercise) return null;
@@ -25,7 +25,7 @@ function dayCard(day, week, equipment) {
       el('div', { class: 'grow' },
         el('div', { class: 'exrow-name', text: exercise.name }),
         el('div', { class: 'exrow-tag',
-          text: `${GROUP_LABEL[exercise.group] || exercise.group} · ${exercise.type === 'c' ? 'Grundübung' : 'Isolation'} · ${prescription.rest} s Pause` })),
+          text: `${GROUP_LABEL[exercise.group] || exercise.group} · ${exercise.type === 'c' ? 'Grundübung' : 'Isolation'} · ${restSeconds(prescription, tempo)} s Pause` })),
       el('div', { class: 'exrow-rx tabular' },
         el('strong', { text: `${adjusted.sets} × ${prescription.reps[0]}–${prescription.reps[1]}` }),
         el('span', { text: `RIR ${adjusted.rir}` })));
@@ -37,7 +37,8 @@ function dayCard(day, week, equipment) {
     el('div', { class: 'dayhead' },
       el('span', { class: 'dayhead-wd', text: day.weekday != null ? WEEKDAY_SHORT[day.weekday] : '–' }),
       el('span', { class: 'dayhead-name grow', text: day.name }),
-      el('span', { class: 'muted small tabular', text: `${day.exercises.length} Übungen · ${totalSets} Sätze` })),
+      el('span', { class: 'muted small tabular',
+        text: `${totalSets} Sätze · rund ${sessionMinutes(day.exercises, tempo)} Min` })),
     ...rows,
     day.short
       ? el('p', { class: 'note note-inset' },
@@ -98,7 +99,8 @@ export async function render(container, ctx) {
         onClick: () => ctx.startSetup(profile),
       }, 'Angaben ändern')));
 
-  const days = plan.days.map((day) => dayCard(day, week, profile.equipment));
+  const tempo = ctx.settings.pausen || 'normal';
+  const days = plan.days.map((day) => dayCard(day, week, profile.equipment, tempo));
 
   // Fähigkeiten stehen über den Tagen: sie laufen an jedem Trainingstag,
   // nicht an einem bestimmten.
@@ -176,7 +178,7 @@ export async function render(container, ctx) {
     el('button', {
       class: 'btn btn-danger btn-block', type: 'button',
       onClick: async () => {
-        if (!confirmAction('Trainingsplan, Einheiten und Gewichtsverlauf löschen? Die Mahlzeiten bleiben erhalten.')) return;
+        if (!confirmAction('Trainingsplan, Einheiten, Gewichtsverlauf, Beweglichkeitstests und Fortschrittsfotos löschen? Die Mahlzeiten bleiben erhalten.')) return;
         await clearTraining();
         await ctx.refreshTraining();
         ctx.go('training');
