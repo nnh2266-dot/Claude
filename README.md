@@ -63,8 +63,9 @@ anzeigt.
   angeleitet, alle paar Wochen zu wiederholen. Gemessen wird in Stufen, nicht in
   Zentimetern. Am Ende steht eine Auswertung von 0 bis 100 gegen gängige Richtwerte,
   mit der schwächsten Prüfung und ungleichen Seiten als Befund
-- **Fortschritt**: Gewichtsverlauf mit Sieben-Tage-Schnitt, Kraftentwicklung je Übung,
-  bewegte Last pro Woche
+- **Fortschritt**: Gewichtsverlauf mit Sieben-Tage-Schnitt, dann Kraftentwicklung je
+  Übung und bewegte Last pro Woche — die Kraftwerte stehen oben, weil sie sich nach
+  jeder Einheit ändern, Fotos und Beweglichkeit nur alle paar Wochen
 - **Kalorien nachsteuern**: weicht die gemessene Gewichtsveränderung vom Ziel ab,
   schlägt die App eine Korrektur vor — auf Knopfdruck übernommen
 

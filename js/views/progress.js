@@ -201,6 +201,43 @@ export async function render(container, ctx) {
     body.push(card);
   }
 
+  /* Kraft */
+  body.push(el('h2', { class: 'section-title', text: 'Kraftentwicklung' }));
+  const bests = personalBests(sessions).slice(0, 10);
+
+  if (!bests.length) {
+    body.push(el('div', { class: 'card' },
+      emptyState('Noch keine Sätze',
+        'Trag die Sätze im Reiter „Training" direkt beim Üben ein — dann steht hier, was dazugekommen ist.')));
+  } else {
+    body.push(el('div', { class: 'card card-flush' },
+      ...bests.map((best) => {
+        const gain = best.bodyweight ? best.reps - best.firstReps : best.weight - best.firstWeight;
+        return el('div', { class: 'calcrow' },
+          el('div', { class: 'grow' },
+            el('div', { text: best.name }),
+            el('div', { class: 'muted small',
+              text: `bester Satz ${formatDateKey(best.date)} · Start ${best.bodyweight ? `${best.firstReps} Wdh.` : `${oneDecimal(best.firstWeight)} kg`}` })),
+          gain > 0 ? el('span', { class: 'pill pill-ok tabular', text: `${signed(gain)}${best.bodyweight ? ' Wdh.' : ' kg'}` }) : null,
+          el('div', { class: 'tabular',
+            text: best.bodyweight ? `${best.reps} Wdh.` : `${oneDecimal(best.weight)} kg × ${best.reps}` }));
+      })));
+  }
+
+  /* Volumen */
+  const volume = weeklyVolume(sessions, profile.weight);
+  if (volume.length >= 2) {
+    body.push(el('h2', { class: 'section-title', text: 'Volumen pro Woche' }));
+    body.push(el('div', { class: 'card' },
+      volumeChart(volume),
+      el('p', { class: 'hint mt-16',
+        text: 'Bewegte Last je Woche, also Gewicht mal Wiederholungen. Körpergewichtsübungen zählen mit dem halben Körpergewicht.' })));
+  }
+
+  // Reihenfolge: was sich beim Training bewegt, steht oben. Fotos und
+  // Beweglichkeit sind wichtig, aber man sieht dort alle paar Wochen etwas —
+  // die Kraftwerte ändern sich nach jeder Einheit.
+
   /* Fähigkeiten */
   const skillIds = profile.skills || [];
   if (skillIds.length) {
@@ -237,39 +274,6 @@ export async function render(container, ctx) {
   /* Beweglichkeit */
   body.push(el('h2', { class: 'section-title', text: 'Beweglichkeit' }));
   body.push(mobilitySection(ctx));
-
-  /* Kraft */
-  body.push(el('h2', { class: 'section-title', text: 'Kraftentwicklung' }));
-  const bests = personalBests(sessions).slice(0, 10);
-
-  if (!bests.length) {
-    body.push(el('div', { class: 'card' },
-      emptyState('Noch keine Sätze',
-        'Trag die Sätze im Reiter „Training" direkt beim Üben ein — dann steht hier, was dazugekommen ist.')));
-  } else {
-    body.push(el('div', { class: 'card card-flush' },
-      ...bests.map((best) => {
-        const gain = best.bodyweight ? best.reps - best.firstReps : best.weight - best.firstWeight;
-        return el('div', { class: 'calcrow' },
-          el('div', { class: 'grow' },
-            el('div', { text: best.name }),
-            el('div', { class: 'muted small',
-              text: `bester Satz ${formatDateKey(best.date)} · Start ${best.bodyweight ? `${best.firstReps} Wdh.` : `${oneDecimal(best.firstWeight)} kg`}` })),
-          gain > 0 ? el('span', { class: 'pill pill-ok tabular', text: `${signed(gain)}${best.bodyweight ? ' Wdh.' : ' kg'}` }) : null,
-          el('div', { class: 'tabular',
-            text: best.bodyweight ? `${best.reps} Wdh.` : `${oneDecimal(best.weight)} kg × ${best.reps}` }));
-      })));
-  }
-
-  /* Volumen */
-  const volume = weeklyVolume(sessions, profile.weight);
-  if (volume.length >= 2) {
-    body.push(el('h2', { class: 'section-title', text: 'Volumen pro Woche' }));
-    body.push(el('div', { class: 'card' },
-      volumeChart(volume),
-      el('p', { class: 'hint mt-16',
-        text: 'Bewegte Last je Woche, also Gewicht mal Wiederholungen. Körpergewichtsübungen zählen mit dem halben Körpergewicht.' })));
-  }
 
   mount(container, head, el('div', null, ...body));
 }
