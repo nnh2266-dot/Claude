@@ -10,6 +10,7 @@ import {
   exerciseById, GROUP_LABEL, EQUIPMENT_LABEL, GOAL_LABEL, LEVEL_LABEL,
   blockWeek, forWeek, buildPlan, BLOCK_WEEKS, restSeconds, sessionMinutes,
 } from '../training.js';
+import { ladderFor } from '../ladders.js';
 import { energyPlan, energyBreakdown, ACTIVITY_LABEL } from '../energy.js';
 import { skillById, currentLevel, levelIndex, MINUTES_PER_SKILL } from '../skills.js';
 
@@ -25,7 +26,10 @@ function dayCard(day, week, equipment, tempo) {
       el('div', { class: 'grow' },
         el('div', { class: 'exrow-name', text: exercise.name }),
         el('div', { class: 'exrow-tag',
-          text: `${GROUP_LABEL[exercise.group] || exercise.group} · ${exercise.type === 'c' ? 'Grundübung' : 'Isolation'} · ${restSeconds(prescription, tempo)} s Pause` })),
+          text: `${GROUP_LABEL[exercise.group] || exercise.group} · ${exercise.type === 'c' ? 'Grundübung' : 'Isolation'} · ${restSeconds(prescription, tempo)} s Pause`
+            + (ladderFor(prescription.id)
+                ? ` · Stufe ${ladderFor(prescription.id).index + 1}/${ladderFor(prescription.id).leiter.stufen.length}`
+                : '') })),
       el('div', { class: 'exrow-rx tabular' },
         el('strong', { text: `${adjusted.sets} × ${prescription.reps[0]}–${prescription.reps[1]}` }),
         el('span', { text: `RIR ${adjusted.rir}` })));
@@ -174,6 +178,39 @@ export async function render(container, ctx) {
           })))
     : null;
 
+  const erledigt = profile.outgrown || [];
+  const leiterliste = erledigt.length
+    ? el('div', null,
+        el('h2', { class: 'section-title', text: 'Ausgewachsene Übungen' }),
+        el('div', { class: 'card stack' },
+          el('p', { class: 'small muted',
+            text: 'Zu leicht geworden — du bist auf der Variantenleiter darüber '
+              + 'hinaus. Anders als aussortierte Übungen sind sie nicht ungeeignet, '
+              + 'nur erledigt.' }),
+          ...erledigt.map((id) => {
+            const e = exerciseById(id);
+            const stand = ladderFor(id);
+            return el('div', { class: 'row-between' },
+              el('div', { class: 'grow' },
+                el('div', { text: e ? e.name : id }),
+                stand
+                  ? el('div', { class: 'muted small',
+                      text: `${stand.leiter.name} · Stufe ${stand.index + 1} von ${stand.leiter.stufen.length}` })
+                  : null),
+              el('button', {
+                class: 'btn btn-sm', type: 'button',
+                onClick: async () => {
+                  await setTrainingProfile({
+                    ...profile, outgrown: erledigt.filter((x) => x !== id),
+                  });
+                  await ctx.refreshTraining();
+                  ctx.reload();
+                  toast('Wieder im Vorrat.');
+                },
+              }, 'Zurückholen'));
+          })))
+    : null;
+
   const reset = el('div', { class: 'mt-24' },
     el('button', {
       class: 'btn btn-danger btn-block', type: 'button',
@@ -186,5 +223,5 @@ export async function render(container, ctx) {
       },
     }, 'Training zurücksetzen'));
 
-  mount(container, head, summary, skillSection, ...days, sperrliste, nutrition, breakdown, reset);
+  mount(container, head, summary, skillSection, ...days, leiterliste, sperrliste, nutrition, breakdown, reset);
 }

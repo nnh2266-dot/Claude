@@ -13,8 +13,11 @@ import {
 import {
   exerciseById, GROUP_LABEL, blockWeek, forWeek, dayForWeekday, nextStep, BLOCK_WEEKS,
   travelDay, restSeconds, sessionMinutes, REST_TEMPO,
-  replaceExercise,
+  replaceExercise, setExercise,
 } from '../training.js';
+import {
+  ladderFor, harderRung, easierRung, pickNearestRung, topOutStreak, STREAK_FOR_NEXT,
+} from '../ladders.js';
 import { energyPlan, weightTrend } from '../energy.js';
 import { warmupFor, warmupMinutes } from '../warmup.js';
 import {
@@ -519,11 +522,12 @@ function unitFor(level) {
 
 /* ---------------- Übungsblock mit Satzeingabe ---------------- */
 
-function exerciseBlock(prescription, week, session, sessions, dateKey, onChange, tauschen, tempo) {
+function exerciseBlock(prescription, week, session, sessions, dateKey, onChange, aktionen, tempo, profile) {
   const exercise = exerciseById(prescription.id);
   if (!exercise) return null;
 
   const adjusted = forWeek(prescription, week);
+  const stand = ladderFor(prescription.id);
   const pause = restSeconds(prescription, tempo);
   const last = lastPerformance(sessions, prescription.id, dateKey);
   const entries = session.entries[prescription.id] || (session.entries[prescription.id] = []);
@@ -623,10 +627,48 @@ function exerciseBlock(prescription, week, session, sessions, dateKey, onChange,
       el('strong', { text: 'Nächster Schritt: ' }),
       nextStep(prescription, last ? last.sets : null, adjusted.rir),
       el('span', { class: 'exblock-hint', text: exercise.cue })),
+    leiterZeile(prescription, exercise, sessions, dateKey, profile, aktionen),
     el('div', { class: 'stufenwahl' },
       el('button', {
-        class: 'btn btn-ghost btn-sm', type: 'button', onClick: tauschen,
-      }, 'Zu schwer — andere Übung')));
+        class: 'btn btn-ghost btn-sm', type: 'button', onClick: aktionen.tauschen,
+      }, 'Zu schwer — andere Übung'),
+      stand && harderRung(prescription.id, profile)
+        ? el('button', {
+            class: 'btn btn-ghost btn-sm', type: 'button', onClick: aktionen.hoch,
+          }, 'Zu leicht — härtere Stufe')
+        : null));
+}
+
+/**
+ * Wo die Übung auf ihrer Leiter steht, und der Hinweis, wenn es Zeit für die
+ * nächste Sprosse ist.
+ *
+ * Der Hinweis kommt erst nach zwei Einheiten in Folge am oberen Ende. Nach
+ * einer einzelnen guten Einheit umzustellen wäre verfrüht — ein guter Tag ist
+ * noch keine neue Stufe.
+ */
+function leiterZeile(prescription, exercise, sessions, dateKey, profile, aktionen) {
+  const stand = ladderFor(exercise.id);
+  if (!stand) return null;
+
+  const serie = topOutStreak(sessions, prescription, dateKey);
+  const naechste = harderRung(exercise.id, profile);
+  const position = `Stufe ${stand.index + 1} von ${stand.leiter.stufen.length} · ${stand.leiter.name}`;
+
+  if (serie >= STREAK_FOR_NEXT && naechste) {
+    return el('div', { class: 'leiter leiter-reif' },
+      el('p', { class: 'leiter-titel' },
+        el('strong', { text: 'Zeit für die nächste Stufe. ' }),
+        `${serie}× hintereinander alle Sätze auf ${prescription.reps[1]} Wiederholungen — `
+        + 'mehr Wiederholungen bringen jetzt weniger als eine schwerere Variante.'),
+      el('button', {
+        class: 'btn btn-primary btn-sm btn-block', type: 'button', onClick: aktionen.hoch,
+      }, `Weiter zu: ${naechste.exercise.name}`),
+      el('p', { class: 'leiter-pos', text: position }));
+  }
+
+  return el('p', { class: 'leiter-pos' }, position
+    + (naechste ? ` · als nächstes ${naechste.exercise.name}` : ' · oberste Stufe'));
 }
 
 /* ---------------- Gewichtskarte ---------------- */
@@ -700,7 +742,7 @@ export async function render(container, ctx) {
   // geht. Der Plan selbst bleibt unangetastet — der Schalter ist umkehrbar.
   const tempo = ctx.settings.pausen || 'normal';
   const unterwegs = ctx.settings.unterwegs === true;
-  const umgerechnet = unterwegs && geplanterTag ? travelDay(geplanterTag, profile) : null;
+  const umgerechnet = unterwegs && geplanterTag ? travelDay(geplanterTag, profile, pickNearestRung) : null;
   const day = umgerechnet
     ? { ...geplanterTag, exercises: umgerechnet.exercises }
     : geplanterTag;
@@ -794,7 +836,7 @@ export async function render(container, ctx) {
       // Umrechnung übergeht gesperrte Übungen und nimmt die nächste.
       if (unterwegs) {
         const gesperrt = [...new Set([...(profile.blocked || []), alteId])];
-        const nachher = travelDay(geplanterTag, { ...profile, blocked: gesperrt });
+        const nachher = travelDay(geplanterTag, { ...profile, blocked: gesperrt }, pickNearestRung);
         const neue = nachher.exercises.length === day.exercises.length
           ? nachher.exercises[exerciseIndex]
           : null;
@@ -837,8 +879,54 @@ export async function render(container, ctx) {
       toast(`Getauscht: ${exerciseById(ersatz.id).name}.`);
     };
 
+    /**
+     * Eine Sprosse der Variantenleiter hoch oder runter.
+     *
+     * Die verlassene Übung landet nicht in der Sperrliste, sondern in
+     * `outgrown`: sie ist nicht ungeeignet, sondern erledigt. Der Unterschied
+     * zählt, weil die Sperrliste im Plan als „aussortiert" auftaucht — und
+     * „zu leicht geworden" ist das Gegenteil davon.
+     */
+    const stufeWechseln = async (exerciseIndex, richtung) => {
+      const alteId = day.exercises[exerciseIndex].id;
+      const ziel = richtung > 0 ? harderRung(alteId, profile) : easierRung(alteId, profile);
+
+      if (!ziel) {
+        toast(richtung > 0
+          ? 'Das ist die schwerste Stufe, die mit deiner Ausrüstung geht.'
+          : 'Leichter geht es auf dieser Leiter nicht.');
+        return;
+      }
+
+      const outgrown = richtung > 0
+        ? [...new Set([...(profile.outgrown || []), alteId])]
+        // Abwärts wird nichts erledigt — im Gegenteil, die verlassene Stufe
+        // darf wiederkommen, sobald sie wieder passt.
+        : (profile.outgrown || []).filter((id) => id !== ziel.exercise.id);
+
+      const neuesProfil = { ...profile, outgrown };
+
+      if (!unterwegs) {
+        await setPlan(setExercise(plan, neuesProfil, dayIndex, exerciseIndex, ziel.exercise.id));
+      }
+      await setTrainingProfile(neuesProfil);
+
+      if (session.entries[alteId]) {
+        delete session.entries[alteId];
+        await saveSession(session);
+      }
+
+      await ctx.refreshTraining();
+      ctx.reload();
+      toast(`${richtung > 0 ? 'Eine Stufe höher' : 'Eine Stufe zurück'}: ${ziel.exercise.name}.`);
+    };
+
     const blocks = day.exercises
-      .map((p, i) => exerciseBlock(p, week, session, sessions, dateKey, persist, () => tauschen(i), tempo))
+      .map((p, i) => exerciseBlock(p, week, session, sessions, dateKey, persist, {
+        tauschen: () => tauschen(i),
+        hoch: () => stufeWechseln(i, +1),
+        runter: () => stufeWechseln(i, -1),
+      }, tempo, profile))
       .filter(Boolean);
 
     body.push(pausenKarte(ctx, tempo, day.exercises));

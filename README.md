@@ -69,6 +69,8 @@ anzeigt.
 - **Krafteinordnung**: je Muskelgruppe ein Wert von 0 bis 100, gemessen an Richtwerten,
   die auf das eigene Körpergewicht bezogen sind, dazu die Verhältnisse Drücken/Ziehen
   und Oberkörper/Beine
+- **Variantenleitern**: wird eine Übung ohne Gewicht zu leicht, führt die App zur
+  nächsten Stufe — von allein nach zwei Einheiten am oberen Ende, oder auf Knopfdruck
 - **Kalorien nachsteuern**: weicht die gemessene Gewichtsveränderung vom Ziel ab,
   schlägt die App eine Korrektur vor — auf Knopfdruck übernommen
 
@@ -210,6 +212,7 @@ js/warmup.js             Aufwärmen, zusammengestellt aus den Gruppen des Tages
 js/mobility.js           Beweglichkeitstest: Prüfungen, Stufen, Punkte, Vergleich
 js/report.js             Tages- und Wochenbericht: Befunde aus den eigenen Daten
 js/strength.js           Krafteinordnung: Richtwerte je Übung, Gruppen, Verhältnisse
+js/ladders.js            Variantenleitern für Übungen ohne Zusatzgewicht
 js/version.js            Fassungsnummer, muss zur CACHE_VERSION in sw.js passen
 js/energy.js             Grundumsatz, Tagesziele, Gewichtstrend, Kalorienkorrektur
 js/claude.js             Anthropic-API + Chat-Brücke: Prompts (Foto und Text), Schema
@@ -447,7 +450,7 @@ drei Tagen Push/Pull/Beine), vier Tage Oberkörper/Unterkörper, fünf gemischt,
 Push/Pull/Beine doppelt. Die Übungszahl folgt der Zeit pro Einheit, Sätze und RIR der
 Erfahrungsstufe.
 
-Aus 80 Übungen wird nach Ausrüstung, vorhandenem Gerät und Beschwerden gefiltert;
+Aus 87 Übungen wird nach Ausrüstung, vorhandenem Gerät und Beschwerden gefiltert;
 gesperrte Übungen werden gar nicht erst eingeplant.
 
 **Gerät ist dabei etwas anderes als Gewicht.** Ein Klimmzug braucht keine Hantel, aber
@@ -519,6 +522,48 @@ die App das, statt die Übung ersatzlos zu streichen.
 Muskelgruppe und merkt sich die abgelehnte, damit sie auch bei einem neuen Plan nicht
 zurückkommt. Im Plan stehen die aussortierten Übungen mit einem Knopf zum
 Wiederzulassen.
+
+### Variantenleitern
+
+Mit Hanteln ist die nächste Stufe einfach mehr Gewicht — das erledigt die doppelte
+Progression. Ohne Gewicht gibt es diesen Weg nicht: irgendwann sind sechzig
+Liegestütze kein Krafttraining mehr, sondern Ausdauer. Dann muss die Übung schwerer
+werden, nicht länger.
+
+`ladders.js` beschreibt dafür sieben Bewegungen von leicht nach schwer:
+
+| Leiter | Sprossen |
+| --- | --- |
+| Drücken waagerecht | erhöht → Liegestütze → Pseudo-Planche → Archer → einarmig negativ |
+| Drücken über Kopf | Pike Push-Ups → negative Handstand-Liegestütze → Handstand-Liegestütze |
+| Ziehen waagerecht | Latzug in Bauchlage → Handtuch im Sitzen → am Türrahmen → unter dem Tisch → Schrägrudern |
+| Ziehen über Kopf | negative Klimmzüge → Chin-Ups → Klimmzüge |
+| Kniebeuge | Körpergewicht → Ausfallschritt → Step-Up → bulgarisch → Skater → einbeinig |
+| Hüftstreckung | Glute Bridge → einbeinig |
+| Trizeps strecken | Bankdips → Diamant-Liegestütze |
+
+Unter jeder Übung steht, auf welcher Sprosse sie liegt und welche als nächste kommt.
+Daneben dem vorhandenen *Zu schwer* gibt es **Zu leicht — härtere Stufe**; der Knopf
+erscheint nur, wenn es mit der vorhandenen Ausrüstung überhaupt eine höhere Sprosse
+gibt. Nicht machbare Sprossen werden beim Auf- und Absteigen übersprungen statt
+vorgeschlagen und dann abgelehnt.
+
+**Von allein meldet sich die App nach zwei Einheiten in Folge am oberen Ende des
+Wiederholungsbereichs** (`topOutStreak`, Schwelle `STREAK_FOR_NEXT`). Nach einer
+einzelnen guten Einheit umzustellen wäre verfrüht — ein guter Tag ist noch keine neue
+Stufe. Gezählt wird über die Einheiten, in denen die Übung vorkam, eine Woche Pause
+unterbricht also nicht; und verlangt wird nicht die heutige Satzzahl, sondern dass alle
+aufgezeichneten Sätze oben lagen und es mindestens zwei waren. Sonst risse die Serie
+bei jedem Wechsel der Blockwoche, weil die Deload-Woche weniger Sätze hat.
+
+Die verlassene Übung landet in `profile.outgrown`, **nicht** in `blocked`. Der
+Unterschied zählt: die Sperrliste heißt im Plan „aussortiert", und „zu leicht geworden"
+ist das Gegenteil davon. Beide Listen halten Übungen aus neuen Plänen heraus, beide
+stehen im Plan mit einem Knopf zum Zurückholen — aber unter eigener Überschrift.
+
+Im Unterwegs-Betrieb nutzt auch der Ersatz die Leitern: fehlt der Tisch, kommt die
+nächstgelegene Sprosse derselben Bewegung statt irgendetwas aus derselben Gruppe, bei
+gleichem Abstand die leichtere.
 
 Fortschritt je Übung nach doppelter Progression: sitzen alle Sätze am oberen Ende des
 Wiederholungsbereichs, steigt das Gewicht um 2,5 kg (Grundübung) oder 1,25 kg

@@ -27,6 +27,7 @@ export function begin(profile) {
         skills: [...(profile.skills || [])],
         gear: [...(profile.gear || [])],
         blocked: [...(profile.blocked || [])],
+        outgrown: [...(profile.outgrown || [])],
       }
     : { weekdays: [], limits: [], focus: [], skills: [], gear: [], sessionLength: 60 };
   step = 0;
@@ -390,8 +391,9 @@ async function finish(ctx) {
     focus: (draft.focus || []).slice(0, 2),
     skills: (draft.skills || []).slice(0, 2),
     gear: draft.equipment === 'studio' ? ['stange', 'barren'] : (draft.gear || []),
-    // Aussortierte Übungen überleben eine Änderung der Angaben.
+    // Aussortierte und ausgewachsene Übungen überleben eine Änderung der Angaben.
     blocked: draft.blocked || [],
+    outgrown: draft.outgrown || [],
   };
 
   const plan = buildPlan(profile, 0);

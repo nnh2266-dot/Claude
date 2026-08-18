@@ -24,6 +24,8 @@ const RAW = [
   ['bfly','Band-Fly','brust','i','b','','Am Endpunkt eine Sekunde halten.'],
   ['pushele','Liegestütze erhöht','brust','c','w','','Hände auf Stuhl oder Tisch — die leichtere Variante.'],
   ['pseudopu','Pseudo-Planche-Liegestütze','brust','c','w','schulter','Hände auf Bauchhöhe, Finger zu den Füßen. Die Schultern über die Hände schieben.'],
+  ['archerpu','Archer-Liegestütze','brust','c','w','schulter','Ein Arm beugt, der andere bleibt zur Seite gestreckt. Das Gewicht liegt auf dem beugenden Arm.'],
+  ['onearmneg','Einarmige Liegestütze negativ','brust','c','w','schulter','Eine Hand hinter dem Rücken, Füße weit auseinander. Nur langsam ablassen, mit beiden Händen hoch.'],
   // Rücken, vertikal
   ['pullup','Klimmzüge','ruecken','c','gw','','Brust zur Stange, Schulterblätter zuerst.'],
   ['latpull','Latzug','ruecken','c','g','','Ellbogen nach unten-hinten ziehen.'],
@@ -55,6 +57,8 @@ const RAW = [
   ['legext','Beinstrecker','quad','i','g','knie','Oben kurz halten, langsam ablassen.'],
   ['bwsq','Körpergewicht-Kniebeuge','quad','c','w','','Langsam runter, zwei Sekunden halten, explosiv hoch.'],
   ['stepup','Step-Ups','quad','c','gdw','knie','Kraft aus dem oberen Bein, nicht abdrücken.'],
+  ['skater','Skater Squat','quad','c','w','knie','Auf einem Bein absenken, das hintere Bein pendelt frei nach hinten. Die Arme balancieren vorn aus.'],
+  ['pistol1','Einbeinige Kniebeuge','quad','c','w','knie','Ein Bein gestreckt nach vorn, ganz absenken und aus der Tiefe hoch. Die Ferse bleibt am Boden.'],
   ['hack','Hack Squat','quad','c','g','knie','Füße mittig, ganze Fußsohle belastet.'],
   // Beine, Rückseite und Hüfte
   ['dl','Kreuzheben','ham','c','g','ruecken','Stange am Körper, Hüfte und Brust steigen gleichzeitig.'],
@@ -62,6 +66,7 @@ const RAW = [
   ['legcurl','Beinbeuger','ham','i','g','','Hüfte bleibt unten, kein Hohlkreuz.'],
   ['hipth','Hip Thrust','glute','c','gd','','Rippen unten lassen, oben eine Sekunde zusammendrücken.'],
   ['gbridge','Glute Bridge','glute','c','dw','','Fersen drücken, Po fest anspannen.'],
+  ['gbridge1','Einbeinige Glute Bridge','glute','c','dw','','Ein Bein angewinkelt anheben, das Becken bleibt waagerecht — nicht zur Seite kippen.'],
   ['gm','Good Mornings','ham','c','g','ruecken','Leichtes Gewicht, Bewegung aus der Hüfte.'],
   ['nordic','Nordic Curls','ham','i','w','','So weit wie kontrollierbar, dann abfangen.'],
   ['kick','Kabel-Kickback','glute','i','g','','Standbein leicht gebeugt, kein Hohlkreuz.'],
@@ -71,6 +76,8 @@ const RAW = [
   ['dbohp','Schulterdrücken Kurzhantel','schulter','c','gd','','Handflächen leicht zueinander drehen.'],
   ['arnold','Arnold Press','schulter','c','gd','schulter','Rotation langsam, kein Schwung.'],
   ['pikepu','Pike Push-Ups','schulter','c','w','schulter','Hüfte hoch, Kopf Richtung Boden.'],
+  ['hspuneg','Negative Handstand-Liegestütze','schulter','c','w','schulter,handgelenk','Im Handstand an der Wand langsam ablassen, dann mit den Füßen abstoßen und neu ansetzen.'],
+  ['hspu','Handstand-Liegestütze an der Wand','schulter','c','w','schulter,handgelenk','Bauch zur Wand, Ellbogen eng. Kopf setzt kurz auf, dann drücken.'],
   ['latraise','Seitheben Kurzhantel','sdelt','i','gd','','Kleiner Finger führt, nur bis Schulterhöhe.'],
   ['clat','Seitheben Kabel','sdelt','i','g','','Konstante Spannung, langsam ablassen.'],
   ['blat2','Band-Seitheben','sdelt','i','b','','Oben eine Sekunde halten.'],
@@ -335,6 +342,35 @@ export function sessionMinutes(exercises, tempo = 'normal') {
   return Math.round(sekunden / 60);
 }
 
+/* ---------------- Verfügbarkeit ---------------- */
+
+/**
+ * Kommt diese Übung für dieses Profil überhaupt infrage?
+ *
+ * Bewusst eine einzige Stelle: Plangenerator, Tausch und Variantenleiter haben
+ * das vorher jeweils selbst geprüft, und jede Erweiterung — erst die Geräte,
+ * dann die Sperrliste, jetzt die ausgewachsenen Übungen — musste an drei
+ * Stellen nachgezogen werden.
+ */
+export function isAvailable(exercise, profile, { ignoriereSperren = false } = {}) {
+  if (!exercise) return false;
+
+  const codes = EQUIPMENT_CODES[profile.equipment] || EQUIPMENT_CODES.studio;
+  const gear = profile.equipment === 'studio' ? Object.keys(GEAR_LABEL) : (profile.gear || []);
+  const limits = profile.limits || [];
+
+  if (![...exercise.env].some((c) => codes.includes(c))) return false;
+  if (exercise.avoid.some((a) => limits.includes(a))) return false;
+  if (GEAR[exercise.id] && !gear.includes(GEAR[exercise.id])) return false;
+
+  if (ignoriereSperren) return true;
+  if ((profile.blocked || []).includes(exercise.id)) return false;
+  // Ausgewachsene Übungen kommen nicht zurück in den Plan — anders als
+  // gesperrte sind sie nicht ungeeignet, sondern erledigt.
+  if ((profile.outgrown || []).includes(exercise.id)) return false;
+  return true;
+}
+
 /* ---------------- Plangenerator ---------------- */
 
 /**
@@ -343,21 +379,9 @@ export function sessionMinutes(exercises, tempo = 'normal') {
  * dafür gibt es in der Ansicht den Knopf „Andere Übungen wählen".
  */
 export function buildPlan(profile, seed = 0) {
-  const codes = EQUIPMENT_CODES[profile.equipment] || EQUIPMENT_CODES.studio;
-  const limits = profile.limits || [];
-
-  // Im Studio ist alles da; sonst zählt, was im Fragebogen angekreuzt wurde.
-  const gear = profile.equipment === 'studio' ? Object.keys(GEAR_LABEL) : (profile.gear || []);
-
-  // Im Training als zu schwer aussortierte Übungen bleiben draußen.
-  const blocked = new Set(profile.blocked || []);
-
-  const usable = EXERCISES.filter(
-    (e) => [...e.env].some((c) => codes.includes(c))
-      && !e.avoid.some((a) => limits.includes(a))
-      && (!GEAR[e.id] || gear.includes(GEAR[e.id]))
-      && !blocked.has(e.id)
-  );
+  // Ausrüstung, Gerät, Beschwerden, Sperrliste und ausgewachsene Übungen
+  // stecken alle in isAvailable.
+  const usable = EXERCISES.filter((e) => isAvailable(e, profile));
 
   let key = profile.days;
   if (profile.days === 3 && profile.level !== 'anfaenger') key = '3ppl';
@@ -469,17 +493,8 @@ export function replaceExercise(plan, profile, dayIndex, exerciseIndex) {
   const altExercise = exerciseById(alt.id);
   if (!altExercise) return { plan, ersatz: null };
 
-  const codes = EQUIPMENT_CODES[profile.equipment] || EQUIPMENT_CODES.studio;
-  const limits = profile.limits || [];
-  const gear = profile.equipment === 'studio' ? Object.keys(GEAR_LABEL) : (profile.gear || []);
-  const blocked = new Set([...(profile.blocked || []), alt.id]);
   const imTag = new Set(day.exercises.map((e) => e.id));
-
-  const passt = (e) => [...e.env].some((c) => codes.includes(c))
-    && !e.avoid.some((a) => limits.includes(a))
-    && (!GEAR[e.id] || gear.includes(GEAR[e.id]))
-    && !blocked.has(e.id)
-    && !imTag.has(e.id);
+  const passt = (e) => isAvailable(e, profile) && e.id !== alt.id && !imTag.has(e.id);
 
   // Erst dieselbe Gruppe und Art, dann nur die Gruppe, dann die Ersatzgruppe.
   let auswahl = EXERCISES.filter((e) => passt(e) && e.group === altExercise.group && e.type === altExercise.type);
@@ -501,6 +516,25 @@ export function replaceExercise(plan, profile, dayIndex, exerciseIndex) {
 }
 
 /**
+ * Setzt an einer Stelle im Plan eine bestimmte Übung ein.
+ *
+ * Anders als replaceExercise wird hier nicht gesucht, sondern gesetzt — die
+ * Variantenleiter weiß schon, welche Sprosse als nächste kommt.
+ */
+export function setExercise(plan, profile, dayIndex, exerciseIndex, neueId) {
+  const uebung = exerciseById(neueId);
+  const tag = plan.days[dayIndex];
+  if (!uebung || !tag || !tag.exercises[exerciseIndex]) return plan;
+
+  const vorgabe = prescribe(uebung, profile, exerciseIndex === 0);
+  const days = plan.days.map((d, i) => (i !== dayIndex ? d : {
+    ...d,
+    exercises: d.exercises.map((e, j) => (j === exerciseIndex ? vorgabe : e)),
+  }));
+  return { ...plan, days };
+}
+
+/**
  * Rechnet einen Trainingstag auf das um, was in einem leeren Zimmer geht.
  *
  * Bewusst keine Änderung am gespeicherten Plan und kein Eintrag in `blocked`:
@@ -509,12 +543,8 @@ export function replaceExercise(plan, profile, dayIndex, exerciseIndex) {
  *
  * @returns {{exercises: object[], getauscht: {von: string, zu: string}[]}}
  */
-export function travelDay(day, profile) {
+export function travelDay(day, profile, waehlen = null) {
   if (!day || !day.exercises) return { exercises: [], getauscht: [] };
-
-  const limits = profile.limits || [];
-  // Im Training aussortierte Übungen bleiben auch hier draußen.
-  const blocked = new Set(profile.blocked || []);
 
   // Was ohnehin bleibt, ist belegt — sonst schlägt der Tausch eine Übung vor,
   // die weiter unten im selben Tag schon steht.
@@ -531,10 +561,7 @@ export function travelDay(day, profile) {
     const uebung = exerciseById(vorgabe.id);
     if (uebung && floorOnly(uebung)) return vorgabe;
 
-    const passt = (e) => floorOnly(e)
-      && !e.avoid.some((a) => limits.includes(a))
-      && !blocked.has(e.id)
-      && !belegt.has(e.id);
+    const passt = (e) => floorOnly(e) && isAvailable(e, profile) && !belegt.has(e.id);
 
     const gruppe = uebung ? uebung.group : null;
     let auswahl = gruppe
@@ -551,7 +578,11 @@ export function travelDay(day, profile) {
       return null;
     }
 
-    const ersatz = auswahl[0];
+    // Ohne eigene Regel die erste passende. Die Ansicht reicht eine hinein,
+    // die Sprossen derselben Variantenleiter bevorzugt — „Rudern unter dem
+    // Tisch" soll zu „Handtuch-Rudern im Sitzen" werden und nicht zu dem, was
+    // zufällig obenauf liegt.
+    const ersatz = (waehlen && waehlen(auswahl, uebung)) || auswahl[0];
     belegt.add(ersatz.id);
     getauscht.push({ von: uebung ? uebung.name : vorgabe.id, zu: ersatz.name });
     return prescribe(ersatz, profile, i === 0);
