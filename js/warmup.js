@@ -25,7 +25,7 @@ const ALLGEMEIN = {
  */
 const NACH_GRUPPE = {
   brust:    { id: 'brust', name: 'Schultern öffnen', seconds: 40,
-              detail: 'Arme groß kreisen, dann im Türrahmen die Brust dehnen — je Seite 20 Sekunden, locker.' },
+              detail: 'Arme groß kreisen, dann die Hände hinter dem Rücken falten und die Brust öffnen — 20 Sekunden, locker. Wo ein Türrahmen ist, geht auch der.' },
   ruecken:  { id: 'ruecken', name: 'Schulterblätter wecken', seconds: 40,
               detail: 'Zehn Mal Schulterblätter zusammenziehen und lösen, dann Katze-Kuh im Vierfüßler.' },
   schulter: { id: 'schulter', name: 'Schultergürtel kreisen', seconds: 40,

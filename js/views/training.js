@@ -8,9 +8,11 @@ import { el, mount, viewHead, emptyState, toast, iconButton } from '../ui.js';
 import { localDateKey, formatDateKey, parseNumber, shiftDateKey } from '../nutrition.js';
 import {
   getSession, saveSession, saveWeight, setSkillLevel, setPlan, setTrainingProfile,
+  setSetting,
 } from '../store.js';
 import {
   exerciseById, GROUP_LABEL, blockWeek, forWeek, dayForWeekday, nextStep, BLOCK_WEEKS,
+  travelDay,
   replaceExercise,
 } from '../training.js';
 import { energyPlan, weightTrend } from '../energy.js';
@@ -18,6 +20,53 @@ import { warmupFor, warmupMinutes } from '../warmup.js';
 import {
   skillById, currentLevel, levelIndex, setsNeeded, levelCleared, hasNextLevel, MEASURE,
 } from '../skills.js';
+
+/**
+ * Schalter für den Unterwegs-Betrieb, samt Liste der getauschten Übungen.
+ *
+ * Bewusst mit sichtbarem Ausschalter: ein Modus, der den Plan umschreibt und
+ * dabei still bleibt, wird irgendwann vergessen — und dann wundert man sich
+ * Wochen später, warum keine Klimmzüge mehr drinstehen.
+ */
+function unterwegsKarte(ctx, unterwegs, umgerechnet) {
+  const umschalten = async (an) => {
+    await setSetting('unterwegs', an);
+    await ctx.refreshSettings();
+    ctx.reload();
+    toast(an ? 'Plan aufs Zimmer umgerechnet.' : 'Wieder der normale Plan.');
+  };
+
+  if (!unterwegs) {
+    return el('div', { class: 'card stack' },
+      el('button', {
+        class: 'btn btn-block', type: 'button',
+        onClick: () => umschalten(true),
+      }, 'Unterwegs? Plan aufs Zimmer umrechnen'),
+      el('p', { class: 'hint' },
+        'Für Hotel und Besuch: dann stehen nur Übungen im Plan, die mit Boden und '
+        + 'Wand auskommen — ohne Tisch, Türrahmen, Stange oder Erhöhung.'));
+  }
+
+  const getauscht = (umgerechnet && umgerechnet.getauscht) || [];
+
+  return el('div', { class: 'card stack' },
+    el('div', { class: 'row-between' },
+      el('h2', { class: 'card-title', text: 'Unterwegs' }),
+      el('span', { class: 'pill pill-kcal', text: 'an' })),
+    el('p', { class: 'small' },
+      'Heute stehen nur Übungen im Plan, die mit Boden und Wand auskommen. '
+      + 'Dein gespeicherter Plan bleibt unverändert.'),
+    getauscht.length
+      ? el('ul', { class: 'nogo swaps' },
+          ...getauscht.map((g) => el('li', {
+            text: g.zu ? `${g.von} → ${g.zu}` : `${g.von} — dafür gibt es hier keinen Ersatz`,
+          })))
+      : el('p', { class: 'hint', text: 'Heute war nichts zu tauschen — der Tag ging ohnehin ohne alles.' }),
+    el('button', {
+      class: 'btn btn-block', type: 'button',
+      onClick: () => umschalten(false),
+    }, 'Wieder der normale Plan'));
+}
 
 /** Letzte aufgezeichnete Leistung einer Übung vor einem Datum. */
 function lastPerformance(sessions, exerciseId, beforeDate) {
@@ -609,8 +658,16 @@ export async function render(container, ctx) {
 
   const week = blockWeek(plan, dateKey);
   const weekday = new Date(`${dateKey}T12:00:00`).getDay();
-  const day = dayForWeekday(plan, weekday);
+  const geplanterTag = dayForWeekday(plan, weekday);
   const energy = energyPlan(profile, ctx.state.kcalAdjust);
+
+  // Unterwegs zählt nicht der gespeicherte Plan, sondern das, was im Zimmer
+  // geht. Der Plan selbst bleibt unangetastet — der Schalter ist umkehrbar.
+  const unterwegs = ctx.settings.unterwegs === true;
+  const umgerechnet = unterwegs && geplanterTag ? travelDay(geplanterTag, profile) : null;
+  const day = umgerechnet
+    ? { ...geplanterTag, exercises: umgerechnet.exercises }
+    : geplanterTag;
 
   const head = viewHead(
     day ? day.name : 'Ruhetag',
@@ -634,6 +691,8 @@ export async function render(container, ctx) {
         onClick: () => ctx.startSetup(profile),
       }, 'Gerät nachtragen und Plan neu bauen')));
   }
+
+  body.push(unterwegsKarte(ctx, unterwegs, umgerechnet));
 
   if (!day) {
     // Nächste Einheit suchen, damit der Ruhetag nicht im Leeren endet.
@@ -669,8 +728,10 @@ export async function render(container, ctx) {
       pending = setTimeout(() => { saveSession(session).then(() => ctx.refreshTraining()); }, 400);
     };
 
-    // Technik zuerst, danach die Kraftübungen.
+    // Technik zuerst, danach die Kraftübungen. Unterwegs fallen Fähigkeiten
+    // weg, die eine Stange oder einen Barren brauchen — im Zimmer steht keiner.
     const skillBlocks = (profile.skills || [])
+      .filter((id) => !unterwegs || !(skillById(id) || {}).gear)
       .map((id) => skillBlock(id, session, ctx, persist))
       .filter(Boolean);
 
@@ -683,7 +744,7 @@ export async function render(container, ctx) {
       body.push(el('h2', { class: 'section-title', text: 'Krafttraining' }));
     }
 
-    const dayIndex = plan.days.indexOf(day);
+    const dayIndex = plan.days.indexOf(geplanterTag);
 
     /**
      * Übung austauschen. Die abgelehnte wird gemerkt, damit sie auch bei einem
@@ -691,6 +752,33 @@ export async function render(container, ctx) {
      */
     const tauschen = async (exerciseIndex) => {
       const alteId = day.exercises[exerciseIndex].id;
+
+      // Unterwegs steht die Übung gar nicht im gespeicherten Plan — der Tausch
+      // greift deshalb nicht am Plan an, sondern an der Sperrliste. Die
+      // Umrechnung übergeht gesperrte Übungen und nimmt die nächste.
+      if (unterwegs) {
+        const gesperrt = [...new Set([...(profile.blocked || []), alteId])];
+        const nachher = travelDay(geplanterTag, { ...profile, blocked: gesperrt });
+        const neue = nachher.exercises.length === day.exercises.length
+          ? nachher.exercises[exerciseIndex]
+          : null;
+
+        if (!neue || neue.id === alteId) {
+          toast('Ohne Ausrüstung gibt es dafür keinen Ersatz mehr.');
+          return;
+        }
+
+        await setTrainingProfile({ ...profile, blocked: gesperrt });
+        if (session.entries[alteId]) {
+          delete session.entries[alteId];
+          await saveSession(session);
+        }
+        await ctx.refreshTraining();
+        ctx.reload();
+        toast(`Getauscht: ${exerciseById(neue.id).name}.`);
+        return;
+      }
+
       const { plan: neuerPlan, ersatz } = replaceExercise(plan, profile, dayIndex, exerciseIndex);
 
       if (!ersatz) {

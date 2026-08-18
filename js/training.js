@@ -23,6 +23,7 @@ const RAW = [
   ['dbfly','Kurzhantel-Fly','brust','i','gd','schulter','Kontrolliert öffnen, nur bis Brusthöhe.'],
   ['bfly','Band-Fly','brust','i','b','','Am Endpunkt eine Sekunde halten.'],
   ['pushele','Liegestütze erhöht','brust','c','w','','Hände auf Stuhl oder Tisch — die leichtere Variante.'],
+  ['pseudopu','Pseudo-Planche-Liegestütze','brust','c','w','schulter','Hände auf Bauchhöhe, Finger zu den Füßen. Die Schultern über die Hände schieben.'],
   // Rücken, vertikal
   ['pullup','Klimmzüge','ruecken','c','gw','','Brust zur Stange, Schulterblätter zuerst.'],
   ['latpull','Latzug','ruecken','c','g','','Ellbogen nach unten-hinten ziehen.'],
@@ -39,6 +40,9 @@ const RAW = [
   ['tablerow','Rudern unter dem Tisch','ruecken','c','w','','Unter einen stabilen Tisch legen, an der Kante hochziehen. Körper bleibt gerade.'],
   ['towelrow','Handtuch-Rudern am Türrahmen','ruecken','c','w','','Handtuch um den Türgriff, zurücklehnen und zur Tür ziehen. Über die Fußstellung dosieren.'],
   ['superman','Superman am Boden','ruecken','i','w','ruecken','Bauchlage, Arme und Beine anheben, zwei Sekunden halten.'],
+  ['towelsit','Handtuch-Rudern im Sitzen','ruecken','c','w','','Langsitz, Handtuch um die Fußsohlen. Ziehen und mit den Beinen dagegenhalten — der Widerstand kommt von dir selbst.'],
+  ['pronelat','Latzug in Bauchlage','ruecken','c','w','ruecken','Bauchlage, Arme lang nach vorn. Ellbogen kraftvoll zu den Rippen ziehen, Brust bleibt oben.'],
+  ['revsnow','Umgekehrte Schneeengel','ruecken','i','w','','Bauchlage, Handrücken am Boden. Arme flach vom Kopf zur Hüfte streichen und zurück, langsam.'],
   ['facep','Face Pull','rdelt','i','gb','','Auf Augenhöhe ziehen, Daumen nach hinten.'],
   ['revfly','Reverse Fly','rdelt','i','gd','','Leicht vorgebeugt, Arme fast gestreckt.'],
   ['ytw','Y-T-W am Boden','rdelt','i','w','','Bauchlage, Arme nacheinander in Y-, T- und W-Form anheben. Daumen zeigen nach oben.'],
@@ -132,6 +136,38 @@ export const GEAR_LABEL = {
   stange: 'Klimmzugstange',
   barren: 'Dip-Barren oder zwei stabile Stühle',
 };
+
+/**
+ * Übungen, die irgendeinen Gegenstand brauchen — auch einen, den man zuhause
+ * gar nicht als Ausrüstung wahrnimmt: einen Tisch, unter den man sich legt,
+ * einen Türgriff, eine Kante zum Abstützen, eine Erhöhung für den Fuß.
+ *
+ * Getrennt von GEAR, weil es eine andere Frage beantwortet. GEAR fragt „hast du
+ * das angeschafft?", das hier fragt „steht das gerade im Raum?". In einem
+ * Hotelzimmer lautet die Antwort auf beides zuverlässig nein, und ein Plan, der
+ * einen stabilen Tisch voraussetzt, ist dort kein Plan.
+ */
+export const NEEDS_OBJECT = new Set([
+  'tablerow',   // ein Tisch, der das Körpergewicht trägt
+  'towelrow',   // ein Türrahmen mit brauchbarem Griff
+  'pushele',    // eine Erhöhung für die Hände
+  'benchdip',   // eine Kante hinter dem Rücken
+  'bulg',       // eine Erhöhung für den hinteren Fuß
+  'stepup',     // eine Stufe in Kniehöhe
+]);
+
+/**
+ * Kommt diese Übung mit Boden und Wand aus?
+ *
+ * Drei Bedingungen, und alle drei sind nötig: Sie muss mit dem eigenen Körper
+ * gehen (`w`), sie darf kein Gerät brauchen — eine Klimmzugstange steht in
+ * keinem Hotelzimmer — und keinen Gegenstand aus NEEDS_OBJECT.
+ */
+export function floorOnly(exercise) {
+  return exercise.env.includes('w')
+    && !GEAR[exercise.id]
+    && !NEEDS_OBJECT.has(exercise.id);
+}
 
 /** Welche Umgebungscodes eine Ausrüstung freischaltet.
  *  Wer ein Studio hat, bekommt keine Band-Übungen vorgeschlagen — dort steht
@@ -401,6 +437,66 @@ export function replaceExercise(plan, profile, dayIndex, exerciseIndex) {
   }));
 
   return { plan: { ...plan, days }, ersatz };
+}
+
+/**
+ * Rechnet einen Trainingstag auf das um, was in einem leeren Zimmer geht.
+ *
+ * Bewusst keine Änderung am gespeicherten Plan und kein Eintrag in `blocked`:
+ * die Übung ist nicht zu schwer und nicht ungeeignet, sie passt nur heute
+ * nicht in den Raum. Sobald der Schalter aus ist, steht der alte Plan wieder da.
+ *
+ * @returns {{exercises: object[], getauscht: {von: string, zu: string}[]}}
+ */
+export function travelDay(day, profile) {
+  if (!day || !day.exercises) return { exercises: [], getauscht: [] };
+
+  const limits = profile.limits || [];
+  // Im Training aussortierte Übungen bleiben auch hier draußen.
+  const blocked = new Set(profile.blocked || []);
+
+  // Was ohnehin bleibt, ist belegt — sonst schlägt der Tausch eine Übung vor,
+  // die weiter unten im selben Tag schon steht.
+  const belegt = new Set(
+    day.exercises.filter((v) => {
+      const e = exerciseById(v.id);
+      return e && floorOnly(e);
+    }).map((v) => v.id)
+  );
+
+  const getauscht = [];
+
+  const exercises = day.exercises.map((vorgabe, i) => {
+    const uebung = exerciseById(vorgabe.id);
+    if (uebung && floorOnly(uebung)) return vorgabe;
+
+    const passt = (e) => floorOnly(e)
+      && !e.avoid.some((a) => limits.includes(a))
+      && !blocked.has(e.id)
+      && !belegt.has(e.id);
+
+    const gruppe = uebung ? uebung.group : null;
+    let auswahl = gruppe
+      ? EXERCISES.filter((e) => passt(e) && e.group === gruppe && e.type === uebung.type)
+      : [];
+    if (!auswahl.length && gruppe) auswahl = EXERCISES.filter((e) => passt(e) && e.group === gruppe);
+    if (!auswahl.length && gruppe && FALLBACK_GROUP[gruppe]) {
+      auswahl = EXERCISES.filter((e) => passt(e) && e.group === FALLBACK_GROUP[gruppe]);
+    }
+
+    // Nichts Passendes: die Übung fällt weg statt falsch ersetzt zu werden.
+    if (!auswahl.length) {
+      if (uebung) getauscht.push({ von: uebung.name, zu: null });
+      return null;
+    }
+
+    const ersatz = auswahl[0];
+    belegt.add(ersatz.id);
+    getauscht.push({ von: uebung ? uebung.name : vorgabe.id, zu: ersatz.name });
+    return prescribe(ersatz, profile, i === 0);
+  }).filter(Boolean);
+
+  return { exercises, getauscht };
 }
 
 /* ---------------- 4-Wochen-Block ----------------

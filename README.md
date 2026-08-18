@@ -49,6 +49,9 @@ anzeigt.
 - **Aufwärmen**: eine kurze Liste, die sich aus dem Tag ergibt — Kreislauf, dann
   Mobilisation für genau die Gelenke, die gleich arbeiten, dazu ein Aufwärmsatz an
   der ersten Übung. Etwa vier bis fünf Minuten
+- **Unterwegs**: ein Schalter rechnet den Tag auf ein leeres Hotelzimmer um — nur
+  Übungen, die mit Boden und Wand auskommen, ohne Tisch, Türrahmen oder Erhöhung.
+  Der gespeicherte Plan bleibt unverändert
 - **Pausenuhr**: läuft von selbst los, sobald ein Satz abgehakt ist, mit der Zeit aus
   der Vorgabe — 150 Sekunden nach einer Grundübung, 75 nach einer Isolationsübung.
   Die Leiste klebt unten und meldet sich am Ende
@@ -348,7 +351,7 @@ drei Tagen Push/Pull/Beine), vier Tage Oberkörper/Unterkörper, fünf gemischt,
 Push/Pull/Beine doppelt. Die Übungszahl folgt der Zeit pro Einheit, Sätze und RIR der
 Erfahrungsstufe.
 
-Aus 76 Übungen wird nach Ausrüstung, vorhandenem Gerät und Beschwerden gefiltert;
+Aus 80 Übungen wird nach Ausrüstung, vorhandenem Gerät und Beschwerden gefiltert;
 gesperrte Übungen werden gar nicht erst eingeplant.
 
 **Gerät ist dabei etwas anderes als Gewicht.** Ein Klimmzug braucht keine Hantel, aber
@@ -362,6 +365,36 @@ Schulterbeschwerden —, sagt der Plan das offen, statt die Liste aufzufüllen.
 
 Übungen ohne Zusatzgewicht bekommen höhere Wiederholungszahlen (10–20 statt 5–8),
 weil der Fortschritt dort über Wiederholungen und schwerere Varianten läuft.
+
+### Unterwegs
+
+Ein Plan, der einen stabilen Tisch voraussetzt, ist im Hotelzimmer kein Plan. Oben im
+Training steht deshalb ein Schalter, der den Tag auf das umrechnet, was in einem leeren
+Zimmer geht: **nur Übungen, die mit Boden und Wand auskommen.**
+
+Dafür gibt es neben `GEAR` eine zweite Liste, `NEEDS_OBJECT`. Die beiden beantworten
+verschiedene Fragen — `GEAR` fragt „hast du das angeschafft?", `NEEDS_OBJECT` fragt
+„steht das gerade im Raum?". Darunter fällt, was man zuhause gar nicht als Ausrüstung
+wahrnimmt: ein Tisch, unter den man sich legt, ein Türgriff, eine Kante hinter dem
+Rücken, eine Erhöhung für den hinteren Fuß. `floorOnly()` verlangt alle drei
+Bedingungen — mit Körpergewicht machbar, kein Gerät, kein Gegenstand.
+
+`travelDay()` ersetzt jede übrige Übung durch eine aus derselben Gruppe und Art, sonst
+aus der Gruppe, sonst aus der Ersatzgruppe. Findet sich nichts, fällt die Übung weg,
+statt falsch ersetzt zu werden. Damit dafür genug da ist, kennt die App vier
+Rückenübungen, die wirklich nichts brauchen: Handtuch-Rudern im Sitzen (der Widerstand
+kommt aus den eigenen Beinen), Latzug in Bauchlage, Umgekehrte Schneeengel und
+Superman.
+
+Der **gespeicherte Plan bleibt dabei unangetastet**, und nichts wandert in `blocked`:
+die Übung ist nicht ungeeignet, sie passt nur nicht in den Raum. Ein Ausschalter steht
+sichtbar in derselben Karte, zusammen mit der Liste dessen, was getauscht wurde — ein
+Modus, der den Plan still umschreibt, wird sonst vergessen. Fähigkeiten, die eine
+Stange oder einen Barren verlangen, blendet der Schalter ebenfalls aus.
+
+*Zu schwer* wirkt unterwegs auf die Sperrliste statt auf den Plan, weil die gezeigte
+Übung im gespeicherten Plan gar nicht vorkommt. Gibt der Vorrat nichts mehr her, sagt
+die App das, statt die Übung ersatzlos zu streichen.
 
 **Passt eine Übung nicht, fliegt sie raus.** Unter jeder Übung steht im Training
 *Zu schwer — andere Übung*: die App tauscht sofort gegen eine andere aus derselben

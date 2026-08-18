@@ -1115,3 +1115,6 @@ input[type="range"] {
   background: var(--surface-2);
 }
 .scorebar i { display: block; height: 100%; border-radius: 3px; background: var(--kcal); }
+
+/* Getauschte Übungen im Unterwegs-Betrieb: Liste ohne das Kreuz der Verbotsliste */
+.swaps li::before { content: '→'; color: var(--kcal); font-size: 12px; top: 0; }

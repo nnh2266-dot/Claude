@@ -93,6 +93,8 @@ export async function getSettings() {
     apiKey: typeof raw.apiKey === 'string' ? raw.apiKey : '',
     model: typeof raw.model === 'string' && raw.model ? raw.model : DEFAULT_MODEL,
     goals: { ...DEFAULT_GOALS, ...(raw.goals && typeof raw.goals === 'object' ? raw.goals : {}) },
+    // Unterwegs: der Plan wird auf das umgerechnet, was in einem leeren Zimmer geht.
+    unterwegs: raw.unterwegs === true,
   };
 }
 
