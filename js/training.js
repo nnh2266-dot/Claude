@@ -621,6 +621,62 @@ export function forWeek(prescription, week) {
   return { sets, rir: Math.min(4, Math.max(0, prescription.rir + mod.rirDelta)) };
 }
 
+/** Gründe, aus denen eine Einheit ausfallen darf. */
+export const SKIP_REASONS = {
+  reise:   { label: 'Gereist', text: 'unterwegs' },
+  schlaf:  { label: 'Zu wenig Schlaf', text: 'übermüdet' },
+  krank:   { label: 'Krank', text: 'krank' },
+  schmerz: { label: 'Schmerzen', text: 'wegen Schmerzen' },
+  zeit:    { label: 'Keine Zeit', text: 'aus Zeitgründen' },
+};
+
+/**
+ * Ausgefallene Trainingstage der letzten Tage.
+ *
+ * Ein Tag gilt als ausgefallen, wenn er im Plan stand, vorbei ist und weder
+ * abgeschlossen noch anderswo nachgeholt wurde. Bewusst ausgelassene Tage
+ * bleiben dabei: „krank" heißt nicht „erledigt", man kann sie trotzdem
+ * nachholen wollen.
+ */
+export function missedDays(plan, sessions, dateKey, tage = 10) {
+  if (!plan) return [];
+
+  const offen = [];
+  for (let i = 1; i <= tage; i += 1) {
+    const tag = shiftKey(dateKey, -i);
+
+    // Tage vor der Planerstellung sind nicht ausgefallen — da gab es keinen
+    // Plan, gegen den sie hätten ausfallen können.
+    if (plan.createdAt && tag < plan.createdAt) continue;
+
+    const weekday = new Date(`${tag}T12:00:00`).getDay();
+    const planTag = dayForWeekday(plan, weekday);
+    if (!planTag) continue;
+
+    const session = (sessions || []).find((s) => s.date === tag);
+    if (session && (session.done || session.movedTo)) continue;
+
+    // Woanders nachgeholt? Dann ist der Tag erledigt, auch ohne Eintrag bei ihm.
+    if ((sessions || []).some((s) => s.holtNach === tag && s.done)) continue;
+
+    offen.push({
+      date: tag,
+      day: planTag,
+      weekday,
+      session: session || null,
+      grund: session && session.skipped ? session.reason || null : null,
+    });
+  }
+  return offen;
+}
+
+/** Datumsschlüssel verschieben — hier lokal, damit training.js DOM-frei bleibt. */
+function shiftKey(key, delta) {
+  const d = new Date(`${key}T12:00:00`);
+  d.setDate(d.getDate() + delta);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+
 /** Den Trainingstag zu einem Datum finden, oder null an Ruhetagen. */
 export function dayForWeekday(plan, weekday) {
   if (!plan) return null;

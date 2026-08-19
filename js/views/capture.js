@@ -14,6 +14,7 @@
 import { el, mount, viewHead, iconButton, field, toast, confirmAction } from '../ui.js';
 import {
   saveMeal, deleteMeal, saveFavorite, saveDraft, loadDraft, clearStoredDraft,
+  queuePhoto, deletePending,
 } from '../store.js';
 import { processPhoto, blobToBase64 } from '../image.js';
 import {
@@ -209,9 +210,53 @@ export async function startFromFile(file, ctx) {
   await runAnalysis(ctx);
 }
 
+/**
+ * Ein aufgehobenes Foto wieder aufnehmen und auswerten.
+ *
+ * Läuft durch dieselbe Sitzung wie ein frisches Foto, damit auch dieselben
+ * Korrekturmöglichkeiten gelten — Portionsregler, Zutaten ändern, Hinweis
+ * nachtragen. Aus der Warteschlange verschwindet der Eintrag erst, wenn die
+ * Sitzung steht; bricht etwas vorher ab, ist das Foto noch da.
+ */
+export async function startFromPending(eintrag, ctx) {
+  const draft = {
+    mode: 'photo',
+    dateKey: eintrag.date,
+    photoBlob: eintrag.blob,
+    thumbBlob: eintrag.thumb,
+    description: eintrag.hint || '',
+    mealType: eintrag.mealType || null,
+  };
+
+  session = buildSession(draft);
+  session.description = eintrag.hint || '';
+  session.draftRef = draft;
+  await persistSession();
+
+  await deletePending(eintrag.id);
+  await ctx.refreshPending();
+
+  ctx.openEditor(draft);
+  await runAnalysis(ctx);
+}
+
 /** Ruft die API auf und schreibt das Ergebnis in die laufende Sitzung. */
 async function runAnalysis(ctx) {
   if (!session || !session.photoBlob) return;
+
+  // Ohne Verbindung gar nicht erst anfragen: der Fehlschlag dauert sonst bis
+  // zum Zeitablauf, und die Meldung danach erklärt nichts.
+  if (navigator.onLine === false) {
+    session.error = {
+      message: 'Keine Verbindung. Das Foto lässt sich aufheben und später auswerten — '
+        + 'oder du trägst die Mahlzeit gleich von Hand ein.',
+      retriable: true,
+      offline: true,
+    };
+    rerender(ctx);
+    await persistSession();
+    return;
+  }
 
   session.analysing = true;
   session.error = null;
@@ -254,6 +299,39 @@ async function runAnalysis(ctx) {
     // Ab hier steckt Arbeit im Entwurf, die nicht verloren gehen darf.
     await persistSession();
   }
+}
+
+/**
+ * Legt das Foto in die Warteschlange und verlässt den Editor.
+ *
+ * Kein Platzhalter in den Mahlzeiten: ein Eintrag mit null Kalorien würde in
+ * Tagessumme, Zielen und Bericht mitzählen und die Zahlen still verfälschen.
+ * Bis zur Auswertung ist die Mahlzeit schlicht noch nicht erfasst — das ist
+ * die Wahrheit, und der Bericht darf sie ruhig sagen.
+ */
+async function fuerSpaeterAufheben(ctx) {
+  if (!session || !session.photoBlob) return;
+
+  try {
+    await queuePhoto({
+      dateKey: session.dateKey || localDateKey(),
+      blob: session.photoBlob,
+      thumb: session.thumbBlob,
+      hint: session.description || '',
+      mealType: session.mealType || null,
+    });
+  } catch (err) {
+    console.error(err);
+    toast('Das Foto ließ sich nicht aufheben.', 'err');
+    return;
+  }
+
+  await forgetStoredDraft();
+  session = null;
+  ctx.clearDraft();
+  await ctx.refreshPending();
+  ctx.go('today');
+  toast('Foto aufgehoben. Es wartet auf der Tagesansicht.');
 }
 
 /** Schätzt aus der Beschreibung und schreibt das Ergebnis in die Sitzung. */
@@ -811,15 +889,27 @@ function draw(container, ctx) {
         session.error.retriable && (session.photoBlob || session.mode === 'text')
           ? el(
               'div',
-              { class: 'mt-16' },
+              { class: 'row mt-16' },
               el(
                 'button',
                 {
-                  class: 'btn', type: 'button',
+                  class: 'btn grow', type: 'button',
                   onClick: () => (session.mode === 'text' ? runTextAnalysis(ctx) : runAnalysis(ctx)),
                 },
                 'Nochmal versuchen'
-              )
+              ),
+              // Nur beim Foto: eine Beschreibung kann man später ohnehin
+              // nochmal eintippen, ein Moment mit dem Teller kommt nicht wieder.
+              session.photoBlob
+                ? el(
+                    'button',
+                    {
+                      class: 'btn btn-primary grow', type: 'button',
+                      onClick: () => fuerSpaeterAufheben(ctx),
+                    },
+                    'Für später aufheben'
+                  )
+                : null
             )
           : null
       )

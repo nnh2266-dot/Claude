@@ -8,7 +8,7 @@
 import { localDateKey } from './nutrition.js';
 import {
   getSettings, getTrainingProfile, getPlan, getKcalAdjust, getSkillLevels,
-  listSessions, listWeights, listMobilityTests, listProgressPhotos,
+  listSessions, listWeights, listMobilityTests, listProgressPhotos, listPending,
 } from './store.js';
 import { targetsForDate } from './energy.js';
 import { toast } from './ui.js';
@@ -57,6 +57,8 @@ const state = {
   weights: [],
   mobility: [],
   photos: [],
+  /** Fotos, die auf eine Verbindung warten. */
+  pending: [],
 };
 
 let current = { name: null, param: null };
@@ -155,6 +157,12 @@ const ctx = {
     });
   },
 
+  /** Lädt die Warteschlange neu. */
+  async refreshPending() {
+    state.pending = await listPending();
+    return state.pending;
+  },
+
   /** Lädt nur die Fotos neu — die Blobs sind groß, der Rest kann bleiben. */
   async refreshPhotos() {
     state.photos = await listProgressPhotos();
@@ -213,10 +221,20 @@ const ctx = {
 async function start() {
   state.settings = await getSettings();
   await ctx.refreshTraining();
+  await ctx.refreshPending();
 
   window.addEventListener('hashchange', handleRoute);
 
   document.getElementById('fab')?.addEventListener('click', () => ctx.pickPhoto());
+
+  // Kommt die Verbindung zurück, warten vielleicht Fotos. Einmal Bescheid
+  // sagen genügt — auswerten soll, wer gerade Zeit dafür hat.
+  window.addEventListener('online', async () => {
+    const warten = await ctx.refreshPending();
+    if (!warten.length) return;
+    toast(`Wieder online. ${warten.length} ${warten.length === 1 ? 'Foto wartet' : 'Fotos warten'} auf die Auswertung.`);
+    if (current.name === 'today') handleRoute();
+  });
 
   document.getElementById('photo-input')?.addEventListener('change', (event) => {
     const file = event.target.files?.[0];

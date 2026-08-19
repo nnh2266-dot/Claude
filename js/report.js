@@ -16,7 +16,7 @@
 
 import { localDateKey, shiftDateKey } from './nutrition.js';
 import { targetsForDate, weightTrend, calorieAdvice, weeklyRateFor } from './energy.js';
-import { exerciseById, dayForWeekday, blockWeek, BLOCK_WEEKS } from './training.js';
+import { exerciseById, dayForWeekday, blockWeek, BLOCK_WEEKS, SKIP_REASONS } from './training.js';
 import { skillById, levelIndex } from './skills.js';
 import { hasResults, dueAgain, overallScore, RETEST_DAYS } from './mobility.js';
 
@@ -79,6 +79,9 @@ export function dailyReport(data) {
       befunde.push(gut(`${tag.name} abgeschlossen, ${saetze.voll} Sätze aufgezeichnet.`));
     } else if (saetze.voll > 0) {
       befunde.push(fakt(`${tag.name} angefangen: ${saetze.voll} ${saetze.voll === 1 ? 'Satz steht' : 'Sätze stehen'}, abgeschlossen ist die Einheit nicht.`));
+    } else if (session && session.skipped) {
+      const r = SKIP_REASONS[session.reason];
+      befunde.push(fakt(`${tag.name} heute ausgelassen${r ? `, ${r.text}` : ''}. Das ist in Ordnung.`));
     } else {
       befunde.push(schlecht(`${tag.name} steht heute an und ist noch nicht angefangen.`));
     }
@@ -186,6 +189,7 @@ export function weeklyReport(data) {
   });
   const geplantBisHeute = geplant.filter((d) => d <= dateKey);
   const gemacht = bisHeute.filter((d) => sessions.some((s) => s.date === d && s.done));
+  const bewusst = bisHeute.filter((d) => sessions.some((s) => s.date === d && s.skipped && !s.done));
   const angefangen = bisHeute.filter((d) =>
     sessions.some((s) => s.date === d && !s.done && sessionSets(s).voll > 0));
   const verpasst = geplantBisHeute.filter((d) => !gemacht.includes(d) && d < dateKey);
@@ -204,9 +208,37 @@ export function weeklyReport(data) {
       + (offenNochDieseWoche ? `, ${offenNochDieseWoche} stehen diese Woche noch an.` : '.')));
   }
 
-  if (verpasst.length) {
-    const namen = verpasst.map((d) => WOCHENTAG[new Date(`${d}T12:00:00`).getDay()]);
-    training.push(schlecht(`Ausgefallen: ${namen.join(', ')}.`));
+  // Bewusst ausgelassen ist etwas anderes als vergessen. Wer nach einer
+  // durchwachten Nacht nicht trainiert, trifft eine Entscheidung — und die
+  // gehört als Tatsache in den Bericht, nicht als Vorwurf.
+  const mitGrund = [];
+  const ohneGrund = [];
+  for (const d of verpasst) {
+    const s = sessions.find((x) => x.date === d);
+    if (s && s.movedTo) continue;                       // woanders nachgeholt
+    if (s && s.skipped) mitGrund.push({ d, grund: s.reason });
+    else ohneGrund.push(d);
+  }
+
+  if (mitGrund.length) {
+    const teile = mitGrund.map(({ d, grund }) => {
+      const name = WOCHENTAG[new Date(`${d}T12:00:00`).getDay()];
+      const r = SKIP_REASONS[grund];
+      return r ? `${name} (${r.text})` : name;
+    });
+    training.push(fakt(`Bewusst ausgelassen: ${teile.join(', ')}.`));
+  }
+  if (ohneGrund.length) {
+    const namen = ohneGrund.map((d) => WOCHENTAG[new Date(`${d}T12:00:00`).getDay()]);
+    training.push(schlecht(`Ausgefallen ohne Eintrag: ${namen.join(', ')}.`));
+  }
+
+  const nachgeholt = bisHeute.filter((d) => {
+    const s = sessions.find((x) => x.date === d);
+    return s && s.holtNach && s.done;
+  });
+  if (nachgeholt.length) {
+    training.push(gut(`${nachgeholt.length} ${nachgeholt.length === 1 ? 'Einheit' : 'Einheiten'} nachgeholt.`));
   }
   if (angefangen.length) {
     training.push(schlecht(`${angefangen.length} Einheit${angefangen.length === 1 ? '' : 'en'} angefangen, aber nie abgeschlossen.`));
@@ -350,7 +382,7 @@ export function weeklyReport(data) {
     bis: shiftDateKey(montag, 6),
     vollstaendig,
     abschnitte,
-    fazit: fazitSatz(gute, schlechte, gemacht.length, geplantBisHeute.length, vollstaendig),
+    fazit: fazitSatz(gute, schlechte, gemacht.length + bewusst.length, geplantBisHeute.length, vollstaendig),
   };
 }
 

@@ -71,6 +71,10 @@ anzeigt.
   und Oberkörper/Beine
 - **Variantenleitern**: wird eine Übung ohne Gewicht zu leicht, führt die App zur
   nächsten Stufe — von allein nach zwei Einheiten am oberen Ende, oder auf Knopfdruck
+- **Fotos ohne Verbindung**: ein Foto lässt sich aufheben und später auswerten. Bis
+  dahin zählt es nirgends mit
+- **Ausfallen lassen und nachholen**: eine Einheit mit Grund auslassen, an einem
+  Ruhetag nachholen — der Bericht unterscheidet beides von „einfach nicht gemacht"
 - **Kalorien nachsteuern**: weicht die gemessene Gewichtsveränderung vom Ziel ab,
   schlägt die App eine Korrektur vor — auf Knopfdruck übernommen
 
@@ -373,6 +377,51 @@ Wiederholungen gedeckelt, weil sie darüber deutlich überschätzt; und gerechne
 dem besten Satz überhaupt, nicht dem der laufenden Woche. Wo kein Richtwert existiert —
 etwa beim Handtuch-Rudern im Sitzen, wo der Widerstand aus den eigenen Beinen kommt —
 steht ausdrücklich keine Zahl statt einer erfundenen.
+
+## Wenn etwas dazwischenkommt
+
+### Fotos ohne Verbindung
+
+Ohne Netz fragt die App gar nicht erst an — der Fehlschlag dauerte sonst bis zum
+Zeitablauf, und die Meldung danach erklärt nichts. Stattdessen steht im Editor
+**Für später aufheben**: das Bild wandert in den Store `pending` und wartet dort.
+
+Bewusst **kein Platzhalter in den Mahlzeiten**. Ein Eintrag mit null Kalorien würde in
+Tagessumme, Zielen und Bericht mitzählen und die Zahlen still verfälschen. Bis zur
+Auswertung ist die Mahlzeit schlicht noch nicht erfasst — das ist die Wahrheit, und der
+Bericht darf sie ruhig sagen.
+
+Auf der Tagesansicht steht dann eine Karte mit den wartenden Bildern. Ausgewertet wird
+eines nach dem anderen über den normalen Editor, damit dieselben Korrekturen gelten wie
+bei einem frischen Foto — Portionsregler, Zutaten, Hinweis nachtragen — statt dass ein
+Stapel ungeprüft in den Tag rutscht. Kommt die Verbindung zurück, sagt die App einmal
+Bescheid; auswerten soll, wer gerade Zeit dafür hat.
+
+### Ausfallen lassen
+
+Besser eine Einheit bewusst auslassen als eine halbe absolvieren. Nach zu wenig Schlaf
+ist die Kraft ohnehin weg und das Risiko steigt. Im Training steht deshalb
+*Heute geht nichts?* mit fünf Gründen: gereist, zu wenig Schlaf, krank, Schmerzen,
+keine Zeit.
+
+Der Grund ist kein Schmuck. Ohne ihn steht im Wochenbericht nur „ausgefallen", und das
+liest sich gleich, ob man verreist war oder es vergessen hat. Mit ihm trennt der Bericht
+**„Bewusst ausgelassen: Mittwoch (übermüdet)"** als Tatsache von **„Ausgefallen ohne
+Eintrag: Freitag"** als Befund, und das Fazit rechnet bewusst ausgelassene Einheiten
+nicht als Fehlbetrag.
+
+### Nachholen
+
+An einem Ruhetag listet die App offene Einheiten der letzten zehn Tage — höchstens drei
+zur Auswahl, denn nachgeholt wird eine, und eine lange Liste liest sich wie eine
+Mahnung. Tage vor der Planerstellung zählen nicht mit: da gab es keinen Plan, gegen den
+sie hätten ausfallen können.
+
+*Heute nachholen* setzt `session.holtNach` auf den ausgefallenen Tag; die Trainingsansicht
+zeigt dann dessen Plan statt des heutigen, und in der Kopfzeile steht, woher er kommt.
+Der ausgefallene Tag bekommt umgekehrt ein `movedTo` und verschwindet aus der Liste.
+Nur an Ruhetagen — zwei Einheiten an einem Tag sind keine Rettung, sondern der nächste
+Ausfall.
 
 ## Die Berichte
 

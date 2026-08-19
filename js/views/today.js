@@ -6,6 +6,7 @@
 import { el, svg, mount, viewHead, iconButton, emptyState } from '../ui.js';
 import { getMealsByDate } from '../store.js';
 import { reportTeaser } from './report.js';
+import { startFromPending } from './capture.js';
 import {
   localDateKey, shiftDateKey, formatDateKey, formatTime,
   sumMeals, groupByMealType, MEAL_TYPE_LABEL,
@@ -144,6 +145,47 @@ function mealRow(meal, ctx) {
   );
 }
 
+/**
+ * Karte für Fotos, die ohne Verbindung aufgehoben wurden.
+ *
+ * Ausgewertet wird eines nach dem anderen über den normalen Editor — dann
+ * gelten dieselben Korrekturmöglichkeiten wie bei einem frischen Foto, statt
+ * dass ein Stapel ungeprüft in den Tag rutscht.
+ */
+function wartendeFotos(ctx) {
+  const warten = ctx.state.pending || [];
+  if (!warten.length) return null;
+
+  const offline = navigator.onLine === false;
+  const ohneKey = !ctx.settings.apiKey;
+  const naechstes = warten[0];
+
+  const grund = offline
+    ? 'Noch keine Verbindung.'
+    : ohneKey
+      ? 'Ohne API-Key geht die Auswertung nur über die Claude-App — den Weg findest du im Editor.'
+      : null;
+
+  return el('div', { class: 'card stack' },
+    el('div', { class: 'row-between' },
+      el('h3', { class: 'card-title',
+        text: warten.length === 1 ? 'Ein Foto wartet' : `${warten.length} Fotos warten` }),
+      el('span', { class: 'pill pill-kcal', text: 'offen' })),
+    el('div', { class: 'fotostreifen' },
+      ...warten.slice(0, 5).map((w) => el('img', {
+        class: 'fotomini', alt: '',
+        src: URL.createObjectURL(w.thumb || w.blob),
+      }))),
+    el('p', { class: 'hint',
+      text: 'Aufgehoben ohne Verbindung. Bis zur Auswertung zählen sie nirgends mit — '
+        + 'weder in der Tagessumme noch im Bericht.' }),
+    grund ? el('p', { class: 'hint', text: grund }) : null,
+    el('button', {
+      class: 'btn btn-primary btn-block', type: 'button', disabled: offline,
+      onClick: () => startFromPending(naechstes, ctx),
+    }, warten.length === 1 ? 'Jetzt auswerten' : `Nächstes auswerten (${warten.length} offen)`));
+}
+
 export async function render(container, ctx, param) {
   releaseObjectUrls();
 
@@ -169,6 +211,10 @@ export async function render(container, ctx, param) {
   );
 
   const body = [progressCard(totals, goals, ctx)];
+
+  // Wartende Fotos zuerst: solange sie liegen, stimmt keine Zahl darunter.
+  const warteschlange = wartendeFotos(ctx);
+  if (warteschlange) body.push(el('div', { class: 'mt-16' }, warteschlange));
 
   // Der Bericht gehört nach oben, nicht ans Ende: er sagt, was heute noch
   // fehlt, und das nützt am Morgen mehr als am Abend.

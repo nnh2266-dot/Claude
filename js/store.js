@@ -8,6 +8,7 @@
  *   weights   — Körpergewicht, ein Eintrag je Tag
  *   mobility  — Beweglichkeitstests, ein Eintrag je Messtag
  *   photos    — Fortschrittsfotos, ein Eintrag je Aufnahmetag
+ *   pending   — fotografierte Mahlzeiten, die noch auf die Auswertung warten
  *   settings  — Key/Value (apiKey, model, goals, profile, plan, kcalAdjust,
  *               skillLevels)
  */
@@ -15,7 +16,7 @@
 import { DEFAULT_GOALS, sumItems, newId, localDateKey } from './nutrition.js';
 
 const DB_NAME = 'naehrwert';
-const DB_VERSION = 4;
+const DB_VERSION = 5;
 
 export const DEFAULT_MODEL = 'claude-haiku-4-5';
 
@@ -57,6 +58,14 @@ function openDB() {
       // beim Aufräumen der Einträge nicht mit verschwinden.
       if (!db.objectStoreNames.contains('photos')) {
         db.createObjectStore('photos', { keyPath: 'date' });
+      }
+      // Ab Version 5: die Warteschlange für Fotos ohne Verbindung. Bewusst ein
+      // eigener Store und nicht ein Eintrag in `meals` mit null Kalorien — ein
+      // solcher Platzhalter würde in Tagessumme, Zielen und Berichten
+      // mitzählen und die Zahlen still verfälschen.
+      if (!db.objectStoreNames.contains('pending')) {
+        const pending = db.createObjectStore('pending', { keyPath: 'id' });
+        pending.createIndex('by-created', 'createdAt');
       }
     };
 
@@ -287,6 +296,12 @@ export async function getSession(dateKey) {
   return row && row.entries ? row : null;
 }
 
+/**
+ * Die Felder werden einzeln übernommen und nicht der ganze Übergabewert
+ * gespeichert — sonst landen Anzeigereste und halbe Zustände in der Datenbank.
+ * Preis dafür: neue Felder müssen hier eingetragen werden, sonst fallen sie
+ * still hinten runter.
+ */
 export async function saveSession(session) {
   const record = {
     date: session.date,
@@ -296,6 +311,13 @@ export async function saveSession(session) {
     // Technikarbeit: je Fähigkeit eine Liste aus Sekunden oder Wiederholungen
     skills: session.skills || {},
     done: !!session.done,
+    // Bewusst ausgelassen, mit Grund.
+    skipped: !!session.skipped,
+    reason: session.reason || null,
+    // Diese Einheit holt einen ausgefallenen Tag nach …
+    holtNach: session.holtNach || null,
+    // … und dieser Tag wurde anderswo nachgeholt.
+    movedTo: session.movedTo || null,
     updatedAt: Date.now(),
   };
   await tx('sessions', 'readwrite', (s) => s.put(record));
@@ -340,6 +362,35 @@ export async function saveMobilityTest(dateKey, results) {
 export async function listMobilityTests() {
   const rows = await tx('mobility', 'readonly', (s) => s.getAll());
   return (rows || []).sort((a, b) => (a.date < b.date ? -1 : 1));
+}
+
+/* ---------------- Warteschlange für Fotos ---------------- */
+
+/**
+ * Ein Foto aufheben, bis wieder eine Verbindung da ist.
+ * Beschreibung und Datum reisen mit — sonst landet die Mahlzeit später am
+ * falschen Tag, und der Hinweis fürs Schätzen wäre verloren.
+ */
+export async function queuePhoto({ dateKey, blob, thumb, hint = '', mealType = null }) {
+  const record = {
+    id: newId(), date: dateKey, blob, thumb: thumb || blob,
+    hint, mealType, createdAt: Date.now(),
+  };
+  await tx('pending', 'readwrite', (s) => s.put(record));
+  return record;
+}
+
+export async function listPending() {
+  const rows = await tx('pending', 'readonly', (s) => s.getAll());
+  return (rows || []).sort((a, b) => a.createdAt - b.createdAt);
+}
+
+export async function countPending() {
+  return (await tx('pending', 'readonly', (s) => s.count())) || 0;
+}
+
+export async function deletePending(id) {
+  await tx('pending', 'readwrite', (s) => s.delete(id));
 }
 
 /* ---------------- Fortschrittsfotos ---------------- */
@@ -466,6 +517,7 @@ export async function importData(data) {
 
 /** Löscht alle Mahlzeiten und Favoriten. Einstellungen bleiben erhalten. */
 export async function clearEntries() {
+  await tx('pending', 'readwrite', (s) => s.clear());
   await tx('meals', 'readwrite', (s) => s.clear());
   await tx('favorites', 'readwrite', (s) => s.clear());
 }
@@ -491,5 +543,6 @@ export async function clearEverything() {
   await tx('weights', 'readwrite', (s) => s.clear());
   await tx('mobility', 'readwrite', (s) => s.clear());
   await tx('photos', 'readwrite', (s) => s.clear());
+  await tx('pending', 'readwrite', (s) => s.clear());
   await tx('settings', 'readwrite', (s) => s.clear());
 }

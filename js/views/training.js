@@ -13,7 +13,7 @@ import {
 import {
   exerciseById, GROUP_LABEL, blockWeek, forWeek, dayForWeekday, nextStep, BLOCK_WEEKS,
   travelDay, restSeconds, sessionMinutes, REST_TEMPO,
-  replaceExercise, setExercise,
+  replaceExercise, setExercise, missedDays, SKIP_REASONS,
 } from '../training.js';
 import {
   ladderFor, harderRung, easierRung, pickNearestRung, topOutStreak, STREAK_FOR_NEXT,
@@ -23,6 +23,128 @@ import { warmupFor, warmupMinutes } from '../warmup.js';
 import {
   skillById, currentLevel, levelIndex, setsNeeded, levelCleared, hasNextLevel, MEASURE,
 } from '../skills.js';
+
+const WOCHENTAG = ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'];
+
+/**
+ * Eine Einheit bewusst ausfallen lassen, mit Grund.
+ *
+ * Der Grund ist kein Schmuck. Ohne ihn steht im Wochenbericht nur „ausgefallen",
+ * und das liest sich gleich, ob man verreist war oder es vergessen hat. Nach
+ * einer durchwachten Nacht ist Nichttrainieren die richtige Entscheidung — die
+ * App soll dafür nicht schimpfen.
+ */
+function ausfallenKarte(ctx, session, day, dateKey) {
+  if (session.done) return null;
+
+  if (session.skipped) {
+    const grund = SKIP_REASONS[session.reason];
+    return el('div', { class: 'card stack' },
+      el('div', { class: 'row-between' },
+        el('h3', { class: 'card-title', text: 'Heute ausgelassen' }),
+        el('span', { class: 'pill', text: grund ? grund.label : 'ohne Grund' })),
+      el('p', { class: 'hint',
+        text: 'Steht so im Wochenbericht — als Entscheidung, nicht als Versäumnis. '
+          + 'Nachholen kannst du die Einheit an einem der nächsten Ruhetage.' }),
+      el('button', {
+        class: 'btn btn-block', type: 'button',
+        onClick: async () => {
+          delete session.skipped;
+          delete session.reason;
+          await saveSession(session);
+          await ctx.refreshTraining();
+          ctx.reload();
+          toast('Doch nicht ausgelassen.');
+        },
+      }, 'Doch trainieren'));
+  }
+
+  const auswahl = el('div', { class: 'chips' },
+    ...Object.entries(SKIP_REASONS).map(([wert, r]) => el('button', {
+      class: 'chip', type: 'button',
+      onClick: async () => {
+        Object.assign(session, {
+          skipped: true, reason: wert, done: false,
+          dayName: day.name, template: day.template,
+        });
+        await saveSession(session);
+        await ctx.refreshTraining();
+        ctx.reload();
+        toast('Eingetragen. Kein Drama.');
+      },
+    }, r.label)));
+
+  return el('details', { class: 'card klappkarte ausfallwahl' },
+    el('summary', null,
+      el('span', { class: 'grow', text: 'Heute geht nichts?' }),
+      el('span', { class: 'muted small', text: 'ausfallen lassen' })),
+    el('div', { class: 'stack mt-16' },
+      el('p', { class: 'small' },
+        'Besser eine Einheit bewusst auslassen als eine halbe absolvieren. Nach zu '
+        + 'wenig Schlaf ist die Kraft ohnehin weg, und das Risiko steigt.'),
+      auswahl,
+      el('p', { class: 'hint',
+        text: 'Der Grund steht später im Bericht. Nachholen geht danach an einem Ruhetag.' })));
+}
+
+/**
+ * Ausgefallene Einheiten der letzten Tage, zum Nachholen an einem Ruhetag.
+ *
+ * Nur an Ruhetagen: zwei Einheiten an einem Tag sind keine Rettung, sondern
+ * der nächste Ausfall.
+ */
+function nachholKarte(ctx, plan, sessions, dateKey) {
+  const offen = missedDays(plan, sessions, dateKey, 10);
+  if (!offen.length) return null;
+
+  const zeile = (m) => {
+    const grund = m.grund ? SKIP_REASONS[m.grund] : null;
+    return el('div', { class: 'calcrow' },
+      el('div', { class: 'grow' },
+        el('div', { text: `${WOCHENTAG[m.weekday]} · ${m.day.name}` }),
+        el('div', { class: 'muted small',
+          text: grund ? `ausgelassen, ${grund.text}` : 'nicht gemacht' })),
+      el('button', {
+        class: 'btn btn-sm', type: 'button',
+        onClick: async () => {
+          const heute = (await getSession(dateKey)) || {
+            date: dateKey, entries: {}, skills: {}, done: false,
+          };
+          heute.holtNach = m.date;
+          heute.dayName = m.day.name;
+          heute.template = m.day.template;
+          await saveSession(heute);
+
+          // Der ausgefallene Tag bekommt einen Vermerk, damit er nicht weiter
+          // in der Liste steht — auch wenn dort gar kein Eintrag existierte.
+          const alt = m.session || { date: m.date, entries: {}, skills: {}, done: false };
+          alt.movedTo = dateKey;
+          await saveSession(alt);
+
+          await ctx.refreshTraining();
+          ctx.reload();
+          toast(`${m.day.name} wird heute nachgeholt.`);
+        },
+      }, 'Heute nachholen'));
+  };
+
+  // Höchstens drei zur Auswahl: nachgeholt wird eine, und eine lange Liste
+  // liest sich wie eine Mahnung.
+  const zeigen = offen.slice(0, 3);
+
+  return el('div', { class: 'card stack' },
+    el('h3', { class: 'card-title',
+      text: offen.length === 1 ? 'Eine Einheit ist offen' : `${offen.length} Einheiten sind offen` }),
+    el('p', { class: 'muted small',
+      text: 'Heute ist Ruhetag — ein guter Tag, um eine davon nachzuholen. Muss aber nicht: '
+        + 'ein Plan mit drei Einheiten die Woche verträgt eine ausgefallene.' }),
+    el('div', { class: 'card card-flush' }, ...zeigen.map(zeile)),
+    offen.length > zeigen.length
+      ? el('p', { class: 'hint',
+          text: `${offen.length - zeigen.length} weitere liegen noch weiter zurück. Die holt man `
+            + 'nicht mehr nach — der Plan läuft weiter.' })
+      : null);
+}
 
 /**
  * Pausenlänge einstellen, mit der Dauer der Einheit als Folge daneben.
@@ -45,7 +167,7 @@ function pausenKarte(ctx, tempo, exercises) {
       onClick: () => waehlen(wert),
     }, `${t.label} · ${sessionMinutes(exercises, wert)} Min`)));
 
-  return el('details', { class: 'card pausenwahl' },
+  return el('details', { class: 'card klappkarte pausenwahl' },
     el('summary', null,
       el('span', { class: 'grow', text: 'Pausen' }),
       el('span', { class: 'muted small',
@@ -735,8 +857,19 @@ export async function render(container, ctx) {
 
   const week = blockWeek(plan, dateKey);
   const weekday = new Date(`${dateKey}T12:00:00`).getDay();
-  const geplanterTag = dayForWeekday(plan, weekday);
   const energy = energyPlan(profile, ctx.state.kcalAdjust);
+
+  // Die Einheit muss vor dem Tag geladen werden: holt sie eine ausgefallene
+  // nach, gilt deren Plan und nicht der des heutigen Wochentags.
+  const session = (await getSession(dateKey)) || {
+    date: dateKey, entries: {}, skills: {}, done: false,
+  };
+  if (!session.skills) session.skills = {};   // Einheiten von vor den Fähigkeiten
+
+  const nachholTag = session.holtNach
+    ? dayForWeekday(plan, new Date(`${session.holtNach}T12:00:00`).getDay())
+    : null;
+  const geplanterTag = nachholTag || dayForWeekday(plan, weekday);
 
   // Unterwegs zählt nicht der gespeicherte Plan, sondern das, was im Zimmer
   // geht. Der Plan selbst bleibt unangetastet — der Schalter ist umkehrbar.
@@ -749,7 +882,8 @@ export async function render(container, ctx) {
 
   const head = viewHead(
     day ? day.name : 'Ruhetag',
-    `${formatDateKey(dateKey)} · ${BLOCK_WEEKS[week].label}`,
+    `${formatDateKey(dateKey)} · ${BLOCK_WEEKS[week].label}`
+      + (nachholTag ? ` · nachgeholt vom ${WOCHENTAG[new Date(`${session.holtNach}T12:00:00`).getDay()]}` : ''),
     iconButton('star', 'Ganzer Plan', () => ctx.go('plan'))
   );
 
@@ -773,6 +907,10 @@ export async function render(container, ctx) {
   body.push(unterwegsKarte(ctx, unterwegs, umgerechnet));
 
   if (!day) {
+    // Am Ruhetag zuerst, was offen ist — danach der Trost.
+    const nachholen = nachholKarte(ctx, plan, sessions, dateKey);
+    if (nachholen) body.push(nachholen);
+
     // Nächste Einheit suchen, damit der Ruhetag nicht im Leeren endet.
     let next = null;
     for (let i = 1; i <= 7 && !next; i++) {
@@ -794,10 +932,8 @@ export async function render(container, ctx) {
         el('strong', { text: `${energy.rest.kcal} kcal statt ${energy.training.kcal}. ` }),
         `Ruhetage brauchen weniger Energie, weil die Einheit fehlt. Das Eiweiß bleibt mit ${energy.rest.protein} g gleich hoch — daran hängt der Muskelerhalt.`)));
   } else {
-    const session = (await getSession(dateKey)) || {
-      date: dateKey, dayName: day.name, template: day.template, entries: {}, skills: {}, done: false,
-    };
-    if (!session.skills) session.skills = {};   // Einheiten von vor den Fähigkeiten
+    session.dayName = day.name;
+    session.template = day.template;
 
     let pending = null;
     const persist = () => {
@@ -932,10 +1068,15 @@ export async function render(container, ctx) {
     body.push(pausenKarte(ctx, tempo, day.exercises));
     body.push(el('div', { class: 'card card-flush mt-16' }, ...blocks));
 
+    const ausfallen = ausfallenKarte(ctx, session, day, dateKey);
+    if (ausfallen) body.push(el('div', { class: 'mt-16' }, ausfallen));
+
     body.push(el('button', {
       class: 'btn btn-primary btn-block btn-lg mt-16', type: 'button',
       onClick: async () => {
         session.done = true;
+        delete session.skipped;
+        delete session.reason;
         await saveSession(session);
         await ctx.refreshTraining();
         ctx.reload();
