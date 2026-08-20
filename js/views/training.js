@@ -93,39 +93,71 @@ function ausfallenKarte(ctx, session, day, dateKey) {
  * Nur an Ruhetagen: zwei Einheiten an einem Tag sind keine Rettung, sondern
  * der nächste Ausfall.
  */
-function nachholKarte(ctx, plan, sessions, dateKey) {
+function nachholKarte(ctx, plan, sessions, dateKey, { nachholenMoeglich = true } = {}) {
   const offen = missedDays(plan, sessions, dateKey, 10);
   if (!offen.length) return null;
 
+  /** Grund für einen vergangenen Tag setzen oder wieder löschen. */
+  const grundSetzen = async (m, wert) => {
+    const eintrag = m.session || {
+      date: m.date, entries: {}, skills: {}, done: false,
+      dayName: m.day.name, template: m.day.template,
+    };
+    eintrag.skipped = Boolean(wert);
+    eintrag.reason = wert || null;
+    await saveSession(eintrag);
+    await ctx.refreshTraining();
+    ctx.reload();
+    toast(wert ? 'Grund eingetragen.' : 'Grund entfernt.');
+  };
+
+  const nachholen = async (m) => {
+    const heute = (await getSession(dateKey)) || {
+      date: dateKey, entries: {}, skills: {}, done: false,
+    };
+    heute.holtNach = m.date;
+    heute.dayName = m.day.name;
+    heute.template = m.day.template;
+    await saveSession(heute);
+
+    // Der ausgefallene Tag bekommt einen Vermerk, damit er nicht weiter
+    // in der Liste steht — auch wenn dort gar kein Eintrag existierte.
+    const alt = m.session || { date: m.date, entries: {}, skills: {}, done: false };
+    alt.movedTo = dateKey;
+    await saveSession(alt);
+
+    await ctx.refreshTraining();
+    ctx.reload();
+    toast(`${m.day.name} wird heute nachgeholt.`);
+  };
+
   const zeile = (m) => {
     const grund = m.grund ? SKIP_REASONS[m.grund] : null;
-    return el('div', { class: 'calcrow' },
-      el('div', { class: 'grow' },
-        el('div', { text: `${WOCHENTAG[m.weekday]} · ${m.day.name}` }),
-        el('div', { class: 'muted small',
-          text: grund ? `ausgelassen, ${grund.text}` : 'nicht gemacht' })),
-      el('button', {
-        class: 'btn btn-sm', type: 'button',
-        onClick: async () => {
-          const heute = (await getSession(dateKey)) || {
-            date: dateKey, entries: {}, skills: {}, done: false,
-          };
-          heute.holtNach = m.date;
-          heute.dayName = m.day.name;
-          heute.template = m.day.template;
-          await saveSession(heute);
 
-          // Der ausgefallene Tag bekommt einen Vermerk, damit er nicht weiter
-          // in der Liste steht — auch wenn dort gar kein Eintrag existierte.
-          const alt = m.session || { date: m.date, entries: {}, skills: {}, done: false };
-          alt.movedTo = dateKey;
-          await saveSession(alt);
+    // Der Grund gehört an den Tag, an dem es passiert ist. Wer erst am
+    // nächsten Morgen dazu kommt, soll ihn nicht auf den falschen Tag buchen.
+    const grundWahl = el('details', { class: 'klappkarte grundwahl' },
+      el('summary', null,
+        el('span', { class: 'grow small', text: grund ? 'Grund ändern' : 'Grund eintragen' })),
+      el('div', { class: 'chips mt-16' },
+        ...Object.entries(SKIP_REASONS).map(([wert, r]) => el('button', {
+          class: 'chip', type: 'button',
+          'aria-pressed': m.grund === wert ? 'true' : 'false',
+          onClick: () => grundSetzen(m, m.grund === wert ? null : wert),
+        }, r.label))));
 
-          await ctx.refreshTraining();
-          ctx.reload();
-          toast(`${m.day.name} wird heute nachgeholt.`);
-        },
-      }, 'Heute nachholen'));
+    return el('div', { class: 'nachholzeile' },
+      el('div', { class: 'row-between' },
+        el('div', { class: 'grow' },
+          el('div', { text: `${formatDateKey(m.date)} · ${m.day.name}` }),
+          el('div', { class: 'muted small',
+            text: grund ? `ausgelassen, ${grund.text}` : 'nicht gemacht, ohne Grund' })),
+        nachholenMoeglich
+          ? el('button', {
+              class: 'btn btn-sm', type: 'button', onClick: () => nachholen(m),
+            }, 'Heute nachholen')
+          : null),
+      grundWahl);
   };
 
   // Höchstens drei zur Auswahl: nachgeholt wird eine, und eine lange Liste
@@ -136,8 +168,11 @@ function nachholKarte(ctx, plan, sessions, dateKey) {
     el('h3', { class: 'card-title',
       text: offen.length === 1 ? 'Eine Einheit ist offen' : `${offen.length} Einheiten sind offen` }),
     el('p', { class: 'muted small',
-      text: 'Heute ist Ruhetag — ein guter Tag, um eine davon nachzuholen. Muss aber nicht: '
-        + 'ein Plan mit drei Einheiten die Woche verträgt eine ausgefallene.' }),
+      text: nachholenMoeglich
+        ? 'Heute ist Ruhetag — ein guter Tag, um eine davon nachzuholen. Muss aber nicht: '
+          + 'ein Plan mit drei Einheiten die Woche verträgt eine ausgefallene.'
+        : 'Vergangene Tage. Nachholen geht am nächsten Ruhetag; den Grund kannst du '
+          + 'aber jetzt schon eintragen — er gehört an den Tag, an dem es passiert ist.' }),
     el('div', { class: 'card card-flush' }, ...zeigen.map(zeile)),
     offen.length > zeigen.length
       ? el('p', { class: 'hint',
@@ -1070,6 +1105,12 @@ export async function render(container, ctx) {
 
     const ausfallen = ausfallenKarte(ctx, session, day, dateKey);
     if (ausfallen) body.push(el('div', { class: 'mt-16' }, ausfallen));
+
+    // Auch an Trainingstagen erreichbar: wer erst am nächsten Morgen dazu
+    // kommt, den Ausfall einzutragen, käme sonst gar nicht an den richtigen
+    // Tag heran und bucht ihn auf den heutigen.
+    const offeneTage = nachholKarte(ctx, plan, sessions, dateKey, { nachholenMoeglich: false });
+    if (offeneTage) body.push(el('div', { class: 'mt-16' }, offeneTage));
 
     body.push(el('button', {
       class: 'btn btn-primary btn-block btn-lg mt-16', type: 'button',

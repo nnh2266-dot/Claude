@@ -1205,3 +1205,13 @@ input[type="range"] {
 }
 .leiter-reif .leiter-titel { margin: 0 0 9px; font-size: 12.5px; line-height: 1.45; }
 .leiter-reif .leiter-pos { margin-top: 8px; color: var(--text-muted); }
+
+/* Zeile in der Liste offener Einheiten: Kopf plus aufklappbare Gründe */
+.nachholzeile {
+  padding: 11px 14px;
+  border-bottom: 1px solid var(--border);
+}
+.nachholzeile:last-child { border-bottom: 0; }
+.grundwahl > summary { padding: 8px 0 0; font-weight: 500; color: var(--text-muted); }
+.grundwahl .chips { gap: 6px; }
+.grundwahl .chip { padding: 6px 11px; font-size: 12.5px; }

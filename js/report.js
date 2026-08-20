@@ -205,7 +205,9 @@ export function weeklyReport(data) {
   } else {
     // Mitten in der Woche ist „0 von 3" kein Befund, sondern eine Uhrzeit.
     training.push(fakt(`${gemacht.length} von ${geplantBisHeute.length} bis heute fälligen Einheiten abgeschlossen`
-      + (offenNochDieseWoche ? `, ${offenNochDieseWoche} stehen diese Woche noch an.` : '.')));
+      + (offenNochDieseWoche
+          ? `, ${offenNochDieseWoche} ${offenNochDieseWoche === 1 ? 'steht' : 'stehen'} diese Woche noch an.`
+          : '.')));
   }
 
   // Bewusst ausgelassen ist etwas anderes als vergessen. Wer nach einer

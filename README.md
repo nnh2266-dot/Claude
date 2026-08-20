@@ -417,6 +417,11 @@ zur Auswahl, denn nachgeholt wird eine, und eine lange Liste liest sich wie eine
 Mahnung. Tage vor der Planerstellung zählen nicht mit: da gab es keinen Plan, gegen den
 sie hätten ausfallen können.
 
+Dieselbe Liste steht auch an Trainingstagen, dort ohne den Nachholknopf: **der Grund
+lässt sich für jeden vergangenen Tag nachtragen.** Wer erst am nächsten Morgen dazu
+kommt, den Ausfall einzutragen, käme sonst gar nicht an den richtigen Tag heran und
+bucht ihn auf den heutigen.
+
 *Heute nachholen* setzt `session.holtNach` auf den ausgefallenen Tag; die Trainingsansicht
 zeigt dann dessen Plan statt des heutigen, und in der Kopfzeile steht, woher er kommt.
 Der ausgefallene Tag bekommt umgekehrt ein `movedTo` und verschwindet aus der Liste.
