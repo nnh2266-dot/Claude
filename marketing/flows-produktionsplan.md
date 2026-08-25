@@ -630,6 +630,61 @@ was er behaupten soll.
 
 ---
 
+### Der finale Prompt (Stand nach 11 Durchläufen)
+
+Drei Hebel, die sich in den Versuchen als entscheidend erwiesen haben:
+
+1. **Griff am unteren Ende des Schafts.** Damit liegt die gesamte Gerätelänge über der
+   Faust — das ist zusätzliche Reichweite den Rücken hinunter, ohne dass das Gerät
+   länger wird. Bis dahin stand nur die Handhöhe im Prompt, nie die Griffstelle.
+2. **Ein eigener Absatz zu Material und Licht.** Ohne ihn wirkt das Gerät gezeichnet.
+3. **Das Gehäusevolumen am Bogenende.** Ein gleichmäßig dünner Bogen liest sich als Stock.
+
+```
+A real matte-black handheld massage device, photographed, not illustrated.
+About 35 cm long in total - roughly the length of a forearm, the size of a
+hairdryer. A slim straight shaft with a diamond-textured rubber grip panel and
+three small control buttons. At its top the shaft bends forward and then curves
+back down again in one smooth continuous gooseneck, exactly like the spout of a
+kitchen mixer tap, so the far end hangs downward. That far end swells into a
+fat rounded motor housing, distinctly wider and heavier-looking than the shaft,
+and a polished chrome ring sits where the housing meets a round black foam head
+that points straight down. One solid rigid piece: no hinge, no joint, no
+telescoping section, no straight pistol body.
+
+Material and light: soft-touch matte black plastic with gentle diffuse
+highlights along the curve, one crisp reflection on the chrome ring, the foam
+head slightly textured and light-absorbing. Shot on a full-frame camera at
+50 mm in soft natural window light, realistic depth of field, true product
+photography - no CGI sheen, no illustration, no plastic toy look.
+
+Seen from behind. Her right hand grips the very bottom end of the shaft, at
+about chest height, so the whole length of the device extends above her fist.
+Her forearm is vertical, wrist straight in line with the shaft, elbow hanging
+down against her ribs, shoulder relaxed and not lifted. From her fist the shaft
+rises past the side of her right shoulder, the arc passes over the very top of
+that shoulder from front to back, and the head hangs down behind it onto her
+back. The round foam head rests level with the middle of her shoulder blades,
+pressing in just enough to dimple the skin and cast a small soft contact
+shadow. It stays to the right of her spine and never touches her neck or hair.
+```
+
+Negativ:
+
+```
+illustration, cartoon, CGI, plastic toy, walking stick, cane, pole, staff,
+thin hook, uniform thickness, long shaft, straight pistol body, hinge, joint,
+telescoping, hand behind her back, raised elbow, lifted shoulder, bent wrist,
+twisted torso, head on the neck, head on the outer shoulder, head on the
+deltoid, head floating away from the body, head on the spine, two devices,
+text, brand logos, watermark
+```
+
+**Regel für weitere Durchläufe: eine Änderung pro Versuch.** Wandern mehrere Angaben
+gleichzeitig, ist bei einem schlechten Ergebnis nicht mehr zuzuordnen, welche schuld war.
+
+---
+
 ## 13. Was das nicht ersetzt
 
 Eine Sache bleibt trotz allem besser, sobald sie möglich ist: **eine echte Aufnahme, wie
