@@ -1,6 +1,6 @@
 # NackenFrei — Der Spot
 
-`marketing/nackenfrei-spot.mp4` · 15,5 s · 1080 × 1920 · 30 fps · mit Ton
+`marketing/nackenfrei-spot.mp4` · 13,7 s · 1080 × 1920 · 30 fps · mit Ton
 
 Gebaut ohne weitere Generierung, aus vorhandenem Material und den Markenassets.
 Stand: 27. August 2026.
@@ -11,21 +11,23 @@ Stand: 27. August 2026.
 
 | Zeit | Einstellung | Herkunft | Einblendung |
 |---|---|---|---|
-| 0,0–2,0 | Gerade Massagepistole, Ellbogen hoch | Clip `8f69be11` | **„So kommt niemand da hin."** |
-| 2,0–4,5 | Diagramm: Reichweite des Arms endet vor der Zone | erzeugt | **„Diese Stelle erreicht keine Hand."** |
-| 4,5–7,0 | Diagramm: der Bogen führt über die Schulter auf die Zone | erzeugt | **„Der Bogen geht darüber hinweg."** |
-| 7,0–8,5 | Bogengriff, halbnah | Clip `da55be44` | **„Ohne verdrehten Arm."** |
-| 8,5–10,5 | Kontakt-Detail, Kamera fährt heran | Clip `bcf71d3d` | **„Punktgenau am Muskel."** |
-| 10,5–13,0 | Produkt mit vier Aufsätzen | `produkt-freigestellt.png` | **„Vier Aufsätze. Neun Stufen."** |
-| 13,0–15,5 | Abbinder | Wortmarke | **NACKENFREI** · „Ohne fremde Hilfe." |
+| 0,0–3,0 | Diagramm: Reichweite des Arms endet vor der Zone | erzeugt | **„Diese Stelle erreicht keine Hand."** · „So weit kommt der Arm." |
+| 3,0–6,0 | Diagramm: der Bogen führt über die Schulter auf die Zone | erzeugt | **„Der Bogen geht darüber hinweg."** · „Fester Bogen. Nichts zum Anstecken." |
+| 6,0–8,2 | Kontakt-Detail, Kamera fährt heran | Clip `bcf71d3d` | **„Punktgenau am Muskel."** · „Kugelkopf für die Fläche." |
+| 8,2–11,2 | Produkt mit vier Aufsätzen | `produkt-freigestellt.png` | **„Vier Aufsätze. Neun Stufen."** · „Kugel · Flach · U-Form · Spitz" |
+| 11,2–13,7 | Abbinder | Wortmarke | **NACKENFREI** · „Ohne fremde Hilfe." |
 
-**Alle Schnitte sind harte Schnitte auf dem Takt** (120 BPM, Schlag alle 0,5 s), keine
-Überblendungen. Weiche Blenden ließen die frühere Fassung wie ein Erklärvideo wirken.
+**Nur noch eine Realaufnahme.** Die beiden anderen sind raus: In `da55be44` schwebt der
+Massagekopf neben dem Hals, statt den Rücken zu berühren, und in `8f69be11` sitzt die
+Hand am geraden Gerät in einer Haltung, die niemand einnimmt. Beides fiel beim Ansehen
+sofort als künstlich auf. Übrig bleibt `bcf71d3d` — die einzige Aufnahme im gesamten
+Material, in der Griff, Kontakt und Armhaltung gleichzeitig stimmen.
 
-Dramaturgie: **Problem gezeigt → Problem erklärt → Lösung erklärt → Lösung gezeigt →
-Lösung im Detail → Produkt → Marke.** Die beiden Diagramme stehen in der Mitte, die
-Realaufnahmen klammern sie ein, und die Lösungsseite geht von halbnah auf nah — erst die
-Haltung, dann der Kontakt.
+Harte Schnitte, keine Überblendungen.
+
+Dramaturgie: **Problem → Lösung → Beweis → Produkt → Marke.** Die beiden Diagramme
+führen die Argumentation, die eine Realaufnahme belegt sie, das Produktbild zeigt, was
+man kauft.
 
 ---
 

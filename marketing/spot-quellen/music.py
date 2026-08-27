@@ -1,79 +1,56 @@
-import numpy as np, wave, struct
+import numpy as np, wave
 
 SR=48000
-DUR=15.7
+DUR=13.85
 BPM=120; BEAT=60/BPM
-N=int(SR*DUR)
-t=np.arange(N)/SR
-
-def env(a,d,length):
-    n=int(length*SR); e=np.zeros(n)
-    ai=max(1,int(a*SR)); di=max(1,n-ai)
-    e[:ai]=np.linspace(0,1,ai)
-    e[ai:]=np.exp(-np.linspace(0,6,di))
-    return e
-
-def place(buf, sig, at):
-    i=int(at*SR); j=min(len(buf), i+len(sig))
-    if i<len(buf): buf[i:j]+=sig[:j-i]
-
+CUTS=[0.0,3.0,6.0,8.17,11.17]
+N=int(SR*DUR); t=np.arange(N)/SR
 mix=np.zeros(N)
 
-# --- low drone: A1 with a detuned partner, slow swell
-for f,a,det in [(55.0,0.30,0.0),(55.0,0.16,0.35),(110.0,0.10,0.0)]:
-    mix += a*np.sin(2*np.pi*(f+det)*t) * (0.55+0.45*np.sin(2*np.pi*t/9.0))
+def place(buf,sig,at):
+    i=int(at*SR); j=min(len(buf),i+len(sig))
+    if i<len(buf): buf[i:j]+=sig[:j-i]
 
-# --- pad: A minor, soft, slowly breathing
-for f,a in [(220.0,0.055),(261.63,0.045),(329.63,0.035),(440.0,0.018)]:
-    lfo=0.6+0.4*np.sin(2*np.pi*t/5.5 + f)
-    mix += a*np.sin(2*np.pi*f*t)*lfo
+# --- sub drone, barely there
+mix += 0.22*np.sin(2*np.pi*55.0*t) * (0.6+0.4*np.sin(2*np.pi*t/11.0))
+mix += 0.09*np.sin(2*np.pi*82.5*t) * (0.5+0.5*np.sin(2*np.pi*t/7.0+1.1))
 
-# --- pulse on every beat, slightly stronger on the downbeat
+# --- warm pad, a minor, each voice breathing on its own
+for f,a,ph in [(110.0,0.085,0.0),(164.81,0.055,1.3),(220.0,0.040,2.6),(261.63,0.030,0.7)]:
+    mix += a*np.sin(2*np.pi*f*t)*(0.55+0.45*np.sin(2*np.pi*t/6.5+ph))
+
+# --- soft heartbeat on the beat, no click, no noise
 k=0; tt=0.0
 while tt<DUR:
-    strong = (k%4==0)
-    length=0.22
-    e=env(0.002,0.2,length)
-    n=len(e); tl=np.arange(n)/SR
-    body=np.sin(2*np.pi*np.linspace(74,48,n)*tl)          # short pitch drop
-    click=np.random.RandomState(k).normal(0,1,n)*np.exp(-np.linspace(0,40,n))
-    place(mix, (0.26 if strong else 0.13)*body*e + 0.02*click, tt)
+    n=int(0.30*SR); tl=np.arange(n)/SR
+    e=np.concatenate([np.linspace(0,1,int(0.012*SR)), np.exp(-np.linspace(0,7,n-int(0.012*SR)))])
+    body=np.sin(2*np.pi*np.linspace(62,44,n)*tl)
+    place(mix, (0.20 if k%4==0 else 0.10)*body*e, tt)
     tt+=BEAT; k+=1
 
-# --- accents on the cuts
-CUTS=[0.0,2.0,4.5,7.0,8.5,10.5,13.0]
+# --- one warm swell on each cut, no transient
 for i,c in enumerate(CUTS):
-    n=int(0.5*SR); tl=np.arange(n)/SR
-    thump=np.sin(2*np.pi*np.linspace(90,40,n)*tl)*np.exp(-np.linspace(0,9,n))
-    air=np.random.RandomState(100+i).normal(0,1,n)*np.exp(-np.linspace(0,26,n))
-    place(mix, 0.34*thump + 0.05*air, max(0,c-0.01))
+    n=int(0.9*SR); tl=np.arange(n)/SR
+    e=np.concatenate([np.linspace(0,1,int(0.10*SR)), np.exp(-np.linspace(0,4.5,n-int(0.10*SR)))])
+    place(mix, 0.16*np.sin(2*np.pi*np.linspace(70,52,n)*tl)*e, max(0.0,c-0.06))
 
-# --- lift into the endcard
-li=int(12.4*SR); ln=int(0.9*SR)
-sweep=np.linspace(0,1,ln)**2
-seg=np.random.RandomState(7).normal(0,1,ln)*sweep*0.05
-mix[li:li+ln]+=seg
-# small shimmer on the wordmark
-n=int(1.6*SR); tl=np.arange(n)/SR
-place(mix, 0.05*np.sin(2*np.pi*880*tl)*np.exp(-np.linspace(0,5,n)), 13.05)
+# --- gentle opening of the pad into the endcard
+li=int(11.17*SR)
+if li<N:
+    mix[li:] *= np.linspace(1.0,1.18,N-li)
 
-# --- gentle one-pole lowpass to take the edge off
-a=0.35
-out=np.empty_like(mix); acc=0.0
-for i in range(0,N,1):
-    acc = acc + a*(mix[i]-acc)
-    out[i]=acc
-mix = 0.72*out + 0.28*mix
+# --- two-pole lowpass, takes all edge off
+for _ in range(2):
+    a=0.28; acc=0.0; out=np.empty_like(mix)
+    for i in range(N):
+        acc += a*(mix[i]-acc); out[i]=acc
+    mix=out
 
-# fades
-fi=int(0.35*SR); fo=int(1.1*SR)
+fi=int(0.6*SR); fo=int(1.4*SR)
 mix[:fi]*=np.linspace(0,1,fi); mix[-fo:]*=np.linspace(1,0,fo)
-
-mix/= max(1e-9, np.max(np.abs(mix)))
-mix*=0.78
-st=np.stack([mix, mix*0.985],axis=1)
-pcm=(st*32767).astype(np.int16)
+mix/=max(1e-9,np.max(np.abs(mix))); mix*=0.62
+st=np.stack([mix,mix*0.99],axis=1)
 with wave.open("bed.wav","w") as w:
     w.setnchannels(2); w.setsampwidth(2); w.setframerate(SR)
-    w.writeframes(pcm.tobytes())
-print("bed.wav", round(len(mix)/SR,2), "s   peak", round(float(np.max(np.abs(mix))),3))
+    w.writeframes((st*32767).astype(np.int16).tobytes())
+print("bed.wav",round(DUR,2),"s")
