@@ -17,6 +17,10 @@ def soft_patch(im, box, blur=11, feather=16, pad=34):
     return im
 
 JOBS={
+ "C":dict(src="bcf71d3d-ElevenLabs_video_geminiomniflash_She_holds_the_m_20260816T05_40_19.mp4",
+          ss=1.85, t=2.2,
+          boxes=[(197,760,86,60),(92,985,90,62),(0,1062,86,74)],
+          boxes_end=[(307,945,96,66),(157,1180,100,68),(18,1258,96,80)]),
  "A":dict(src="8f69be11-ElevenLabs_video_geminiomniflash_Same_woman_sam_20260816T06_14_12.mp4",
           ss=0.35, t=2.6,
           boxes=[(316,676,84,60),(322,838,84,58),(84,940,84,70)]),
@@ -29,9 +33,14 @@ raw=f"raw_{tag}"; cln=f"cln_{tag}"
 os.makedirs(raw,exist_ok=True); os.makedirs(cln,exist_ok=True)
 subprocess.run([FF,"-y","-ss",str(J["ss"]),"-t",str(J["t"]),"-i",f'{U}/{J["src"]}',
                 f"{raw}/f%04d.png","-loglevel","error"],check=True)
-n=0
-for fn in sorted(os.listdir(raw)):
+files=sorted(os.listdir(raw)); n=0
+be=J.get("boxes_end")
+for i,fn in enumerate(files):
     im=Image.open(f"{raw}/{fn}").convert("RGB")
-    for b in J["boxes"]: im=soft_patch(im,b)
+    t=i/max(1,len(files)-1)
+    for k,b in enumerate(J["boxes"]):
+        if be:
+            e=be[k]; b=tuple(int(b[j]+(e[j]-b[j])*t) for j in range(4))
+        im=soft_patch(im,b)
     im.save(f"{cln}/{fn}"); n+=1
 print(tag,"cleaned",n)

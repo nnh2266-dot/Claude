@@ -1,6 +1,6 @@
 # NackenFrei — Der Spot
 
-`marketing/nackenfrei-spot.mp4` · 16,5 s · 1080 × 1920 · 30 fps · stumm
+`marketing/nackenfrei-spot.mp4` · 17,8 s · 1080 × 1920 · 30 fps · stumm
 
 Gebaut ohne weitere Generierung, aus vorhandenem Material und den Markenassets.
 Stand: 27. August 2026.
@@ -14,13 +14,15 @@ Stand: 27. August 2026.
 | 0,0–2,7 | Gerade Massagepistole, Ellbogen hoch | Clip `8f69be11`, entlogot und gegradet | **„So kommt niemand da hin."** · „Gerader Griff." |
 | 2,7–5,3 | Diagramm: Reichweite des Arms endet vor der Zone | erzeugt | **„Diese Stelle erreicht keine Hand."** · „So weit kommt der Arm." |
 | 5,3–8,0 | Diagramm: der Bogen führt über die Schulter auf die Zone | erzeugt | **„Der Bogen geht darüber hinweg."** · „Fester Bogen. Nichts zum Anstecken." |
-| 8,0–10,6 | Bogengriff in Anwendung | Clip `da55be44`, entlogot und gegradet | **„Ohne verdrehten Arm."** · „Ellbogen bleibt unten." |
-| 10,6–13,6 | Produkt mit vier Aufsätzen, langsamer Push | `produkt-freigestellt.png` | **„Vier Aufsätze. Neun Stufen."** · „Ein Bogen. Kein Ansteckgriff." |
-| 13,6–16,5 | Abbinder | Wortmarke aus `marketing/logo/` | **NACKENFREI** · „Ohne fremde Hilfe." · „14 Tage Rückgabe · Versand frei" |
+| 8,0–10,1 | Bogengriff in Anwendung, halbnah | Clip `da55be44`, entlogot und gegradet | **„Ohne verdrehten Arm."** · „Ellbogen bleibt unten." |
+| 10,1–12,0 | Kontakt-Detail, Kamera fährt heran | Clip `bcf71d3d`, entlogot mit mitlaufender Maske | **„Punktgenau am Muskel."** · „Kugelkopf für die Fläche." |
+| 12,0–14,8 | Produkt mit vier Aufsätzen, langsamer Push | `produkt-freigestellt.png` | **„Vier Aufsätze. Neun Stufen."** · „Ein Bogen. Kein Ansteckgriff." |
+| 14,8–17,8 | Abbinder | Wortmarke aus `marketing/logo/` | **NACKENFREI** · „Ohne fremde Hilfe." · „14 Tage Rückgabe · Versand frei" |
 
 Dramaturgie: **Problem gezeigt → Problem erklärt → Lösung erklärt → Lösung gezeigt →
-Produkt → Marke.** Die beiden Diagramme stehen in der Mitte, die beiden Realaufnahmen
-klammern sie ein.
+Lösung im Detail → Produkt → Marke.** Die beiden Diagramme stehen in der Mitte, die
+Realaufnahmen klammern sie ein, und die Lösungsseite geht von halbnah auf nah — erst die
+Haltung, dann der Kontakt.
 
 ---
 
@@ -43,7 +45,8 @@ Dunkeln und wird zum neutralen Raum statt zum Sportsignal.
 
 **Die Fremdlogos sind entfernt.** Nicht mit sichtbaren Weichzeichner-Kästen, sondern mit
 weich auslaufenden Masken pro Einzelbild (`spot-quellen/delogo.py`) — je drei Stellen pro
-Clip: BH-Band, Hosenbund, Armbanduhr.
+Clip: BH-Band, Hosenbund, Armbanduhr. Im Kontakt-Detail fährt die Kamera heran, dort
+**wandert die Maske linear mit**, sonst läuft das Logo unter dem Fleck hervor.
 
 **Die echte Wortmarke.** Der Abbinder benutzt `nackenfrei-wortmarke-weiss.png`, nicht
 gesetzten Text.
@@ -56,6 +59,17 @@ sechs sehr unterschiedlichen Bildquellen zusammen.
 KI-Hinweis steht ab Bild 1 oben links (Art. 50 EU AI Act).
 
 ---
+
+## Das Kontakt-Detail
+
+Clip `bcf71d3d` stand in der ersten Bestandsaufnahme als „Reserve" — zu Unrecht. Er
+enthält eine **langsame Heranfahrt**, und in der engeren Endeinstellung sind Hosenbund
+und Uhr ohnehin aus dem Bild. Übrig bleibt die beste Aufnahme des gesamten Materials:
+Chromring, Kugelkopf am Muskel, Hand korrekt am Schaft, Arm entspannt.
+
+Beschnitt auf 557 × 990 aus der Quelle, dann auf 1080 × 1920 — ein Hochskalieren um das
+Doppelte. Als Detail-Einstellung mit Grade und Korn trägt das; als Vollbild-Einstellung
+täte es das nicht.
 
 ## Was noch fehlt
 
