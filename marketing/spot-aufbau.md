@@ -1,6 +1,6 @@
 # NackenFrei — Der Spot
 
-`marketing/nackenfrei-spot.mp4` · 17,8 s · 1080 × 1920 · 30 fps · stumm
+`marketing/nackenfrei-spot.mp4` · 15,5 s · 1080 × 1920 · 30 fps · mit Ton
 
 Gebaut ohne weitere Generierung, aus vorhandenem Material und den Markenassets.
 Stand: 27. August 2026.
@@ -11,13 +11,16 @@ Stand: 27. August 2026.
 
 | Zeit | Einstellung | Herkunft | Einblendung |
 |---|---|---|---|
-| 0,0–2,7 | Gerade Massagepistole, Ellbogen hoch | Clip `8f69be11`, entlogot und gegradet | **„So kommt niemand da hin."** · „Gerader Griff." |
-| 2,7–5,3 | Diagramm: Reichweite des Arms endet vor der Zone | erzeugt | **„Diese Stelle erreicht keine Hand."** · „So weit kommt der Arm." |
-| 5,3–8,0 | Diagramm: der Bogen führt über die Schulter auf die Zone | erzeugt | **„Der Bogen geht darüber hinweg."** · „Fester Bogen. Nichts zum Anstecken." |
-| 8,0–10,1 | Bogengriff in Anwendung, halbnah | Clip `da55be44`, entlogot und gegradet | **„Ohne verdrehten Arm."** · „Ellbogen bleibt unten." |
-| 10,1–12,0 | Kontakt-Detail, Kamera fährt heran | Clip `bcf71d3d`, entlogot mit mitlaufender Maske | **„Punktgenau am Muskel."** · „Kugelkopf für die Fläche." |
-| 12,0–14,8 | Produkt mit vier Aufsätzen, langsamer Push | `produkt-freigestellt.png` | **„Vier Aufsätze. Neun Stufen."** · „Ein Bogen. Kein Ansteckgriff." |
-| 14,8–17,8 | Abbinder | Wortmarke aus `marketing/logo/` | **NACKENFREI** · „Ohne fremde Hilfe." · „14 Tage Rückgabe · Versand frei" |
+| 0,0–2,0 | Gerade Massagepistole, Ellbogen hoch | Clip `8f69be11` | **„So kommt niemand da hin."** |
+| 2,0–4,5 | Diagramm: Reichweite des Arms endet vor der Zone | erzeugt | **„Diese Stelle erreicht keine Hand."** |
+| 4,5–7,0 | Diagramm: der Bogen führt über die Schulter auf die Zone | erzeugt | **„Der Bogen geht darüber hinweg."** |
+| 7,0–8,5 | Bogengriff, halbnah | Clip `da55be44` | **„Ohne verdrehten Arm."** |
+| 8,5–10,5 | Kontakt-Detail, Kamera fährt heran | Clip `bcf71d3d` | **„Punktgenau am Muskel."** |
+| 10,5–13,0 | Produkt mit vier Aufsätzen | `produkt-freigestellt.png` | **„Vier Aufsätze. Neun Stufen."** |
+| 13,0–15,5 | Abbinder | Wortmarke | **NACKENFREI** · „Ohne fremde Hilfe." |
+
+**Alle Schnitte sind harte Schnitte auf dem Takt** (120 BPM, Schlag alle 0,5 s), keine
+Überblendungen. Weiche Blenden ließen die frühere Fassung wie ein Erklärvideo wirken.
 
 Dramaturgie: **Problem gezeigt → Problem erklärt → Lösung erklärt → Lösung gezeigt →
 Lösung im Detail → Produkt → Marke.** Die beiden Diagramme stehen in der Mitte, die
@@ -71,11 +74,26 @@ Beschnitt auf 557 × 990 aus der Quelle, dann auf 1080 × 1920 — ein Hochskali
 Doppelte. Als Detail-Einstellung mit Grade und Korn trägt das; als Vollbild-Einstellung
 täte es das nicht.
 
+## Der Ton
+
+`spot-quellen/music.py` erzeugt das Bett synthetisch — keine Lizenzfrage, keine
+Bibliothek, reproduzierbar:
+
+- **Drone** auf A1 (55 Hz) mit leicht verstimmter Doppelung, langsame Schwellung über 9 s
+- **Fläche** aus a-Moll (220 / 261,63 / 329,63 / 440 Hz), jede Stimme mit eigenem LFO
+- **Puls** auf jedem Schlag bei 120 BPM, auf der Eins betont — ein kurzer Sinus mit
+  Tonhöhenabfall von 74 auf 48 Hz
+- **Impuls auf jedem Schnitt**, damit Bild und Ton auf demselben Raster sitzen
+- **Anhebung** ab 12,4 s in den Abbinder, dazu ein kurzes Schimmern auf der Wortmarke
+- Einfacher Tiefpass darüber, Ein- und Ausblendung, Spitze bei −2 dBFS
+
+Kein Bass-Drop, kein Trailer-Sound. Der Kategorie-Standard ist Studio-Techno; davon
+wegzugehen ist Teil der Differenzierung.
+
 ## Was noch fehlt
 
 | Fehlt | Aufwand |
 |---|---|
-| **Ton** — Musikbett und zwei Akzente | Der Spot ist sound-off gebaut und funktioniert stumm. Musik aus freier Bibliothek |
 | **Sprecherin** | TTS kostet einen Bruchteil eines Video-Nodes |
 | **Untertitel** | erst nötig, wenn eine Stimme darunterliegt |
 | **4:5-Fassung** (1080 × 1350) | eigene Textebene, kein Beschnitt — die Einblendungen müssen neu gesetzt werden |
