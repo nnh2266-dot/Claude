@@ -19,6 +19,10 @@ import { targetsForDate, weightTrend, calorieAdvice, weeklyRateFor } from './ene
 import { exerciseById, dayForWeekday, blockWeek, BLOCK_WEEKS, SKIP_REASONS } from './training.js';
 import { skillById, levelIndex } from './skills.js';
 import { dayTotals, weekSummary } from './activities.js';
+import {
+  duration as schlafDauer, formatDauer, rateDuration, lightTiming, isComplete as nachtVoll,
+  summarise as schlafSchnitt, SOLL_MIN, LICHT_MINUTEN,
+} from './sleep.js';
 import { hasResults, dueAgain, overallScore, RETEST_DAYS } from './mobility.js';
 
 /** Ein Befund. `art` steuert nur die Darstellung, nicht den Inhalt. */
@@ -92,6 +96,35 @@ export function dailyReport(data) {
     befunde.push(gestern && gestern.done
       ? fakt('Ruhetag nach einer Einheit — genau dafür ist er da.')
       : fakt('Ruhetag.'));
+  }
+
+  /* Schlaf */
+  const nacht = (data.sleep || []).find((n) => n.date === dateKey) || null;
+  if (nacht && nachtVoll(nacht)) {
+    const dauer = schlafDauer(nacht);
+    const b = rateDuration(dauer);
+    befunde.push(b.art === 'gut'
+      ? gut(`${formatDauer(dauer)} im Bett — ${b.text}.`)
+      : (b.art === 'kurz' || b.art === 'knapp'
+          ? schlecht(`Nur ${formatDauer(dauer)} im Bett — ${b.text}.`)
+          : fakt(`${formatDauer(dauer)} im Bett — ${b.text}.`)));
+
+    const licht = lightTiming(nacht);
+    if (!nacht.licht || !nacht.licht.zeit) {
+      befunde.push(schlecht('Noch nicht draußen gewesen. In der ersten Stunde nach dem '
+        + 'Aufwachen stellt Tageslicht die innere Uhr.'));
+    } else if (licht && licht.imFenster && licht.langGenug) {
+      befunde.push(gut(`Morgenlicht ${nacht.licht.minuten} Minuten, `
+        + `${licht.minutenNachAufwachen} Minuten nach dem Aufwachen.`));
+    } else if (licht) {
+      befunde.push(fakt(`Morgenlicht ${nacht.licht.minuten} Minuten`
+        + (licht.imFenster ? '' : `, aber erst ${einsNach(licht.minutenNachAufwachen / 60)} Stunden nach dem Aufwachen`)
+        + (licht.langGenug ? '.' : ` — unter ${LICHT_MINUTEN} Minuten bringt wenig.`)));
+    }
+  } else if (nacht && nacht.zuBett) {
+    befunde.push(fakt('Zubettgehen steht, das Aufwachen fehlt noch.'));
+  } else {
+    befunde.push(fakt('Für heute Nacht ist nichts eingetragen.'));
   }
 
   /* Sport außer dem Training */
@@ -334,6 +367,35 @@ export function weeklyReport(data) {
     }
   }
   abschnitte.push({ titel: 'Ernährung', befunde: ernaehrung });
+
+  /* --- Schlaf --- */
+  const wochenNaechte = (data.sleep || []).filter((n) => bisHeute.includes(n.date));
+  if (wochenNaechte.length) {
+    const z = schlafSchnitt(wochenNaechte);
+    const schlaf = [];
+
+    if (z.naechte) {
+      schlaf.push(z.schnitt >= SOLL_MIN
+        ? gut(`Im Schnitt ${formatDauer(z.schnitt)} über ${z.naechte} vollständige Nächte.`)
+        : schlecht(`Im Schnitt nur ${formatDauer(z.schnitt)} über ${z.naechte} vollständige Nächte.`));
+      if (z.unterSoll) {
+        schlaf.push(z.unterSoll > z.naechte / 2
+          ? schlecht(`${z.unterSoll} von ${z.naechte} Nächten unter sieben Stunden.`)
+          : fakt(`${z.unterSoll} von ${z.naechte} Nächten unter sieben Stunden.`));
+      }
+      schlaf.push(fakt(`Kürzeste ${formatDauer(z.kuerzeste)}, längste ${formatDauer(z.laengste)}.`));
+    }
+    if (wochenNaechte.length < bisHeute.length) {
+      schlaf.push(fakt(`An ${bisHeute.length - wochenNaechte.length} Tagen nichts eingetragen.`));
+    }
+
+    schlaf.push(z.lichtPuenktlich >= Math.ceil(bisHeute.length * 0.7)
+      ? gut(`An ${z.lichtPuenktlich} von ${bisHeute.length} Tagen früh genug und lange genug draußen.`)
+      : schlecht(`Nur an ${z.lichtPuenktlich} von ${bisHeute.length} Tagen früh und lange genug draußen`
+        + (z.lichtTage > z.lichtPuenktlich ? ` (an ${z.lichtTage} überhaupt).` : '.')));
+
+    abschnitte.push({ titel: 'Schlaf und Licht', befunde: schlaf });
+  }
 
   /* --- Sport außer dem Training --- */
   const wochenAktiv = (data.activities || []).filter((a) => bisHeute.includes(a.date));

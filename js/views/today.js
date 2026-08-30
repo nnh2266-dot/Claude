@@ -9,6 +9,7 @@ import { reportTeaser } from './report.js';
 import { startFromPending } from './capture.js';
 import { activitySection } from './activity.js';
 import { dayTotals } from '../activities.js';
+import { sleepSection } from './sleep.js';
 import {
   localDateKey, shiftDateKey, formatDateKey, formatTime,
   sumMeals, groupByMealType, MEAL_TYPE_LABEL,
@@ -218,6 +219,8 @@ export async function render(container, ctx, param) {
 
   const body = [progressCard(totals, goals, ctx)];
 
+  // Schlaf vor Sport: morgens ist das die erste Eingabe des Tages.
+  body.push(el('div', { class: 'mt-16' }, sleepSection(ctx, dateKey, ctx.state.sleep)));
   body.push(el('div', { class: 'mt-16' }, activitySection(ctx, dateKey, activities)));
 
   // Wartende Fotos zuerst: solange sie liegen, stimmt keine Zahl darunter.

@@ -9,7 +9,7 @@ import { localDateKey } from './nutrition.js';
 import {
   getSettings, getTrainingProfile, getPlan, getKcalAdjust, getSkillLevels,
   listSessions, listWeights, listMobilityTests, listProgressPhotos, listPending,
-  getActivitiesByDate,
+  getActivitiesByDate, listSleep,
 } from './store.js';
 import { targetsForDate } from './energy.js';
 import { toast } from './ui.js';
@@ -28,6 +28,7 @@ import * as reportView from './views/report.js';
 import * as photosView from './views/photos.js';
 import * as strengthView from './views/strength.js';
 import * as activityView from './views/activity.js';
+import * as sleepView from './views/sleep.js';
 
 const VIEWS = {
   today: todayView,
@@ -44,6 +45,7 @@ const VIEWS = {
   photos: photosView,
   strength: strengthView,
   activity: activityView,
+  sleep: sleepView,
 };
 
 const state = {
@@ -64,6 +66,8 @@ const state = {
   pending: [],
   /** Aktivitäten des angezeigten Tages. */
   activities: [],
+  /** Alle Nächte — die Einträge sind winzig, das lohnt keine Teilladerei. */
+  sleep: [],
 };
 
 let current = { name: null, param: null };
@@ -104,7 +108,7 @@ async function handleRoute() {
   // markiert — sonst sähe die Leiste unten aus, als wäre man nirgends.
   const TAB_OF = {
     plan: 'training', progress: 'training', setup: 'training', mobility: 'training',
-    photos: 'training', strength: 'training', report: 'today', activity: 'today',
+    photos: 'training', strength: 'training', report: 'today', activity: 'today', sleep: 'today',
   };
   const activeTab = TAB_OF[route.name] || route.name;
   for (const tab of document.querySelectorAll('.tab')) {
@@ -160,6 +164,12 @@ const ctx = {
     Object.assign(state, {
       profile, plan, kcalAdjust, skillLevels, sessions, weights, mobility, photos,
     });
+  },
+
+  /** Lädt den Schlafverlauf neu. */
+  async refreshSleep() {
+    state.sleep = await listSleep();
+    return state.sleep;
   },
 
   /** Lädt die Aktivitäten des angezeigten Tages. */
@@ -236,6 +246,7 @@ async function start() {
   await ctx.refreshTraining();
   await ctx.refreshPending();
   await ctx.refreshActivities();
+  await ctx.refreshSleep();
 
   window.addEventListener('hashchange', handleRoute);
 

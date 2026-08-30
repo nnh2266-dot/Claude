@@ -10,6 +10,7 @@
  *   photos    — Fortschrittsfotos, ein Eintrag je Aufnahmetag
  *   pending   — fotografierte Mahlzeiten, die noch auf die Auswertung warten
  *   activities— Sport außerhalb des Krafttrainings, Index 'by-date'
+ *   sleep     — Schlaf und Morgenlicht, ein Eintrag je Nacht
  *   settings  — Key/Value (apiKey, model, goals, profile, plan, kcalAdjust,
  *               skillLevels)
  */
@@ -17,7 +18,7 @@
 import { DEFAULT_GOALS, sumItems, newId, localDateKey } from './nutrition.js';
 
 const DB_NAME = 'naehrwert';
-const DB_VERSION = 6;
+const DB_VERSION = 7;
 
 export const DEFAULT_MODEL = 'claude-haiku-4-5';
 
@@ -73,6 +74,11 @@ function openDB() {
       if (!db.objectStoreNames.contains('activities')) {
         const acts = db.createObjectStore('activities', { keyPath: 'id' });
         acts.createIndex('by-date', 'date');
+      }
+      // Ab Version 7: Schlaf. Ein Eintrag je Nacht, unter dem Datum des
+      // Aufwachens — dieselbe Sicht, in der man morgens denkt.
+      if (!db.objectStoreNames.contains('sleep')) {
+        db.createObjectStore('sleep', { keyPath: 'date' });
       }
     };
 
@@ -371,6 +377,45 @@ export async function listMobilityTests() {
   return (rows || []).sort((a, b) => (a.date < b.date ? -1 : 1));
 }
 
+/* ---------------- Schlaf ---------------- */
+
+/**
+ * Eine Nacht speichern. Teilweise gefüllte Einträge sind normal und gewollt:
+ * abends steht nur die Zubettgeh-Zeit, der Rest kommt am Morgen dazu.
+ */
+export async function saveSleep(eintrag) {
+  const vorher = (await tx('sleep', 'readonly', (s) => s.get(eintrag.date))) || {};
+  const record = {
+    date: eintrag.date,
+    zuBett: eintrag.zuBett !== undefined ? (eintrag.zuBett || null) : (vorher.zuBett || null),
+    aufgewacht: eintrag.aufgewacht !== undefined
+      ? (eintrag.aufgewacht || null) : (vorher.aufgewacht || null),
+    licht: eintrag.licht !== undefined ? (eintrag.licht || null) : (vorher.licht || null),
+    note: eintrag.note !== undefined ? (eintrag.note || '') : (vorher.note || ''),
+    source: eintrag.source || vorher.source || 'manual',
+    updatedAt: Date.now(),
+  };
+  await tx('sleep', 'readwrite', (s) => s.put(record));
+  return record;
+}
+
+export async function getSleep(dateKey) {
+  return tx('sleep', 'readonly', (s) => s.get(dateKey));
+}
+
+export async function listSleep() {
+  const rows = await tx('sleep', 'readonly', (s) => s.getAll());
+  return (rows || []).sort((a, b) => (a.date < b.date ? -1 : 1));
+}
+
+export async function getSleepInRange(startKey, endKey) {
+  return (await listSleep()).filter((e) => e.date >= startKey && e.date <= endKey);
+}
+
+export async function deleteSleep(dateKey) {
+  await tx('sleep', 'readwrite', (s) => s.delete(dateKey));
+}
+
 /* ---------------- Aktivitäten ---------------- */
 
 export async function saveActivity(activity) {
@@ -497,6 +542,7 @@ export async function exportData() {
   const skillLevels = await getSkillLevels();
   const mobility = await listMobilityTests();
   const activities = await listActivities();
+  const sleep = await listSleep();
 
   return {
     format: 'naehrwert-export',
@@ -513,6 +559,7 @@ export async function exportData() {
     weights,
     mobility,
     activities,
+    sleep,
   };
 }
 
@@ -572,6 +619,10 @@ export async function importData(data) {
     activities++;
   }
 
+  for (const eintrag of Array.isArray(data.sleep) ? data.sleep : []) {
+    if (eintrag && eintrag.date) await saveSleep(eintrag);
+  }
+
   return { meals, favorites, sessions, weights, activities };
 }
 
@@ -589,6 +640,7 @@ export async function clearTraining() {
   await tx('mobility', 'readwrite', (s) => s.clear());
   await tx('photos', 'readwrite', (s) => s.clear());
   await tx('activities', 'readwrite', (s) => s.clear());
+  await tx('sleep', 'readwrite', (s) => s.clear());
   await tx('settings', 'readwrite', (s) => {
     s.delete('profile');
     s.delete('plan');
@@ -606,5 +658,6 @@ export async function clearEverything() {
   await tx('photos', 'readwrite', (s) => s.clear());
   await tx('pending', 'readwrite', (s) => s.clear());
   await tx('activities', 'readwrite', (s) => s.clear());
+  await tx('sleep', 'readwrite', (s) => s.clear());
   await tx('settings', 'readwrite', (s) => s.clear());
 }

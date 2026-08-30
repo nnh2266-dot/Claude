@@ -71,6 +71,8 @@ anzeigt.
   und Oberkörper/Beine
 - **Variantenleitern**: wird eine Übung ohne Gewicht zu leicht, führt die App zur
   nächsten Stufe — von allein nach zwei Einheiten am oberen Ende, oder auf Knopfdruck
+- **Schlaf und Morgenlicht**: abends das Zubettgehen, morgens das Aufwachen und die
+  Zeit draußen — die innere Uhr stellt sich am Tageslicht der ersten Stunde
 - **Sport außer dem Training**: Laufen, Rad, Yoga und anderes eintragen; der
   geschätzte Verbrauch hebt das Tagesziel
 - **Apple Health**: keine laufende Verbindung möglich, aber die Export-Datei lässt sich
@@ -222,6 +224,7 @@ js/report.js             Tages- und Wochenbericht: Befunde aus den eigenen Daten
 js/strength.js           Krafteinordnung: Richtwerte je Übung, Gruppen, Verhältnisse
 js/ladders.js            Variantenleitern für Übungen ohne Zusatzgewicht
 js/activities.js         Sport außer dem Training: MET-Werte, Schätzung, Anrechnung
+js/sleep.js              Schlafdauer, Morgenlicht, Nachtzuordnung
 js/health.js             Apple-Health-Export einlesen (Workouts, Körpergewicht)
 js/version.js            Fassungsnummer, muss zur CACHE_VERSION in sw.js passen
 js/energy.js             Grundumsatz, Tagesziele, Gewichtstrend, Kalorienkorrektur
@@ -230,7 +233,7 @@ js/image.js              Kamera-Foto verkleinern, Thumbnail, Base64
 js/ui.js                 DOM-Helfer
 js/views/                today · capture · history · favorites · settings
                          training · plan · progress · setup · mobility
-                         report · photos · strength · activity
+                         report · photos · strength · activity · sleep
 sw.js                    Service Worker (Offline-Betrieb)
 manifest.webmanifest     PWA-Manifest
 ```
@@ -383,6 +386,34 @@ Wiederholungen gedeckelt, weil sie darüber deutlich überschätzt; und gerechne
 dem besten Satz überhaupt, nicht dem der laufenden Woche. Wo kein Richtwert existiert —
 etwa beim Handtuch-Rudern im Sitzen, wo der Widerstand aus den eigenen Beinen kommt —
 steht ausdrücklich keine Zahl statt einer erfundenen.
+
+## Schlaf und Morgenlicht
+
+Ein Eintrag steht für eine Nacht und trägt das Datum des **Aufwachens** — die Nacht vom
+30. auf den 31. liegt unter dem 31. Das ist die Sicht, in der man morgens denkt, und sie
+macht den Vergleich mit dem Trainingstag einfach: derselbe Schlüssel.
+
+Die Karte auf der Tagesansicht richtet sich nach der Uhrzeit. Vor zwölf fragt sie nach
+dem Aufwachen und dem Draußensein, danach nach dem Zubettgehen — wer um sieben Uhr früh
+einen Knopf „Schlafen gehen" sieht, muss erst nachdenken, was er hier soll. Eine abends
+eingetragene Zeit wandert automatisch auf die kommende Nacht; die Grenze liegt bei fünf
+Uhr früh, weil danach niemand mehr schlafen geht, sondern aufsteht.
+
+Gerechnet wird die Zeit **im Bett**, nicht der tatsächliche Schlaf. Das steht auch so in
+der App: wer lange wach liegt, sieht hier eine bessere Zahl, als die Nacht war. Eine
+Web-App kann das nicht besser wissen, und eine Zahl, die mehr verspricht, als sie hält,
+ist schlechter als eine ehrliche.
+
+**Das Licht am Morgen ist kein Beiwerk.** Die innere Uhr stellt sich am Tageslicht der
+ersten Stunde nach dem Aufwachen. Draußen sind es selbst bei Wolken einige tausend Lux,
+am Fenster drinnen ein Bruchteil davon — deshalb fragt die App ausdrücklich nach
+*draußen* und nicht nach *hell gehabt*. Bewertet wird beides: ob es im Fenster von
+60 Minuten lag und ob es mindestens 10 Minuten waren.
+
+Steht eine kurze Nacht im Log, sagt die Trainingsansicht das vor der Einheit — unter
+fünf Stunden mit dem Hinweis, dass Auslassen die bessere Entscheidung sein kann, darüber
+nur als Vorwarnung für die letzten Wiederholungen. Kein Verbot: die Entscheidung soll
+man treffen können, bevor man im dritten Satz merkt, dass nichts geht.
 
 ## Sport außer dem Training
 

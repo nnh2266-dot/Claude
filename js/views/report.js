@@ -9,7 +9,7 @@
 
 import { el, mount, viewHead, iconButton, emptyState } from '../ui.js';
 import { localDateKey, shiftDateKey } from '../nutrition.js';
-import { getMealsInRange, getActivitiesInRange, getActivitiesByDate } from '../store.js';
+import { getMealsInRange, getActivitiesInRange } from '../store.js';
 import { dailyReport, weeklyReport, weekStart } from '../report.js';
 
 /** Welche Woche gerade gezeigt wird — null heißt: die laufende. */
@@ -57,6 +57,7 @@ export async function render(container, ctx) {
 
   const daten = {
     activities: wocheAktiv,
+    sleep: ctx.state.sleep || [],
     profile: ctx.state.profile,
     plan: ctx.state.plan,
     sessions: ctx.state.sessions,
@@ -142,6 +143,7 @@ export function reportTeaser(ctx, meals) {
   const heute = localDateKey();
   const tag = dailyReport({
     activities: ctx.state.activities || [],
+    sleep: ctx.state.sleep || [],
     profile: ctx.state.profile,
     plan: ctx.state.plan,
     sessions: ctx.state.sessions,

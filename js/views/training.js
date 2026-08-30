@@ -21,6 +21,9 @@ import {
 import { energyPlan, weightTrend } from '../energy.js';
 import { warmupFor, warmupMinutes } from '../warmup.js';
 import {
+  duration as schlafDauer, formatDauer as schlafDauerText, isComplete as nachtVoll, SOLL_MIN,
+} from '../sleep.js';
+import {
   skillById, currentLevel, levelIndex, setsNeeded, levelCleared, hasNextLevel, MEASURE,
 } from '../skills.js';
 
@@ -1102,6 +1105,21 @@ export async function render(container, ctx) {
 
     body.push(pausenKarte(ctx, tempo, day.exercises));
     body.push(el('div', { class: 'card card-flush mt-16' }, ...blocks));
+
+    // Nach einer kurzen Nacht ist die Kraft messbar niedriger. Kein Verbot,
+    // aber die Entscheidung „heute lieber nicht" soll man treffen können,
+    // bevor man im dritten Satz merkt, dass nichts geht.
+    const nacht = (ctx.state.sleep || []).find((n) => n.date === dateKey);
+    if (nacht && nachtVoll(nacht) && schlafDauer(nacht) < SOLL_MIN) {
+      const kurz = schlafDauer(nacht) < 5 * 60;
+      body.push(el('div', { class: 'note mt-16' },
+        el('strong', { text: `Letzte Nacht ${schlafDauerText(schlafDauer(nacht))}. ` }),
+        kurz
+          ? 'Nach so einer Nacht ist die Kraft deutlich niedriger und das Risiko höher. '
+            + 'Wenn es zäh wird, ist Auslassen die bessere Entscheidung — der Grund dafür steht unten.'
+          : 'Etwas unter der Empfehlung. Kein Grund auszusetzen, aber wundere dich nicht, '
+            + 'wenn die letzten Wiederholungen heute schwerer gehen.'));
+    }
 
     const ausfallen = ausfallenKarte(ctx, session, day, dateKey);
     if (ausfallen) body.push(el('div', { class: 'mt-16' }, ausfallen));
