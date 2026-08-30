@@ -1215,3 +1215,15 @@ input[type="range"] {
 .grundwahl > summary { padding: 8px 0 0; font-weight: 500; color: var(--text-muted); }
 .grundwahl .chips { gap: 6px; }
 .grundwahl .chip { padding: 6px 11px; font-size: 12.5px; }
+
+/* ---------- Aktivitäten ---------- */
+
+.aktivicon { font-size: 20px; line-height: 1; width: 26px; text-align: center; }
+
+/* Zeile, die sich antippen lässt — sieht aus wie die anderen, ist ein Knopf */
+.calcrow-btn {
+  width: 100%; text-align: left; font: inherit; color: inherit;
+  background: none; border: 0; border-bottom: 1px solid var(--border);
+  cursor: pointer;
+}
+.calcrow-btn:last-child { border-bottom: 0; }

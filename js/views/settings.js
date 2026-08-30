@@ -5,6 +5,7 @@
 import { el, mount, viewHead, field, toast, confirmAction } from '../ui.js';
 import {
   setSetting, exportData, importData, clearEntries, clearEverything, countMeals,
+  saveActivity, saveWeight,
 } from '../store.js';
 import { MODELS, testConnection, ApiError } from '../claude.js';
 import { macrosFromKcal, parseNumber, DEFAULT_GOALS } from '../nutrition.js';
@@ -264,6 +265,94 @@ function goalsSection(ctx) {
   );
 }
 
+/* ---------------- Apple Health ---------------- */
+
+/**
+ * Übernahme aus dem Health-Export.
+ *
+ * Der Abschnitt beginnt mit der Absage, und das ist Absicht: wer „Apple Health"
+ * liest, erwartet einen Schalter, der die Daten laufend abgleicht. Den kann es
+ * nicht geben, und das früh zu sagen ist ehrlicher, als es hinter einer
+ * Anleitung zu verstecken.
+ */
+function healthSection(ctx) {
+  const stand = el('p', { class: 'hint' });
+
+  const eingabe = el('input', {
+    type: 'file', accept: '.xml,text/xml,application/xml', hidden: true,
+    onChange: async (event) => {
+      const datei = event.target.files?.[0];
+      event.target.value = '';
+      if (!datei) return;
+
+      if (datei.name.toLowerCase().endsWith('.zip')) {
+        stand.textContent = 'Das ist noch das ZIP. Entpack es zuerst und wähl die '
+          + 'Datei „Export.xml" daraus.';
+        return;
+      }
+
+      stand.textContent = 'Wird gelesen … das dauert bei großen Dateien eine Weile.';
+
+      try {
+        const { parseExport } = await import('../health.js');
+        const ergebnis = await parseExport(datei, (anteil) => {
+          stand.textContent = `Wird gelesen … ${Math.round(anteil * 100)} %`;
+        });
+
+        for (const w of ergebnis.workouts) await saveActivity(w);
+        for (const g of ergebnis.gewichte) await saveWeight(g.date, g.kg);
+
+        await ctx.refreshTraining();
+        await ctx.refreshActivities();
+
+        stand.textContent = `${ergebnis.workouts.length} Aktivitäten und `
+          + `${ergebnis.gewichte.length} Gewichtswerte übernommen`
+          + (ergebnis.uebersprungen
+              ? `. ${ergebnis.uebersprungen} `
+                + `${ergebnis.uebersprungen === 1 ? 'Krafteinheit übersprungen' : 'Krafteinheiten übersprungen'}`
+                + ' — die führt die App selbst.'
+              : '.');
+        toast('Übernahme fertig.');
+      } catch (err) {
+        console.error(err);
+        stand.textContent = 'Die Datei ließ sich nicht lesen. Ist es wirklich die Export.xml?';
+      }
+    },
+  });
+
+  return el('div', { class: 'card stack' },
+    el('p', { class: 'small' },
+      el('strong', { text: 'Eine laufende Verbindung ist nicht möglich. ' }),
+      'Apple Health hat keine Schnittstelle für Web-Apps — nur richtige iOS-Apps mit '
+      + 'eigener Berechtigung kommen an die Daten. Diese App läuft im Browser und '
+      + 'kann Health weder lesen noch schreiben.'),
+    el('p', { class: 'small' },
+      'Was geht, ist der Export: Health legt auf Wunsch eine Datei mit allem an, und '
+      + 'die kannst du hier einlesen. Handarbeit statt Abgleich — dafür verlässt nichts '
+      + 'dein Gerät.'),
+    el('details', { class: 'bridge-details' },
+      el('summary', { text: 'So kommst du an die Datei' }),
+      el('ol', { class: 'howto mt-16' },
+        el('li', { text: 'Health öffnen, oben rechts aufs eigene Bild tippen.' }),
+        el('li', { text: 'Ganz unten „Alle Gesundheitsdaten exportieren" wählen und bestätigen.' }),
+        el('li', { text: 'Das dauert einige Minuten. Danach die Datei in „Dateien" sichern.' }),
+        el('li', { text: 'In „Dateien" die ZIP lange antippen und „Entpacken" wählen.' }),
+        el('li', { text: 'Hier unten auf den Knopf tippen und im Ordner die Datei „Export.xml" auswählen.' })),
+      el('p', { class: 'hint mt-16',
+        text: 'Die Datei ist oft mehrere hundert Megabyte groß, weil jeder Schritt seit '
+          + 'Jahren darin steht. Die App liest sie in Stücken und nimmt nur Workouts und '
+          + 'Körpergewicht heraus.' })),
+    el('button', {
+      class: 'btn btn-block', type: 'button', onClick: () => eingabe.click(),
+    }, 'Export.xml auswählen'),
+    stand,
+    el('p', { class: 'hint',
+      text: 'Krafteinheiten aus Health werden übersprungen — die führt diese App selbst, '
+        + 'und ein zweiter Eintrag würde die Kalorien doppelt zählen. Ein erneuter Import '
+        + 'überschreibt bereits übernommene Einträge, statt sie zu verdoppeln.' }),
+    eingabe);
+}
+
 /* ---------------- Daten ---------------- */
 
 function dataSection(ctx, mealCount) {
@@ -279,7 +368,7 @@ function dataSection(ctx, mealCount) {
       try {
         const parsed = JSON.parse(await file.text());
         const result = await importData(parsed);
-        toast(`${result.meals} Mahlzeiten und ${result.favorites} Favoriten importiert.`);
+        toast(`${result.meals} Mahlzeiten, ${result.favorites} Favoriten und ${result.activities || 0} Aktivitäten importiert.`);
         ctx.reload();
       } catch (err) {
         toast(err.message || 'Die Datei konnte nicht gelesen werden.', 'err');
@@ -414,6 +503,8 @@ export async function render(container, ctx) {
       modelSection(ctx),
       el('h2', { class: 'section-title', text: 'Tagesziele' }),
       goalsSection(ctx),
+      el('h2', { class: 'section-title', text: 'Apple Health' }),
+      healthSection(ctx),
       el('h2', { class: 'section-title', text: 'Daten' }),
       dataSection(ctx, mealCount),
       el('h2', { class: 'section-title', text: 'Fassung' }),

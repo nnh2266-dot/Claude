@@ -95,15 +95,31 @@ export function energyPlan(profile, kcalAdjust = 0) {
  * Tagesziel für ein bestimmtes Datum: an Trainingstagen die höheren Werte.
  * Ohne Profil bleibt es bei den von Hand gesetzten Zielen.
  */
-export function targetsForDate(profile, plan, kcalAdjust, dateKey, fallbackGoals) {
-  if (!profile || !plan) return { ...fallbackGoals, kind: 'manual', dayName: null };
+export function targetsForDate(profile, plan, kcalAdjust, dateKey, fallbackGoals, aktivKcal = 0) {
+  if (!profile || !plan) {
+    return { ...fallbackGoals, kind: 'manual', dayName: null, aktiv: 0 };
+  }
 
   const weekday = new Date(`${dateKey}T12:00:00`).getDay();
   const day = dayForWeekday(plan, weekday);
   const energy = energyPlan(profile, kcalAdjust);
   const targets = day ? energy.training : energy.rest;
 
-  return { ...targets, kind: day ? 'training' : 'rest', dayName: day ? day.name : null };
+  // Sport außerhalb des Plans hebt das Tagesziel. Die Kohlenhydrate tragen die
+  // Zusatzkalorien: Eiweiß und Fett folgen dem Körpergewicht, nicht dem
+  // Tagesverbrauch, und beide würden durch einen Lauf nicht wichtiger.
+  const aktiv = Math.max(0, Math.round(aktivKcal));
+  const kcal = targets.kcal + aktiv;
+  const carbs = aktiv ? targets.carbs + Math.round(aktiv / 4) : targets.carbs;
+
+  return {
+    ...targets,
+    kcal,
+    carbs,
+    aktiv,
+    kind: day ? 'training' : 'rest',
+    dayName: day ? day.name : null,
+  };
 }
 
 /* ---------------- Gewichtsverlauf ---------------- */

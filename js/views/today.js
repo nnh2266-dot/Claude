@@ -7,6 +7,8 @@ import { el, svg, mount, viewHead, iconButton, emptyState } from '../ui.js';
 import { getMealsByDate } from '../store.js';
 import { reportTeaser } from './report.js';
 import { startFromPending } from './capture.js';
+import { activitySection } from './activity.js';
+import { dayTotals } from '../activities.js';
 import {
   localDateKey, shiftDateKey, formatDateKey, formatTime,
   sumMeals, groupByMealType, MEAL_TYPE_LABEL,
@@ -195,7 +197,11 @@ export async function render(container, ctx, param) {
   const today = localDateKey();
   const meals = await getMealsByDate(dateKey);
   const totals = sumMeals(meals);
-  const goals = ctx.goalsFor(dateKey);
+
+  // Sport hebt das Tagesziel — die Aktivitäten müssen also vor den Zielen da sein.
+  const activities = await ctx.refreshActivities(dateKey);
+  const aktiv = dayTotals(activities, ctx.state.profile?.weight);
+  const goals = ctx.goalsFor(dateKey, aktiv.anrechnung);
   const groups = groupByMealType(meals);
 
   const head = viewHead(
@@ -211,6 +217,8 @@ export async function render(container, ctx, param) {
   );
 
   const body = [progressCard(totals, goals, ctx)];
+
+  body.push(el('div', { class: 'mt-16' }, activitySection(ctx, dateKey, activities)));
 
   // Wartende Fotos zuerst: solange sie liegen, stimmt keine Zahl darunter.
   const warteschlange = wartendeFotos(ctx);

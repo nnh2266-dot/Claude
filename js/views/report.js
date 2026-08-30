@@ -9,7 +9,7 @@
 
 import { el, mount, viewHead, iconButton, emptyState } from '../ui.js';
 import { localDateKey, shiftDateKey } from '../nutrition.js';
-import { getMealsInRange } from '../store.js';
+import { getMealsInRange, getActivitiesInRange, getActivitiesByDate } from '../store.js';
 import { dailyReport, weeklyReport, weekStart } from '../report.js';
 
 /** Welche Woche gerade gezeigt wird — null heißt: die laufende. */
@@ -53,7 +53,10 @@ export async function render(container, ctx) {
   const mealsByDate = {};
   for (const m of mealsWoche) (mealsByDate[m.date] ||= []).push(m);
 
+  const wocheAktiv = await getActivitiesInRange(montag, sonntag);
+
   const daten = {
+    activities: wocheAktiv,
     profile: ctx.state.profile,
     plan: ctx.state.plan,
     sessions: ctx.state.sessions,
@@ -83,7 +86,10 @@ export async function render(container, ctx) {
   /* Tagesbericht — nur für die laufende Woche sinnvoll. */
   if (istLaufendeWoche) {
     const tag = dailyReport({
-      ...daten, meals: mealsByDate[heute] || [], dateKey: heute,
+      ...daten,
+      meals: mealsByDate[heute] || [],
+      activities: wocheAktiv.filter((a) => a.date === heute),
+      dateKey: heute,
     });
     body.push(el('h2', { class: 'section-title', text: 'Heute' }));
     body.push(abschnitt(tag.titel, tag.befunde));
@@ -135,6 +141,7 @@ export function reportTeaser(ctx, meals) {
 
   const heute = localDateKey();
   const tag = dailyReport({
+    activities: ctx.state.activities || [],
     profile: ctx.state.profile,
     plan: ctx.state.plan,
     sessions: ctx.state.sessions,

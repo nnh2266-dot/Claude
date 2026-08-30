@@ -71,6 +71,10 @@ anzeigt.
   und Oberkörper/Beine
 - **Variantenleitern**: wird eine Übung ohne Gewicht zu leicht, führt die App zur
   nächsten Stufe — von allein nach zwei Einheiten am oberen Ende, oder auf Knopfdruck
+- **Sport außer dem Training**: Laufen, Rad, Yoga und anderes eintragen; der
+  geschätzte Verbrauch hebt das Tagesziel
+- **Apple Health**: keine laufende Verbindung möglich, aber die Export-Datei lässt sich
+  einlesen — Workouts und Körpergewicht
 - **Fotos ohne Verbindung**: ein Foto lässt sich aufheben und später auswerten. Bis
   dahin zählt es nirgends mit
 - **Ausfallen lassen und nachholen**: eine Einheit mit Grund auslassen, an einem
@@ -217,6 +221,8 @@ js/mobility.js           Beweglichkeitstest: Prüfungen, Stufen, Punkte, Verglei
 js/report.js             Tages- und Wochenbericht: Befunde aus den eigenen Daten
 js/strength.js           Krafteinordnung: Richtwerte je Übung, Gruppen, Verhältnisse
 js/ladders.js            Variantenleitern für Übungen ohne Zusatzgewicht
+js/activities.js         Sport außer dem Training: MET-Werte, Schätzung, Anrechnung
+js/health.js             Apple-Health-Export einlesen (Workouts, Körpergewicht)
 js/version.js            Fassungsnummer, muss zur CACHE_VERSION in sw.js passen
 js/energy.js             Grundumsatz, Tagesziele, Gewichtstrend, Kalorienkorrektur
 js/claude.js             Anthropic-API + Chat-Brücke: Prompts (Foto und Text), Schema
@@ -224,7 +230,7 @@ js/image.js              Kamera-Foto verkleinern, Thumbnail, Base64
 js/ui.js                 DOM-Helfer
 js/views/                today · capture · history · favorites · settings
                          training · plan · progress · setup · mobility
-                         report · photos · strength
+                         report · photos · strength · activity
 sw.js                    Service Worker (Offline-Betrieb)
 manifest.webmanifest     PWA-Manifest
 ```
@@ -377,6 +383,48 @@ Wiederholungen gedeckelt, weil sie darüber deutlich überschätzt; und gerechne
 dem besten Satz überhaupt, nicht dem der laufenden Woche. Wo kein Richtwert existiert —
 etwa beim Handtuch-Rudern im Sitzen, wo der Widerstand aus den eigenen Beinen kommt —
 steht ausdrücklich keine Zahl statt einer erfundenen.
+
+## Sport außer dem Training
+
+Laufen, Rad, Schwimmen, Yoga — was nicht im Trainingsplan steht, kommt in den Store
+`activities`; mehrere je Tag sind möglich, wer morgens läuft und abends zum Yoga geht
+trägt beides ein.
+
+Der Verbrauch wird über **MET-Werte** geschätzt: `MET × 3,5 × kg / 200` Kalorien pro
+Minute, wobei die Intensität den MET-Wert mit 0,75 / 1,0 / 1,25 verschiebt. Wer eine Uhr
+trägt, die den Puls kennt, trägt deren Wert ein — der schlägt jede Formel und hat
+Vorrang.
+
+**Aufs Tagesziel kommen nur 70 Prozent davon** (`ANRECHNUNG`). Zwei Gründe: MET-Tabellen
+schätzen großzügig, weil sie von gleichmäßigem Tempo im Labor ausgehen, und im
+Aktivitätsfaktor des Profils steckt bereits Alltagsbewegung — ein Teil des Spaziergangs
+ist dort schon eingerechnet. Wer den vollen Wert dazuisst, wundert sich am Monatsende
+über die Waage. Die Zusatzkalorien tragen die Kohlenhydrate: Eiweiß und Fett folgen dem
+Körpergewicht, nicht dem Tagesverbrauch, und würden durch einen Lauf nicht wichtiger.
+
+## Apple Health
+
+**Eine laufende Verbindung gibt es nicht, und zwar grundsätzlich.** HealthKit hat keine
+Web-Schnittstelle; nur native iOS-Apps mit eigener Berechtigung kommen an die Daten.
+Diese App läuft im Browser und kann Health weder lesen noch schreiben — daran ändert
+kein Umweg etwas. Das steht so auch in den Einstellungen, gleich als erster Satz: wer
+„Apple Health" liest, erwartet einen Schalter, und das früh zu sagen ist ehrlicher, als
+es hinter einer Anleitung zu verstecken.
+
+Was geht, ist der **Export**. Health legt auf Wunsch eine Datei mit allem an; `health.js`
+liest daraus Workouts und Körpergewicht. Die Datei ist oft mehrere hundert Megabyte
+groß, weil jeder Schrittzähler-Eintrag seit Jahren darin steht — deshalb wird sie in
+Stücken von 4 MB gelesen und mit einem Ausdruck durchsucht, statt als XML-Baum geladen
+zu werden; Letzteres bringt jeden Browser um. Ein Überlappungsrest von 64 KB fängt
+Datensätze ab, die an einer Stückgrenze zerrissen werden.
+
+Beide Formate werden erkannt: ältere Exporte schreiben Strecke und Kalorien als
+Attribute des `<Workout>`, neuere als verschachtelte `<WorkoutStatistics>`.
+
+**Krafteinheiten aus Health werden übersprungen** — die führt diese App selbst, mit
+Sätzen und Gewichten, und ein zweiter Eintrag daneben würde die Kalorien doppelt zählen.
+Die Kennung eines importierten Workouts leitet sich aus Startzeit und Art ab, ein
+zweiter Import überschreibt deshalb, statt zu verdoppeln.
 
 ## Wenn etwas dazwischenkommt
 

@@ -9,6 +9,7 @@
  *   mobility  — Beweglichkeitstests, ein Eintrag je Messtag
  *   photos    — Fortschrittsfotos, ein Eintrag je Aufnahmetag
  *   pending   — fotografierte Mahlzeiten, die noch auf die Auswertung warten
+ *   activities— Sport außerhalb des Krafttrainings, Index 'by-date'
  *   settings  — Key/Value (apiKey, model, goals, profile, plan, kcalAdjust,
  *               skillLevels)
  */
@@ -16,7 +17,7 @@
 import { DEFAULT_GOALS, sumItems, newId, localDateKey } from './nutrition.js';
 
 const DB_NAME = 'naehrwert';
-const DB_VERSION = 5;
+const DB_VERSION = 6;
 
 export const DEFAULT_MODEL = 'claude-haiku-4-5';
 
@@ -66,6 +67,12 @@ function openDB() {
       if (!db.objectStoreNames.contains('pending')) {
         const pending = db.createObjectStore('pending', { keyPath: 'id' });
         pending.createIndex('by-created', 'createdAt');
+      }
+      // Ab Version 6: Aktivitäten. Mehrere je Tag möglich — wer morgens läuft
+      // und abends zum Yoga geht, soll beides eintragen können.
+      if (!db.objectStoreNames.contains('activities')) {
+        const acts = db.createObjectStore('activities', { keyPath: 'id' });
+        acts.createIndex('by-date', 'date');
       }
     };
 
@@ -364,6 +371,50 @@ export async function listMobilityTests() {
   return (rows || []).sort((a, b) => (a.date < b.date ? -1 : 1));
 }
 
+/* ---------------- Aktivitäten ---------------- */
+
+export async function saveActivity(activity) {
+  const record = {
+    id: activity.id || newId(),
+    date: activity.date,
+    type: activity.type,
+    minutes: Number(activity.minutes) || 0,
+    km: typeof activity.km === 'number' && activity.km > 0 ? activity.km : null,
+    // Ein selbst eingetragener Verbrauch schlägt die Schätzung — etwa aus der
+    // Uhr, die den Puls kennt.
+    kcal: typeof activity.kcal === 'number' && activity.kcal > 0 ? Math.round(activity.kcal) : null,
+    intensity: activity.intensity || 'mittel',
+    note: activity.note || '',
+    source: activity.source || 'manual',
+    updatedAt: Date.now(),
+  };
+  await tx('activities', 'readwrite', (s) => s.put(record));
+  return record;
+}
+
+export async function getActivitiesByDate(dateKey) {
+  const rows = await tx('activities', 'readonly', (s) =>
+    s.index('by-date').getAll(IDBKeyRange.only(dateKey))
+  );
+  return (rows || []).sort((a, b) => a.updatedAt - b.updatedAt);
+}
+
+export async function getActivitiesInRange(startKey, endKey) {
+  const rows = await tx('activities', 'readonly', (s) =>
+    s.index('by-date').getAll(IDBKeyRange.bound(startKey, endKey))
+  );
+  return (rows || []).sort((a, b) => (a.date < b.date ? -1 : 1));
+}
+
+export async function listActivities() {
+  const rows = await tx('activities', 'readonly', (s) => s.getAll());
+  return (rows || []).sort((a, b) => (a.date < b.date ? -1 : 1));
+}
+
+export async function deleteActivity(id) {
+  await tx('activities', 'readwrite', (s) => s.delete(id));
+}
+
 /* ---------------- Warteschlange für Fotos ---------------- */
 
 /**
@@ -445,6 +496,7 @@ export async function exportData() {
     ]);
   const skillLevels = await getSkillLevels();
   const mobility = await listMobilityTests();
+  const activities = await listActivities();
 
   return {
     format: 'naehrwert-export',
@@ -460,6 +512,7 @@ export async function exportData() {
     sessions,
     weights,
     mobility,
+    activities,
   };
 }
 
@@ -512,7 +565,14 @@ export async function importData(data) {
     if (eintrag && eintrag.date) await saveMobilityTest(eintrag.date, eintrag.results);
   }
 
-  return { meals, favorites, sessions, weights };
+  let activities = 0;
+  for (const eintrag of Array.isArray(data.activities) ? data.activities : []) {
+    if (!eintrag || !eintrag.date || !eintrag.type) continue;
+    await saveActivity(eintrag);
+    activities++;
+  }
+
+  return { meals, favorites, sessions, weights, activities };
 }
 
 /** Löscht alle Mahlzeiten und Favoriten. Einstellungen bleiben erhalten. */
@@ -528,6 +588,7 @@ export async function clearTraining() {
   await tx('weights', 'readwrite', (s) => s.clear());
   await tx('mobility', 'readwrite', (s) => s.clear());
   await tx('photos', 'readwrite', (s) => s.clear());
+  await tx('activities', 'readwrite', (s) => s.clear());
   await tx('settings', 'readwrite', (s) => {
     s.delete('profile');
     s.delete('plan');
@@ -544,5 +605,6 @@ export async function clearEverything() {
   await tx('mobility', 'readwrite', (s) => s.clear());
   await tx('photos', 'readwrite', (s) => s.clear());
   await tx('pending', 'readwrite', (s) => s.clear());
+  await tx('activities', 'readwrite', (s) => s.clear());
   await tx('settings', 'readwrite', (s) => s.clear());
 }

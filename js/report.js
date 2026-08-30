@@ -18,6 +18,7 @@ import { localDateKey, shiftDateKey } from './nutrition.js';
 import { targetsForDate, weightTrend, calorieAdvice, weeklyRateFor } from './energy.js';
 import { exerciseById, dayForWeekday, blockWeek, BLOCK_WEEKS, SKIP_REASONS } from './training.js';
 import { skillById, levelIndex } from './skills.js';
+import { dayTotals, weekSummary } from './activities.js';
 import { hasResults, dueAgain, overallScore, RETEST_DAYS } from './mobility.js';
 
 /** Ein Befund. `art` steuert nur die Darstellung, nicht den Inhalt. */
@@ -93,8 +94,15 @@ export function dailyReport(data) {
       : fakt('Ruhetag.'));
   }
 
+  /* Sport außer dem Training */
+  const aktiv = dayTotals(data.activities || [], profile?.weight);
+  if (aktiv.anzahl) {
+    befunde.push(gut(`${aktiv.anzahl} ${aktiv.anzahl === 1 ? 'Aktivität' : 'Aktivitäten'} `
+      + `eingetragen: ${aktiv.minuten} Minuten, rund ${aktiv.kcal} kcal.`));
+  }
+
   /* Kalorien */
-  const ziele = targetsForDate(profile, plan, kcalAdjust, dateKey, goals);
+  const ziele = targetsForDate(profile, plan, kcalAdjust, dateKey, goals, aktiv.anrechnung);
   const summe = tagesSumme(meals);
 
   if (!meals.length) {
@@ -294,7 +302,10 @@ export function weeklyReport(data) {
 
     for (const d of tageMitEssen) {
       const s = tagesSumme(mealsByDate[d]);
-      const z = targetsForDate(profile, plan, kcalAdjust, d, goals);
+      const tagesSport = dayTotals(
+        (data.activities || []).filter((a) => a.date === d), profile?.weight
+      );
+      const z = targetsForDate(profile, plan, kcalAdjust, d, goals, tagesSport.anrechnung);
       summeKcal += s.kcal;
       summeProtein += s.protein;
       const abw = s.kcal - z.kcal;
@@ -323,6 +334,23 @@ export function weeklyReport(data) {
     }
   }
   abschnitte.push({ titel: 'Ernährung', befunde: ernaehrung });
+
+  /* --- Sport außer dem Training --- */
+  const wochenAktiv = (data.activities || []).filter((a) => bisHeute.includes(a.date));
+  if (wochenAktiv.length) {
+    const nachArt = weekSummary(wochenAktiv, profile?.weight);
+    const gesamt = nachArt.reduce((s, a) => ({
+      minuten: s.minuten + a.minuten, kcal: s.kcal + a.kcal,
+    }), { minuten: 0, kcal: 0 });
+
+    const sport = [fakt(`${einsNach(gesamt.minuten / 60)} Stunden Sport neben dem Training, `
+      + `rund ${gesamt.kcal} kcal.`)];
+    for (const a of nachArt) {
+      sport.push(fakt(`${a.name}: ${a.anzahl}×, ${a.minuten} Minuten`
+        + (a.km ? `, ${Math.round(a.km * 10) / 10} km` : '') + '.'));
+    }
+    abschnitte.push({ titel: 'Sport außer dem Training', befunde: sport });
+  }
 
   /* --- Gewicht --- */
   const gewicht = [];

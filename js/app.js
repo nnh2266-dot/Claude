@@ -9,6 +9,7 @@ import { localDateKey } from './nutrition.js';
 import {
   getSettings, getTrainingProfile, getPlan, getKcalAdjust, getSkillLevels,
   listSessions, listWeights, listMobilityTests, listProgressPhotos, listPending,
+  getActivitiesByDate,
 } from './store.js';
 import { targetsForDate } from './energy.js';
 import { toast } from './ui.js';
@@ -26,6 +27,7 @@ import * as mobilityView from './views/mobility.js';
 import * as reportView from './views/report.js';
 import * as photosView from './views/photos.js';
 import * as strengthView from './views/strength.js';
+import * as activityView from './views/activity.js';
 
 const VIEWS = {
   today: todayView,
@@ -41,6 +43,7 @@ const VIEWS = {
   report: reportView,
   photos: photosView,
   strength: strengthView,
+  activity: activityView,
 };
 
 const state = {
@@ -59,6 +62,8 @@ const state = {
   photos: [],
   /** Fotos, die auf eine Verbindung warten. */
   pending: [],
+  /** Aktivitäten des angezeigten Tages. */
+  activities: [],
 };
 
 let current = { name: null, param: null };
@@ -99,7 +104,7 @@ async function handleRoute() {
   // markiert — sonst sähe die Leiste unten aus, als wäre man nirgends.
   const TAB_OF = {
     plan: 'training', progress: 'training', setup: 'training', mobility: 'training',
-    photos: 'training', strength: 'training', report: 'today',
+    photos: 'training', strength: 'training', report: 'today', activity: 'today',
   };
   const activeTab = TAB_OF[route.name] || route.name;
   for (const tab of document.querySelectorAll('.tab')) {
@@ -157,6 +162,12 @@ const ctx = {
     });
   },
 
+  /** Lädt die Aktivitäten des angezeigten Tages. */
+  async refreshActivities(dateKey) {
+    state.activities = await getActivitiesByDate(dateKey || state.date);
+    return state.activities;
+  },
+
   /** Lädt die Warteschlange neu. */
   async refreshPending() {
     state.pending = await listPending();
@@ -173,8 +184,10 @@ const ctx = {
    * Das Tagesziel für ein Datum. Mit Trainingsplan hängt es davon ab, ob an
    * dem Tag trainiert wird — sonst gelten die von Hand gesetzten Ziele.
    */
-  goalsFor(dateKey) {
-    return targetsForDate(state.profile, state.plan, state.kcalAdjust, dateKey, state.settings.goals);
+  goalsFor(dateKey, aktivKcal = 0) {
+    return targetsForDate(
+      state.profile, state.plan, state.kcalAdjust, dateKey, state.settings.goals, aktivKcal
+    );
   },
 
   /** Startet eine Beweglichkeitsmessung. */
@@ -222,6 +235,7 @@ async function start() {
   state.settings = await getSettings();
   await ctx.refreshTraining();
   await ctx.refreshPending();
+  await ctx.refreshActivities();
 
   window.addEventListener('hashchange', handleRoute);
 
