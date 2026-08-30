@@ -96,6 +96,7 @@ export const STANDARDS = {
   cgbp:     { art: 'last', werte: [0.40, 0.60, 0.80, 1.00, 1.20] },
   diapu:    { art: 'wdh',  werte: [3, 10, 20, 30, 45] },
   benchdip: { art: 'wdh',  werte: [5, 15, 25, 35, 50] },
+  bwskull:  { art: 'wdh',  werte: [5, 12, 20, 30, 45] },
 
   /* Rumpf */
   hlr:      { art: 'wdh',  werte: [3, 8, 15, 22, 30] },

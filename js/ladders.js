@@ -49,7 +49,15 @@ export const LADDERS = [
   {
     id: 'trizeps',
     name: 'Trizeps strecken',
-    stufen: ['benchdip', 'diapu'],
+    stufen: ['bwskull', 'benchdip', 'diapu'],
+  },
+  {
+    id: 'bizeps',
+    name: 'Ellbogen beugen',
+    // Der Eigenwiderstand ist die unterste Sprosse: er geht überall, lässt sich
+    // aber nicht messen. Sobald eine Stange da ist, führt der Weg zum Klimmzug
+    // im Untergriff — dort zählt wieder eine Zahl.
+    stufen: ['selfcurl', 'towelcurl', 'chinup'],
   },
 ];
 

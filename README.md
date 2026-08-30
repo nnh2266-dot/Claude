@@ -583,7 +583,7 @@ drei Tagen Push/Pull/Beine), vier Tage Oberkörper/Unterkörper, fünf gemischt,
 Push/Pull/Beine doppelt. Die Übungszahl folgt der Zeit pro Einheit, Sätze und RIR der
 Erfahrungsstufe.
 
-Aus 87 Übungen wird nach Ausrüstung, vorhandenem Gerät und Beschwerden gefiltert;
+Aus 90 Übungen wird nach Ausrüstung, vorhandenem Gerät und Beschwerden gefiltert;
 gesperrte Übungen werden gar nicht erst eingeplant.
 
 **Gerät ist dabei etwas anderes als Gewicht.** Ein Klimmzug braucht keine Hantel, aber
@@ -597,6 +597,19 @@ Schulterbeschwerden —, sagt der Plan das offen, statt die Liste aufzufüllen.
 
 Übungen ohne Zusatzgewicht bekommen höhere Wiederholungszahlen (10–20 statt 5–8),
 weil der Fortschritt dort über Wiederholungen und schwerere Varianten läuft.
+
+**Wie viele Übungen ein Tag hat, hängt an der Pausenlänge.** Mit der Langhantel dauert
+eine Übung rund acht Minuten, ohne Zusatzgewicht knapp fünfeinhalb — die Pause macht den
+Unterschied. Eine Zeit lang galten acht Minuten für alle; das stammte aus der Zeit vor
+den kürzeren Pausen und ließ eine Einheit ohne Gewichte kürzer ausfallen, als sie sein
+dürfte. Genau eine Position der Vorlage fiel dadurch immer weg, und weil es auf jedem
+Tag dieselbe war, sah eine Muskelgruppe nie eine Übung.
+
+Passt die Vorlage trotzdem nicht in die Zeit — bei 45 Minuten etwa —, **rotiert der
+Überhang mit dem Tag**: mal steht die vorletzte Position im Plan, mal die letzte. So
+kommt über die Woche jede Gruppe wenigstens einmal vor. Aufgefüllt wird nur bis zur
+Länge der Vorlage, nicht bis zum Zeitbudget; sonst hängt an einem vollständigen Tag noch
+eine Wiederholung derselben Muskelgruppe hinten dran.
 
 ### Die Pausen
 

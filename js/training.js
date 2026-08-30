@@ -89,6 +89,8 @@ const RAW = [
   ['ccurl','Kabel-Curls','bizeps','i','g','','Spannung auch unten halten.'],
   ['bcurl','Band-Curls','bizeps','i','b','','Langsam zurücklassen, etwa drei Sekunden.'],
   ['chinup','Chin-Ups','bizeps','c','gw','','Untergriff, Brust zur Stange.'],
+  ['towelcurl','Handtuch-Curl','bizeps','i','w','','Handtuch unter einen Fuß, beide Enden greifen und beugen. Das Bein hält dagegen — so schwer, wie du es machst.'],
+  ['selfcurl','Curl mit Eigenwiderstand','bizeps','i','w','','Die freie Hand drückt von oben gegen das beugende Handgelenk. Langsam beugen, noch langsamer zurück.'],
   // Trizeps
   ['pushdown','Trizepsdrücken Kabel','trizeps','i','g','','Oberarme fixiert, unten kurz halten.'],
   ['cgbp','Enges Bankdrücken','trizeps','c','g','handgelenk,schulter','Griff schulterbreit, Ellbogen eng.'],
@@ -96,6 +98,7 @@ const RAW = [
   ['benchdip','Bankdips','trizeps','i','w','schulter','Hüfte nah an der Bank.'],
   ['bpush','Band-Pushdown','trizeps','i','b','','Am Endpunkt den Trizeps fest anspannen.'],
   ['diapu','Diamant-Liegestütze','trizeps','c','w','handgelenk','Hände unter der Brust, Ellbogen eng.'],
+  ['bwskull','Strecker am Boden','trizeps','i','w','ellbogen','Im Kniestütz auf die Unterarme absenken, nur aus dem Trizeps zurückdrücken. Der Rumpf bleibt eine Linie.'],
   // Waden
   ['calf','Wadenheben stehend','waden','i','gd','','Volle Dehnung unten, oben eine Sekunde.'],
   ['calfm','Wadenheben Maschine','waden','i','g','','Langsames Tempo, keine Wippbewegung.'],
@@ -387,15 +390,22 @@ export function buildPlan(profile, seed = 0) {
   if (profile.days === 3 && profile.level !== 'anfaenger') key = '3ppl';
   const split = SPLITS[key] || SPLITS[3];
 
-  // Die Übungszahl folgt der Zeit pro Einheit: grob acht Minuten je Übung.
-  // Technikarbeit läuft vor dem Krafttraining und braucht ihren eigenen Anteil —
-  // sonst wird die Einheit heimlich länger, als sie angesagt war.
+  // Die Übungszahl folgt der Zeit pro Einheit. Wie lange eine Übung dauert,
+  // hängt vor allem an der Pause: mit der Langhantel sind es zweieinhalb
+  // Minuten zwischen den Sätzen, ohne Zusatzgewicht anderthalb. Acht Minuten
+  // je Übung galten für alle — das stammt aus der Zeit vor den kürzeren
+  // Pausen und ließ eine Einheit ohne Gewichte kürzer ausfallen, als sie sein
+  // dürfte. Genau eine Position der Vorlage fiel dadurch immer weg.
   const skillMinutes = (profile.skills || []).length * MINUTES_PER_SKILL;
   const strengthMinutes = Math.max(20, profile.sessionLength - skillMinutes);
+  const ohneGewicht = profile.equipment === 'bw' || profile.equipment === 'band';
+  const minutenProUebung = ohneGewicht ? 5.5 : 8;
   // Ohne Technik bleibt es bei mindestens vier Übungen. Mit Technik darf es eine
   // weniger sein — die Einheit ist dann trotzdem voll.
   const fewest = skillMinutes > 0 ? 3 : 4;
-  const perSession = Math.min(9, Math.max(fewest, Math.round((strengthMinutes - 8) / 8)));
+  const perSession = Math.min(9, Math.max(
+    fewest, Math.round((strengthMinutes - 8) / minutenProUebung)
+  ));
 
   const rotation = {};
   const pick = (spec, usedToday) => {
@@ -419,7 +429,15 @@ export function buildPlan(profile, seed = 0) {
         specs.splice(Math.min(3, specs.length), 0, FOCUS_SLOT[focus]);
       }
     }
-    specs = specs.slice(0, perSession);
+    // Passt die Vorlage trotzdem nicht in die Zeit, fällt das Ende weg — und
+    // ohne Zutun auf jedem Tag dasselbe. Über eine Woche sah eine Gruppe
+    // dadurch nie eine Übung. Deshalb rotiert der Überhang mit dem Tag: mal
+    // steht die vorletzte Position drin, mal die letzte.
+    if (specs.length > perSession) {
+      const fest = specs.slice(0, perSession - 1);
+      const ueberhang = specs.slice(perSession - 1);
+      specs = [...fest, ueberhang[(index + seed) % ueberhang.length]];
+    }
 
     const usedToday = new Set();
     const exercises = [];
@@ -440,9 +458,15 @@ export function buildPlan(profile, seed = 0) {
       if (FALLBACK_GROUP[group]) groups.add(FALLBACK_GROUP[group]);
     }
 
+    // Aufgefüllt wird bis zur Länge der Vorlage, nicht bis zum Zeitbudget.
+    // Sonst hängt an einem Tag, der ohnehin vollständig ist, noch eine
+    // Wiederholung derselben Muskelgruppe hinten dran, nur weil rechnerisch
+    // Zeit übrig wäre.
+    const ziel = specs.length;
+
     const topUp = (allowed, max) => {
       let added = 0;
-      while (exercises.length < perSession && added < max) {
+      while (exercises.length < ziel && added < max) {
         const candidates = usable.filter((e) => !usedToday.has(e.id) && allowed.includes(e.group));
         if (!candidates.length) return;
         rotation.__fill = (rotation.__fill || 0) + 1;
@@ -453,7 +477,7 @@ export function buildPlan(profile, seed = 0) {
       }
     };
 
-    topUp([...groups].filter((g) => g !== 'core'), perSession);
+    topUp([...groups].filter((g) => g !== 'core'), ziel);
     topUp(['core'], 2);
 
     return {
