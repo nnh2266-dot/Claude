@@ -22,6 +22,7 @@ import {
 import { energyPlan, weightTrend } from '../energy.js';
 import { activityById } from '../activities.js';
 import { warmupFor, warmupMinutes } from '../warmup.js';
+import { hasResults, dueAgain, daysSince, RETEST_DAYS } from '../mobility.js';
 import {
   duration as schlafDauer, formatDauer as schlafDauerText, isComplete as nachtVoll, SOLL_MIN,
 } from '../sleep.js';
@@ -294,6 +295,33 @@ function formatSets(sets, einseitig = false) {
    Aufgeklappt beim ersten Blick, danach eingeklappt — wer die Liste kennt,
    will sie nicht jedes Mal wegscrollen.
 --------------------------------------------- */
+
+/**
+ * Verweis auf den Beweglichkeitstest, direkt unter dem Aufwärmen.
+ *
+ * Sichtbar ist er nur, wenn es etwas zu tun gibt: noch nie gemessen, oder die
+ * letzte Messung ist alt. Ein Knopf, der immer da ist und meistens nichts
+ * bedeutet, wird nach zwei Wochen nicht mehr gesehen.
+ */
+function beweglichkeitsZeile(ctx, dateKey) {
+  if (dateKey !== localDateKey()) return null;
+
+  const brauchbar = (ctx.state.mobility || []).filter(hasResults);
+  const letzte = brauchbar.length ? brauchbar[brauchbar.length - 1] : null;
+  if (letzte && !dueAgain(letzte.date, dateKey)) return null;
+
+  const tage = letzte ? daysSince(letzte.date, dateKey) : null;
+  return el('div', { class: 'card stack mt-16' },
+    el('div', { class: 'row-between' },
+      el('h3', { class: 'card-title', text: 'Beweglichkeit' }),
+      el('span', { class: 'pill pill-kcal', text: letzte ? 'fällig' : 'noch offen' })),
+    el('p', { class: 'small', text: letzte
+      ? `Zuletzt vor ${tage} Tagen gemessen. Etwa alle ${RETEST_DAYS} Tage lohnt sich ein neuer Durchgang.`
+      : 'Fünf Prüfungen, etwa zehn Minuten, ohne Hilfsmittel. Danach weißt du, '
+        + 'wo dein Körper steht und woran sich das Dehnen messen lässt.' }),
+    el('button', { class: 'btn btn-block', type: 'button', onClick: () => ctx.startMobility() },
+      letzte ? 'Neu messen' : 'Test durchführen'));
+}
 
 function warmupCard(day, hatTechnik) {
   const items = warmupFor(day, hatTechnik);
@@ -979,6 +1007,10 @@ export async function render(container, ctx) {
     const nachholen = nachholKarte(ctx, plan, sessions, dateKey);
     if (nachholen) body.push(nachholen);
 
+    // Ein Ruhetag ist der beste Tag für die zehn Minuten Beweglichkeitstest.
+    const dehnRuhe = beweglichkeitsZeile(ctx, dateKey);
+    if (dehnRuhe) body.push(dehnRuhe);
+
     // Nächste Einheit suchen, damit der Ruhetag nicht im Leeren endet.
     let next = null;
     for (let i = 1; i <= 7 && !next; i++) {
@@ -1019,6 +1051,12 @@ export async function render(container, ctx) {
 
     const warmup = warmupCard(day, skillBlocks.length > 0);
     if (warmup) body.push(warmup);
+
+    // Der Beweglichkeitstest stand bisher nur ganz unten im Fortschritt. Hier
+    // gehört er hin: Aufwärmen und Dehnen ist der Moment, in dem man wissen
+    // will, wo man steht.
+    const dehnKarte = beweglichkeitsZeile(ctx, dateKey);
+    if (dehnKarte) body.push(dehnKarte);
 
     if (skillBlocks.length) {
       body.push(el('h2', { class: 'section-title', text: 'Technik zuerst' }));

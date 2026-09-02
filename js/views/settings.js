@@ -379,7 +379,19 @@ function dataSection(ctx, mealCount) {
       try {
         const parsed = JSON.parse(await file.text());
         const result = await importData(parsed);
-        toast(`${result.meals} Mahlzeiten, ${result.favorites} Favoriten und ${result.activities || 0} Aktivitäten importiert.`);
+        // Alles nennen, was wirklich eingespielt wurde. Vorher standen nur
+        // drei Zahlen da, während Einheiten, Gewichte und Schlaf still
+        // mitkamen — man konnte nicht prüfen, ob die Sicherung vollständig war.
+        const teile = [
+          [result.meals, 'Mahlzeit', 'Mahlzeiten'],
+          [result.favorites, 'Favorit', 'Favoriten'],
+          [result.sessions, 'Einheit', 'Einheiten'],
+          [result.weights, 'Gewichtswert', 'Gewichtswerte'],
+          [result.mobility, 'Beweglichkeitstest', 'Beweglichkeitstests'],
+          [result.activities, 'Aktivität', 'Aktivitäten'],
+          [result.sleep, 'Nacht', 'Nächte'],
+        ].filter(([n]) => n > 0).map(([n, ein, viele]) => `${n} ${n === 1 ? ein : viele}`);
+        toast(teile.length ? `${teile.join(', ')} importiert.` : 'Die Datei enthielt keine Einträge.');
         ctx.reload();
       } catch (err) {
         toast(err.message || 'Die Datei konnte nicht gelesen werden.', 'err');

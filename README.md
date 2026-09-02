@@ -279,6 +279,11 @@ mehr als 0,22 Prozentpunkte vom Ziel ab, schlägt die App eine Korrektur vor
 
 ## Der Beweglichkeitstest
 
+Zu finden ist er an zwei Stellen: unter *Fortschritt → Beweglichkeit*, und im Training
+direkt unter dem Aufwärmen — dort allerdings nur, wenn er etwas zu sagen hat, also wenn
+noch nie gemessen wurde oder die letzte Messung älter als vier Wochen ist. Ein Knopf,
+der immer da ist und meistens nichts bedeutet, wird nach zwei Wochen nicht mehr gesehen.
+
 Fünf Prüfungen: Vorbeugen im Sitzen, Knie zur Wand, Hand über die Schulter,
 Schmetterling, tiefe Hocke halten. Gebraucht wird nichts außer einer Wand und etwas
 Boden.
@@ -521,6 +526,13 @@ Deshalb rechnet die App die beiden Seiten unterschiedlich ein:
 - **Bestleistung, Krafteinordnung und Variantenleiter** nehmen die **schwächere** Seite.
   Sie begrenzt, was man kann, und erst wenn beide oben sind, ist die Übung zu leicht.
 - **Volumen** nimmt die **Summe** — die Arbeit wurde ja zweimal gemacht.
+- **Der nächste Schritt** unter der Übung nimmt ebenfalls die schwächere Seite. Solange
+  eine Seite zwei Wiederholungen oder mehr zurückliegt, schlägt die App kein schwereres
+  Gewicht vor, sondern das Gegenteil: mit der schwachen Seite anfangen und die starke
+  auf deren Zahl deckeln, bis der Rückstand weg ist.
+- **Im Wochenbericht** stehen beide Seiten (`12/9`), und verglichen wird über die
+  schwächere. Vorher meldete der Bericht „besser als letzte Woche", wenn nur die linke
+  Seite zugelegt hatte, während die rechte abgebaut hatte.
 
 In der Krafteinordnung steht ein eigener Abschnitt, sobald der Unterschied über zehn
 Prozent liegt; darunter ist es Tagesform. Alte Sätze ohne zweite Seite bleiben gültig:

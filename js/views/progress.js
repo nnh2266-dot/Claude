@@ -130,6 +130,12 @@ function prognoseText(p, profile) {
     return `Es geht gerade in die andere Richtung (${tempo}). Von ${ziel} entfernst du dich damit.`;
   }
 
+  if (p.art === 'weit') {
+    const monate = Math.round(p.wochen / 4.3);
+    return `Bei ${tempo} dauert es rund ${monate} Monate bis ${ziel}. Ein genaues Datum `
+      + 'steht hier bewusst nicht: so weit voraus ist die Hochrechnung geraten.';
+  }
+
   const wochen = Math.round(p.tage / 7);
   return `Bei ${tempo} wärst du am ${formatDateKey(p.datum)} bei ${ziel} — in etwa `
     + `${wochen} ${wochen === 1 ? 'Woche' : 'Wochen'}. Das ist aus zwei Wochen Messwerten `

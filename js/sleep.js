@@ -145,8 +145,12 @@ export function summarise(eintraege) {
  */
 export function lightStreak(eintraege, bisDatum, shift) {
   const nach = new Map((eintraege || []).map((e) => [e.date, e]));
+  const hatLicht = (t) => { const e = nach.get(t); return Boolean(e && e.licht && e.licht.zeit); };
   let serie = 0;
-  let tag = bisDatum;
+  // Solange heute noch nichts eingetragen ist, zählt die Serie bis gestern.
+  // Sonst stünde jeden Morgen „0 Tage in Folge", obwohl nichts gerissen ist —
+  // der Zähler würde die Serie kaputtmachen, die er belohnen soll.
+  let tag = hatLicht(bisDatum) ? bisDatum : shift(bisDatum, -1);
 
   for (let i = 0; i < 400; i += 1) {
     const e = nach.get(tag);

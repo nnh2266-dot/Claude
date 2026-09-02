@@ -53,7 +53,7 @@ function dayCard(day, week, equipment, tempo) {
 }
 
 function targetCard(title, macros, tone) {
-  return el('div', { class: 'card targetcard' },
+  return el('div', { class: 'card' },
     el('div', { class: 'row-between' },
       el('h3', { class: 'card-title', text: title }),
       el('span', { class: `pill pill-${tone} tabular`, text: `${macros.kcal} kcal` })),

@@ -176,8 +176,8 @@ export function weightTrend(weights, todayKey = localDateKey()) {
  * Bewegt sich das Gewicht in die falsche Richtung oder gar nicht, gibt es
  * keinen Termin, sondern diesen Befund.
  *
- * @returns {{art:'erreicht'|'unterwegs'|'falscheRichtung'|'stillstand',
- *            tage?:number, datum?:string, proWoche?:number}|null}
+ * @returns {{art:'erreicht'|'unterwegs'|'weit'|'falscheRichtung'|'stillstand',
+ *            tage?:number, datum?:string, wochen?:number, proWoche?:number}|null}
  */
 export function targetForecast(profile, weights, todayKey = localDateKey()) {
   const ziel = profile?.targetWeight;
@@ -193,6 +193,9 @@ export function targetForecast(profile, weights, todayKey = localDateKey()) {
   if (Math.sign(fehlt) !== Math.sign(proWoche)) return { art: 'falscheRichtung', proWoche };
 
   const wochen = fehlt / proWoche;
+  // Über ein halbes Jahr hinaus ist ein Datum keine Aussage mehr, sondern eine
+  // Scheingenauigkeit: die Hochrechnung steht auf drei Wochen Messwerten.
+  if (wochen > 26) return { art: 'weit', wochen: Math.round(wochen), proWoche };
   const tage = Math.round(wochen * 7);
   return { art: 'unterwegs', tage, datum: shiftDateKey(todayKey, tage), proWoche };
 }

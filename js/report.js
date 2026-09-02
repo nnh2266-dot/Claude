@@ -598,8 +598,14 @@ function uebungsFortschritt(sessions, wocheTage, vorTage) {
         for (const set of sets || []) {
           if (!set || !set.reps) continue;
           const w = Number(set.weight) || 0;
-          const score = w > 0 ? w * (1 + set.reps / 30) : set.reps;
-          if (!map.has(id) || score > map.get(id).score) map.set(id, { score, weight: w, reps: set.reps });
+          // Einseitig zählt die schwächere Seite — sonst meldet der Bericht
+          // einen Fortschritt, während die andere Seite abgebaut hat.
+          const seiten = isUnilateral(id) ? setSides(set) : null;
+          const reps = seiten ? (seiten.schwaechste ?? set.reps) : set.reps;
+          const score = w > 0 ? w * (1 + reps / 30) : reps;
+          if (!map.has(id) || score > map.get(id).score) {
+            map.set(id, { score, weight: w, reps, seiten });
+          }
         }
       }
     }
@@ -615,8 +621,12 @@ function uebungsFortschritt(sessions, wocheTage, vorTage) {
     const alt = vorher.get(id);
     if (!alt) continue;
     const name = exerciseById(id)?.name || id;
-    const wie = wert.weight > 0 ? `${einsNach(wert.weight)} kg × ${wert.reps}` : `${wert.reps} Wdh.`;
-    const wieAlt = alt.weight > 0 ? `${einsNach(alt.weight)} kg × ${alt.reps}` : `${alt.reps} Wdh.`;
+    // Bei einseitigen Übungen stehen beide Seiten da: „12/9" sagt mehr als „9".
+    const wdh = (v) => (v.seiten && v.seiten.links !== null && v.seiten.rechts !== null
+      ? `${v.seiten.links}/${v.seiten.rechts}`
+      : String(v.reps));
+    const wie = wert.weight > 0 ? `${einsNach(wert.weight)} kg × ${wdh(wert)}` : `${wdh(wert)} Wdh.`;
+    const wieAlt = alt.weight > 0 ? `${einsNach(alt.weight)} kg × ${wdh(alt)}` : `${wdh(alt)} Wdh.`;
     if (wert.score > alt.score) rauf.push(`${name} ${wieAlt} → ${wie}`);
     else if (wert.score < alt.score) runter.push(`${name} ${wieAlt} → ${wie}`);
   }

@@ -111,7 +111,10 @@ export function weekSummary(eintraege, kg) {
 export function pace(eintrag) {
   if (!eintrag.km || !eintrag.minutes) return null;
   const proKm = eintrag.minutes / eintrag.km;
-  const min = Math.floor(proKm);
-  const sek = Math.round((proKm - min) * 60);
+  // Erst auf ganze Sekunden runden, dann teilen — sonst kommt bei 5,999 min/km
+  // „5:60" heraus statt „6:00".
+  const gesamt = Math.round(proKm * 60);
+  const min = Math.floor(gesamt / 60);
+  const sek = gesamt % 60;
   return `${min}:${String(sek).padStart(2, '0')} min/km`;
 }

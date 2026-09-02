@@ -802,7 +802,23 @@ export function nextStep(prescription, lastSets, rir = prescription.rir) {
   }
 
   const done = lastSets.filter((s) => s && s.reps);
-  const allAtTop = done.length >= prescription.sets && done.every((s) => Number(s.reps) >= high);
+  // Bei einseitigen Übungen entscheidet die schwächere Seite. Sonst würde eine
+  // starke linke Seite das Gewicht hochtreiben, während die rechte hinterherhinkt
+  // — genau das Ungleichgewicht, das die Übung eigentlich beheben soll.
+  const einseitig = isUnilateral(prescription.id);
+  const zaehlt = (s) => (einseitig ? (setSides(s).schwaechste ?? Number(s.reps)) : Number(s.reps));
+  const allAtTop = done.length >= prescription.sets && done.every((s) => zaehlt(s) >= high);
+
+  const hinkt = einseitig
+    ? done.find((s) => { const t = setSides(s); return t.links !== null && t.rechts !== null
+        && Math.max(t.links, t.rechts) - t.schwaechste >= 2; })
+    : null;
+  if (hinkt && !allAtTop) {
+    const t = setSides(hinkt);
+    const schwach = t.links < t.rechts ? 'linke' : 'rechte';
+    return `Die ${schwach} Seite bleibt zurück (${t.links}/${t.rechts}). Fang mit ihr an und `
+      + `mach auf der starken Seite nur so viele Wiederholungen, wie die schwache geschafft hat.`;
+  }
 
   if (allAtTop && prescription.loadless) {
     return `Alle Sätze auf ${high} — jetzt die schwerere Variante: langsamer, größerer Bewegungsumfang oder einbeinig beziehungsweise einarmig.`;

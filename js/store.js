@@ -613,7 +613,10 @@ export async function importData(data) {
   }
   for (const entry of Array.isArray(data.weights) ? data.weights : []) {
     if (!entry || !entry.date || !Number(entry.kg)) continue;
-    await saveWeight(entry.date, entry.kg);
+    // Die Herkunft mitnehmen: sonst gilt ein aus Health übernommener Wert nach
+    // dem Wiedereinspielen als von Hand eingetragen und wäre vor dem nächsten
+    // Health-Import geschützt, den er eigentlich bekommen soll.
+    await saveWeight(entry.date, entry.kg, { source: entry.source || 'manual' });
     weights++;
   }
   if (data.profile && typeof data.profile === 'object') await setTrainingProfile(data.profile);
@@ -622,8 +625,11 @@ export async function importData(data) {
   if (data.skillLevels && typeof data.skillLevels === 'object') {
     await setSetting('skillLevels', data.skillLevels);
   }
+  let mobility = 0;
   for (const eintrag of Array.isArray(data.mobility) ? data.mobility : []) {
-    if (eintrag && eintrag.date) await saveMobilityTest(eintrag.date, eintrag.results);
+    if (!eintrag || !eintrag.date) continue;
+    await saveMobilityTest(eintrag.date, eintrag.results);
+    mobility++;
   }
 
   let activities = 0;
@@ -633,11 +639,14 @@ export async function importData(data) {
     activities++;
   }
 
+  let sleep = 0;
   for (const eintrag of Array.isArray(data.sleep) ? data.sleep : []) {
-    if (eintrag && eintrag.date) await saveSleep(eintrag);
+    if (!eintrag || !eintrag.date) continue;
+    await saveSleep(eintrag);
+    sleep++;
   }
 
-  return { meals, favorites, sessions, weights, activities };
+  return { meals, favorites, sessions, weights, activities, sleep, mobility };
 }
 
 /** Löscht alle Mahlzeiten und Favoriten. Einstellungen bleiben erhalten. */
