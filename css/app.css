@@ -1439,3 +1439,75 @@ input[type="range"] {
   font-size: 13.5px;
   line-height: 1.5;
 }
+
+/* ---------------- Tagesleiste ---------------- */
+
+.leistenblock { display: grid; gap: 10px; }
+
+.tagesleiste {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(72px, 1fr));
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.tageskachel {
+  display: grid;
+  justify-items: center;
+  align-content: start;
+  gap: 1px;
+  padding: 11px 4px 12px;
+  border: 0;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  cursor: pointer;
+  /* Der Zustand sitzt als Streifen oben, nicht als Rahmen — vier Rahmen
+     nebeneinander wären vier Kästchen statt einer Leiste. */
+  border-top: 3px solid transparent;
+}
+.tageskachel:active { background: var(--surface-2); }
+.tageskachel.offen { background: var(--surface-2); }
+
+.zu-gut   { border-top-color: var(--ok); }
+.zu-offen { border-top-color: var(--kcal); }
+.zu-leer  { border-top-color: var(--border-strong); }
+
+.kachelikon  { font-size: 16px; line-height: 1.2; }
+.kachellabel { font-size: 10.5px; color: var(--text-muted); letter-spacing: .02em; }
+.kachelwert  { font-size: 14px; font-weight: 600; margin-top: 2px; }
+.kachelunter { font-size: 10.5px; color: var(--text-faint); }
+
+/* Aufgeklappte Karte: sie gehört sichtbar zur Leiste darüber. */
+.kachelinhalt > .card { margin-top: 0; }
+
+/* ---------------- Empfehlung zur Nahrungsergänzung ---------------- */
+
+.ratblock {
+  border-top: 1px solid var(--border);
+  padding-top: 14px;
+  display: grid;
+  gap: 12px;
+}
+.ratkopf { display: flex; align-items: baseline; justify-content: space-between; }
+.rat-klar    .ratkopf .card-title { color: var(--ok); }
+.rat-pruefen .ratkopf .card-title { color: var(--kcal); }
+.rat-spar    .ratkopf .card-title { color: var(--text-muted); }
+
+.ratzeile {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+.ratname { font-size: 15px; font-weight: 600; }
+.ratgrund { margin: 5px 0 4px; font-size: 13.5px; line-height: 1.5; color: var(--text-muted); }
+/* Abgeraten wird leiser gesetzt — die Absage soll lesbar sein, aber nicht
+   genauso laut wie die Empfehlung. */
+.rat-spar .ratname { font-weight: 500; color: var(--text-muted); }
+.rat-spar .ratgrund { color: var(--text-faint); }
+
+/* Der Katalog ist Nachschlagewerk: zugeklappt, bis jemand nachschlägt. */
+.katalog > .stack { padding-top: 4px; }

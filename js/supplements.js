@@ -316,6 +316,164 @@ export function streak(aufgeloest, eintraege, bisDatum, shift) {
   return serie;
 }
 
+/* ---------------- Empfehlung ---------------- */
+
+/** Von Oktober bis März steht die Sonne hierzulande zu tief für Vitamin D. */
+const DUNKLE_MONATE = new Set([9, 10, 11, 0, 1, 2]);
+
+const rang = { klar: 0, pruefen: 1, spar: 2 };
+
+/**
+ * Was für **diesen** Nutzer sinnvoll ist.
+ *
+ * Bisher stand zu jedem Mittel nur, wie gut es allgemein belegt ist — und die
+ * Entscheidung blieb beim Nutzer. Das war ehrlich, aber es half nicht: Neun
+ * Einträge mit je drei Absätzen sind eine Bibliothek, keine Antwort.
+ *
+ * Diese Funktion trifft die Auswahl, aber nur aus dem, was die App tatsächlich
+ * weiß: Ernährungsform, Ziel, Trainingstage, Körpergewicht, Eiweißaufnahme der
+ * letzten Tage, Jahreszeit. Jede Empfehlung nennt den Grund, und wo der Grund
+ * ein Blutwert wäre, steht das statt einer Zahl.
+ *
+ * Drei Töpfe, und der dritte ist der wichtigste:
+ *   klar     — lohnt sich für dich, mit Begründung aus deinen Daten
+ *   pruefen  — kann sinnvoll sein, hängt aber an etwas, das die App nicht weiß
+ *   spar     — dafür gibt es bei dir keinen Grund
+ *
+ * Ein Empfehlungssystem, das nie „nein" sagt, ist ein Verkaufskatalog.
+ *
+ * @param {object} p
+ *   profile        Trainingsprofil (ernaehrung, weight, goal, days)
+ *   proteinZiel    Tagesziel in Gramm
+ *   proteinSchnitt gemessener Schnitt der letzten Tage, oder null
+ *   monat          0–11, für die Jahreszeit
+ *   schlaeftKurz   liegt der Schlafschnitt unter der Empfehlung?
+ */
+export function empfehlung(p) {
+  const kost = p.profile?.ernaehrung || 'misch';
+  const trainiert = (p.profile?.days || 0) >= 2;
+  const monat = typeof p.monat === 'number' ? p.monat : new Date().getMonth();
+  const aus = [];
+
+  const sag = (id, topf, grund) => {
+    const k = supplementById(id);
+    if (k) aus.push({ id, name: k.name, beleg: k.beleg, menge: k.menge, topf, grund });
+  };
+
+  /* Kreatin */
+  if (trainiert) {
+    sag('kreatin', 'klar', kost === 'misch'
+      ? 'Das am besten belegte Mittel im Kraftsport, und du trainierst regelmäßig. '
+        + 'Wirkt unabhängig vom Zeitpunkt, ohne Ladephase.'
+      : 'Doppelt sinnvoll bei dir: bestbelegtes Mittel im Kraftsport — und weil Kreatin '
+        + 'fast nur in Fleisch und Fisch steckt, ist dein Speicher von vornherein '
+        + 'niedriger. Die Wirkung fällt dadurch stärker aus als bei Mischköstlern.');
+  } else {
+    sag('kreatin', 'pruefen', 'Wirkt vor allem in Verbindung mit Krafttraining. Ohne '
+      + 'regelmäßige Einheiten bringt es wenig.');
+  }
+
+  /* Eiweißpulver — hängt daran, ob das Ziel ohne erreicht wird */
+  const ziel = p.proteinZiel || 0;
+  const schnitt = typeof p.proteinSchnitt === 'number' ? p.proteinSchnitt : null;
+  if (ziel && schnitt !== null && schnitt < ziel * 0.85) {
+    sag('eiweiss', 'klar',
+      `Du liegst im Schnitt bei ${Math.round(schnitt)} g statt ${Math.round(ziel)} g. `
+      + (kost === 'misch'
+        ? 'Eine Portion schließt die Lücke, ohne dass du mehr kochen musst.'
+        : 'Pflanzlich ist das die eigentliche Arbeit — eine Portion nimmt dir davon '
+          + 'ein Drittel ab.'));
+  } else if (ziel && schnitt !== null) {
+    sag('eiweiss', 'spar',
+      `Du erreichst dein Eiweißziel im Schnitt schon über das Essen (${Math.round(schnitt)} g `
+      + `von ${Math.round(ziel)} g). Dann ist Pulver nur eine teure Form von Essen.`);
+  } else {
+    sag('eiweiss', 'pruefen', 'Erst ein paar Tage Mahlzeiten eintragen — dann sieht die '
+      + 'App, ob du dein Eiweißziel ohne Pulver erreichst.');
+  }
+
+  /* Vitamin D — Jahreszeit */
+  if (DUNKLE_MONATE.has(monat)) {
+    sag('vitd', 'pruefen',
+      'Von Oktober bis März steht die Sonne hierzulande zu tief, um genug zu bilden — '
+      + 'in dieser Zeit sind viele niedrig. Sicher weiß es nur ein Blutwert, und '
+      + 'Auffüllen hilft nur, wenn tatsächlich zu wenig da ist.');
+  } else {
+    sag('vitd', 'spar',
+      'Im Sommerhalbjahr reicht bei den meisten das Tageslicht. Ab Oktober lohnt die '
+      + 'Frage neu.');
+  }
+
+  /* Omega-3 */
+  if (kost === 'misch') {
+    sag('omega3', 'pruefen',
+      'Sinnvoll, wenn du selten fetten Fisch isst. Zweimal die Woche Lachs oder Hering '
+      + 'ersetzt die Kapseln.');
+  } else {
+    sag('omega3', 'klar',
+      'Ohne Fisch kommt kaum EPA und DHA zusammen — Lein- und Walnussöl liefern nur ALA, '
+      + 'und davon rechnet der Körper wenige Prozent um. Algenöl ist die Quelle, aus der '
+      + 'auch der Fisch sein EPA hat.');
+  }
+
+  /* B12 */
+  if (kost === 'vegan') {
+    sag('b12', 'klar',
+      'Bei veganer Ernährung keine Option, sondern Pflicht: Es gibt keine verlässliche '
+      + 'pflanzliche Quelle, und ein Mangel zeigt sich erst nach Jahren — dann aber mit '
+      + 'bleibenden Folgen.');
+  } else if (kost === 'vegetarisch') {
+    sag('b12', 'pruefen',
+      'Milch und Eier enthalten B12, aber wenig. Wenn beides selten auf dem Teller '
+      + 'liegt, lohnt ein Blutwert — raten hilft hier nicht.');
+  } else {
+    sag('b12', 'spar', 'Bei gemischter Kost kommt genug über das Essen.');
+  }
+
+  /* Koffein */
+  sag('koffein', p.schlaeftKurz ? 'pruefen' : 'pruefen',
+    p.schlaeftKurz
+      ? 'Wirkt zuverlässig auf die Leistung — aber deine Nächte sind ohnehin kurz, und '
+        + 'Koffein verlängert sie nicht. Wenn, dann nur vormittags.'
+      : 'Wirkt zuverlässig auf die Leistung. Kein Muss, und nach 15 Uhr kostet es '
+        + 'Tiefschlaf, auch wenn das Einschlafen klappt.');
+
+  /* Eisen und Zink */
+  if (kost === 'misch') {
+    sag('eisen', 'spar', 'Ohne nachgewiesenen Mangel nicht sinnvoll, und zu viel Eisen '
+      + 'lagert sich ein.');
+    sag('zink', 'spar', 'Bei gemischter Kost selten knapp.');
+  } else {
+    sag('eisen', 'pruefen',
+      'Pflanzliches Eisen wird schlechter aufgenommen. Vor einer Tablette aber: Vitamin C '
+      + 'zur selben Mahlzeit bringt oft mehr, und ohne Blutbild gehört Eisen nicht '
+      + 'eingenommen — Überschuss lagert sich ein und geht nicht wieder weg.');
+    sag('zink', 'pruefen',
+      'Hülsenfrüchte und Vollkorn enthalten Zink, aber auch Phytat, das die Aufnahme '
+      + 'bremst. Einweichen, Keimen und Sauerteig bringen meist mehr als eine Tablette.');
+  }
+
+  /* Der Rest */
+  sag('magnesium', 'spar',
+    'Wird viel verkauft, ist aber bei normaler Ernährung selten knapp — und ohne Mangel '
+    + 'ist keine Wirkung zu erwarten.');
+  sag('betaalanin', 'spar',
+    'Hilft bei Belastungen von ein bis vier Minuten. Für schwere Sätze mit wenigen '
+    + 'Wiederholungen bringt es nichts.');
+  sag('multi', 'spar',
+    'Als Absicherung gedacht, bei halbwegs abwechslungsreicher Ernährung ohne '
+    + 'nachweisbaren Nutzen.');
+
+  aus.sort((a, b) => rang[a.topf] - rang[b.topf]);
+  return aus;
+}
+
+export const TOPF_LABEL = {
+  klar:    { titel: 'Lohnt sich für dich', kurz: 'empfohlen' },
+  pruefen: { titel: 'Kommt darauf an',     kurz: 'prüfen' },
+  spar:    { titel: 'Spar dir das',        kurz: 'nicht nötig' },
+};
+
 /**
  * Seit wann ein Mittel ununterbrochen genommen wird, in Tagen.
  * Gebraucht für den Kreatin-Hinweis: die Wassereinlagerung fällt in die ersten

@@ -11,11 +11,12 @@
  */
 
 import { el, mount, viewHead, toast, emptyState } from '../ui.js';
-import { setSupplementTaken, setSupplementList } from '../store.js';
-import { shiftDateKey } from '../nutrition.js';
+import { setSupplementTaken, setSupplementList, getMealsInRange } from '../store.js';
+import { localDateKey, shiftDateKey } from '../nutrition.js';
+import { summarise as schlafSchnitt, SOLL_MIN } from '../sleep.js';
 import {
   SUPPLEMENTS, ZEITEN, BELEG_LABEL, resolve, byTime, dayStatus, streak, supplementById,
-  sortForDiet, hasDietNote,
+  sortForDiet, hasDietNote, empfehlung, TOPF_LABEL,
 } from '../supplements.js';
 import { KOSTFORMEN } from '../suggest.js';
 
@@ -84,6 +85,78 @@ export function supplementSection(ctx, dateKey) {
       onClick: () => ctx.go('supps') }, 'Liste ändern'));
 }
 
+/* ---------------- Empfehlung ---------------- */
+
+/**
+ * Eiweißschnitt der letzten sieben Tage.
+ *
+ * Er entscheidet, ob Eiweißpulver empfohlen wird oder ausdrücklich nicht — und
+ * das ist der Punkt, an dem eine Empfehlung aus eigenen Daten kommt statt aus
+ * einer Tabelle. Gerechnet wird nur über Tage, an denen überhaupt etwas
+ * eingetragen ist; ein leerer Tag ist kein Tag mit null Gramm Eiweiß.
+ */
+async function proteinSchnittLetzteTage(ctx) {
+  const heute = localDateKey();
+  const mahlzeiten = await getMealsInRange(shiftDateKey(heute, -7), heute);
+  if (!mahlzeiten.length) return null;
+
+  const jeTag = new Map();
+  for (const m of mahlzeiten) {
+    jeTag.set(m.date, (jeTag.get(m.date) || 0) + (m.totals?.protein || 0));
+  }
+  if (jeTag.size < 3) return null;
+  return [...jeTag.values()].reduce((a, b) => a + b, 0) / jeTag.size;
+}
+
+/** Liegt der Schlafschnitt unter der Empfehlung? Steuert den Koffein-Rat. */
+function kurzeNaechte(ctx) {
+  const z = schlafSchnitt(ctx.state.sleep || []);
+  return Boolean(z.naechte >= 3 && z.schnitt !== null && z.schnitt < SOLL_MIN);
+}
+
+function empfehlungsBlock(rat, gewaehlt, speichern, ctx) {
+  const drin = (id) => gewaehlt.some((g) => g.id === id);
+  const bloecke = [];
+
+  for (const topf of ['klar', 'pruefen', 'spar']) {
+    const teil = rat.filter((r) => r.topf === topf);
+    if (!teil.length) continue;
+
+    bloecke.push(el('div', { class: `ratblock rat-${topf}` },
+      el('div', { class: 'ratkopf' },
+        el('h3', { class: 'card-title', text: TOPF_LABEL[topf].titel }),
+        el('span', { class: 'muted small tabular', text: `${teil.length}` })),
+      ...teil.map((r) => el('div', { class: 'ratzeile' },
+        el('div', { class: 'grow' },
+          el('div', { class: 'row-between' },
+            el('span', { class: 'ratname', text: r.name }),
+            el('span', { class: `pill supppill supp-${r.beleg}`, text: BELEG_LABEL[r.beleg] })),
+          el('p', { class: 'ratgrund', text: r.grund }),
+          topf !== 'spar'
+            ? el('p', { class: 'muted small tabular', text: `Üblich: ${r.menge}` })
+            : null),
+        // „Spar dir das" bekommt keinen Knopf. Wer es trotzdem will, findet es
+        // unten im Katalog — aber nicht mit einem Tippen aus der Absage heraus.
+        topf !== 'spar' && !drin(r.id)
+          ? el('button', {
+              class: 'btn btn-sm', type: 'button',
+              onClick: () => speichern([...gewaehlt,
+                { id: r.id, zeit: supplementById(r.id)?.zeit || 'egal' }]),
+            }, 'Aufnehmen')
+          : drin(r.id)
+            ? el('span', { class: 'pill pill-ok', text: 'auf der Liste' })
+            : null))));
+  }
+
+  return el('div', { class: 'card stack' },
+    el('p', { class: 'small' },
+      'Gerechnet aus dem, was in der App steht: Ernährungsform, Trainingstage, dein '
+      + 'Eiweißschnitt der letzten Woche und die Jahreszeit. ',
+      el('strong', { text: 'Was an einem Blutwert hängt, steht unter „Kommt darauf an" — '
+        + 'da rät die App bewusst nicht.' })),
+    ...bloecke);
+}
+
 /* ---------------- Einrichtung ---------------- */
 
 const belegPill = (beleg) => el('span', {
@@ -149,16 +222,32 @@ export async function render(container, ctx) {
         }, 'Raus')))));
   }
 
-  /* Katalog */
-  body.push(el('h2', { class: 'section-title', text: 'Zur Auswahl' }));
+  /* Empfehlung */
+  const rat = empfehlung({
+    profile: ctx.state.profile,
+    proteinZiel: ctx.state.profile ? ctx.goalsFor(localDateKey()).protein : 0,
+    proteinSchnitt: await proteinSchnittLetzteTage(ctx),
+    monat: new Date().getMonth(),
+    schlaeftKurz: kurzeNaechte(ctx),
+  });
 
+  body.push(el('h2', { class: 'section-title', text: 'Für dich' }));
+  body.push(empfehlungsBlock(rat, gewaehlt, speichern, ctx));
+
+  /* Katalog — Nachschlagewerk, kein Hauptinhalt. Wer die Empfehlung oben
+     gelesen hat, braucht ihn nicht; wer nachlesen will, klappt ihn auf. */
   const offen = sortForDiet(SUPPLEMENTS.filter((s) => !istDrin(s.id)), kost);
   if (!offen.length) {
+    body.push(el('h2', { class: 'section-title', text: 'Alle im Einzelnen' }));
     body.push(el('div', { class: 'card' },
       emptyState('Alles ausgewählt', 'Mehr kennt die App nicht. Eigene Mittel kannst du '
         + 'unten hinzufügen.')));
   } else {
-    body.push(el('div', { class: 'stack' }, ...offen.map((s) => el('div', {
+    const katalog = el('details', { class: 'card klappkarte katalog' },
+      el('summary', null,
+        el('span', { text: 'Alle im Einzelnen' }),
+        el('span', { class: 'muted small tabular', text: `${offen.length} Mittel` })));
+    katalog.append(el('div', { class: 'stack mt-16' }, ...offen.map((s) => el('div', {
       class: `card stack suppkarte${hasDietNote(s, kost) ? ' fuerkost' : ''}`,
     },
       el('div', { class: 'row-between' },
@@ -177,6 +266,7 @@ export async function render(container, ctx) {
           class: 'btn btn-sm', type: 'button',
           onClick: () => speichern([...gewaehlt, { id: s.id, zeit: s.zeit }]),
         }, 'Zur Liste'))))));
+    body.push(katalog);
   }
 
   /* Eigenes */

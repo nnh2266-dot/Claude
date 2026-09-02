@@ -12,6 +12,10 @@ import { el } from '../ui.js';
 import { localDateKey, shiftDateKey } from '../nutrition.js';
 import { dailyCoach } from '../coach.js';
 import { dayForWeekday, blockWeek } from '../training.js';
+import { oeffneKachel } from './tagesleiste.js';
+
+/** Welche Kachel der Tagesleiste hinter einem Sprungziel steckt. */
+const KACHEL_ZU = { water: 'trinken', supps: 'ergaenzung' };
 
 /** Die vierte Woche im Block ist die Entlastungswoche. */
 const DELOAD_WOCHE = 4;
@@ -61,9 +65,22 @@ export function coachCard(ctx, dateKey, meals, goals, mealsByDate = {}) {
   if (!ergebnis.hinweise.length && !ergebnis.lob.length) return null;
 
   const springen = (ziel) => {
-    if (ziel === 'water' || ziel === 'supps' || ziel === 'suggest') {
-      // Diese drei stehen auf derselben Seite weiter unten.
-      const el2 = document.querySelector(`[data-anker="${ziel}"]`);
+    // Trinken und Ergänzung liegen jetzt zugeklappt in der Tagesleiste. Erst
+    // aufklappen, dann hinscrollen — sonst führt der Knopf auf eine Kachel,
+    // die nichts zeigt.
+    const kachel = KACHEL_ZU[ziel];
+    if (kachel) {
+      oeffneKachel(kachel);
+      ctx.reload();
+      // Nach dem Neuzeichnen steht der Inhalt erst im nächsten Bild.
+      requestAnimationFrame(() => {
+        document.querySelector(`[data-anker="${kachel}"]`)
+          ?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      });
+      return;
+    }
+    if (ziel === 'suggest') {
+      const el2 = document.querySelector('[data-anker="suggest"]');
       if (el2) { el2.scrollIntoView({ behavior: 'smooth', block: 'center' }); return; }
     }
     ctx.go(ziel);

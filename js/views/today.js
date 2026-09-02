@@ -7,11 +7,8 @@ import { el, svg, mount, viewHead, iconButton, emptyState } from '../ui.js';
 import { getMealsByDate, getMealsInRange } from '../store.js';
 import { reportTeaser } from './report.js';
 import { startFromPending } from './capture.js';
-import { activitySection } from './activity.js';
 import { dayTotals } from '../activities.js';
-import { sleepSection } from './sleep.js';
-import { waterSection } from './water.js';
-import { supplementSection } from './supplements.js';
+import { tagesleiste } from './tagesleiste.js';
 import { suggestSection } from './suggest.js';
 import { coachCard } from './coach.js';
 import { scoreMeal } from '../mealscore.js';
@@ -259,27 +256,25 @@ export async function render(container, ctx, param) {
   const warteschlange = wartendeFotos(ctx);
   if (warteschlange) body.push(el('div', { class: 'mt-16' }, warteschlange));
 
-  // Vorschläge gehören zu den Kalorien, nicht zum Rest — deshalb direkt unter
-  // den Ring, wo der offene Rest steht.
+  // Schlaf, Sport, Trinken und Ergänzung als Leiste statt als vier Karten.
+  // Vier Zahlen, die man im Vorbeigehen prüft, brauchen keine vier
+  // Überschriften — und sie stehen direkt unter dem Ring, weil man sie im
+  // selben Blick abliest.
+  const leiste = tagesleiste(ctx, dateKey);
+  if (leiste) body.push(el('div', { class: 'mt-16' }, leiste));
+
+  // Vorschläge gehören zu den Kalorien: Sie beantworten den offenen Rest, der
+  // im Ring darüber steht.
   const vorschlaege = suggestSection(ctx, dateKey, {
     kcal: goals.kcal - totals.kcal,
     protein: goals.protein - totals.protein,
   });
   if (vorschlaege) body.push(el('div', { class: 'mt-16', 'data-anker': 'suggest' }, vorschlaege));
 
-  // Schlaf vor Sport: morgens ist das die erste Eingabe des Tages.
-  body.push(el('div', { class: 'mt-16' }, sleepSection(ctx, dateKey, ctx.state.sleep)));
-  body.push(el('div', { class: 'mt-16' }, activitySection(ctx, dateKey, activities)));
-  body.push(el('div', { class: 'mt-16', 'data-anker': 'water' },
-    waterSection(ctx, dateKey, ctx.state.water)));
-
-  const supps = supplementSection(ctx, dateKey);
-  if (supps) body.push(el('div', { class: 'mt-16', 'data-anker': 'supps' }, supps));
-
-  // Der Bericht gehört nach oben, nicht ans Ende: er sagt, was heute noch
-  // fehlt, und das nützt am Morgen mehr als am Abend.
+  // Der Tagesbericht sagt in weiten Teilen dasselbe wie der Überblick oben —
+  // solange der steht, reicht hier eine Zeile, die zum ganzen Bericht führt.
   if (dateKey === today) {
-    const bericht = reportTeaser(ctx, meals);
+    const bericht = ueberblick ? null : reportTeaser(ctx, meals);
     if (bericht) body.push(el('div', { class: 'mt-16' }, bericht));
   }
 
@@ -339,7 +334,15 @@ export async function render(container, ctx, param) {
           onClick: () => ctx.openEditor({ mode: 'manual', dateKey }),
         },
         'Von Hand eintragen'
-      )
+      ),
+      // Der ganze Bericht ist eine Zeile wert, keine Karte: Wer ihn will,
+      // sucht ihn — und wer nicht, hat oben schon alles Wichtige gelesen.
+      dateKey === today
+        ? el('button', {
+            class: 'btn btn-ghost btn-block', type: 'button',
+            onClick: () => ctx.go('report'),
+          }, 'Ganzer Bericht')
+        : null
     )
   );
 

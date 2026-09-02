@@ -118,7 +118,7 @@ export function suggestSection(ctx, dateKey, rest) {
               toast('Kopieren ging nicht. Text steht in den Einstellungen.', 'err');
             }
           },
-        }, 'Frage für die Claude-App kopieren'),
+        }, 'Frage kopieren'),
     vonClaude
       ? el('button', { class: 'btn', type: 'button',
           onClick: () => { vonClaude = null; ctx.reload(); } }, 'Eigene')

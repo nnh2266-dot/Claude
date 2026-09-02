@@ -245,7 +245,7 @@ js/ui.js                 DOM-Helfer
 js/views/                today · capture · history · favorites · settings
                          training · plan · progress · setup · mobility
                          report · photos · strength · activity · sleep
-                         water · supplements · suggest · coach
+                         water · supplements · suggest · coach · tagesleiste
 sw.js                    Service Worker (Offline-Betrieb)
 manifest.webmanifest     PWA-Manifest
 ```
@@ -405,6 +405,30 @@ dem besten Satz überhaupt, nicht dem der laufenden Woche. Wo kein Richtwert exi
 etwa beim Handtuch-Rudern im Sitzen, wo der Widerstand aus den eigenen Beinen kommt —
 steht ausdrücklich keine Zahl statt einer erfundenen.
 
+## Die Tagesansicht
+
+Sie ist die Seite, die man am häufigsten sieht, und war nach den letzten Erweiterungen
+auf neun Karten und knapp drei Bildschirmhöhen angewachsen. Jetzt sind es drei Karten
+und anderthalb Bildschirme. Der Aufbau von oben nach unten:
+
+1. **Der Überblick** — was heute zählt, höchstens drei Zeilen (siehe unten).
+2. **Der Kalorienring** mit Makros und dem Wasserrichtwert.
+3. **Die Tagesleiste** — Schlaf, Sport, Trinken und Ergänzung als vier Kacheln mit je
+   einer Zahl. Antippen klappt genau eine auf; die volle Karte ist dieselbe wie vorher,
+   sie liegt nur nicht mehr dauernd offen. Ein farbiger Streifen oben sagt den Zustand:
+   grün erledigt, orange offen, grau nichts eingetragen.
+4. **Was noch reinpasst** — Essensvorschläge, wenn noch etwas übrig ist.
+5. **Die Mahlzeiten** des Tages mit ihrer Einordnung.
+6. Eintragen-Knöpfe und eine Zeile zum ganzen Bericht.
+
+Die aufgeklappte Kachel überlebt das Neuzeichnen: Wer ein Glas einträgt, findet die
+Karte danach noch offen — sonst würde sie bei jedem Eintrag zuklappen, und genau dann
+will man noch eins eintragen. Aufgeklappt bleibt immer nur eine; zwei gleichzeitig wären
+wieder der alte Zustand mit mehr Klickerei davor.
+
+Der Tagesbericht ist von der Startseite verschwunden, weil er in weiten Teilen dasselbe
+sagte wie der Überblick darüber. Er steht als Zeile ganz unten.
+
 ## Der Tagesüberblick
 
 Ganz oben auf der Tagesansicht steht eine Karte, die als einzige Stelle der App alle
@@ -492,6 +516,34 @@ App, die alles gleich aussehen lässt, verkauft mit.
 
 Was nicht im Katalog steht, lässt sich als eigenes Mittel eintragen — zur Wirkung sagt
 die App dann nichts, sie kennt es ja nicht.
+
+### Was die App dir empfiehlt
+
+Ganz oben in der Ergänzungsansicht steht **Für dich** — eine Auswahl, keine Bibliothek.
+Gerechnet aus dem, was in der App steht: Ernährungsform, Trainingstage, dein
+Eiweißschnitt der letzten Woche, die Jahreszeit und dein Schlaf. Drei Töpfe:
+
+| Topf | Bedeutung |
+| --- | --- |
+| **Lohnt sich für dich** | mit Begründung aus deinen eigenen Daten |
+| **Kommt darauf an** | kann sinnvoll sein, hängt aber an etwas, das die App nicht weiß — meist ein Blutwert |
+| **Spar dir das** | dafür gibt es bei dir keinen Grund |
+
+Der dritte Topf ist der wichtigste. **Ein Empfehlungssystem, das nie „nein" sagt, ist ein
+Verkaufskatalog.** Aus „Spar dir das" führt deshalb auch kein Knopf zur Liste — wer es
+trotzdem will, findet es im Katalog darunter, aber nicht mit einem Tippen aus der Absage
+heraus.
+
+Zwei Beispiele, wie die Begründung aus den Daten kommt:
+
+- **Eiweißpulver** landet unter „Lohnt sich", wenn dein gemessener Schnitt unter 85 % vom
+  Ziel liegt — und ausdrücklich unter „Spar dir das", wenn du das Ziel schon über das
+  Essen erreichst. Dann ist Pulver nur eine teure Form von Essen.
+- **Vitamin D** steht von Oktober bis März unter „Kommt darauf an", im Sommerhalbjahr
+  unter „Spar dir das".
+
+Der volle Katalog mit allen Absätzen liegt darunter zugeklappt. Er ist Nachschlagewerk,
+nicht Hauptinhalt.
 
 ### Was sich vegetarisch und vegan ändert
 
