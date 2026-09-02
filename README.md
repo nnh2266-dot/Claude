@@ -450,6 +450,22 @@ ist ein brauchbarer Melder. Der Richtwert hilft an Tagen, an denen man das Trink
 schlicht vergisst — deshalb gibt es hier keine roten Balken, sondern eine Skala mit
 Vierteln und einen Satz zur Einordnung.
 
+## Ernährungsform
+
+Unter *Mehr → Ernährungsform* stehen drei Möglichkeiten: **Alles**, **Vegetarisch**,
+**Vegan**. Sie steuert zwei Dinge und sonst nichts:
+
+- **die eingebauten Bausteine der Essensvorschläge** — bei vegetarisch fallen Fleisch
+  und Fisch weg, bei vegan zusätzlich Milchprodukte und Ei
+- **die Hinweise bei der Nahrungsergänzung** (siehe unten)
+
+Was sie ausdrücklich **nicht** tut: deine eigenen Favoriten filtern. Was du selbst
+gespeichert hast, ist per Definition das, was du isst — eine App, die einem das eigene
+Essen wegfiltert, ist kaputt. Und eine Regel ist sie auch nicht: Wer vegetarisch isst
+und zweimal im Monat Fisch, trägt den Fisch einfach ein.
+
+Die Einstellung steht im Trainingsprofil, geht also mit in den Export.
+
 ## Nahrungsergänzung
 
 Zwei Dinge macht dieser Teil, und ein drittes ausdrücklich nicht.
@@ -476,6 +492,31 @@ App, die alles gleich aussehen lässt, verkauft mit.
 
 Was nicht im Katalog steht, lässt sich als eigenes Mittel eintragen — zur Wirkung sagt
 die App dann nichts, sie kennt es ja nicht.
+
+### Was sich vegetarisch und vegan ändert
+
+Bei sechs Einträgen ist die Ernährungsform kein Detail, sondern der Kern der Sache. Sie
+rutschen im Katalog nach oben und bekommen einen eigenen, hervorgehobenen Absatz:
+
+- **Kreatin** wird für Vegetarier **wichtiger, nicht unwichtiger.** Es steckt fast nur in
+  Fleisch und Fisch — ohne die ist der Muskelspeicher von vornherein niedriger, und die
+  Wirkung fällt in Studien entsprechend deutlicher aus als bei Mischköstlern.
+- **Vitamin B12** ist vegan Pflicht, vegetarisch eine Frage der Menge: Milch und Eier
+  enthalten es, aber wenig. Ein Blutwert klärt das.
+- **Omega-3** kommt ohne Fisch kaum zusammen. Lein- und Walnussöl liefern ALA, davon
+  rechnet der Körper nur wenige Prozent in EPA und DHA um. Algenöl ist die Quelle, aus
+  der auch der Fisch sein EPA hat.
+- **Eisen** aus Pflanzen wird schlechter aufgenommen. Vitamin C zur selben Mahlzeit hilft
+  deutlich, Kaffee und Tee direkt danach bremsen.
+- **Zink** bremst Phytat aus Hülsenfrüchten und Vollkorn. Einweichen, Keimen und
+  Sauerteig bauen es ab — das bringt meist mehr als eine Tablette.
+- **Eiweißpulver**: Molke ist vegetarisch; pflanzlich kommt Soja dem Aminosäureprofil am
+  nächsten, Erbse und Reis gleichen sich gemischt aus.
+
+Zusätzlich wird der Tagesüberblick konkreter: Eine Eiweißlücke wird nicht mehr in
+Magerquark gerechnet, wenn du vegan isst, und wenn das Eiweiß an zwei von drei Tagen
+unter 80 % vom Ziel liegt, sagt die App das einmal deutlich — pflanzlich ist das die
+eigentliche Arbeit, und sie liegt nicht am heutigen Abendessen.
 
 ## Was eine Mahlzeit für den Tag tut
 

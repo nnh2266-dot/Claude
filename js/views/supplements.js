@@ -15,12 +15,15 @@ import { setSupplementTaken, setSupplementList } from '../store.js';
 import { shiftDateKey } from '../nutrition.js';
 import {
   SUPPLEMENTS, ZEITEN, BELEG_LABEL, resolve, byTime, dayStatus, streak, supplementById,
+  sortForDiet, hasDietNote,
 } from '../supplements.js';
+import { KOSTFORMEN } from '../suggest.js';
 
 /* ---------------- Karte auf der Tagesansicht ---------------- */
 
 export function supplementSection(ctx, dateKey) {
-  const liste = resolve(ctx.state.suppListe || []);
+  const kost = ctx.state.profile?.ernaehrung || 'misch';
+  const liste = resolve(ctx.state.suppListe || [], kost);
 
   if (!liste.length) {
     // Kein Dauerhinweis: Wer nichts nimmt, soll die Karte auch nicht sehen.
@@ -91,6 +94,7 @@ const belegPill = (beleg) => el('span', {
 export async function render(container, ctx) {
   const gewaehlt = [...(ctx.state.suppListe || [])];
   const istDrin = (id) => gewaehlt.some((g) => g.id === id);
+  const kost = ctx.state.profile?.ernaehrung || 'misch';
 
   const speichern = async (neu) => {
     await setSupplementList(neu);
@@ -115,13 +119,19 @@ export async function render(container, ctx) {
     el('p', { class: 'muted small',
       text: 'Drei der Mittel greifen in andere Zahlen der App ein: Kreatin verschiebt das '
         + 'Gewicht, Koffein den Schlaf, Eiweißpulver das Eiweißziel. Wenn du sie hier '
-        + 'einträgst, weiß die App das und rechnet nicht dagegen.' })));
+        + 'einträgst, weiß die App das und rechnet nicht dagegen.' }),
+    kost !== 'misch'
+      ? el('p', { class: 'hint' },
+          el('strong', { text: `${KOSTFORMEN[kost].label}: ` }),
+          'Bei vier Einträgen ändert das etwas Wesentliches — sie stehen oben und tragen '
+          + 'einen eigenen Absatz. Umstellen geht unter „Mehr → Ernährungsform".')
+      : null));
 
   /* Ausgewählte zuerst, mit Zeitpunkt */
   if (gewaehlt.length) {
     body.push(el('h2', { class: 'section-title', text: 'Deine Liste' }));
     body.push(el('div', { class: 'card card-flush' },
-      ...resolve(gewaehlt).map((s) => el('div', { class: 'calcrow' },
+      ...resolve(gewaehlt, kost).map((s) => el('div', { class: 'calcrow' },
         el('div', { class: 'grow' },
           el('div', { text: s.name }),
           el('div', { class: 'muted small', text: s.menge || 'ohne Mengenangabe' })),
@@ -142,17 +152,24 @@ export async function render(container, ctx) {
   /* Katalog */
   body.push(el('h2', { class: 'section-title', text: 'Zur Auswahl' }));
 
-  const offen = SUPPLEMENTS.filter((s) => !istDrin(s.id));
+  const offen = sortForDiet(SUPPLEMENTS.filter((s) => !istDrin(s.id)), kost);
   if (!offen.length) {
     body.push(el('div', { class: 'card' },
       emptyState('Alles ausgewählt', 'Mehr kennt die App nicht. Eigene Mittel kannst du '
         + 'unten hinzufügen.')));
   } else {
-    body.push(el('div', { class: 'stack' }, ...offen.map((s) => el('div', { class: 'card stack suppkarte' },
+    body.push(el('div', { class: 'stack' }, ...offen.map((s) => el('div', {
+      class: `card stack suppkarte${hasDietNote(s, kost) ? ' fuerkost' : ''}`,
+    },
       el('div', { class: 'row-between' },
         el('h3', { class: 'card-title', text: s.name }),
         belegPill(s.beleg)),
       el('p', { class: 'small', text: s.wofuer }),
+      // Der kostabhängige Absatz steht vor dem allgemeinen Hinweis: Bei
+      // vegetarischer Kost ist er bei Kreatin und B12 die eigentliche Aussage.
+      hasDietNote(s, kost)
+        ? el('p', { class: 'kosthinweis', text: s.kost[kost] })
+        : null,
       el('p', { class: 'muted small', text: s.hinweis }),
       el('div', { class: 'row-between' },
         el('span', { class: 'muted small tabular', text: `Üblich: ${s.menge}` }),

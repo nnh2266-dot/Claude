@@ -23,7 +23,7 @@ const ART_ICON = {
   info: 'i',
 };
 
-export function coachCard(ctx, dateKey, meals, goals) {
+export function coachCard(ctx, dateKey, meals, goals, mealsByDate = {}) {
   if (dateKey !== localDateKey()) return null;
 
   const plan = ctx.state.plan;
@@ -52,6 +52,7 @@ export function coachCard(ctx, dateKey, meals, goals) {
     trainingHeute,
     sessionHeute,
     pending: ctx.state.pending || [],
+    mealsByDate,
     deload,
   });
 

@@ -54,6 +54,15 @@ export const SUPPLEMENTS = [
       + 'du es nimmst. Eine Ladephase braucht es nicht.',
     // Diese Marken steuern die Hinweise im Rest der App.
     wirkt: ['gewicht'],
+    kost: {
+      vegetarisch: 'Für dich besonders: Kreatin steckt fast nur in Fleisch und Fisch. Ohne '
+        + 'die ist dein Muskelspeicher von vornherein niedriger, und die Wirkung fällt in '
+        + 'Studien entsprechend deutlicher aus als bei Mischköstlern.',
+      vegan: 'Für dich besonders: Kreatin steckt fast nur in Fleisch und Fisch, über die '
+        + 'Nahrung nimmst du also praktisch keines auf. Der Speicher ist dadurch niedriger '
+        + 'und die Wirkung fällt deutlicher aus als bei Mischköstlern. Auf „vegan" achten — '
+        + 'Monohydrat ist es fast immer, die Kapselhülle nicht immer.',
+    },
   },
   {
     id: 'eiweiss',
@@ -66,6 +75,13 @@ export const SUPPLEMENTS = [
     hinweis: 'Trag die Portion als Mahlzeit ein, nicht nur hier als Häkchen — sonst fehlt '
       + 'sie in der Tagessumme und im Eiweißziel.',
     wirkt: ['eiweiss'],
+    kost: {
+      vegetarisch: 'Molkenpulver ist vegetarisch. Wer lieber pflanzlich will: Soja kommt '
+        + 'dem Aminosäureprofil von Molke am nächsten, Erbse und Reis gemischt ebenfalls.',
+      vegan: 'Soja allein reicht aus. Erbse und Reis einzeln haben Lücken im '
+        + 'Aminosäureprofil, gemischt gleichen sie sich aus — deshalb die vielen '
+        + 'Mehrkomponenten-Pulver.',
+    },
   },
   {
     id: 'koffein',
@@ -101,6 +117,14 @@ export const SUPPLEMENTS = [
     hinweis: 'Auf der Packung steht meist die Ölmenge, nicht der EPA/DHA-Gehalt. Der steht '
       + 'kleiner darunter und ist der Wert, auf den es ankommt.',
     wirkt: [],
+    kost: {
+      vegetarisch: 'Ohne Fisch bleibt praktisch nichts übrig: Lein-, Walnuss- und Rapsöl '
+        + 'liefern ALA, und davon rechnet der Körper nur wenige Prozent in EPA und DHA um. '
+        + 'Wer nicht auf Fischöl will, nimmt Algenöl — daher stammt das EPA im Fisch '
+        + 'ohnehin.',
+      vegan: 'Algenöl statt Fischöl. Das ist die ursprüngliche Quelle — Fische reichern '
+        + 'EPA und DHA nur aus Algen an. Lein- und Walnussöl liefern ALA, das reicht nicht.',
+    },
   },
   {
     id: 'b12',
@@ -108,11 +132,19 @@ export const SUPPLEMENTS = [
     beleg: 'gut',
     menge: '10–250 µg täglich',
     zeit: 'morgens',
-    wofuer: 'Notwendig bei veganer Ernährung — B12 kommt praktisch nur aus tierischen '
-      + 'Lebensmitteln. Bei gemischter Kost überflüssig.',
+    wofuer: 'B12 kommt praktisch nur aus tierischen Lebensmitteln. Bei veganer Ernährung '
+      + 'notwendig, bei gemischter Kost überflüssig.',
     hinweis: 'Hier geht es nicht um Leistung, sondern um einen echten Mangel mit '
-      + 'bleibenden Folgen. Wenn du vegan isst, ist das kein Extra.',
+      + 'bleibenden Folgen — und der zeigt sich erst nach Jahren, wenn die Leberreserve '
+      + 'aufgebraucht ist.',
     wirkt: [],
+    kost: {
+      vegetarisch: 'Bei dir kommt es auf die Menge an: Milchprodukte und Eier enthalten '
+        + 'B12, aber wenig. Wer selten beides isst, liegt schnell im unteren Bereich. Ein '
+        + 'Blutwert klärt das — raten hilft hier nicht.',
+      vegan: 'Für dich ist das kein Extra, sondern Pflicht. Es gibt keine verlässliche '
+        + 'pflanzliche Quelle; Algen und Sauerkraut zählen nicht.',
+    },
   },
   {
     id: 'magnesium',
@@ -147,6 +179,35 @@ export const SUPPLEMENTS = [
     hinweis: 'Dauerhaft hohe Mengen stören die Kupferaufnahme. Das ist eines der wenigen '
       + 'Mittel, bei denen mehr klar schlechter ist.',
     wirkt: [],
+    kost: {
+      vegetarisch: 'Hülsenfrüchte und Vollkorn enthalten Zink, aber auch Phytat, das die '
+        + 'Aufnahme bremst. Einweichen, Keimen und Sauerteig bauen Phytat ab — das bringt '
+        + 'in der Regel mehr als eine Tablette.',
+      vegan: 'Hülsenfrüchte und Vollkorn enthalten Zink, aber auch Phytat, das die '
+        + 'Aufnahme bremst. Einweichen, Keimen und Sauerteig bauen Phytat ab — das bringt '
+        + 'in der Regel mehr als eine Tablette.',
+    },
+  },
+  {
+    id: 'eisen',
+    name: 'Eisen',
+    beleg: 'mittel',
+    menge: '10–20 mg täglich',
+    zeit: 'morgens',
+    wofuer: 'Nur bei nachgewiesenem Mangel. Der macht sich als Müdigkeit und schneller '
+      + 'Erschöpfung im Training bemerkbar — beides hat aber auch ein Dutzend andere Gründe.',
+    hinweis: 'Ohne Blutbild nicht einnehmen. Zu viel Eisen lagert sich ein und ist dann '
+      + 'nicht mehr loszuwerden — das ist kein Vitamin, bei dem der Überschuss einfach '
+      + 'ausgeschieden wird.',
+    wirkt: [],
+    kost: {
+      vegetarisch: 'Pflanzliches Eisen wird schlechter aufgenommen als das aus Fleisch. '
+        + 'Vitamin C zur selben Mahlzeit verbessert das deutlich — Paprika oder ein Glas '
+        + 'Orangensaft zu den Linsen. Kaffee und Tee direkt danach bremsen es.',
+      vegan: 'Pflanzliches Eisen wird schlechter aufgenommen als das aus Fleisch. '
+        + 'Vitamin C zur selben Mahlzeit verbessert das deutlich — Paprika oder ein Glas '
+        + 'Orangensaft zu den Linsen. Kaffee und Tee direkt danach bremsen es.',
+    },
   },
   {
     id: 'multi',
@@ -174,7 +235,7 @@ export function supplementById(id) {
  *
  * @param {Array} gewaehlt  [{ id, zeit?, menge?, name? }]
  */
-export function resolve(gewaehlt) {
+export function resolve(gewaehlt, kost = 'misch') {
   return (gewaehlt || []).map((eintrag) => {
     const katalog = supplementById(eintrag.id);
     return {
@@ -185,10 +246,30 @@ export function resolve(gewaehlt) {
       beleg: katalog?.beleg || null,
       wofuer: katalog?.wofuer || null,
       hinweis: katalog?.hinweis || null,
+      // Was sich durch die Ernährungsform ändert — bei Kreatin und B12 ist das
+      // kein Detail, sondern der Kern der Sache.
+      kostHinweis: katalog?.kost?.[kost] || null,
       wirkt: katalog?.wirkt || [],
       eigen: !katalog,
     };
   });
+}
+
+/**
+ * Reihenfolge im Katalog: Was durch die Ernährungsform an Bedeutung gewinnt,
+ * steht oben. Bei vegetarischer Kost sind das Kreatin, B12, Omega-3 und Eisen —
+ * genau die vier, die man sonst überliest, weil sie zwischen neun anderen
+ * stehen.
+ */
+export function sortForDiet(liste, kost = 'misch') {
+  if (kost === 'misch') return [...liste];
+  const relevant = (s) => Boolean(s.kost && s.kost[kost]);
+  return [...liste].sort((a, b) => Number(relevant(b)) - Number(relevant(a)));
+}
+
+/** Gilt für dieses Mittel bei dieser Kostform ein eigener Hinweis? */
+export function hasDietNote(supplement, kost = 'misch') {
+  return Boolean(supplement?.kost && supplement.kost[kost]);
 }
 
 /** Nach Tageszeit gruppiert, in der Reihenfolge von ZEITEN. */

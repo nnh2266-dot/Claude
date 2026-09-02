@@ -4,7 +4,7 @@
  */
 
 import { el, svg, mount, viewHead, iconButton, emptyState } from '../ui.js';
-import { getMealsByDate } from '../store.js';
+import { getMealsByDate, getMealsInRange } from '../store.js';
 import { reportTeaser } from './report.js';
 import { startFromPending } from './capture.js';
 import { activitySection } from './activity.js';
@@ -242,7 +242,15 @@ export async function render(container, ctx, param) {
 
   // Der Überblick steht über allem: Er ist die einzige Stelle, die alle
   // Bereiche gleichzeitig sieht, und sagt in drei Zeilen, was heute zählt.
-  const ueberblick = coachCard(ctx, dateKey, meals, goals);
+  // Die drei Vortage kommen mit, damit er wiederkehrende Muster erkennt statt
+  // jeden Abend dieselbe Tageslücke zu melden.
+  const vortage = {};
+  if (dateKey === today) {
+    for (const m of await getMealsInRange(shiftDateKey(dateKey, -3), shiftDateKey(dateKey, -1))) {
+      (vortage[m.date] = vortage[m.date] || []).push(m);
+    }
+  }
+  const ueberblick = coachCard(ctx, dateKey, meals, goals, vortage);
   if (ueberblick) body.push(ueberblick);
 
   body.push(el('div', { class: ueberblick ? 'mt-16' : '' }, progressCard(totals, goals, ctx)));

@@ -23,53 +23,102 @@
  */
 
 /**
+ * Kostformen.
+ *
+ * Sie steuern nur die eingebauten Bausteine, nie die eigenen Favoriten — was
+ * du selbst gespeichert hast, ist per Definition das, was du isst. Und sie sind
+ * keine Regel: Wer sich vegetarisch ernährt und zweimal im Monat Fisch isst,
+ * trägt den Fisch einfach ein. Die Einstellung entscheidet, was die App
+ * vorschlägt, nicht was erlaubt ist.
+ */
+export const KOSTFORMEN = {
+  misch:       { label: 'Alles',        kurz: 'Mischkost' },
+  vegetarisch: { label: 'Vegetarisch',  kurz: 'kein Fleisch, kein Fisch' },
+  vegan:       { label: 'Vegan',        kurz: 'keine Tierprodukte' },
+};
+
+/** Welche Bausteine eine Kostform zulässt. */
+const ERLAUBT = {
+  vegan:       new Set(['vegan']),
+  vegetarisch: new Set(['vegan', 'vegetarisch']),
+  misch:       new Set(['vegan', 'vegetarisch', 'misch']),
+};
+
+/**
  * Eingebaute Bausteine.
  *
  * Nährwerte gerundet und je Portion, wie man sie tatsächlich isst. Sie sind
  * Anhaltspunkte — beim Eintragen lassen sie sich korrigieren, und wer genau
  * misst, kommt ohnehin auf andere Zahlen.
+ *
+ * `kost` nennt die strengste Ernährungsform, in die ein Baustein noch passt.
  */
 export const BAUSTEINE = [
-  // Eiweißträger mit wenig Kalorien — der Fall, der am häufigsten gebraucht wird
+  /* --- Eiweißträger mit wenig Kalorien: der Fall, der am häufigsten fehlt --- */
   { name: 'Magerquark mit Beeren', kcal: 230, protein: 33, carbs: 18, fat: 1,
-    grams: 350, zeit: ['breakfast', 'snack', 'dinner'], schnell: true },
+    grams: 350, zeit: ['breakfast', 'snack', 'dinner'], schnell: true, kost: 'vegetarisch' },
   { name: 'Skyr mit Honig', kcal: 200, protein: 27, carbs: 20, fat: 1,
-    grams: 300, zeit: ['breakfast', 'snack'], schnell: true },
+    grams: 300, zeit: ['breakfast', 'snack'], schnell: true, kost: 'vegetarisch' },
   { name: 'Hüttenkäse auf Vollkornbrot', kcal: 300, protein: 24, carbs: 32, fat: 8,
-    grams: 200, zeit: ['breakfast', 'dinner'], schnell: true },
-  { name: 'Hähnchenbrust mit Reis und Gemüse', kcal: 550, protein: 48, carbs: 55, fat: 12,
-    grams: 450, zeit: ['lunch', 'dinner'], schnell: false },
-  { name: 'Linsen mit Feta und Tomaten', kcal: 480, protein: 27, carbs: 48, fat: 18,
-    grams: 400, zeit: ['lunch', 'dinner'], schnell: false },
-  { name: 'Thunfisch aus der Dose mit Vollkornnudeln', kcal: 520, protein: 42, carbs: 62, fat: 9,
-    grams: 380, zeit: ['lunch', 'dinner'], schnell: true },
+    grams: 200, zeit: ['breakfast', 'dinner'], schnell: true, kost: 'vegetarisch' },
   { name: 'Rührei aus drei Eiern mit Brot', kcal: 420, protein: 27, carbs: 30, fat: 21,
-    grams: 250, zeit: ['breakfast', 'dinner'], schnell: true },
+    grams: 250, zeit: ['breakfast', 'dinner'], schnell: true, kost: 'vegetarisch' },
   { name: 'Griechischer Joghurt mit Nüssen', kcal: 320, protein: 20, carbs: 14, fat: 20,
-    grams: 250, zeit: ['breakfast', 'snack'], schnell: true },
-  { name: 'Lachsfilet mit Kartoffeln', kcal: 600, protein: 40, carbs: 45, fat: 27,
-    grams: 400, zeit: ['lunch', 'dinner'], schnell: false },
+    grams: 250, zeit: ['breakfast', 'snack'], schnell: true, kost: 'vegetarisch' },
   { name: 'Eiweißshake mit Milch', kcal: 280, protein: 35, carbs: 20, fat: 6,
-    grams: 400, zeit: ['snack', 'breakfast'], schnell: true },
+    grams: 400, zeit: ['snack', 'breakfast'], schnell: true, kost: 'vegetarisch' },
+  { name: 'Sojajoghurt mit Beeren und Leinsamen', kcal: 260, protein: 16, carbs: 24, fat: 11,
+    grams: 300, zeit: ['breakfast', 'snack'], schnell: true, kost: 'vegan' },
+  { name: 'Eiweißshake mit Sojamilch', kcal: 270, protein: 33, carbs: 18, fat: 6,
+    grams: 400, zeit: ['snack', 'breakfast'], schnell: true, kost: 'vegan' },
+  { name: 'Hähnchenbrust mit Reis und Gemüse', kcal: 550, protein: 48, carbs: 55, fat: 12,
+    grams: 450, zeit: ['lunch', 'dinner'], schnell: false, kost: 'misch' },
+  { name: 'Thunfisch aus der Dose mit Vollkornnudeln', kcal: 520, protein: 42, carbs: 62, fat: 9,
+    grams: 380, zeit: ['lunch', 'dinner'], schnell: true, kost: 'misch' },
+  { name: 'Lachsfilet mit Kartoffeln', kcal: 600, protein: 40, carbs: 45, fat: 27,
+    grams: 400, zeit: ['lunch', 'dinner'], schnell: false, kost: 'misch' },
 
-  // Sättigung bei wenig Kalorien
-  { name: 'Großer Salat mit Ei und Kichererbsen', kcal: 380, protein: 22, carbs: 30, fat: 18,
-    grams: 500, zeit: ['lunch', 'dinner'], schnell: false },
-  { name: 'Gemüsesuppe mit Hühnchen', kcal: 300, protein: 28, carbs: 22, fat: 10,
-    grams: 500, zeit: ['lunch', 'dinner'], schnell: false },
-  { name: 'Apfel mit Handvoll Mandeln', kcal: 230, protein: 6, carbs: 24, fat: 13,
-    grams: 180, zeit: ['snack'], schnell: true },
-  { name: 'Karotten und Gurke mit Hummus', kcal: 200, protein: 7, carbs: 18, fat: 11,
-    grams: 250, zeit: ['snack'], schnell: true },
-
-  // Wenn viel übrig ist
-  { name: 'Haferflocken mit Banane und Erdnussmus', kcal: 620, protein: 22, carbs: 78, fat: 24,
-    grams: 400, zeit: ['breakfast'], schnell: true },
+  /* --- Warme Hauptmahlzeiten --- */
+  { name: 'Linsen mit Feta und Tomaten', kcal: 480, protein: 27, carbs: 48, fat: 18,
+    grams: 400, zeit: ['lunch', 'dinner'], schnell: false, kost: 'vegetarisch' },
+  { name: 'Halloumi mit Ofengemüse und Couscous', kcal: 580, protein: 30, carbs: 52, fat: 26,
+    grams: 420, zeit: ['lunch', 'dinner'], schnell: false, kost: 'vegetarisch' },
+  { name: 'Linsenbolognese mit Vollkornnudeln', kcal: 620, protein: 31, carbs: 88, fat: 14,
+    grams: 480, zeit: ['lunch', 'dinner'], schnell: false, kost: 'vegan' },
+  { name: 'Kichererbsen-Curry mit Reis', kcal: 590, protein: 24, carbs: 82, fat: 17,
+    grams: 500, zeit: ['lunch', 'dinner'], schnell: false, kost: 'vegan' },
+  { name: 'Tofu-Pfanne mit Brokkoli und Reis', kcal: 520, protein: 34, carbs: 54, fat: 17,
+    grams: 450, zeit: ['lunch', 'dinner'], schnell: true, kost: 'vegan' },
+  { name: 'Bohnen-Chili mit Mais', kcal: 450, protein: 25, carbs: 60, fat: 11,
+    grams: 500, zeit: ['lunch', 'dinner'], schnell: false, kost: 'vegan' },
+  { name: 'Tempeh mit Süßkartoffel und Spinat', kcal: 560, protein: 36, carbs: 52, fat: 20,
+    grams: 450, zeit: ['lunch', 'dinner'], schnell: false, kost: 'vegan' },
   { name: 'Nudeln mit Hackfleischsoße', kcal: 750, protein: 42, carbs: 82, fat: 26,
-    grams: 500, zeit: ['lunch', 'dinner'], schnell: false },
+    grams: 500, zeit: ['lunch', 'dinner'], schnell: false, kost: 'misch' },
   { name: 'Wrap mit Hähnchen und Avocado', kcal: 600, protein: 38, carbs: 48, fat: 27,
-    grams: 350, zeit: ['lunch', 'dinner'], schnell: true },
+    grams: 350, zeit: ['lunch', 'dinner'], schnell: true, kost: 'misch' },
+
+  /* --- Sättigung bei wenig Kalorien --- */
+  { name: 'Großer Salat mit Ei und Kichererbsen', kcal: 380, protein: 22, carbs: 30, fat: 18,
+    grams: 500, zeit: ['lunch', 'dinner'], schnell: false, kost: 'vegetarisch' },
+  { name: 'Linsensuppe mit Gemüse', kcal: 320, protein: 20, carbs: 44, fat: 6,
+    grams: 500, zeit: ['lunch', 'dinner'], schnell: false, kost: 'vegan' },
+  { name: 'Gemüsesuppe mit Hühnchen', kcal: 300, protein: 28, carbs: 22, fat: 10,
+    grams: 500, zeit: ['lunch', 'dinner'], schnell: false, kost: 'misch' },
+  { name: 'Edamame mit Salz', kcal: 190, protein: 18, carbs: 12, fat: 8,
+    grams: 200, zeit: ['snack'], schnell: true, kost: 'vegan' },
+  { name: 'Apfel mit Handvoll Mandeln', kcal: 230, protein: 6, carbs: 24, fat: 13,
+    grams: 180, zeit: ['snack'], schnell: true, kost: 'vegan' },
+  { name: 'Karotten und Gurke mit Hummus', kcal: 200, protein: 7, carbs: 18, fat: 11,
+    grams: 250, zeit: ['snack'], schnell: true, kost: 'vegan' },
+
+  /* --- Wenn viel übrig ist --- */
+  { name: 'Haferflocken mit Banane und Erdnussmus', kcal: 620, protein: 22, carbs: 78, fat: 24,
+    grams: 400, zeit: ['breakfast'], schnell: true, kost: 'vegan' },
+  { name: 'Porridge mit Sojamilch, Nüssen und Datteln', kcal: 660, protein: 25, carbs: 84, fat: 25,
+    grams: 450, zeit: ['breakfast'], schnell: true, kost: 'vegan' },
 ];
+
 
 /** Welche Mahlzeitenart zu einer Uhrzeit passt. */
 export function mealTypeForHour(stunde) {
@@ -136,10 +185,13 @@ function passt(kandidat, rest, mealType) {
  *   rest       { kcal, protein } — was heute noch übrig ist
  *   favorites  gespeicherte Favoriten
  *   stunde     Tagesstunde, für die Mahlzeitenart
+ *   kost       'misch' | 'vegetarisch' | 'vegan' — filtert nur die Bausteine
  *   anzahl     wie viele Vorschläge
  * @returns {Array<{name, quelle, kcal, protein, carbs, fat, grund, favorit}>}
  */
-export function suggest({ rest, favorites = [], stunde = new Date().getHours(), anzahl = 3 }) {
+export function suggest({
+  rest, favorites = [], stunde = new Date().getHours(), kost = 'misch', anzahl = 3,
+}) {
   const mealType = mealTypeForHour(stunde);
   const ziel = {
     kcal: Math.max(0, Math.round(rest?.kcal || 0)),
@@ -161,7 +213,12 @@ export function suggest({ rest, favorites = [], stunde = new Date().getHours(), 
     });
   }
 
+  // Nur die Bausteine werden gefiltert. Favoriten bleiben unangetastet: Was
+  // jemand selbst gespeichert hat, ist per Definition das, was er isst — und
+  // eine App, die einem das eigene Essen wegfiltert, ist kaputt.
+  const erlaubt = ERLAUBT[kost] || ERLAUBT.misch;
   for (const b of BAUSTEINE) {
+    if (!erlaubt.has(b.kost)) continue;
     kandidaten.push({ ...b, quelle: 'baustein' });
   }
 
@@ -206,7 +263,7 @@ export function suggest({ rest, favorites = [], stunde = new Date().getHours(), 
  * Getrennt gehalten, damit man ihn auch ohne API-Key lesen und in der
  * Claude-App verwenden kann — derselbe Weg wie bei den Essensfotos.
  */
-export function suggestionPrompt(rest, { mealType, mag = [], kueche = null } = {}) {
+export function suggestionPrompt(rest, { mealType, mag = [], kost = 'misch' } = {}) {
   const zeit = { breakfast: 'Frühstück', lunch: 'Mittagessen',
     dinner: 'Abendessen', snack: 'Snack' }[mealType] || 'Mahlzeit';
 
@@ -214,8 +271,9 @@ export function suggestionPrompt(rest, { mealType, mag = [], kueche = null } = {
     `Ich brauche Ideen für ein ${zeit}.`,
     `Übrig für heute: ${Math.round(rest.kcal)} kcal und ${Math.round(rest.protein)} g Eiweiß.`,
   ];
+  if (kost === 'vegetarisch') zeilen.push('Ich esse vegetarisch — kein Fleisch, kein Fisch.');
+  if (kost === 'vegan') zeilen.push('Ich esse vegan — keine tierischen Produkte.');
   if (mag.length) zeilen.push(`Das esse ich oft und gerne: ${mag.join(', ')}.`);
-  if (kueche) zeilen.push(`Küche: ${kueche}.`);
   zeilen.push(
     '',
     'Bitte drei Vorschläge, jeder mit einer Zeile Zutaten und den geschätzten Nährwerten',

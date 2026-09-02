@@ -44,7 +44,7 @@ const hinweis = (art, prio, text, aktion = null) => ({ art, prio, text, aktion }
  *   meals, activities, sportGestern, sleep (alle Nächte), weights, sessions,
  *   water (alle Tage), supps (alle Tage), suppListe (eingerichtete Auswahl),
  *   trainingHeute (Tagesobjekt aus dem Plan oder null), sessionHeute,
- *   pending (wartende Fotos)
+ *   pending (wartende Fotos), mealsByDate (für den Blick auf die Vortage)
  * @returns {{hinweise: Array, alleGut: boolean, geprueft: number}}
  */
 export function dailyCoach(d) {
@@ -113,14 +113,61 @@ export function dailyCoach(d) {
   const restProtein = ziele ? ziele.protein - summe.protein : null;
 
   // Eiweiß ist das einzige Makro, dessen Verfehlen wirklich etwas kostet —
-  // daran hängt der Muskelerhalt im Defizit.
+  // daran hängt der Muskelerhalt im Defizit. Womit sich die Lücke schließen
+  // lässt, hängt an der Ernährungsform: Magerquark hilft niemandem, der vegan
+  // isst, und ein Hinweis, den man nicht befolgen kann, ist keiner.
+  const kost = d.profile?.ernaehrung || 'misch';
+  // Eine Portion, an der man die Lücke messen kann — je Kostform eine, die es
+  // wirklich gibt, mit ihrem tatsächlichen Eiweißgehalt.
+  const PORTION = {
+    misch:       { ein: 'ein Becher Magerquark', viele: 'Becher Magerquark', gramm: 33 },
+    vegetarisch: { ein: 'ein Becher Magerquark', viele: 'Becher Magerquark', gramm: 33 },
+    vegan:       { ein: 'ein Sojashake',         viele: 'Sojashakes',        gramm: 30 },
+  };
+
   if (ziele && restProtein > 25 && abends) {
-    const becher = Math.max(1, Math.round(restProtein / 30));
-    alle.push(hinweis('offen', 80,
-      `Noch ${Math.round(restProtein)} g Eiweiß bis zum Tagesziel. Das sind etwa `
-      + `${becher} ${becher === 1 ? 'Becher' : 'Becher'} Magerquark oder ein Shake `
-      + `${becher > 1 ? 'und ein Joghurt' : ''}`.trim() + '.',
-      { text: 'Vorschläge ansehen', ziel: 'suggest' }));
+    const fehlt = Math.round(restProtein);
+    const portion = PORTION[kost] || PORTION.misch;
+
+    // Über 60 Gramm ist der Tag rechnerisch nicht mehr zu retten. Dann eine
+    // Portionszahl hinzuschreiben wäre Zahlenspielerei — vier Becher Quark isst
+    // niemand um acht Uhr abends.
+    if (fehlt > 60) {
+      alle.push(hinweis('offen', 80,
+        `Noch ${fehlt} g Eiweiß — das holst du heute realistisch nicht mehr auf. Nimm `
+        + 'mit, was ohne Zwang geht, und verteil es morgen auf drei Mahlzeiten statt auf '
+        + 'eine.',
+        { text: 'Vorschläge ansehen', ziel: 'suggest' }));
+    } else {
+      // Aufgerundet ab gut einem Drittel Portion: „ein Becher" für 46 g wäre
+      // eine Untertreibung um dreißig Prozent, und danach fehlt wieder etwas.
+      const anzahl = Math.max(1, Math.round(fehlt / portion.gramm + 0.15));
+      alle.push(hinweis('offen', 80,
+        `Noch ${fehlt} g Eiweiß bis zum Tagesziel — etwa `
+        + `${anzahl === 1 ? portion.ein : `${anzahl} ${portion.viele}`}.`,
+        { text: 'Vorschläge ansehen', ziel: 'suggest' }));
+    }
+  }
+
+  // Pflanzliches Eiweiß über 2 g je Kilogramm zu bekommen, ist die eigentliche
+  // Arbeit einer vegetarischen oder veganen Ernährung im Kraftsport. Wenn es
+  // über Tage nicht klappt, liegt es selten am heutigen Abendessen — dann
+  // gehört das einmal gesagt, statt jeden Abend dieselbe Lücke zu melden.
+  if (ziele && kost !== 'misch' && shift && (d.meals || []).length) {
+    const letzte = [1, 2, 3].map((i) => shift(d.dateKey, -i));
+    const knapp = letzte.filter((t) => {
+      const tagesMahlzeiten = (d.mealsByDate || {})[t];
+      if (!tagesMahlzeiten || !tagesMahlzeiten.length) return false;
+      const p = tagesMahlzeiten.reduce((sum, m) => sum + (m.totals?.protein || 0), 0);
+      return p < ziele.protein * 0.8;
+    }).length;
+    if (knapp >= 2) {
+      alle.push(hinweis('achtung', 60,
+        `${knapp === 3 ? 'An allen drei letzten Tagen' : 'An zwei der letzten drei Tage'} `
+        + 'lag dein Eiweiß unter 80 % vom Ziel. Pflanzlich ist das die eigentliche Arbeit '
+        + '— Hülsenfrüchte, Soja, Quark oder Pulver gehören dann fest in zwei Mahlzeiten, '
+        + 'nicht in eine.'));
+    }
   }
 
   // Deutlich unter dem Kalorienziel und der Tag ist fast vorbei: das ist kein

@@ -5,11 +5,12 @@
 import { el, mount, viewHead, field, toast, confirmAction } from '../ui.js';
 import {
   setSetting, exportData, importData, clearEntries, clearEverything, countMeals,
-  saveActivity, saveWeight, listProgressPhotos,
+  saveActivity, saveWeight, listProgressPhotos, setTrainingProfile,
 } from '../store.js';
 import { MODELS, testConnection, ApiError } from '../claude.js';
 import { macrosFromKcal, parseNumber, DEFAULT_GOALS, localDateKey, formatDateKey } from '../nutrition.js';
 import { energyPlan } from '../energy.js';
+import { KOSTFORMEN } from '../suggest.js';
 import { APP_VERSION, APP_DATE } from '../version.js';
 
 const CONSOLE_URL = 'https://console.anthropic.com/settings/keys';
@@ -553,6 +554,55 @@ function versionSection() {
 }
 
 /**
+ * Ernährungsform. Sie steht im Trainingsprofil, damit sie mit exportiert wird —
+ * und in den Einstellungen, weil sie sich ändern kann, ohne dass der ganze
+ * Fragebogen neu durchlaufen werden müsste.
+ */
+function kostSection(ctx) {
+  const profile = ctx.state.profile;
+  if (!profile) {
+    return el('div', { class: 'card' },
+      el('p', { class: 'small',
+        text: 'Erst der Fragebogen, dann die Ernährungsform — sie hängt am Profil.' }));
+  }
+
+  const aktuell = profile.ernaehrung || 'misch';
+
+  const waehlen = async (id) => {
+    if (id === aktuell) return;
+    await setTrainingProfile({ ...profile, ernaehrung: id });
+    await ctx.refreshTraining();
+    ctx.reload();
+    toast(`Ernährung: ${KOSTFORMEN[id].label}.`);
+  };
+
+  return el('div', { class: 'card stack' },
+    el('div', { class: 'kostwahl' },
+      ...Object.entries(KOSTFORMEN).map(([id, k]) => el('button', {
+        class: `btn kostknopf${id === aktuell ? ' aktiv' : ''}`, type: 'button',
+        'aria-pressed': id === aktuell ? 'true' : 'false',
+        onClick: () => waehlen(id),
+      },
+        el('span', { class: 'kostname', text: k.label }),
+        el('span', { class: 'kostkurz', text: k.kurz })))),
+    el('p', { class: 'muted small',
+      text: 'Das steuert die Essensvorschläge und die Hinweise bei der Nahrungsergänzung. '
+        + 'Deine eigenen Favoriten bleiben unangetastet, und eine Regel ist es auch nicht — '
+        + 'wer vegetarisch isst und zweimal im Monat Fisch, trägt den Fisch einfach ein.' }),
+    aktuell !== 'misch'
+      ? el('p', { class: 'hint',
+          text: aktuell === 'vegan'
+            ? 'Bei veganer Kost ändern sich vier Einträge in der Nahrungsergänzung deutlich: '
+              + 'Kreatin wirkt stärker, B12 ist Pflicht, Omega-3 braucht Algenöl, und Eisen '
+              + 'wird schlechter aufgenommen.'
+            : 'Bei vegetarischer Kost ändern sich vier Einträge in der Nahrungsergänzung: '
+              + 'Kreatin wirkt stärker als bei Mischköstlern, B12 lohnt einen Blutwert, '
+              + 'Omega-3 kommt ohne Fisch kaum zusammen, und Eisen wird schlechter '
+              + 'aufgenommen.' })
+      : null);
+}
+
+/**
  * Nur ein Weg hinein — die eigentliche Liste steht in der Ansicht „supps".
  * Hier steht sie, weil die Karte auf der Tagesansicht ausblendbar ist und man
  * sonst nicht mehr hinfände.
@@ -585,6 +635,8 @@ export async function render(container, ctx) {
       modelSection(ctx),
       el('h2', { class: 'section-title', text: 'Tagesziele' }),
       goalsSection(ctx),
+      el('h2', { class: 'section-title', text: 'Ernährungsform' }),
+      kostSection(ctx),
       el('h2', { class: 'section-title', text: 'Nahrungsergänzung' }),
       suppSection(ctx),
       el('h2', { class: 'section-title', text: 'Apple Health' }),

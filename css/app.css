@@ -1403,3 +1403,39 @@ input[type="range"] {
 .stufe-gut     .einordnungpunkt { background: var(--ok); }
 .stufe-mittel  .einordnungpunkt { background: var(--kcal); }
 .stufe-schwach .einordnungpunkt { background: var(--border-strong); }
+
+/* ---------------- Ernährungsform ---------------- */
+
+.kostwahl {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+.kostknopf {
+  flex-direction: column;
+  gap: 3px;
+  padding: 11px 6px;
+  min-height: 62px;
+  text-align: center;
+}
+.kostknopf.aktiv {
+  border-color: var(--kcal);
+  background: var(--kcal-soft);
+  color: var(--kcal);
+}
+.kostname { font-size: 14px; font-weight: 550; }
+.kostkurz { font-size: 11px; color: var(--text-muted); line-height: 1.3; }
+.kostknopf.aktiv .kostkurz { color: var(--kcal); opacity: .85; }
+
+/* Was sich durch die Ernährungsform ändert — bei Kreatin und B12 ist das
+   nicht eine Randnotiz, sondern die eigentliche Aussage. */
+.suppkarte.fuerkost { border-left-color: var(--kcal); }
+.kosthinweis {
+  margin: 0;
+  padding: 9px 12px;
+  border-radius: var(--radius-sm);
+  background: var(--kcal-soft);
+  color: var(--text);
+  font-size: 13.5px;
+  line-height: 1.5;
+}

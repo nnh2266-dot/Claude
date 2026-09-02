@@ -59,10 +59,12 @@ export function suggestSection(ctx, dateKey, rest) {
 
   const stunde = new Date().getHours();
   const mealType = mealTypeForHour(stunde);
+  const kost = ctx.state.profile?.ernaehrung || 'misch';
   const eigene = suggest({
     rest,
     favorites: ctx.state.favorites || [],
     stunde,
+    kost,
     anzahl: 3,
   });
 
@@ -79,6 +81,7 @@ export function suggestSection(ctx, dateKey, rest) {
         model: ctx.settings.model,
         rest,
         mealType,
+        kost,
         // Was du oft isst, ist der beste Hinweis auf deinen Geschmack.
         mag: (ctx.state.favorites || []).slice(0, 6).map((f) => f.name),
       });
@@ -105,6 +108,7 @@ export function suggestSection(ctx, dateKey, rest) {
           onClick: async () => {
             const text = suggestionPrompt(rest, {
               mealType,
+              kost,
               mag: (ctx.state.favorites || []).slice(0, 6).map((f) => f.name),
             });
             try {
