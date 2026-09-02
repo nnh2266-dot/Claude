@@ -27,6 +27,10 @@ export const ACTIVITIES = [
   { id: 'rudern',    name: 'Rudern',        met: 7.0,  distanz: true,  icon: '🚣' },
   { id: 'yoga',      name: 'Yoga',          met: 3.0,  distanz: false, icon: '🧘' },
   { id: 'klettern',  name: 'Klettern',      met: 8.0,  distanz: false, icon: '🧗' },
+  // Tennis getrennt vom übrigen Ballsport: Einzel und Doppel liegen weit
+  // auseinander, und der Unterschied lässt sich über die Intensität abbilden —
+  // locker trifft das Doppel, hart ein zügiges Einzel.
+  { id: 'tennis',    name: 'Tennis',        met: 7.3,  distanz: false, icon: '🎾' },
   { id: 'ballsport', name: 'Ballsport',     met: 7.0,  distanz: false, icon: '⚽' },
   { id: 'kampf',     name: 'Kampfsport',    met: 9.0,  distanz: false, icon: '🥋' },
   { id: 'tanzen',    name: 'Tanzen',        met: 5.5,  distanz: false, icon: '💃' },
