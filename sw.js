@@ -7,7 +7,7 @@
  * CACHE_VERSION bei jeder Änderung an den App-Dateien erhöhen.
  */
 
-const CACHE_VERSION = 'naehrwerte-v28';   // muss zu APP_VERSION in js/version.js passen
+const CACHE_VERSION = 'naehrwerte-v29';   // muss zu APP_VERSION in js/version.js passen
 
 const APP_SHELL = [
   './',
@@ -31,6 +31,11 @@ const APP_SHELL = [
   './js/activities.js',
   './js/sleep.js',
   './js/health.js',
+  './js/water.js',
+  './js/supplements.js',
+  './js/mealscore.js',
+  './js/suggest.js',
+  './js/coach.js',
   './js/version.js',
   './js/views/today.js',
   './js/views/capture.js',
@@ -47,6 +52,10 @@ const APP_SHELL = [
   './js/views/strength.js',
   './js/views/activity.js',
   './js/views/sleep.js',
+  './js/views/water.js',
+  './js/views/supplements.js',
+  './js/views/suggest.js',
+  './js/views/coach.js',
   './icons/icon-192.png',
   './icons/icon-512.png',
   './icons/apple-touch-icon.png',

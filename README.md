@@ -32,6 +32,12 @@ anzeigt.
   Frühstück / Mittag / Abend / Snack gruppiert
 - **Verlauf**: Balkendiagramm der letzten 7 oder 30 Tage, Durchschnittswerte, Tage im Ziel
 - **Favoriten**: häufige Mahlzeiten mit einem Tipp erneut eintragen — ohne Foto, ohne Kosten
+- **Einordnung je Mahlzeit**: unter jeder Zeile steht, was sie für deinen Tag tut —
+  Eiweiß je 100 kcal, Kalorien je 100 g und ob sie in den Rest passt
+- **Essensvorschläge**: wenn noch etwas übrig ist, schlägt die App drei Sachen vor, die
+  in den Rest passen — aus deinen Favoriten und einer kleinen eingebauten Liste. Ein
+  Tippen öffnet den Editor mit den Nährwerten drin. Auf Wunsch auch Ideen von Claude
+- **Trinken**: Richtwert aus Körpergewicht und Sportminuten, Eintragen über vier Knöpfe
 - **Ohne Internet nutzbar**: alles außer der Foto-Analyse funktioniert offline
 - **Von Hand eintragen**: die App ist auch ganz ohne API-Key voll benutzbar
 
@@ -225,6 +231,11 @@ js/strength.js           Krafteinordnung: Richtwerte je Übung, Gruppen, Verhäl
 js/ladders.js            Variantenleitern für Übungen ohne Zusatzgewicht
 js/activities.js         Sport außer dem Training: MET-Werte, Schätzung, Anrechnung
 js/sleep.js              Schlafdauer, Morgenlicht, Nachtzuordnung
+js/water.js              Trinkrichtwert, Portionen, Serie
+js/supplements.js        Nahrungsergänzung: Katalog, Belegstufen, Wechselwirkungen
+js/mealscore.js          Einordnung einzelner Mahlzeiten aus vier Zahlen
+js/suggest.js            Essensvorschläge aus Favoriten und Bausteinen
+js/coach.js              Tagesüberblick: die Regeln, die alle Bereiche verbinden
 js/health.js             Apple-Health-Export einlesen (Workouts, Körpergewicht)
 js/version.js            Fassungsnummer, muss zur CACHE_VERSION in sw.js passen
 js/energy.js             Grundumsatz, Tagesziele, Gewichtstrend, Kalorienkorrektur
@@ -234,6 +245,7 @@ js/ui.js                 DOM-Helfer
 js/views/                today · capture · history · favorites · settings
                          training · plan · progress · setup · mobility
                          report · photos · strength · activity · sleep
+                         water · supplements · suggest · coach
 sw.js                    Service Worker (Offline-Betrieb)
 manifest.webmanifest     PWA-Manifest
 ```
@@ -252,7 +264,8 @@ Fassung und lädt einmal neu, sobald ein neuer Service Worker übernimmt. Bleibt
 Gerät trotzdem hängen, gibt es unter *Mehr → Fassung* den Knopf
 *Offline-Speicher leeren und neu laden*.
 
-`training.js`, `skills.js` und `energy.js` fassen kein DOM an — die Rechnerei ist damit einzeln
+`training.js`, `skills.js`, `energy.js`, `water.js`, `supplements.js`, `mealscore.js`,
+`suggest.js` und `coach.js` fassen kein DOM an — die Rechnerei ist damit einzeln
 prüfbar, so wie `nutrition.js` es schon vorher war.
 
 ## Wie die Zahlen entstehen
@@ -391,6 +404,121 @@ Wiederholungen gedeckelt, weil sie darüber deutlich überschätzt; und gerechne
 dem besten Satz überhaupt, nicht dem der laufenden Woche. Wo kein Richtwert existiert —
 etwa beim Handtuch-Rudern im Sitzen, wo der Widerstand aus den eigenen Beinen kommt —
 steht ausdrücklich keine Zahl statt einer erfundenen.
+
+## Der Tagesüberblick
+
+Ganz oben auf der Tagesansicht steht eine Karte, die als einzige Stelle der App alle
+Bereiche gleichzeitig sieht: Schlaf, Training, Sport, Kalorien, Trinken, Ergänzung,
+Gewicht, wartende Fotos. Sie zieht die Verbindungen, die man sonst selbst ziehen müsste
+— und genau die rechtfertigen eine App wie diese; sonst wären es fünf Notizzettel in
+einer Hülle.
+
+Drei Regeln halten sie brauchbar:
+
+1. **Höchstens drei Hinweise.** Eine Liste, die alles sagt, sagt nichts.
+2. **Jeder Hinweis nennt etwas Konkretes.** Nicht „achte auf dein Eiweiß", sondern
+   „noch 48 g — das sind zwei Becher Magerquark".
+3. **Es gibt einen guten Zustand.** Liegt alles im Rahmen, steht das da. Ein Ratgeber,
+   der nur mahnt, wird weggeklickt.
+
+Die Reihenfolge ist bewusst gesetzt: **Zuerst, was die Zahlen der App selbst
+verfälscht.** Eine falsche Zahl richtet mehr Schaden an als ein vergessener Hinweis.
+Beispiele:
+
+- **Kreatin verschiebt das Gewicht.** In den ersten Wochen lagert der Muskel ein bis
+  zwei Kilo Wasser ein. Die Kalorienkorrektur würde das als Zunahme lesen und
+  gegensteuern — steht Kreatin auf deiner Liste und läuft seit weniger als vier Wochen,
+  sagt die App das ausdrücklich dazu.
+- **Ohne Wiegetage steuert die App blind.** Fehlen drei Tage in Folge, steht es oben.
+- **Koffein kostet Tiefschlaf.** Steht es auf deiner Liste und war die Nacht kurz, kommt
+  der Hinweis auf die Halbwertszeit von fünf bis sechs Stunden.
+- **Kurze Nacht vor einem Trainingstag**, harter Sport gestern vor den Beinen,
+  Entlastungswoche: dieselbe Karte, dieselbe Reihenfolge.
+
+## Trinken
+
+Der Richtwert lag schon lange im Energieplan, aber nur zum Anschauen. Jetzt lässt er
+sich eintragen — mit vier Knöpfen für Glas, kleine Flasche, Flasche und große Flasche.
+Kein Zahlenfeld: Wer trinkt, hat ein Glas in der Hand und höchstens einen Daumen frei.
+
+Gerechnet wird mit **35 ml je Kilogramm Körpergewicht**, plus **10 ml je Sportminute**
+— das ist der untere Rand dessen, was beim Schwitzen verloren geht. An einem Tag mit
+einer Stunde Training steigt der Richtwert damit von 2,8 auf 3,4 Liter.
+
+Über die Menge wird nicht dramatisiert. Der Körper reguliert Flüssigkeit gut, und Durst
+ist ein brauchbarer Melder. Der Richtwert hilft an Tagen, an denen man das Trinken
+schlicht vergisst — deshalb gibt es hier keine roten Balken, sondern eine Skala mit
+Vierteln und einen Satz zur Einordnung.
+
+## Nahrungsergänzung
+
+Zwei Dinge macht dieser Teil, und ein drittes ausdrücklich nicht.
+
+**Er macht:** eine tägliche Liste zum Abhaken, gruppiert nach Tageszeit. Und er kennt
+die Wechselwirkungen mit dem Rest der App — Kreatin verschiebt das Gewicht, Koffein den
+Schlaf, Eiweißpulver das Eiweißziel. Genau daran hängt der Nutzen; eine Häkchenliste
+allein wäre eine Notiz-App.
+
+**Er macht nicht: dosieren.** Zu jedem Mittel steht, wofür es belegt ist und wie gut —
+mehr nicht. Was du brauchst, hängt an Blutwerten, Ernährung und Vorerkrankungen, und das
+weiß diese App nicht.
+
+Die Belegstufen sind grob und ehrlich:
+
+| Stufe | Bedeutung | Mittel |
+| --- | --- | --- |
+| **gut belegt** | mehrfach in kontrollierten Studien bestätigt | Kreatin, Koffein, Eiweißpulver, B12 (bei veganer Kost) |
+| **mittelmäßig** | Wirkung plausibel, aber kleiner oder von der Ausgangslage abhängig | Vitamin D3, Omega-3, Beta-Alanin |
+| **dünn belegt** | wird viel verkauft, hält der Prüfung kaum stand | Magnesium, Zink, Multivitamin |
+
+Dass Magnesium neben Kreatin steht und dabei „dünn belegt" liest, ist der Punkt. Eine
+App, die alles gleich aussehen lässt, verkauft mit.
+
+Was nicht im Katalog steht, lässt sich als eigenes Mittel eintragen — zur Wirkung sagt
+die App dann nichts, sie kennt es ja nicht.
+
+## Was eine Mahlzeit für den Tag tut
+
+Diese App bewertet **kein Essen als gut oder schlecht**. Sie kennt vier Zahlen —
+Kalorien, Eiweiß, Kohlenhydrate, Fett — und daraus lässt sich nicht ableiten, ob etwas
+gesund ist. Ballaststoffe, Zucker, Salz, Vitamine, Verarbeitungsgrad: nichts davon steht
+in den Daten. Ein Riegel und eine Linsensuppe können dieselben vier Zahlen haben.
+
+Was sich ableiten lässt, ist etwas anderes und Nützlicheres: **was diese Mahlzeit für
+deinen Tag tut.** Drei Fragen, alle drei ehrlich zu beantworten:
+
+- **Eiweiß je 100 kcal.** Magerquark liegt bei etwa 17, Hähnchenbrust bei 22, Brot bei
+  3, Öl bei 0. Ab 7,5 trägt eine Mahlzeit dein Eiweißziel mit.
+- **Kalorien je 100 g.** Der beste Sättigungsschätzer, den vier Zahlen hergeben: Wasser
+  und Ballaststoffe machen Volumen ohne Kalorien, Fett macht Kalorien ohne Volumen.
+  Unter 150 sättigt lange, über 350 ist viel Energie auf wenig Menge.
+- **Passt es in den Rest des Tages?**
+
+Deshalb heißt hier nichts „ungesund". Ein Stück Kuchen bekommt keine schlechte Note,
+sondern den Hinweis, dass es wenig Eiweiß bringt und viele Kalorien auf wenig Volumen —
+was stimmt und was man auch gerne isst.
+
+Im Wochenbericht kommt die Verteilung dazu: Drei bis vier Portionen mit je mindestens
+20 g Eiweiß nutzt der Muskel besser als eine große.
+
+## Essensvorschläge
+
+Die Frage, die abends um sieben tatsächlich im Raum steht, ist nicht „was ist gesund",
+sondern: *mir fehlen noch 700 Kalorien und 60 Gramm Eiweiß, und ich habe keine Idee.*
+
+Zwei Quellen, in dieser Reihenfolge:
+
+1. **Deine Favoriten.** Was du schon einmal gegessen und gespeichert hast, passt zu
+   deinem Geschmack und deinem Einkauf, und ein Tippen trägt es ein.
+2. **Eine kleine eingebaute Liste** einfacher Bausteine — bewusst kurz und bewusst
+   langweilig. Das sind Zutaten, keine Rezepte.
+
+Beides läuft ohne Verbindung und ohne API-Key. Sortiert wird nach drei Dingen: nicht
+über den Rest hinausschießen, das fehlende Eiweiß mitbringen, zur Tageszeit passen.
+
+Wer Lust auf etwas Neues hat, kann zusätzlich Claude fragen — das ist ein eigener Knopf
+und ausdrücklich nicht der Normalfall. Ohne API-Key gibt es stattdessen die fertige
+Frage zum Kopieren, derselbe Weg wie bei den Essensfotos.
 
 ## Schlaf und Morgenlicht
 

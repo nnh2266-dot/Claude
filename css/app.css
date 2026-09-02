@@ -1257,3 +1257,149 @@ input[type="range"] {
   font-size: 12px; color: var(--text-faint);
   margin: 2px 0 0; line-height: 1.4;
 }
+
+/* ---------------- Überblick ganz oben ---------------- */
+
+.coachkarte { border-left: 3px solid var(--kcal); }
+
+.coachzeile {
+  display: grid;
+  grid-template-columns: 22px 1fr;
+  gap: 10px;
+  align-items: start;
+}
+.coachikon {
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  display: grid; place-items: center;
+  font-size: 12px; font-weight: 700; line-height: 1;
+  background: var(--surface-2); color: var(--text-muted);
+  margin-top: 1px;
+}
+.coach-warnung .coachikon { background: var(--danger-soft); color: var(--danger); }
+.coach-achtung .coachikon { background: var(--kcal-soft);   color: var(--kcal); }
+.coach-offen   .coachikon { background: var(--surface-2);   color: var(--text-muted); }
+.coach-info    .coachikon { background: var(--surface-2);   color: var(--text-faint); }
+
+.coachtext { margin: 0 0 4px; font-size: 14px; line-height: 1.5; }
+.coachzeile .btn-sm { margin-top: 2px; }
+.coachgut { margin: 0; font-size: 14px; color: var(--ok); }
+
+/* ---------------- Trinken ---------------- */
+
+.wasserbalken {
+  position: relative;
+  height: 12px;
+  border-radius: 6px;
+  background: var(--surface-2);
+  overflow: hidden;
+}
+.wasserfuell {
+  height: 100%;
+  border-radius: 6px;
+  background: var(--carbs);
+  transition: width .18s ease-out;
+}
+.wassermarke {
+  position: absolute; top: 0; bottom: 0;
+  width: 1px;
+  background: var(--bg);
+  opacity: .8;
+}
+
+.wasserknoepfe {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+.wasserknopf {
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px 4px;
+  min-height: 60px;
+}
+.wasserikon { font-size: 18px; line-height: 1; }
+.wassermenge { font-size: 12px; color: var(--text-muted); }
+
+/* ---------------- Nahrungsergänzung ---------------- */
+
+.suppgruppe { display: grid; gap: 6px; }
+.suppzeit {
+  font-size: 11px; letter-spacing: .06em; text-transform: uppercase;
+  color: var(--text-faint);
+}
+.suppzeile {
+  display: flex; align-items: center; gap: 10px;
+  width: 100%; text-align: left;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  cursor: pointer;
+}
+.suppzeile.an { border-color: var(--ok); background: var(--surface-2); }
+.supphaken {
+  width: 22px; height: 22px; flex: 0 0 22px;
+  border: 1.5px solid var(--border-strong);
+  border-radius: 6px;
+  display: grid; place-items: center;
+  font-size: 13px; font-weight: 700;
+  color: var(--on-accent);
+}
+.suppzeile.an .supphaken { background: var(--ok); border-color: var(--ok); }
+.suppname { display: block; font-size: 14px; }
+.suppmenge { display: block; font-size: 12px; color: var(--text-muted); }
+.suppwahl { width: auto; min-width: 128px; }
+.suppkarte { border-left: 3px solid var(--border-strong); }
+.supppill { font-size: 11px; }
+.supp-gut    { background: color-mix(in srgb, var(--ok) 16%, transparent); color: var(--ok); }
+.supp-mittel { background: var(--kcal-soft); color: var(--kcal); }
+.supp-duenn  { background: var(--surface-2); color: var(--text-muted); }
+
+/* ---------------- Essensvorschläge ---------------- */
+
+.vorschlagliste { display: grid; gap: 8px; }
+.vorschlag {
+  display: flex; align-items: center; gap: 12px;
+  width: 100%; text-align: left;
+  padding: 11px 13px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  cursor: pointer;
+}
+.vorschlag:active { background: var(--surface-2); }
+.vorschlagname { font-size: 14px; font-weight: 550; }
+.vorschlagzahlen { text-align: right; font-size: 13px; white-space: nowrap; }
+
+/* ---------------- Einordnung einer Mahlzeit ---------------- */
+
+.mealwert {
+  font-size: 12px; line-height: 1.4;
+  margin-top: 3px;
+  color: var(--text-muted);
+}
+.mealwert.wert-gut     { color: var(--ok); }
+.mealwert.wert-schwach { color: var(--text-muted); }
+
+.einordnung { border-left: 3px solid var(--border-strong); }
+.einordnungzeile {
+  display: grid;
+  grid-template-columns: 10px 1fr;
+  gap: 10px;
+  align-items: start;
+  font-size: 14px;
+  line-height: 1.5;
+}
+.einordnungpunkt {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--text-faint);
+  margin-top: 7px;
+}
+.stufe-gut     .einordnungpunkt { background: var(--ok); }
+.stufe-mittel  .einordnungpunkt { background: var(--kcal); }
+.stufe-schwach .einordnungpunkt { background: var(--border-strong); }

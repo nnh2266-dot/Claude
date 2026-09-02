@@ -10,6 +10,7 @@ import {
   getSettings, getTrainingProfile, getPlan, getKcalAdjust, getSkillLevels,
   listSessions, listWeights, listMobilityTests, listProgressPhotos, listPending,
   getActivitiesByDate, listSleep, listActivities,
+  listWater, listSupplementDays, getSupplementList, listFavorites,
 } from './store.js';
 import { targetsForDate } from './energy.js';
 import { toast } from './ui.js';
@@ -29,6 +30,7 @@ import * as photosView from './views/photos.js';
 import * as strengthView from './views/strength.js';
 import * as activityView from './views/activity.js';
 import * as sleepView from './views/sleep.js';
+import * as suppsView from './views/supplements.js';
 
 const VIEWS = {
   today: todayView,
@@ -46,6 +48,7 @@ const VIEWS = {
   strength: strengthView,
   activity: activityView,
   sleep: sleepView,
+  supps: suppsView,
 };
 
 const state = {
@@ -70,6 +73,14 @@ const state = {
   sportWoche: [],
   /** Alle Nächte — die Einträge sind winzig, das lohnt keine Teilladerei. */
   sleep: [],
+  /** Getrunkenes je Tag. Genauso winzig wie der Schlaf. */
+  water: [],
+  /** Die Häkchen der Nahrungsergänzung je Tag. */
+  supps: [],
+  /** Was du überhaupt nimmst — die eingerichtete Auswahl. */
+  suppListe: [],
+  /** Favoriten — die Essensvorschläge greifen darauf zurück. */
+  favorites: [],
 };
 
 let current = { name: null, param: null };
@@ -111,6 +122,7 @@ async function handleRoute() {
   const TAB_OF = {
     plan: 'training', progress: 'training', setup: 'training', mobility: 'training',
     photos: 'training', strength: 'training', report: 'today', activity: 'today', sleep: 'today',
+    supps: 'today',
   };
   const activeTab = TAB_OF[route.name] || route.name;
   for (const tab of document.querySelectorAll('.tab')) {
@@ -172,6 +184,15 @@ const ctx = {
   async refreshSleep() {
     state.sleep = await listSleep();
     return state.sleep;
+  },
+
+  /** Lädt Trinken und Nahrungsergänzung neu — beide hängen an derselben Karte. */
+  async refreshDaily() {
+    const [water, supps, suppListe, favorites] = await Promise.all([
+      listWater(), listSupplementDays(), getSupplementList(), listFavorites(),
+    ]);
+    Object.assign(state, { water, supps, suppListe, favorites });
+    return { water, supps, suppListe, favorites };
   },
 
   /** Lädt die Aktivitäten des angezeigten Tages. */
@@ -250,6 +271,7 @@ async function start() {
   await ctx.refreshPending();
   await ctx.refreshActivities();
   await ctx.refreshSleep();
+  await ctx.refreshDaily();
 
   window.addEventListener('hashchange', handleRoute);
 

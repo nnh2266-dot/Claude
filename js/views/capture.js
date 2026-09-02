@@ -14,7 +14,7 @@
 import { el, mount, viewHead, iconButton, field, toast, confirmAction } from '../ui.js';
 import {
   saveMeal, deleteMeal, saveFavorite, saveDraft, loadDraft, clearStoredDraft,
-  queuePhoto, deletePending,
+  queuePhoto, deletePending, getMealsByDate,
 } from '../store.js';
 import { processPhoto, blobToBase64 } from '../image.js';
 import {
@@ -24,9 +24,17 @@ import {
   MEAL_TYPES, sumItems, scaleItems, parseNumber, formatGram,
   localDateKey, newId,
 } from '../nutrition.js';
+import { scoreMeal, GRENZEN } from '../mealscore.js';
 
 /** Zustand der laufenden Bearbeitung. */
 let session = null;
+
+/**
+ * Die übrigen Mahlzeiten des bearbeiteten Tages.
+ * Gebraucht für die Einordnung: „passt in den Rest des Tages" lässt sich nur
+ * beantworten, wenn man weiß, was sonst noch drinsteht.
+ */
+let tagesMahlzeiten = [];
 
 let photoUrl = null;
 
@@ -796,6 +804,44 @@ function totalsStrip() {
   );
 }
 
+/**
+ * Was diese Mahlzeit für den Tag tut — direkt unter den Summen, wo man beim
+ * Eintragen ohnehin hinschaut.
+ *
+ * Bewusst keine Note und kein Ampelsymbol: Die App weiß nur vier Zahlen und
+ * kann daraus nicht ableiten, ob etwas gesund ist. Sie kann sagen, wie viel
+ * Eiweiß dabei ist, wie sättigend es je Kalorie sein dürfte und ob es in den
+ * Rest des Tages passt. Genau das steht da, und die Grenze steht darunter.
+ */
+function einordnungsKarte(ctx) {
+  const totals = sumItems(session.items);
+  if (!totals.kcal) return null;
+
+  // Was vor dieser Mahlzeit noch übrig war. Beim Bearbeiten zählt sie selbst
+  // nicht mit, sonst wäre der Rest doppelt abgezogen.
+  const ziele = ctx.goalsFor(session.dateKey);
+  const andere = tagesMahlzeiten
+    .filter((m) => m.id !== session.id)
+    .reduce((sum, m) => sum + (m.totals?.kcal || 0), 0);
+  const rest = ziele ? { kcal: ziele.kcal - andere } : null;
+
+  const wert = scoreMeal({ totals, items: session.items }, rest);
+  if (!wert) return null;
+
+  const punkt = (d) => (d ? el('div', { class: `einordnungzeile stufe-${d.stufe}` },
+    el('span', { class: 'einordnungpunkt', 'aria-hidden': 'true' }),
+    el('span', { text: d.text })) : null);
+
+  return el('div', { class: 'card stack einordnung' },
+    el('div', { class: 'row-between' },
+      el('h3', { class: 'card-title', text: 'Was das für heute heißt' }),
+      wert.label ? el('span', { class: 'pill pill-kcal', text: wert.label }) : null),
+    punkt(wert.eiweiss),
+    punkt(wert.dichte),
+    punkt(wert.passung),
+    el('p', { class: 'muted small', text: GRENZEN }));
+}
+
 async function handleSave(ctx) {
   if (!session.items.length) {
     toast('Bitte mindestens eine Komponente eintragen.', 'err');
@@ -1043,6 +1089,9 @@ function draw(container, ctx) {
 
   blocks.push(el('div', { class: 'mt-16' }, totalsStrip()));
 
+  const einordnung = einordnungsKarte(ctx);
+  if (einordnung) blocks.push(el('div', { class: 'mt-16' }, einordnung));
+
   // Notiz und Favorit
   blocks.push(
     el(
@@ -1109,6 +1158,7 @@ export async function render(container, ctx) {
   if (!session || session.draftRef !== draft) {
     session = buildSession(draft);
     session.draftRef = draft;
+    tagesMahlzeiten = await getMealsByDate(session.dateKey);
   }
 
   draw(container, ctx);

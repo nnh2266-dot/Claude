@@ -21,6 +21,9 @@ import {
 } from './training.js';
 import { skillById, levelIndex } from './skills.js';
 import { dayTotals, weekSummary } from './activities.js';
+import { dailyGoal as wasserZiel, formatMl, average as wasserSchnitt } from './water.js';
+import { resolve as suppsAufloesen, dayStatus as suppStand } from './supplements.js';
+import { dayPicture } from './mealscore.js';
 import {
   duration as schlafDauer, formatDauer, rateDuration, lightTiming, isComplete as nachtVoll,
   summarise as schlafSchnitt, SOLL_MIN, LICHT_MINUTEN,
@@ -134,6 +137,29 @@ export function dailyReport(data) {
   if (aktiv.anzahl) {
     befunde.push(gut(`${aktiv.anzahl} ${aktiv.anzahl === 1 ? 'Aktivität' : 'Aktivitäten'} `
       + `eingetragen: ${aktiv.minuten} Minuten, rund ${aktiv.kcal} kcal.`));
+  }
+
+  /* Trinken */
+  const wZiel = wasserZiel(profile?.weight, aktiv.minuten + (tag ? (profile?.sessionLength || 0) : 0));
+  const getrunken = (data.water || []).find((w) => w.date === dateKey)?.ml || 0;
+  if (wZiel) {
+    if (getrunken >= wZiel * 0.9) {
+      befunde.push(gut(`${formatMl(getrunken)} getrunken — Richtwert erreicht.`));
+    } else if (getrunken > 0) {
+      befunde.push(fakt(`${formatMl(getrunken)} von rund ${formatMl(wZiel)} getrunken.`));
+    } else {
+      befunde.push(fakt('Beim Trinken ist heute noch nichts eingetragen.'));
+    }
+  }
+
+  /* Nahrungsergänzung */
+  const suppListe = suppsAufloesen(data.suppListe || []);
+  if (suppListe.length) {
+    const stand = suppStand(suppListe, (data.supps || []).find((x) => x.date === dateKey));
+    befunde.push(stand.vollstaendig
+      ? gut(`Nahrungsergänzung vollständig (${stand.gesamt}).`)
+      : fakt(`Nahrungsergänzung ${stand.genommen} von ${stand.gesamt}`
+          + (stand.offen.length ? ` — offen: ${stand.offen.map((x) => x.name).join(', ')}.` : '.')));
   }
 
   /* Kalorien */
@@ -411,6 +437,53 @@ export function weeklyReport(data) {
     }
 
     abschnitte.push({ titel: 'Schlaf und Licht', befunde: schlaf });
+  }
+
+  /* --- Trinken und Nahrungsergänzung --- */
+  const alltag = [];
+
+  const wZielWoche = wasserZiel(profile?.weight, 0);
+  const wSchnitt = wasserSchnitt(data.water || [], bisHeute);
+  if (wZielWoche && wSchnitt) {
+    alltag.push(wSchnitt.schnitt >= wZielWoche * 0.9
+      ? gut(`Im Schnitt ${formatMl(wSchnitt.schnitt)} an ${wSchnitt.tage} Tagen — `
+          + `Richtwert liegt bei ${formatMl(wZielWoche)}.`)
+      : fakt(`Im Schnitt ${formatMl(wSchnitt.schnitt)} an ${wSchnitt.tage} Tagen, `
+          + `Richtwert ${formatMl(wZielWoche)}.`));
+    if (wSchnitt.tage < bisHeute.length) {
+      alltag.push(fakt(`An ${bisHeute.length - wSchnitt.tage} Tagen nichts eingetragen.`));
+    }
+  }
+
+  const wocheSupps = suppsAufloesen(data.suppListe || []);
+  if (wocheSupps.length) {
+    const voll = bisHeute.filter((t) =>
+      suppStand(wocheSupps, (data.supps || []).find((x) => x.date === t)).vollstaendig).length;
+    alltag.push(voll >= Math.ceil(bisHeute.length * 0.8)
+      ? gut(`An ${voll} von ${bisHeute.length} Tagen alles genommen.`)
+      : fakt(`An ${voll} von ${bisHeute.length} Tagen alles genommen.`));
+  }
+
+  if (alltag.length) abschnitte.push({ titel: 'Trinken und Ergänzung', befunde: alltag });
+
+  /* --- Wie die Mahlzeiten zusammengesetzt waren --- */
+  const eiweissBild = bisHeute
+    .map((t) => dayPicture(mealsByDate[t] || [], null))
+    .filter(Boolean);
+  if (eiweissBild.length >= 3) {
+    const einseitig = eiweissBild.filter((b) => b.einseitig).length;
+    const tragendeSchnitt = eiweissBild.reduce((sum, b) => sum + b.tragende, 0) / eiweissBild.length;
+    const zusammensetzung = [];
+    zusammensetzung.push(tragendeSchnitt >= 2.5
+      ? gut(`Im Schnitt ${einsNach(tragendeSchnitt)} Mahlzeiten am Tag mit mindestens 20 g `
+          + 'Eiweiß — gut verteilt.')
+      : fakt(`Im Schnitt nur ${einsNach(tragendeSchnitt)} Mahlzeiten am Tag mit mindestens 20 g `
+          + 'Eiweiß. Drei bis vier verteilte Portionen nutzt der Muskel besser als eine große.'));
+    if (einseitig >= 3) {
+      zusammensetzung.push(schlecht(`An ${einseitig} Tagen steckte mehr als die Hälfte des `
+        + 'Eiweißes in einer einzigen Mahlzeit.'));
+    }
+    abschnitte.push({ titel: 'Zusammensetzung', befunde: zusammensetzung });
   }
 
   /* --- Sport außer dem Training --- */

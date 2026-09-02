@@ -435,7 +435,8 @@ function dataSection(ctx, mealCount) {
     importInput,
     el('p', { class: 'hint' },
       'Der Export enthält Mahlzeiten, Favoriten, Trainingsplan, Einheiten, Gewichte, ' +
-      'Beweglichkeitstests, Aktivitäten und Schlaf. Nicht enthalten sind der API-Key und ' +
+      'Beweglichkeitstests, Aktivitäten, Schlaf, Trinken und Nahrungsergänzung. Nicht ' +
+      'enthalten sind der API-Key und ' +
       'alle Bilder: Fortschrittsfotos, Essensfotos und die Warteschlange. Bilder würden die ' +
       'Datei um ein Vielfaches vergrößern — dafür gibt es den eigenen Knopf darunter.'),
     el(
@@ -551,6 +552,24 @@ function versionSection() {
         + 'Trainingsdaten und Gewichte bleiben erhalten.' }));
 }
 
+/**
+ * Nur ein Weg hinein — die eigentliche Liste steht in der Ansicht „supps".
+ * Hier steht sie, weil die Karte auf der Tagesansicht ausblendbar ist und man
+ * sonst nicht mehr hinfände.
+ */
+function suppSection(ctx) {
+  const anzahl = (ctx.state.suppListe || []).length;
+  return el('div', { class: 'card stack' },
+    el('p', { class: 'small',
+      text: anzahl
+        ? `${anzahl} ${anzahl === 1 ? 'Mittel' : 'Mittel'} eingerichtet. Abgehakt wird auf der `
+          + 'Tagesansicht.'
+        : 'Wenn du regelmäßig etwas nimmst, kannst du es hier einrichten und täglich '
+          + 'abhaken. Zu jedem Mittel steht dabei, wie gut die Wirkung belegt ist.' }),
+    el('button', { class: 'btn btn-block', type: 'button', onClick: () => ctx.go('supps') },
+      anzahl ? 'Liste ändern' : 'Einrichten'));
+}
+
 export async function render(container, ctx) {
   const mealCount = await countMeals();
 
@@ -566,6 +585,8 @@ export async function render(container, ctx) {
       modelSection(ctx),
       el('h2', { class: 'section-title', text: 'Tagesziele' }),
       goalsSection(ctx),
+      el('h2', { class: 'section-title', text: 'Nahrungsergänzung' }),
+      suppSection(ctx),
       el('h2', { class: 'section-title', text: 'Apple Health' }),
       healthSection(ctx),
       el('h2', { class: 'section-title', text: 'Daten' }),

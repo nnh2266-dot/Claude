@@ -14,7 +14,7 @@ import {
   exerciseById, GROUP_LABEL, blockWeek, forWeek, dayForWeekday, nextStep, BLOCK_WEEKS,
   travelDay, restSeconds, sessionMinutes, REST_TEMPO,
   replaceExercise, setExercise, missedDays, SKIP_REASONS, deloadHinweis,
-  isUnilateral, setSides,
+  isUnilateral,
 } from '../training.js';
 import {
   ladderFor, harderRung, easierRung, pickNearestRung, topOutStreak, STREAK_FOR_NEXT,

@@ -299,6 +299,96 @@ export async function analyseText({ apiKey, model, description }) {
   return normaliseResult(parsed);
 }
 
+/* ---------------- Essensvorschläge ---------------- */
+
+const VORSCHLAG_SYSTEM = `Du schlägst Mahlzeiten vor. Der Nutzer sagt dir, wie viele Kalorien und wie viel Eiweiß ihm heute noch fehlen.
+
+Regeln:
+- Genau drei Vorschläge, alltagstauglich, höchstens 20 Minuten Zubereitung.
+- Zusammen sollen sie unterschiedliche Fälle abdecken: einer schnell, einer sättigend, einer eiweißreich.
+- Schätze die Nährwerte für eine realistische Portion. Lieber vorsichtig schätzen als schmeicheln.
+- Keine Nahrungsergänzungsmittel vorschlagen, keine Diätratschläge, keine Bewertung des bisherigen Tages.
+- Deutsch, knapp, ohne Werbesprache.`;
+
+const VORSCHLAG_SCHEMA = {
+  type: 'object',
+  properties: {
+    vorschlaege: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          name:     { type: 'string' },
+          zutaten:  { type: 'string' },
+          kcal:     { type: 'number' },
+          protein:  { type: 'number' },
+          carbs:    { type: 'number' },
+          fat:      { type: 'number' },
+        },
+        required: ['name', 'zutaten', 'kcal', 'protein', 'carbs', 'fat'],
+        additionalProperties: false,
+      },
+    },
+  },
+  required: ['vorschlaege'],
+  additionalProperties: false,
+};
+
+/**
+ * Holt drei Vorschläge von Claude.
+ *
+ * Bewusst ein eigener Knopf und nicht der Normalfall: Die eingebauten
+ * Vorschläge laufen ohne Verbindung und ohne Guthaben. Das hier ist für den
+ * Abend, an dem einem nichts mehr einfällt.
+ */
+export async function suggestMeals({ apiKey, model, rest, mealType, mag = [] }) {
+  if (!apiKey) {
+    throw new ApiError(
+      'Ohne API-Key geht das nur über die Claude-App — den Text zum Kopieren findest du '
+      + 'unter den Vorschlägen.',
+      { kind: 'auth' }
+    );
+  }
+
+  const zeit = { breakfast: 'Frühstück', lunch: 'Mittagessen',
+    dinner: 'Abendessen', snack: 'Snack' }[mealType] || 'Mahlzeit';
+  const zeilen = [
+    `Ich brauche Ideen für ein ${zeit}.`,
+    `Übrig für heute: ${Math.round(rest.kcal)} kcal und ${Math.round(rest.protein)} g Eiweiß.`,
+  ];
+  if (mag.length) zeilen.push(`Das esse ich oft: ${mag.join(', ')}.`);
+
+  const message = await callApi(apiKey, {
+    model,
+    max_tokens: 1500,
+    system: VORSCHLAG_SYSTEM,
+    output_config: { format: { type: 'json_schema', schema: VORSCHLAG_SCHEMA } },
+    messages: [{ role: 'user', content: zeilen.join('\n') }],
+  });
+
+  if (message.stop_reason === 'refusal') {
+    throw new ApiError('Der Vorschlag wurde abgelehnt. Die eingebauten Ideen stehen weiter da.',
+      { kind: 'refusal' });
+  }
+
+  let parsed;
+  try {
+    parsed = JSON.parse(firstText(message));
+  } catch {
+    throw new ApiError('Die Antwort war unverständlich. Bitte nochmal versuchen.',
+      { kind: 'parse', retriable: true });
+  }
+
+  return (parsed.vorschlaege || []).slice(0, 3).map((v) => ({
+    name: String(v.name || '').trim() || 'Vorschlag',
+    zutaten: String(v.zutaten || '').trim(),
+    kcal: Math.max(0, Math.round(Number(v.kcal) || 0)),
+    protein: Math.max(0, Math.round(Number(v.protein) || 0)),
+    carbs: Math.max(0, Math.round(Number(v.carbs) || 0)),
+    fat: Math.max(0, Math.round(Number(v.fat) || 0)),
+  }));
+}
+
 /* ---------------- Chat-Brücke ----------------
    Weg ohne API-Key: der Nutzer schickt Prompt und Foto selbst durch die
    Claude-App und fügt die Antwort hier wieder ein. Kostet nichts extra, wenn

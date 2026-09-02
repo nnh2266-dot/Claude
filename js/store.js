@@ -11,14 +11,16 @@
  *   pending   — fotografierte Mahlzeiten, die noch auf die Auswertung warten
  *   activities— Sport außerhalb des Krafttrainings, Index 'by-date'
  *   sleep     — Schlaf und Morgenlicht, ein Eintrag je Nacht
+ *   water     — Getrunkenes, ein Eintrag je Tag
+ *   supps     — Nahrungsergänzung, ein Eintrag je Tag mit den Häkchen
  *   settings  — Key/Value (apiKey, model, goals, profile, plan, kcalAdjust,
- *               skillLevels)
+ *               skillLevels, suppListe)
  */
 
 import { DEFAULT_GOALS, sumItems, newId, localDateKey } from './nutrition.js';
 
 const DB_NAME = 'naehrwert';
-const DB_VERSION = 7;
+const DB_VERSION = 8;
 
 export const DEFAULT_MODEL = 'claude-haiku-4-5';
 
@@ -79,6 +81,16 @@ function openDB() {
       // Aufwachens — dieselbe Sicht, in der man morgens denkt.
       if (!db.objectStoreNames.contains('sleep')) {
         db.createObjectStore('sleep', { keyPath: 'date' });
+      }
+      // Ab Version 8: Trinken und Nahrungsergänzung. Beide je ein Eintrag pro
+      // Tag — anders als beim Sport gibt es nichts zu unterscheiden, ein Glas
+      // ist ein Glas. Die Einzelschlucke stehen im Eintrag als Liste, damit man
+      // den letzten zurücknehmen kann.
+      if (!db.objectStoreNames.contains('water')) {
+        db.createObjectStore('water', { keyPath: 'date' });
+      }
+      if (!db.objectStoreNames.contains('supps')) {
+        db.createObjectStore('supps', { keyPath: 'date' });
       }
     };
 
@@ -430,6 +442,90 @@ export async function deleteSleep(dateKey) {
   await tx('sleep', 'readwrite', (s) => s.delete(dateKey));
 }
 
+/* ---------------- Trinken ---------------- */
+
+/**
+ * Zählt Millilitern zum Tag dazu. Negative Werte nehmen zurück — dafür gibt es
+ * den Rückgängig-Knopf, wenn man sich vertippt hat.
+ *
+ * Die einzelnen Portionen bleiben als Liste stehen, sonst ließe sich nur die
+ * Summe zurücksetzen und nicht der letzte Schluck.
+ */
+export async function addWater(dateKey, ml) {
+  const vorher = (await tx('water', 'readonly', (s) => s.get(dateKey))) || { portionen: [] };
+  const portionen = [...(vorher.portionen || [])];
+
+  if (ml > 0) {
+    portionen.push({ ml: Math.round(ml), ts: Date.now() });
+  } else if (ml < 0) {
+    portionen.pop();
+  }
+
+  const record = {
+    date: dateKey,
+    ml: portionen.reduce((sum, p) => sum + p.ml, 0),
+    portionen,
+    updatedAt: Date.now(),
+  };
+  await tx('water', 'readwrite', (s) => s.put(record));
+  return record;
+}
+
+/** Setzt den Tag auf einen bestimmten Wert, ohne Einzelportionen. */
+export async function setWater(dateKey, ml) {
+  const record = {
+    date: dateKey,
+    ml: Math.max(0, Math.round(ml)),
+    portionen: ml > 0 ? [{ ml: Math.round(ml), ts: Date.now() }] : [],
+    updatedAt: Date.now(),
+  };
+  await tx('water', 'readwrite', (s) => s.put(record));
+  return record;
+}
+
+export async function getWater(dateKey) {
+  return tx('water', 'readonly', (s) => s.get(dateKey));
+}
+
+export async function listWater() {
+  const rows = await tx('water', 'readonly', (s) => s.getAll());
+  return (rows || []).sort((a, b) => (a.date < b.date ? -1 : 1));
+}
+
+/* ---------------- Nahrungsergänzung ---------------- */
+
+/** Setzt oder löscht das Häkchen für ein Mittel an einem Tag. */
+export async function setSupplementTaken(dateKey, id, genommen) {
+  const vorher = (await tx('supps', 'readonly', (s) => s.get(dateKey))) || {};
+  const taken = { ...(vorher.taken || {}) };
+
+  if (genommen) taken[id] = Date.now();
+  else delete taken[id];
+
+  const record = { date: dateKey, taken, updatedAt: Date.now() };
+  await tx('supps', 'readwrite', (s) => s.put(record));
+  return record;
+}
+
+export async function getSupplementDay(dateKey) {
+  return tx('supps', 'readonly', (s) => s.get(dateKey));
+}
+
+export async function listSupplementDays() {
+  const rows = await tx('supps', 'readonly', (s) => s.getAll());
+  return (rows || []).sort((a, b) => (a.date < b.date ? -1 : 1));
+}
+
+/** Die eingerichtete Auswahl — was du überhaupt nimmst, nicht wann. */
+export async function getSupplementList() {
+  const row = await tx('settings', 'readonly', (s) => s.get('suppListe'));
+  return Array.isArray(row?.value) ? row.value : [];
+}
+
+export async function setSupplementList(liste) {
+  await setSetting('suppListe', Array.isArray(liste) ? liste : []);
+}
+
 /* ---------------- Aktivitäten ---------------- */
 
 export async function saveActivity(activity) {
@@ -557,6 +653,9 @@ export async function exportData() {
   const mobility = await listMobilityTests();
   const activities = await listActivities();
   const sleep = await listSleep();
+  const water = await listWater();
+  const supps = await listSupplementDays();
+  const suppListe = await getSupplementList();
 
   return {
     format: 'naehrwert-export',
@@ -574,6 +673,9 @@ export async function exportData() {
     mobility,
     activities,
     sleep,
+    water,
+    supps,
+    suppListe,
   };
 }
 
@@ -646,7 +748,34 @@ export async function importData(data) {
     sleep++;
   }
 
-  return { meals, favorites, sessions, weights, activities, sleep, mobility };
+  let water = 0;
+  for (const eintrag of Array.isArray(data.water) ? data.water : []) {
+    if (!eintrag || !eintrag.date || !Number(eintrag.ml)) continue;
+    await tx('water', 'readwrite', (s) => s.put({
+      date: eintrag.date,
+      ml: Math.max(0, Math.round(Number(eintrag.ml))),
+      portionen: Array.isArray(eintrag.portionen) ? eintrag.portionen : [],
+      updatedAt: Number(eintrag.updatedAt) || Date.now(),
+    }));
+    water++;
+  }
+
+  let supps = 0;
+  for (const eintrag of Array.isArray(data.supps) ? data.supps : []) {
+    if (!eintrag || !eintrag.date || !eintrag.taken) continue;
+    await tx('supps', 'readwrite', (s) => s.put({
+      date: eintrag.date,
+      taken: eintrag.taken,
+      updatedAt: Number(eintrag.updatedAt) || Date.now(),
+    }));
+    supps++;
+  }
+
+  // Die eingerichtete Auswahl gehört mit in die Sicherung — sie von Hand neu
+  // zusammenzuklicken wäre der ärgerlichste Teil einer Wiederherstellung.
+  if (Array.isArray(data.suppListe)) await setSupplementList(data.suppListe);
+
+  return { meals, favorites, sessions, weights, activities, sleep, mobility, water, supps };
 }
 
 /** Löscht alle Mahlzeiten und Favoriten. Einstellungen bleiben erhalten. */

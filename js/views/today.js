@@ -10,6 +10,11 @@ import { startFromPending } from './capture.js';
 import { activitySection } from './activity.js';
 import { dayTotals } from '../activities.js';
 import { sleepSection } from './sleep.js';
+import { waterSection } from './water.js';
+import { supplementSection } from './supplements.js';
+import { suggestSection } from './suggest.js';
+import { coachCard } from './coach.js';
+import { scoreMeal } from '../mealscore.js';
 import { energyPlan } from '../energy.js';
 import {
   localDateKey, shiftDateKey, formatDateKey, formatTime,
@@ -120,7 +125,7 @@ function progressCard(totals, goals, ctx) {
 }
 
 /** Eine Zeile in der Mahlzeitenliste. */
-function mealRow(meal, ctx) {
+function mealRow(meal, ctx, wertung) {
   let thumb;
   if (meal.thumb instanceof Blob) {
     const url = URL.createObjectURL(meal.thumb);
@@ -147,7 +152,13 @@ function mealRow(meal, ctx) {
       'div',
       { class: 'meal-body' },
       el('div', { class: 'meal-name', text: meal.name }),
-      el('div', { class: 'meal-sub', text: parts.join(' · ') })
+      el('div', { class: 'meal-sub', text: parts.join(' · ') }),
+      // Die Einordnung steht in der Zeile, nicht hinter einem Tippen: Sie ist
+      // eine Zeile lang und beantwortet die Frage, die man beim Draufschauen
+      // ohnehin hat.
+      wertung
+        ? el('div', { class: `mealwert wert-${wertung.stufe}` }, wertung.text)
+        : null
     ),
     el(
       'div',
@@ -227,15 +238,35 @@ export async function render(container, ctx, param) {
     })
   );
 
-  const body = [progressCard(totals, goals, ctx)];
+  const body = [];
+
+  // Der Überblick steht über allem: Er ist die einzige Stelle, die alle
+  // Bereiche gleichzeitig sieht, und sagt in drei Zeilen, was heute zählt.
+  const ueberblick = coachCard(ctx, dateKey, meals, goals);
+  if (ueberblick) body.push(ueberblick);
+
+  body.push(el('div', { class: ueberblick ? 'mt-16' : '' }, progressCard(totals, goals, ctx)));
+
+  // Wartende Fotos direkt darunter: solange sie liegen, stimmt keine Zahl.
+  const warteschlange = wartendeFotos(ctx);
+  if (warteschlange) body.push(el('div', { class: 'mt-16' }, warteschlange));
+
+  // Vorschläge gehören zu den Kalorien, nicht zum Rest — deshalb direkt unter
+  // den Ring, wo der offene Rest steht.
+  const vorschlaege = suggestSection(ctx, dateKey, {
+    kcal: goals.kcal - totals.kcal,
+    protein: goals.protein - totals.protein,
+  });
+  if (vorschlaege) body.push(el('div', { class: 'mt-16', 'data-anker': 'suggest' }, vorschlaege));
 
   // Schlaf vor Sport: morgens ist das die erste Eingabe des Tages.
   body.push(el('div', { class: 'mt-16' }, sleepSection(ctx, dateKey, ctx.state.sleep)));
   body.push(el('div', { class: 'mt-16' }, activitySection(ctx, dateKey, activities)));
+  body.push(el('div', { class: 'mt-16', 'data-anker': 'water' },
+    waterSection(ctx, dateKey, ctx.state.water)));
 
-  // Wartende Fotos zuerst: solange sie liegen, stimmt keine Zahl darunter.
-  const warteschlange = wartendeFotos(ctx);
-  if (warteschlange) body.push(el('div', { class: 'mt-16' }, warteschlange));
+  const supps = supplementSection(ctx, dateKey);
+  if (supps) body.push(el('div', { class: 'mt-16', 'data-anker': 'supps' }, supps));
 
   // Der Bericht gehört nach oben, nicht ans Ende: er sagt, was heute noch
   // fehlt, und das nützt am Morgen mehr als am Abend.
@@ -268,7 +299,12 @@ export async function render(container, ctx, param) {
             el('h2', { text: MEAL_TYPE_LABEL[group.id] }),
             el('span', { class: 'kcal tabular', text: `${group.totals.kcal} kcal` })
           ),
-          ...group.meals.map((m) => mealRow(m, ctx))
+          ...group.meals.map((m) => {
+            const s = scoreMeal(m);
+            return mealRow(m, ctx, s && s.satz
+              ? { stufe: s.punkte >= 70 ? 'gut' : s.punkte >= 40 ? 'ok' : 'schwach', text: s.satz }
+              : null);
+          })
         )
       );
     }
