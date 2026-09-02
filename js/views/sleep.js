@@ -11,7 +11,7 @@ import { el, mount, viewHead, iconButton, field, toast, confirmAction } from '..
 import { localDateKey, formatDateKey, shiftDateKey, parseNumber } from '../nutrition.js';
 import { saveSleep, getSleep, deleteSleep } from '../store.js';
 import {
-  toMinutes, toClock, formatDauer, duration, rateDuration, lightTiming,
+  formatDauer, duration, rateDuration, lightTiming, lightStreak,
   nightKeyForBedtime, isComplete, LICHT_FENSTER, LICHT_MINUTEN, SOLL_MIN,
 } from '../sleep.js';
 
@@ -256,6 +256,10 @@ export function sleepSection(ctx, dateKey, eintraege) {
 
   const licht = letzteNacht && letzteNacht.licht?.zeit ? lightTiming(letzteNacht) : null;
 
+  // Die Serie ist die Zahl, die eine Gewohnheit trägt — sichtbarer als jedes
+  // einzelne Häkchen.
+  const serie = lightStreak(eintraege, dateKey, shiftDateKey);
+
   return el('div', { class: 'card stack' },
     el('div', { class: 'row-between' },
       el('h3', { class: 'card-title', text: 'Schlaf' }),
@@ -265,6 +269,10 @@ export function sleepSection(ctx, dateKey, eintraege) {
             text: `Draußen ${letzteNacht.licht.zeit}`,
           })
         : null),
+    serie >= 2
+      ? el('p', { class: 'hint',
+          text: `${serie} Tage in Folge morgens draußen.` })
+      : null,
     ...zeilen,
     hinweisText(letzteNacht, eintrag, morgens)
       ? el('p', { class: 'muted small', text: hinweisText(letzteNacht, eintrag, morgens) })

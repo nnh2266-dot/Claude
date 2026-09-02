@@ -17,7 +17,7 @@
  * Wie training.js ohne DOM-Zugriff.
  */
 
-import { exerciseById, EXERCISES, GROUP_LABEL } from './training.js';
+import { exerciseById, EXERCISES, GROUP_LABEL, isUnilateral, setSides } from './training.js';
 
 export const NIVEAUS = [
   { ab: 90, name: 'Sehr stark' },
@@ -141,19 +141,27 @@ export function estimate1RM(weight, reps) {
   return weight * (1 + Math.min(reps, 12) / 30);
 }
 
-/** Beste Leistung je Übung aus allen Einheiten. */
-export function bestPerExercise(sessions) {
+/**
+ * Beste Leistung je Übung.
+ *
+ * `seit` grenzt auf einen Zeitraum ein. Ohne Einschränkung zählt der beste Satz
+ * überhaupt — nach einer langen Pause steht dort eine Zahl, die man gerade
+ * nicht bringt. Deshalb rechnet die Ansicht beides und stellt es nebeneinander.
+ */
+export function bestPerExercise(sessions, seit = null) {
   const best = new Map();
 
-  for (const session of sessions || []) {
+  for (const session of (sessions || []).filter((s) => !seit || s.date >= seit)) {
     for (const [id, sets] of Object.entries(session.entries || {})) {
       for (const set of sets || []) {
         if (!set || !set.reps) continue;
         const weight = Number(set.weight) || 0;
-        const score = weight > 0 ? estimate1RM(weight, set.reps) : set.reps;
+        // Einseitige Übungen zählen mit der schwächeren Seite.
+        const reps = isUnilateral(id) ? (setSides(set).schwaechste ?? set.reps) : set.reps;
+        const score = weight > 0 ? estimate1RM(weight, reps) : reps;
         const vorher = best.get(id);
         if (!vorher || score > vorher.score) {
-          best.set(id, { id, score, weight, reps: set.reps, date: session.date });
+          best.set(id, { id, score, weight, reps, date: session.date });
         }
       }
     }
@@ -209,8 +217,8 @@ export function rateExercise(id, leistung, profile) {
  * wer schwer Bankdrücken kann, hat eine starke Brust, auch wenn daneben ein
  * halbherziger Satz Fliegende steht.
  */
-export function groupStrength(sessions, profile) {
-  const best = bestPerExercise(sessions);
+export function groupStrength(sessions, profile, seit = null) {
+  const best = bestPerExercise(sessions, seit);
   const gruppen = new Map();
 
   for (const [id, leistung] of best) {
@@ -342,6 +350,52 @@ export function neglected(plan, sessions, vonDatum) {
   return [...imPlan]
     .filter((g) => !trainiert.has(g))
     .map((g) => ({ group: g, label: GROUP_LABEL[g] || g }));
+}
+
+/**
+ * Seitenunterschiede aus den aufgezeichneten Sätzen.
+ *
+ * Ab zehn Prozent gilt es als Befund. Darunter ist es Tagesform: welche Seite
+ * zuerst dran war, wie man stand, wie konzentriert der zweite Satz lief.
+ *
+ * @returns {{id:string, name:string, links:number, rechts:number,
+ *            unterschied:number, schwaecher:string}[]}
+ */
+export function sideImbalance(sessions, seit = null) {
+  const summe = new Map();
+
+  for (const session of (sessions || []).filter((s) => !seit || s.date >= seit)) {
+    for (const [id, sets] of Object.entries(session.entries || {})) {
+      if (!isUnilateral(id)) continue;
+      for (const set of sets || []) {
+        const seiten = setSides(set);
+        if (seiten.links === null || seiten.rechts === null) continue;
+        const bisher = summe.get(id) || { links: 0, rechts: 0, saetze: 0 };
+        bisher.links += seiten.links;
+        bisher.rechts += seiten.rechts;
+        bisher.saetze += 1;
+        summe.set(id, bisher);
+      }
+    }
+  }
+
+  return [...summe.entries()]
+    .filter(([, v]) => v.saetze >= 2)
+    .map(([id, v]) => {
+      const gross = Math.max(v.links, v.rechts);
+      const klein = Math.min(v.links, v.rechts);
+      return {
+        id,
+        name: exerciseById(id)?.name || id,
+        links: Math.round((v.links / v.saetze) * 10) / 10,
+        rechts: Math.round((v.rechts / v.saetze) * 10) / 10,
+        saetze: v.saetze,
+        unterschied: gross ? Math.round(((gross - klein) / gross) * 100) : 0,
+        schwaecher: v.links < v.rechts ? 'links' : 'rechts',
+      };
+    })
+    .filter((e) => e.unterschied >= 10)
+    .sort((a, b) => b.unterschied - a.unterschied);
 }
 
 /** Wie viele Übungen der App überhaupt einen Richtwert haben — für die Ehrlichkeit. */

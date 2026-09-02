@@ -7,9 +7,9 @@
  * während sie tippen.
  */
 
-import { el, mount, viewHead, iconButton, field, toast, emptyState, confirmAction } from '../ui.js';
+import { el, mount, viewHead, iconButton, field, toast, confirmAction } from '../ui.js';
 import { localDateKey, formatDateKey, parseNumber } from '../nutrition.js';
-import { saveActivity, deleteActivity, getActivitiesByDate } from '../store.js';
+import { saveActivity, deleteActivity } from '../store.js';
 import {
   ACTIVITIES, INTENSITIES, activityById, estimateKcal, kcalOf, dayTotals, pace, ANRECHNUNG,
 } from '../activities.js';

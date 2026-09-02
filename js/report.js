@@ -16,7 +16,9 @@
 
 import { localDateKey, shiftDateKey } from './nutrition.js';
 import { targetsForDate, weightTrend, calorieAdvice, weeklyRateFor } from './energy.js';
-import { exerciseById, dayForWeekday, blockWeek, BLOCK_WEEKS, SKIP_REASONS } from './training.js';
+import {
+  exerciseById, dayForWeekday, blockWeek, BLOCK_WEEKS, SKIP_REASONS, isUnilateral, setSides,
+} from './training.js';
 import { skillById, levelIndex } from './skills.js';
 import { dayTotals, weekSummary } from './activities.js';
 import {
@@ -194,10 +196,12 @@ export function weekStart(dateKey) {
 function sessionVolume(session, bodyweight) {
   const angenommen = (bodyweight || 70) * 0.5;
   let volumen = 0;
-  for (const sets of Object.values(session?.entries || {})) {
+  for (const [id, sets] of Object.entries(session?.entries || {})) {
     for (const set of sets || []) {
       if (!set || !set.reps) continue;
-      volumen += (Number(set.weight) > 0 ? Number(set.weight) : angenommen) * set.reps;
+      // Einseitige Übungen mit beiden Seiten — die Arbeit wurde zweimal gemacht.
+      const reps = isUnilateral(id) ? setSides(set).summe : set.reps;
+      volumen += (Number(set.weight) > 0 ? Number(set.weight) : angenommen) * reps;
     }
   }
   return volumen;
@@ -394,6 +398,18 @@ export function weeklyReport(data) {
       : schlecht(`Nur an ${z.lichtPuenktlich} von ${bisHeute.length} Tagen früh und lange genug draußen`
         + (z.lichtTage > z.lichtPuenktlich ? ` (an ${z.lichtTage} überhaupt).` : '.')));
 
+    // Der Zusammenhang, für den man überhaupt jeden Morgen etwas einträgt.
+    // Gerechnet über alle Einheiten, nicht nur diese Woche — sonst gäbe es nie
+    // genug Datenpunkte.
+    const zusammenhang = sleepVersusVolume(sessions, data.sleep, profile?.weight, dateKey);
+    if (zusammenhang) {
+      const d = zusammenhang.unterschied;
+      const text = `An den Tagen nach Nächten unter sieben Stunden lag dein Volumen im `
+        + `Schnitt ${Math.abs(d)} % ${d < 0 ? 'niedriger' : 'höher'} `
+        + `(${zusammenhang.kurz} gegen ${zusammenhang.lang} Einheiten).`;
+      schlaf.push(d <= -8 ? schlecht(text) : fakt(text));
+    }
+
     abschnitte.push({ titel: 'Schlaf und Licht', befunde: schlaf });
   }
 
@@ -465,6 +481,24 @@ export function weeklyReport(data) {
   }
   if (sonstiges.length) abschnitte.push({ titel: 'Fähigkeiten und Beweglichkeit', befunde: sonstiges });
 
+  /* --- Sicherung --- */
+  // Alles liegt in der Datenbank dieses einen Geräts. Der Export existiert,
+  // aber niemand denkt von selbst daran — und wer daran denkt, tut es einmal.
+  const gesichert = data.lastBackup || null;
+  const tageSeit = gesichert ? tageZwischen(gesichert, dateKey) : null;
+  if (tageSeit === null) {
+    abschnitte.push({ titel: 'Sicherung', befunde: [schlecht(
+      'Noch nie gesichert. Alles steht in der Datenbank dieses Geräts — ein gelöschter '
+      + 'Website-Speicher oder ein verlorenes Handy kostet alles. Unter „Mehr“ dauert es '
+      + 'zehn Sekunden.'
+    )] });
+  } else if (tageSeit > 28) {
+    abschnitte.push({ titel: 'Sicherung', befunde: [schlecht(
+      `Letzte Sicherung vor ${tageSeit} Tagen. Seitdem sind alle Einheiten, Gewichte und `
+      + 'Messungen nur auf diesem Gerät.'
+    )] });
+  }
+
   /* --- Fazit --- */
   const schlechte = abschnitte.flatMap((a) => a.befunde).filter((b) => b.art === 'schlecht').length;
   const gute = abschnitte.flatMap((a) => a.befunde).filter((b) => b.art === 'gut').length;
@@ -504,6 +538,50 @@ function fazitSatz(gute, schlechte, gemacht, faellig, vollstaendig) {
   if (schlechte <= 2) return 'Das Training steht. Die Punkte oben sind Feinschliff, keine Baustelle.';
   if (schlechte > gute) return 'Mehr Baustellen als Erfolge. Nimm dir für nächste Woche einen einzigen Punkt vor, nicht alle.';
   return 'Solide Woche mit ein paar offenen Punkten.';
+}
+
+/**
+ * Hängt die Leistung am Schlaf der Nacht davor?
+ *
+ * Verglichen wird das Volumen der Einheiten nach kurzen Nächten mit dem nach
+ * langen. Das ist keine Studie: es sind wenige Datenpunkte, und wer schlecht
+ * schläft, hat oft auch sonst eine anstrengende Woche. Deshalb kommt der Befund
+ * erst ab je zwei Einheiten auf beiden Seiten, und der Satz sagt „an den Tagen
+ * nach", nicht „wegen".
+ *
+ * @returns {{kurz:number, lang:number, kurzSchnitt:number, langSchnitt:number,
+ *            unterschied:number}|null}
+ */
+export function sleepVersusVolume(sessions, sleep, bodyweight, bisDatum) {
+  const nach = new Map((sleep || []).map((n) => [n.date, n]));
+  const kurz = [];
+  const lang = [];
+
+  for (const session of sessions || []) {
+    if (!session.done || session.date > bisDatum) continue;
+    const nacht = nach.get(session.date);
+    if (!nacht || !nachtVoll(nacht)) continue;
+
+    const dauer = schlafDauer(nacht);
+    const volumen = sessionVolume(session, bodyweight);
+    if (!volumen) continue;
+
+    (dauer < SOLL_MIN ? kurz : lang).push(volumen);
+  }
+
+  if (kurz.length < 2 || lang.length < 2) return null;
+
+  const mittel = (xs) => xs.reduce((a, b) => a + b, 0) / xs.length;
+  const kurzSchnitt = mittel(kurz);
+  const langSchnitt = mittel(lang);
+
+  return {
+    kurz: kurz.length,
+    lang: lang.length,
+    kurzSchnitt: Math.round(kurzSchnitt),
+    langSchnitt: Math.round(langSchnitt),
+    unterschied: Math.round(((kurzSchnitt - langSchnitt) / langSchnitt) * 100),
+  };
 }
 
 /**

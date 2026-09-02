@@ -8,11 +8,14 @@
  */
 
 import { el, mount, viewHead, iconButton, emptyState } from '../ui.js';
-import { localDateKey, formatDateKey, shiftDateKey } from '../nutrition.js';
+import { localDateKey, shiftDateKey } from '../nutrition.js';
 import {
-  groupStrength, balance, setsByGroup, neglected, niveauFor,
+  groupStrength, balance, setsByGroup, neglected, niveauFor, sideImbalance,
   RATED_COUNT, EXERCISE_COUNT,
 } from '../strength.js';
+
+/** Zeitraum für die zweite Zahl: „was du gerade bringst". */
+const AKTUELL_TAGE = 28;
 
 const einsNach = (n) => String(Math.round(n * 10) / 10).replace('.', ',');
 const zweiNach = (n) => String(Math.round(n * 100) / 100).replace('.', ',');
@@ -35,7 +38,7 @@ function zielText(b) {
   return `Noch rund ${fehlt} kg bis „${b.zielNiveau.name}".`;
 }
 
-function gruppenZeile(g) {
+function gruppenZeile(g, jetzt) {
   const b = g.bewertet;
 
   if (!b) {
@@ -52,8 +55,16 @@ function gruppenZeile(g) {
       el('div', { class: 'grow' },
         el('div', { class: 'scorerow-name', text: g.label }),
         el('div', { class: 'muted small', text: `${b.niveau.name} · ${b.name}: ${leistungText(b)}` })),
+      typeof jetzt === 'number' && jetzt !== b.punkte
+        ? el('span', { class: 'scorerow-jetzt tabular', text: `zuletzt ${jetzt}` })
+        : null,
       el('div', { class: 'scorerow-num tabular', text: String(b.punkte) })),
-    el('div', { class: 'scorebar' }, el('i', { style: { width: `${Math.max(2, b.punkte)}%` } })),
+    // Bestwert blass in voller Länge, der aktuelle Stand kräftig darüber.
+    el('div', { class: typeof jetzt === 'number' && jetzt < b.punkte ? 'scorebar mit-jetzt' : 'scorebar' },
+      el('i', { style: { width: `${Math.max(2, b.punkte)}%` } }),
+      typeof jetzt === 'number' && jetzt < b.punkte
+        ? el('u', { style: { width: `${Math.max(2, jetzt)}%` } })
+        : null),
     el('div', { class: 'hint', text: zielText(b) }));
 }
 
@@ -102,6 +113,15 @@ export async function render(container, ctx) {
   const gruppen = groupStrength(sessions, profile);
   const bewertete = gruppen.filter((g) => g.bewertet);
 
+  // Zweite Rechnung über die letzten vier Wochen. Der beste Satz überhaupt
+  // sagt, wo du mal warst; der aus dem letzten Monat, wo du gerade bist.
+  const seit = shiftDateKey(localDateKey(), -AKTUELL_TAGE);
+  const aktuell = new Map(
+    groupStrength(sessions, profile, seit)
+      .filter((g) => g.bewertet)
+      .map((g) => [g.group, g.bewertet.punkte])
+  );
+
   if (!bewertete.length) {
     mount(container, head, el('div', { class: 'card' },
       emptyState('Noch keine Sätze mit Richtwert',
@@ -130,7 +150,12 @@ export async function render(container, ctx) {
 
   /* Je Gruppe */
   body.push(el('h2', { class: 'section-title', text: 'Muskelgruppen' }));
-  body.push(el('div', { class: 'card stack' }, ...gruppen.map(gruppenZeile)));
+  body.push(el('div', { class: 'card stack' },
+    ...gruppen.map((g) => gruppenZeile(g, aktuell.get(g.group)))));
+  body.push(el('p', { class: 'hint mt-16',
+    text: `Die große Zahl ist dein bester Satz überhaupt. Steht daneben eine zweite, `
+      + `ist das derselbe Wert aus den letzten ${AKTUELL_TAGE} Tagen — nach einer Pause `
+      + 'klaffen die beiden auseinander, und dann zählt die kleinere.' }));
 
   if (bewertete.length >= 2) {
     const staerkste = bewertete[0];
@@ -148,6 +173,26 @@ export async function render(container, ctx) {
   if (verhaeltnisse.length) {
     body.push(el('h2', { class: 'section-title', text: 'Verhältnisse' }));
     body.push(el('div', { class: 'card stack' }, ...verhaeltnisse.map(verhaeltnisZeile)));
+  }
+
+  /* Links gegen rechts */
+  const schief = sideImbalance(sessions);
+  if (schief.length) {
+    body.push(el('h2', { class: 'section-title', text: 'Links und rechts' }));
+    body.push(el('div', { class: 'card stack' },
+      el('p', { class: 'muted small',
+        text: 'Aus den einseitigen Übungen, gemittelt über deine Sätze. Ab zehn Prozent '
+          + 'Unterschied steht es hier — darunter ist es Tagesform.' }),
+      el('div', { class: 'card card-flush' },
+        ...schief.map((e) => el('div', { class: 'calcrow' },
+          el('div', { class: 'grow' },
+            el('div', { text: e.name }),
+            el('div', { class: 'muted small',
+              text: `links ${einsNach(e.links)} · rechts ${einsNach(e.rechts)} Wdh. im Schnitt` })),
+          el('span', { class: 'pill pill-kcal', text: `${e.unterschied} %` })))),
+      el('p', { class: 'hint',
+        text: 'Die schwächere Seite zuerst trainieren und die stärkere nur so viele '
+          + 'Wiederholungen machen wie die schwache — sonst wächst der Abstand mit.' })));
   }
 
   /* Wohin die Arbeit geht */

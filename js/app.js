@@ -9,7 +9,7 @@ import { localDateKey } from './nutrition.js';
 import {
   getSettings, getTrainingProfile, getPlan, getKcalAdjust, getSkillLevels,
   listSessions, listWeights, listMobilityTests, listProgressPhotos, listPending,
-  getActivitiesByDate, listSleep,
+  getActivitiesByDate, listSleep, listActivities,
 } from './store.js';
 import { targetsForDate } from './energy.js';
 import { toast } from './ui.js';
@@ -66,6 +66,8 @@ const state = {
   pending: [],
   /** Aktivitäten des angezeigten Tages. */
   activities: [],
+  /** Alle Aktivitäten — für Hinweise, die über den Tag hinausschauen. */
+  sportWoche: [],
   /** Alle Nächte — die Einträge sind winzig, das lohnt keine Teilladerei. */
   sleep: [],
 };
@@ -175,6 +177,7 @@ const ctx = {
   /** Lädt die Aktivitäten des angezeigten Tages. */
   async refreshActivities(dateKey) {
     state.activities = await getActivitiesByDate(dateKey || state.date);
+    state.sportWoche = await listActivities();
     return state.activities;
   },
 

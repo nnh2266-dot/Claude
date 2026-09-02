@@ -68,7 +68,7 @@ anzeigt.
   jeder Einheit ändern, Fotos und Beweglichkeit nur alle paar Wochen
 - **Krafteinordnung**: je Muskelgruppe ein Wert von 0 bis 100, gemessen an Richtwerten,
   die auf das eigene Körpergewicht bezogen sind, dazu die Verhältnisse Drücken/Ziehen
-  und Oberkörper/Beine
+  und Oberkörper/Beine — und links gegen rechts, wo einseitig trainiert wird
 - **Variantenleitern**: wird eine Übung ohne Gewicht zu leicht, führt die App zur
   nächsten Stufe — von allein nach zwei Einheiten am oberen Ende, oder auf Knopfdruck
 - **Schlaf und Morgenlicht**: abends das Zubettgehen, morgens das Aufwachen und die
@@ -507,6 +507,25 @@ Der ausgefallene Tag bekommt umgekehrt ein `movedTo` und verschwindet aus der Li
 Nur an Ruhetagen — zwei Einheiten an einem Tag sind keine Rettung, sondern der nächste
 Ausfall.
 
+## Links und rechts
+
+Dreizehn Übungen laufen je Seite einzeln — Bulgarian Split Squat, Ausfallschritte,
+Skater, einbeinige Kniebeuge und Glute Bridge, einarmiges Rudern, die beiden Curls,
+Archer- und einarmige Liegestütze. Für sie hat die Satzeingabe **zwei
+Wiederholungsfelder**, und der Haken geht erst an, wenn beide stehen.
+
+Eine Zahl für beide Seiten verschenkt genau die Information, die zählt: wer links zehn
+und rechts sieben schafft, hat kein Zehner-Ergebnis, sondern ein Ungleichgewicht.
+Deshalb rechnet die App die beiden Seiten unterschiedlich ein:
+
+- **Bestleistung, Krafteinordnung und Variantenleiter** nehmen die **schwächere** Seite.
+  Sie begrenzt, was man kann, und erst wenn beide oben sind, ist die Übung zu leicht.
+- **Volumen** nimmt die **Summe** — die Arbeit wurde ja zweimal gemacht.
+
+In der Krafteinordnung steht ein eigener Abschnitt, sobald der Unterschied über zehn
+Prozent liegt; darunter ist es Tagesform. Alte Sätze ohne zweite Seite bleiben gültig:
+dort steht `reps` für beides.
+
 ## Die Berichte
 
 Ehrlich heißt konkret. „Bleib dran!" ist keine Rückmeldung, „drei von vier Einheiten,
@@ -523,6 +542,15 @@ Der **Wochenbericht** läuft von Montag bis Sonntag und deckt Training (Einheite
 Ausfälle, bewegte Last gegen die Vorwoche), einzelne Übungen (bester Satz gegen den
 besten Satz der Vorwoche), Ernährung, Gewicht samt Korrekturvorschlag sowie
 Fähigkeiten und Beweglichkeit ab. Am Ende steht ein Fazit-Satz.
+
+Er erinnert außerdem an die **Sicherung**, sobald sie länger als vier Wochen her ist
+oder nie stattfand. Alles liegt in der Datenbank dieses einen Geräts, und der Export
+existiert zwar, aber niemand denkt von selbst daran.
+
+Und er verbindet **Schlaf mit Leistung**: liegen auf beiden Seiten mindestens zwei
+Einheiten, steht dort, um wie viel das Volumen an den Tagen nach kurzen Nächten
+abweicht. Das ist keine Studie — wenige Datenpunkte, und wer schlecht schläft, hat oft
+auch sonst eine harte Woche. Deshalb heißt der Satz „an den Tagen nach", nicht „wegen".
 
 **Mitten in der Woche urteilt er anteilig.** Am Dienstag ist eine Einheit vom Freitag
 nicht versäumt, der laufende Tag ist keine Erfassungslücke, und die Vier-Werte-Regel

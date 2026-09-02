@@ -126,6 +126,8 @@ export async function getSettings() {
     unterwegs: raw.unterwegs === true,
     // Pausenlänge: kurz, normal oder lang.
     pausen: ['kurz', 'normal', 'lang'].includes(raw.pausen) ? raw.pausen : 'normal',
+    // Datum der letzten Sicherung — alles liegt nur auf diesem Gerät.
+    lastBackup: typeof raw.lastBackup === 'string' ? raw.lastBackup : null,
   };
 }
 
@@ -347,8 +349,20 @@ export async function deleteSession(dateKey) {
 }
 
 /** Körpergewicht. Ein Wert je Tag; ein zweiter überschreibt den ersten. */
-export async function saveWeight(dateKey, kg) {
-  const record = { date: dateKey, kg: Math.round(Number(kg) * 10) / 10 };
+/**
+ * Ein Gewicht je Tag.
+ *
+ * `source` unterscheidet, woher der Wert kommt. Mit `nurWennNeu` schreibt ein
+ * Import nur dort, wo noch nichts steht: ein morgens nüchtern eingetragener
+ * Wert ist mehr wert als irgendeiner aus dem Tagesverlauf, und an ihm hängen
+ * der Sieben-Tage-Schnitt und die Kalorienkorrektur.
+ */
+export async function saveWeight(dateKey, kg, { source = 'manual', nurWennNeu = false } = {}) {
+  if (nurWennNeu) {
+    const vorhanden = await tx('weights', 'readonly', (s) => s.get(dateKey));
+    if (vorhanden && vorhanden.source !== source) return vorhanden;
+  }
+  const record = { date: dateKey, kg: Math.round(Number(kg) * 10) / 10, source };
   await tx('weights', 'readwrite', (s) => s.put(record));
   return record;
 }

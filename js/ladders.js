@@ -13,7 +13,7 @@
  * Wie training.js ohne DOM-Zugriff.
  */
 
-import { exerciseById, isAvailable } from './training.js';
+import { exerciseById, isAvailable, isUnilateral, setSides } from './training.js';
 
 export const LADDERS = [
   {
@@ -165,7 +165,12 @@ export function topOutStreak(sessions, prescription, bisDatum) {
   let serie = 0;
   for (const session of relevante) {
     const saetze = (session.entries[prescription.id] || []).filter((s) => s && s.reps);
-    const obenAn = saetze.length >= MIN_SAETZE && saetze.every((s) => Number(s.reps) >= obere);
+    // Einseitig zählt die schwächere Seite: erst wenn beide oben sind, ist die
+    // Übung zu leicht.
+    const wert = (satz) => (isUnilateral(prescription.id)
+      ? (setSides(satz).schwaechste ?? satz.reps)
+      : satz.reps);
+    const obenAn = saetze.length >= MIN_SAETZE && saetze.every((s) => Number(wert(s)) >= obere);
     if (!obenAn) break;
     serie += 1;
   }

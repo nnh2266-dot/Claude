@@ -10,6 +10,7 @@ import { startFromPending } from './capture.js';
 import { activitySection } from './activity.js';
 import { dayTotals } from '../activities.js';
 import { sleepSection } from './sleep.js';
+import { energyPlan } from '../energy.js';
 import {
   localDateKey, shiftDateKey, formatDateKey, formatTime,
   sumMeals, groupByMealType, MEAL_TYPE_LABEL,
@@ -29,6 +30,9 @@ const RING_CIRCUMFERENCE = 2 * Math.PI * RING_RADIUS;
 /** Kalorienring plus Makrobalken. */
 function progressCard(totals, goals, ctx) {
   const goalKcal = Math.max(1, goals.kcal);
+  const wasser = ctx.state.profile
+    ? String(energyPlan(ctx.state.profile, ctx.state.kcalAdjust).water).replace('.', ',')
+    : null;
   const ratio = totals.kcal / goalKcal;
   const over = totals.kcal > goals.kcal;
   const remaining = goals.kcal - totals.kcal;
@@ -104,7 +108,13 @@ function progressCard(totals, goals, ctx) {
       }),
       macroBar('macro-protein', 'Eiweiß', totals.protein, goals.protein),
       macroBar('macro-carbs', 'Kohlenhydrate', totals.carbs, goals.carbs),
-      macroBar('macro-fat', 'Fett', totals.fat, goals.fat)
+      macroBar('macro-fat', 'Fett', totals.fat, goals.fat),
+      // Der Wasserrichtwert wurde längst gerechnet und stand nur im Rechenweg
+      // des Plans, wo niemand hinsieht.
+      wasser
+        ? el('p', { class: 'ring-wasser',
+            text: `Wasser: rund ${wasser} l${goals.kind === 'training' ? ', an Trainingstagen eher mehr' : ''}` })
+        : null
     )
   );
 }

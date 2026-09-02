@@ -169,6 +169,35 @@ export function weightTrend(weights, todayKey = localDateKey()) {
 }
 
 /**
+ * Wann das Wunschgewicht bei diesem Tempo erreicht wäre.
+ *
+ * Eine Hochrechnung aus wenigen Wochen, und die Zahl dahinter ist entsprechend
+ * grob — deshalb kommt die Zahl der Wochen mit zurück, auf der sie beruht.
+ * Bewegt sich das Gewicht in die falsche Richtung oder gar nicht, gibt es
+ * keinen Termin, sondern diesen Befund.
+ *
+ * @returns {{art:'erreicht'|'unterwegs'|'falscheRichtung'|'stillstand',
+ *            tage?:number, datum?:string, proWoche?:number}|null}
+ */
+export function targetForecast(profile, weights, todayKey = localDateKey()) {
+  const ziel = profile?.targetWeight;
+  const trend = weightTrend(weights, todayKey);
+  if (!ziel || !trend || !trend.ready) return null;
+
+  const jetzt = trend.average7;
+  const fehlt = ziel - jetzt;
+  const proWoche = trend.deltaKg;
+
+  if (Math.abs(fehlt) < 0.3) return { art: 'erreicht', proWoche };
+  if (Math.abs(proWoche) < 0.05) return { art: 'stillstand', proWoche };
+  if (Math.sign(fehlt) !== Math.sign(proWoche)) return { art: 'falscheRichtung', proWoche };
+
+  const wochen = fehlt / proWoche;
+  const tage = Math.round(wochen * 7);
+  return { art: 'unterwegs', tage, datum: shiftDateKey(todayKey, tage), proWoche };
+}
+
+/**
  * Vergleicht die gemessene Veränderung mit der Zielrate und schlägt eine
  * Korrektur vor. Die Formeln oben sind Schätzungen — das hier ist die
  * Rückmeldung aus der Wirklichkeit, und sie hat Vorrang.

@@ -230,7 +230,12 @@ const SPLITS = {
 const FOCUS_SLOT = { brust:'brust:i', ruecken:'ruecken:c', beine:'quad:i', schulter:'sdelt:i', arme:'bizeps:i', po:'glute:c', core:'core:i' };
 const FOCUS_DAYS = {
   brust: ['push','fbA','upper'], ruecken: ['pull','fbB','upper'], beine: ['legs','lower','fbA'],
-  schulter: ['push','upper','fbB'], arme: ['pull','push','upper'], po: ['legs','lower','fbC'],
+  schulter: ['push','upper','fbB'],
+  // Ohne einen Ganzkörpertag lief der Schwerpunkt „Arme" ins Leere: die Liste
+  // kannte nur die Tage der Split-Pläne, und wer dreimal Ganzkörper trainiert,
+  // bekam denselben Plan wie ohne Schwerpunkt.
+  arme: ['pull','push','upper','fbB'],
+  po: ['legs','lower','fbC'],
   core: ['fbA','legs','lower'],
 };
 
@@ -343,6 +348,36 @@ export function sessionMinutes(exercises, tempo = 'normal') {
     sekunden += p.sets * satz + Math.max(0, p.sets - 1) * restSeconds(p, tempo);
   }
   return Math.round(sekunden / 60);
+}
+
+/**
+ * Übungen, die je Seite einzeln gemacht werden.
+ *
+ * Eine Zahl für beide Seiten verschenkt genau die Information, die zählt: wer
+ * links zehn und rechts sieben schafft, hat kein Zehner-Ergebnis, sondern ein
+ * Ungleichgewicht. Für Auswertung und Fortschritt zählt deshalb die schwächere
+ * Seite, fürs Volumen die Summe.
+ */
+export const UNILATERAL = new Set([
+  'bulg', 'lunge', 'stepup', 'skater', 'pistol1', 'gbridge1',
+  'calf1', 'dbrow', 'kick', 'towelcurl', 'selfcurl', 'archerpu', 'onearmneg',
+]);
+
+export const isUnilateral = (id) => UNILATERAL.has(id);
+
+/**
+ * Die Wiederholungen eines Satzes, aufgelöst nach Seiten.
+ * Alte Einträge ohne zweite Seite bleiben gültig — dort ist `reps` beides.
+ */
+export function setSides(satz) {
+  if (!satz) return { links: null, rechts: null, schwaechste: null, summe: 0 };
+  const links = typeof satz.reps === 'number' ? satz.reps : null;
+  const rechts = typeof satz.reps2 === 'number' ? satz.reps2 : null;
+
+  if (links === null && rechts === null) return { links, rechts, schwaechste: null, summe: 0 };
+  if (rechts === null) return { links, rechts, schwaechste: links, summe: links * 2 };
+  if (links === null) return { links, rechts, schwaechste: rechts, summe: rechts * 2 };
+  return { links, rechts, schwaechste: Math.min(links, rechts), summe: links + rechts };
 }
 
 /* ---------------- Verfügbarkeit ---------------- */
@@ -701,6 +736,48 @@ function shiftKey(key, delta) {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 }
 
+/**
+ * Spricht die Woche gegen eine schwere Woche?
+ *
+ * Der Vierwochenblock läuft nach Kalender: Woche 3 ist „Schwer", egal was
+ * davor war. Eine Woche mit ausgefallenen Einheiten und kurzen Nächten ist
+ * dafür der falsche Moment. Die App weiß das inzwischen — sie soll es sagen
+ * dürfen, ohne den Plan hinter dem Rücken umzustellen.
+ *
+ * Gezählt werden nur harte Fakten der letzten sieben Tage.
+ *
+ * @returns {{gruende: string[], schwer: boolean}}
+ */
+export function deloadHinweis({ plan, sessions, sleep, dateKey, kurzeNacht }) {
+  const gruende = [];
+  if (!plan) return { gruende, schwer: false };
+
+  const woche = blockWeek(plan, dateKey);
+  const istSchwereWoche = BLOCK_WEEKS[woche] && BLOCK_WEEKS[woche].setDelta > 0;
+  if (!istSchwereWoche) return { gruende, schwer: false };
+
+  const tage = Array.from({ length: 7 }, (_, i) => shiftKey(dateKey, -i - 1));
+
+  const ausgefallen = tage.filter((t) => {
+    const wd = new Date(`${t}T12:00:00`).getDay();
+    if (!dayForWeekday(plan, wd)) return false;
+    if (plan.createdAt && t < plan.createdAt) return false;
+    const s = (sessions || []).find((x) => x.date === t);
+    return !(s && (s.done || s.movedTo));
+  }).length;
+  if (ausgefallen >= 2) {
+    gruende.push(`${ausgefallen} Einheiten sind in den letzten sieben Tagen ausgefallen`);
+  }
+
+  const kurz = tage.filter((t) => {
+    const n = (sleep || []).find((x) => x.date === t);
+    return n && kurzeNacht(n);
+  }).length;
+  if (kurz >= 3) gruende.push(`${kurz} Nächte lagen unter sieben Stunden`);
+
+  return { gruende, schwer: true };
+}
+
 /** Den Trainingstag zu einem Datum finden, oder null an Ruhetagen. */
 export function dayForWeekday(plan, weekday) {
   if (!plan) return null;
@@ -750,16 +827,19 @@ export function personalBests(sessions) {
       for (const set of sets || []) {
         if (!set || !set.reps) continue;
         const weight = Number(set.weight) || 0;
+        // Bei einseitigen Übungen zählt die schwächere Seite: sie begrenzt,
+        // was man kann, und ein Mittelwert würde ein Ungleichgewicht verstecken.
+        const reps = isUnilateral(id) ? (setSides(set).schwaechste ?? set.reps) : set.reps;
         // Mit Gewicht zählt das geschätzte Einwiederholungsmaximum (Epley),
         // ohne Gewicht die Wiederholungszahl. Beides bleibt getrennt.
-        const score = weight > 0 ? weight * (1 + set.reps / 30) : set.reps;
+        const score = weight > 0 ? weight * (1 + reps / 30) : reps;
 
         if (!best.has(id)) {
-          best.set(id, { id, bodyweight: weight === 0, firstWeight: weight, firstReps: set.reps, score: null });
+          best.set(id, { id, bodyweight: weight === 0, firstWeight: weight, firstReps: reps, score: null });
         }
         const entry = best.get(id);
         if (entry.score === null || score > entry.score) {
-          Object.assign(entry, { score, weight, reps: set.reps, date: session.date });
+          Object.assign(entry, { score, weight, reps, date: session.date });
         }
       }
     }
@@ -781,10 +861,13 @@ export function weeklyVolume(sessions, bodyweight) {
 
   for (const session of sessions) {
     let volume = 0;
-    for (const sets of Object.values(session.entries || {})) {
+    for (const [id, sets] of Object.entries(session.entries || {})) {
       for (const set of sets || []) {
         if (!set || !set.reps) continue;
-        volume += (Number(set.weight) > 0 ? Number(set.weight) : assumed) * set.reps;
+        // Fürs Volumen zählen beide Seiten zusammen — die Arbeit wurde ja
+        // zweimal gemacht.
+        const reps = isUnilateral(id) ? setSides(set).summe : set.reps;
+        volume += (Number(set.weight) > 0 ? Number(set.weight) : assumed) * reps;
       }
     }
     if (!volume) continue;

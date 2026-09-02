@@ -4,7 +4,8 @@
  */
 
 import { el, svg, mount, viewHead, emptyState } from '../ui.js';
-import { getMealsInRange } from '../store.js';
+import { getMealsInRange, getActivitiesInRange } from '../store.js';
+import { dayTotals } from '../activities.js';
 import {
   localDateKey, lastNDays, formatDateKey, weekdayShort,
   sumMeals, averageTotals, formatGram,
@@ -97,6 +98,11 @@ export async function render(container, ctx) {
   const keys = lastNDays(rangeDays, today);
   const meals = await getMealsInRange(keys[0], today);
 
+  // Sport hebt das Tagesziel. Ohne die Aktivitäten stünde hier eine andere
+  // Ziellinie als auf der Tagesansicht, und die Balken mäßen gegen die falsche.
+  const aktivitaeten = await getActivitiesInRange(keys[0], today);
+  const kg = ctx.state.profile?.weight;
+
   const byDate = new Map(keys.map((k) => [k, []]));
   for (const meal of meals) {
     if (byDate.has(meal.date)) byDate.get(meal.date).push(meal);
@@ -104,8 +110,16 @@ export async function render(container, ctx) {
 
   const days = keys.map((key) => {
     const list = byDate.get(key) || [];
-    // Jeder Tag hat sein eigenes Ziel: an Trainingstagen liegt es höher.
-    return { key, meals: list, totals: sumMeals(list), goal: ctx.goalsFor(key).kcal };
+    const sport = dayTotals(aktivitaeten.filter((a) => a.date === key), kg);
+    // Jeder Tag hat sein eigenes Ziel: an Trainingstagen liegt es höher,
+    // an Tagen mit Sport zusätzlich um den angerechneten Anteil.
+    return {
+      key,
+      meals: list,
+      totals: sumMeals(list),
+      goal: ctx.goalsFor(key, sport.anrechnung).kcal,
+      sport,
+    };
   });
 
   // Für den Durchschnitt zählen nur Tage mit Einträgen — sonst zieht jeder

@@ -7,7 +7,7 @@ import { el, svg, mount, viewHead, iconButton, emptyState, toast } from '../ui.j
 import { localDateKey, formatDateKey, shiftDateKey } from '../nutrition.js';
 import { setKcalAdjust } from '../store.js';
 import { personalBests, weeklyVolume, GOAL_LABEL } from '../training.js';
-import { calorieAdvice } from '../energy.js';
+import { calorieAdvice, targetForecast } from '../energy.js';
 import { skillById, currentLevel, levelIndex, skillHistory } from '../skills.js';
 import { mobilitySection } from './mobility.js';
 import { photoSection } from './photos.js';
@@ -110,6 +110,32 @@ function volumeChart(rows) {
   }, ...parts);
 }
 
+/**
+ * Die Prognose in einem Satz.
+ *
+ * Bewusst mit der Unsicherheit im selben Satz: eine Hochrechnung aus zwei
+ * Wochen Messwerten liegt leicht um Monate daneben, und eine Zahl ohne diesen
+ * Zusatz liest sich wie ein Termin.
+ */
+function prognoseText(p, profile) {
+  const ziel = `${oneDecimal(profile.targetWeight)} kg`;
+  const tempo = `${p.proWoche > 0 ? '+' : ''}${oneDecimal(p.proWoche)} kg pro Woche`;
+
+  if (p.art === 'erreicht') return `Du bist an deinem Wunschgewicht von ${ziel}.`;
+  if (p.art === 'stillstand') {
+    return `Das Gewicht steht gerade. So erreichst du ${ziel} nicht — entweder du wartest `
+      + 'ab, oder du steuerst die Kalorien nach.';
+  }
+  if (p.art === 'falscheRichtung') {
+    return `Es geht gerade in die andere Richtung (${tempo}). Von ${ziel} entfernst du dich damit.`;
+  }
+
+  const wochen = Math.round(p.tage / 7);
+  return `Bei ${tempo} wärst du am ${formatDateKey(p.datum)} bei ${ziel} — in etwa `
+    + `${wochen} ${wochen === 1 ? 'Woche' : 'Wochen'}. Das ist aus zwei Wochen Messwerten `
+    + 'hochgerechnet und kann leicht um Monate danebenliegen.';
+}
+
 /* ---------------- Ansicht ---------------- */
 
 export async function render(container, ctx) {
@@ -137,13 +163,16 @@ export async function render(container, ctx) {
       emptyState('Noch zu wenig Werte',
         'Trag dein Gewicht ein paar Tage lang ein. Ab etwa einer Woche erkennt die App den Trend und rechnet die Kalorien nach.')));
   } else {
+    const prognose = targetForecast(profile, weights, today);
+
     body.push(el('div', { class: 'card' },
       weightChart(weights, profile.targetWeight),
       el('div', { class: 'row-between mt-16' },
         el('span', { class: 'muted small', text: '● Tageswerte    — Sieben-Tage-Schnitt' }),
         profile.targetWeight
           ? el('span', { class: 'muted small tabular', text: `Ziel ${oneDecimal(profile.targetWeight)} kg` })
-          : null)));
+          : null),
+      prognose ? el('p', { class: 'hint mt-16', text: prognoseText(prognose, profile) }) : null));
   }
 
   /* Kalorien nachsteuern — die eigentliche Kopplung */

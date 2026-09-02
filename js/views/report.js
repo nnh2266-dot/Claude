@@ -58,6 +58,7 @@ export async function render(container, ctx) {
   const daten = {
     activities: wocheAktiv,
     sleep: ctx.state.sleep || [],
+    lastBackup: ctx.settings.lastBackup || null,
     profile: ctx.state.profile,
     plan: ctx.state.plan,
     sessions: ctx.state.sessions,
@@ -144,6 +145,7 @@ export function reportTeaser(ctx, meals) {
   const tag = dailyReport({
     activities: ctx.state.activities || [],
     sleep: ctx.state.sleep || [],
+    lastBackup: ctx.settings.lastBackup || null,
     profile: ctx.state.profile,
     plan: ctx.state.plan,
     sessions: ctx.state.sessions,

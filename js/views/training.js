@@ -13,12 +13,14 @@ import {
 import {
   exerciseById, GROUP_LABEL, blockWeek, forWeek, dayForWeekday, nextStep, BLOCK_WEEKS,
   travelDay, restSeconds, sessionMinutes, REST_TEMPO,
-  replaceExercise, setExercise, missedDays, SKIP_REASONS,
+  replaceExercise, setExercise, missedDays, SKIP_REASONS, deloadHinweis,
+  isUnilateral, setSides,
 } from '../training.js';
 import {
   ladderFor, harderRung, easierRung, pickNearestRung, topOutStreak, STREAK_FOR_NEXT,
 } from '../ladders.js';
 import { energyPlan, weightTrend } from '../energy.js';
+import { activityById } from '../activities.js';
 import { warmupFor, warmupMinutes } from '../warmup.js';
 import {
   duration as schlafDauer, formatDauer as schlafDauerText, isComplete as nachtVoll, SOLL_MIN,
@@ -275,10 +277,16 @@ function lastPerformance(sessions, exerciseId, beforeDate) {
   return null;
 }
 
-function formatSets(sets) {
+function formatSets(sets, einseitig = false) {
   return sets
     .filter((s) => s && s.reps)
-    .map((s) => (Number(s.weight) > 0 ? `${String(s.weight).replace('.', ',')} kg × ${s.reps}` : `${s.reps} Wdh.`))
+    .map((s) => {
+      // Einseitig steht beides da — die Zahl allein verschweigt den Unterschied.
+      const wdh = einseitig && typeof s.reps2 === 'number' ? `${s.reps}/${s.reps2}` : String(s.reps);
+      return Number(s.weight) > 0
+        ? `${String(s.weight).replace('.', ',')} kg × ${wdh}`
+        : `${wdh} Wdh.`;
+    })
     .join('  ·  ');
 }
 
@@ -687,6 +695,7 @@ function exerciseBlock(prescription, week, session, sessions, dateKey, onChange,
   if (!exercise) return null;
 
   const adjusted = forWeek(prescription, week);
+  const einseitig = isUnilateral(prescription.id);
   const stand = ladderFor(prescription.id);
   const pause = restSeconds(prescription, tempo);
   const last = lastPerformance(sessions, prescription.id, dateKey);
@@ -697,7 +706,9 @@ function exerciseBlock(prescription, week, session, sessions, dateKey, onChange,
     const stored = entries[i] || {};
 
     // Bei Körpergewichtsübungen zählt die Wiederholung; das Zusatzgewicht darf leer bleiben.
-    const isComplete = (set) => !!set.reps && (prescription.loadless || set.weight != null);
+    const isComplete = (set) => !!set.reps
+      && (!einseitig || !!set.reps2)
+      && (prescription.loadless || set.weight != null);
 
     // Der Haken sieht aus wie ein Kästchen — also muss er sich auch wie eines
     // verhalten. Tippen übernimmt die Vorschläge aus den Platzhaltern: das
@@ -711,9 +722,14 @@ function exerciseBlock(prescription, week, session, sessions, dateKey, onChange,
 
     const update = (ausGeste = false) => {
       const warVoll = isComplete(entries[i] || {});
+      const lies = (feld) =>
+        feld.value.trim() === '' ? null : Math.round(parseNumber(feld.value));
       entries[i] = {
         weight: weightInput.value.trim() === '' ? null : parseNumber(weightInput.value),
-        reps: repsInput.value.trim() === '' ? null : Math.round(parseNumber(repsInput.value)),
+        reps: lies(repsInput),
+        // Nur bei einseitigen Übungen. Bleibt sonst undefiniert, damit alte
+        // Einträge und neue dieselbe Form haben.
+        ...(einseitig ? { reps2: lies(reps2Input) } : {}),
       };
       const istVoll = isComplete(entries[i]);
       tick.classList.toggle('on', istVoll);
@@ -729,12 +745,14 @@ function exerciseBlock(prescription, week, session, sessions, dateKey, onChange,
       if (isComplete(entries[i] || {})) {
         weightInput.value = '';
         repsInput.value = '';
+        if (einseitig) reps2Input.value = '';
         update(true);
         return;
       }
 
       // Leere Felder mit dem füllen, was ohnehin als Vorschlag dort steht.
       if (!repsInput.value.trim()) repsInput.value = repsInput.placeholder;
+      if (einseitig && !reps2Input.value.trim()) reps2Input.value = repsInput.value;
       if (!weightInput.value.trim()) {
         const vorschlag = parseNumber(weightInput.placeholder);
         if (vorschlag > 0) weightInput.value = String(vorschlag).replace('.', ',');
@@ -760,15 +778,25 @@ function exerciseBlock(prescription, week, session, sessions, dateKey, onChange,
 
     const repsInput = el('input', {
       class: 'input setinput', type: 'text', inputmode: 'numeric',
-      'aria-label': `Satz ${i + 1}, Wiederholungen`,
+      'aria-label': einseitig ? `Satz ${i + 1}, Wiederholungen links` : `Satz ${i + 1}, Wiederholungen`,
       placeholder: String(prescription.reps[0]),
       value: stored.reps != null ? String(stored.reps) : '',
       onChange: update,
     });
 
-    rows.push(el('div', { class: 'setrow' },
+    const reps2Input = einseitig
+      ? el('input', {
+          class: 'input setinput', type: 'text', inputmode: 'numeric',
+          'aria-label': `Satz ${i + 1}, Wiederholungen rechts`,
+          placeholder: String(prescription.reps[0]),
+          value: stored.reps2 != null ? String(stored.reps2) : '',
+          onChange: update,
+        })
+      : null;
+
+    rows.push(el('div', { class: einseitig ? 'setrow setrow-zwei' : 'setrow' },
       el('span', { class: 'setnum tabular', text: String(i + 1) }),
-      weightInput, repsInput, tick));
+      weightInput, repsInput, reps2Input, tick));
   }
 
   return el('div', { class: 'exblock' },
@@ -778,10 +806,12 @@ function exerciseBlock(prescription, week, session, sessions, dateKey, onChange,
     el('p', { class: 'exblock-rx tabular',
       text: `${adjusted.sets} Sätze · ${prescription.reps[0]}–${prescription.reps[1]} Wdh. · RIR ${adjusted.rir} · ${pause} s Pause` }),
     el('p', { class: 'exblock-last',
-      text: last ? `Zuletzt ${formatDateKey(last.date)}: ${formatSets(last.sets)}` : 'Noch keine Werte aufgezeichnet.' }),
-    el('div', { class: 'setlabels' },
+      text: last ? `Zuletzt ${formatDateKey(last.date)}: ${formatSets(last.sets, einseitig)}` : 'Noch keine Werte aufgezeichnet.' }),
+    el('div', { class: einseitig ? 'setlabels setlabels-zwei' : 'setlabels' },
       el('span'), el('span', { text: prescription.loadless ? 'Zusatz-kg' : 'kg' }),
-      el('span', { text: 'Wdh.' }), el('span')),
+      el('span', { text: einseitig ? 'Wdh. li' : 'Wdh.' }),
+      einseitig ? el('span', { text: 'Wdh. re' }) : null,
+      el('span')),
     ...rows,
     el('p', { class: 'exblock-cue' },
       el('strong', { text: 'Nächster Schritt: ' }),
@@ -1105,6 +1135,57 @@ export async function render(container, ctx) {
 
     body.push(pausenKarte(ctx, tempo, day.exercises));
     body.push(el('div', { class: 'card card-flush mt-16' }, ...blocks));
+
+    // Der Block läuft nach Kalender. Sprechen die letzten sieben Tage gegen
+    // eine schwere Woche, sagt die App das — und bietet an, die
+    // Entlastungswoche vorzuziehen. Umgestellt wird nur auf Knopfdruck.
+    const kurzeNacht = (n) => nachtVoll(n) && schlafDauer(n) < SOLL_MIN;
+    const deload = deloadHinweis({
+      plan, sessions, sleep: ctx.state.sleep, dateKey, kurzeNacht,
+    });
+    if (deload.schwer && deload.gruende.length) {
+      body.push(el('div', { class: 'card stack mt-16' },
+        el('div', { class: 'row-between' },
+          el('h3', { class: 'card-title', text: 'Diese Woche ist als schwere Woche geplant' }),
+          el('span', { class: 'pill pill-kcal', text: BLOCK_WEEKS[week].label.split('· ')[1] })),
+        el('p', { class: 'small',
+          text: `Dagegen spricht: ${deload.gruende.join(' und ')}. Mehr Sätze bei weniger `
+            + 'Reserve sind dann kein Fortschritt, sondern Verschleiß.' }),
+        el('button', {
+          class: 'btn btn-block', type: 'button',
+          onClick: async () => {
+            // Den Block um eine Woche vorziehen: aus „Schwer" wird „Deload",
+            // der Rhythmus bleibt, nur die Phase verschiebt sich.
+            const neuStart = shiftDateKey(plan.createdAt, 7);
+            await setPlan({ ...plan, createdAt: neuStart });
+            await ctx.refreshTraining();
+            ctx.reload();
+            toast('Entlastungswoche vorgezogen.');
+          },
+        }, 'Entlastungswoche vorziehen'),
+        el('p', { class: 'hint',
+          text: 'Verschiebt den Vierwochenblock um eine Woche. Die schwere Woche kommt '
+            + 'danach, nur eben ausgeruht.' })));
+    }
+
+    // Harter Sport am Vortag und heute dieselbe Muskelgruppe — das summiert sich.
+    const gestern = shiftDateKey(dateKey, -1);
+    const gesternSport = (ctx.state.sportWoche || [])
+      .filter((a) => a.date === gestern && (a.minutes || 0) >= 45);
+    if (gesternSport.length) {
+      const beine = day.exercises.some((p) => {
+        const e = exerciseById(p.id);
+        return e && ['quad', 'ham', 'glute'].includes(e.group);
+      });
+      if (beine) {
+        const namen = [...new Set(gesternSport.map((a) => activityById(a.type)?.name || a.type))];
+        body.push(el('div', { class: 'note mt-16' },
+          el('strong', { text: `Gestern ${namen.join(' und ')}. ` }),
+          'Heute stehen Beine an, und die haben von gestern noch etwas mitzutragen. '
+          + 'Wenn die ersten Sätze zäh gehen, ist das der Grund — dann lieber eine '
+          + 'Wiederholung weniger als eine schlechte mehr.'));
+      }
+    }
 
     // Nach einer kurzen Nacht ist die Kraft messbar niedriger. Kein Verbot,
     // aber die Entscheidung „heute lieber nicht" soll man treffen können,

@@ -5,10 +5,10 @@
 import { el, mount, viewHead, field, toast, confirmAction } from '../ui.js';
 import {
   setSetting, exportData, importData, clearEntries, clearEverything, countMeals,
-  saveActivity, saveWeight,
+  saveActivity, saveWeight, listProgressPhotos,
 } from '../store.js';
 import { MODELS, testConnection, ApiError } from '../claude.js';
-import { macrosFromKcal, parseNumber, DEFAULT_GOALS } from '../nutrition.js';
+import { macrosFromKcal, parseNumber, DEFAULT_GOALS, localDateKey, formatDateKey } from '../nutrition.js';
 import { energyPlan } from '../energy.js';
 import { APP_VERSION, APP_DATE } from '../version.js';
 
@@ -300,13 +300,24 @@ function healthSection(ctx) {
         });
 
         for (const w of ergebnis.workouts) await saveActivity(w);
-        for (const g of ergebnis.gewichte) await saveWeight(g.date, g.kg);
+
+        // Von Hand eingetragene Gewichte bleiben stehen: der Wert von der
+        // Waage am Morgen ist mehr wert als irgendeiner aus dem Tagesverlauf.
+        let uebersprungeneGewichte = 0;
+        for (const g of ergebnis.gewichte) {
+          const vorher = await saveWeight(g.date, g.kg, { source: 'health', nurWennNeu: true });
+          if (vorher.source !== 'health') uebersprungeneGewichte += 1;
+        }
 
         await ctx.refreshTraining();
         await ctx.refreshActivities();
 
+        const neueGewichte = ergebnis.gewichte.length - uebersprungeneGewichte;
         stand.textContent = `${ergebnis.workouts.length} Aktivitäten und `
-          + `${ergebnis.gewichte.length} Gewichtswerte übernommen`
+          + `${neueGewichte} Gewichtswerte übernommen`
+          + (uebersprungeneGewichte
+              ? `, ${uebersprungeneGewichte} Tage übergangen, weil dort schon dein eigener Wert stand`
+              : '')
           + (ergebnis.uebersprungen
               ? `. ${ergebnis.uebersprungen} `
                 + `${ergebnis.uebersprungen === 1 ? 'Krafteinheit übersprungen' : 'Krafteinheiten übersprungen'}`
@@ -395,6 +406,11 @@ function dataSection(ctx, mealCount) {
           link.click();
           link.remove();
           setTimeout(() => URL.revokeObjectURL(url), 1000);
+          // Merken, wann zuletzt gesichert wurde — der Bericht erinnert daran,
+          // wenn es zu lange her ist.
+          await setSetting('lastBackup', localDateKey());
+          await ctx.refreshSettings();
+          ctx.reload();
         },
       },
       'Daten exportieren'
@@ -406,12 +422,47 @@ function dataSection(ctx, mealCount) {
     ),
     importInput,
     el('p', { class: 'hint' },
-      'Der Export enthält Mahlzeiten, Favoriten, Trainingsplan, Einheiten und Gewichte — ohne Fotos (die würden die Datei ' +
-      'um ein Vielfaches vergrößern) und ohne den API-Key.'),
+      'Der Export enthält Mahlzeiten, Favoriten, Trainingsplan, Einheiten, Gewichte, ' +
+      'Beweglichkeitstests, Aktivitäten und Schlaf. Nicht enthalten sind der API-Key und ' +
+      'alle Bilder: Fortschrittsfotos, Essensfotos und die Warteschlange. Bilder würden die ' +
+      'Datei um ein Vielfaches vergrößern — dafür gibt es den eigenen Knopf darunter.'),
     el(
       'button',
       {
-        class: 'btn btn-danger',
+        class: 'btn',
+        type: 'button',
+        onClick: async () => {
+          const fotos = await listProgressPhotos();
+          if (!fotos.length) { toast('Noch keine Fortschrittsfotos da.'); return; }
+
+          // Eines nach dem anderen, mit Pause dazwischen: der Browser bricht
+          // ab, wenn zwanzig Downloads gleichzeitig anklopfen.
+          for (const foto of fotos) {
+            const url = URL.createObjectURL(foto.blob);
+            const link = el('a', { href: url, download: `fortschritt-${foto.date}.jpg` });
+            document.body.append(link);
+            link.click();
+            link.remove();
+            await new Promise((r) => setTimeout(r, 350));
+            URL.revokeObjectURL(url);
+          }
+          toast(`${fotos.length} ${fotos.length === 1 ? 'Foto' : 'Fotos'} gesichert.`);
+        },
+      },
+      'Fortschrittsfotos sichern'
+    ),
+    el('p', { class: 'hint' },
+      'Legt jedes Foto einzeln in deine Dateien, benannt nach dem Aufnahmetag. '
+      + 'Getrennt vom Datenexport, damit der klein bleibt — Fotos sind das Einzige, '
+      + 'was sich später nicht nachtragen lässt.'),
+    ctx.settings.lastBackup
+      ? el('p', { class: 'hint',
+          text: `Zuletzt gesichert: ${formatDateKey(ctx.settings.lastBackup)}.` })
+      : el('p', { class: 'hint', text: 'Noch nie gesichert.' }),
+    el(
+      'button',
+      {
+        class: 'btn btn-danger mt-16',
         type: 'button',
         onClick: async () => {
           if (!confirmAction('Alle Mahlzeiten und Favoriten löschen? Das lässt sich nicht rückgängig machen.')) return;
