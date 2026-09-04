@@ -1511,3 +1511,23 @@ input[type="range"] {
 
 /* Der Katalog ist Nachschlagewerk: zugeklappt, bis jemand nachschlägt. */
 .katalog > .stack { padding-top: 4px; }
+
+/* ---------------- Nachtwahl im Schlafdetail ---------------- */
+
+.mb-12 { margin-bottom: 12px; }
+
+.nachtwahl { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.nachtknopf {
+  flex-direction: column;
+  gap: 2px;
+  padding: 11px 8px;
+  min-height: 58px;
+}
+.nachtknopf.aktiv {
+  border-color: var(--kcal);
+  background: var(--kcal-soft);
+  color: var(--kcal);
+}
+.nachtname { font-size: 14px; font-weight: 550; }
+.nachtdatum { font-size: 11.5px; color: var(--text-muted); }
+.nachtknopf.aktiv .nachtdatum { color: var(--kcal); opacity: .85; }

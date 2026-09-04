@@ -68,6 +68,29 @@ export function nightKeyForBedtime(hhmm, heute, shift) {
 }
 
 /**
+ * Ab welcher Stunde „Schlafen gehen" überhaupt eine sinnvolle Angabe ist.
+ *
+ * Vorher lag die Grenze bei zwölf Uhr mittags: Ab da bot die Karte an, das
+ * Zubettgehen einzutragen, und schrieb die aktuelle Uhrzeit hin. Um vierzehn
+ * Uhr geht aber niemand ins Bett — wer da tippt, meint die vergangene Nacht
+ * und bekommt einen Eintrag für die kommende.
+ */
+export const ABEND_AB = 19;
+
+/**
+ * Wie eine Nacht heißt, wenn man vom heutigen Tag aus auf sie schaut.
+ *
+ * Ein Datum allein beantwortet die Frage nicht, die man im Kopf hat. „Nacht
+ * auf den 4." zwingt zum Nachrechnen; „Letzte Nacht" nicht.
+ */
+export function nightLabel(key, heute, shift) {
+  if (key === heute) return 'Letzte Nacht';
+  if (key === shift(heute, 1)) return 'Kommende Nacht';
+  if (key === shift(heute, -1)) return 'Vorletzte Nacht';
+  return null;
+}
+
+/**
  * Schlafdauer aus Zubettgehen und Aufwachen.
  * Über Mitternacht wird gerechnet, indem die kleinere Zeit als „am Morgen"
  * gilt — bei 23:15 → 07:05 sind das 7 Stunden 50, nicht minus 16.

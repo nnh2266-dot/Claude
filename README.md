@@ -619,11 +619,36 @@ Ein Eintrag steht für eine Nacht und trägt das Datum des **Aufwachens** — di
 30. auf den 31. liegt unter dem 31. Das ist die Sicht, in der man morgens denkt, und sie
 macht den Vergleich mit dem Trainingstag einfach: derselbe Schlüssel.
 
-Die Karte auf der Tagesansicht richtet sich nach der Uhrzeit. Vor zwölf fragt sie nach
-dem Aufwachen und dem Draußensein, danach nach dem Zubettgehen — wer um sieben Uhr früh
-einen Knopf „Schlafen gehen" sieht, muss erst nachdenken, was er hier soll. Eine abends
-eingetragene Zeit wandert automatisch auf die kommende Nacht; die Grenze liegt bei fünf
-Uhr früh, weil danach niemand mehr schlafen geht, sondern aufsteht.
+### Welche Nacht ist gemeint?
+
+Das ist die Frage, an der die Karte lange gescheitert ist, und sie beantwortet sie jetzt
+überall ausdrücklich.
+
+Die Karte richtet sich nach der Uhrzeit, aber sie schreibt die Nacht dazu:
+
+| Uhrzeit | Was angeboten wird |
+| --- | --- |
+| vor 12 Uhr | *Gerade aufgewacht*, *Bin draußen* — beides für die **vergangene** Nacht |
+| 12 bis 19 Uhr | *Letzte Nacht nachtragen* — kein Knopf für die kommende, weil um vierzehn Uhr niemand ins Bett geht |
+| ab 19 Uhr | *Schlafen gehen* für die **kommende** Nacht, daneben weiter *Letzte Nacht nachtragen* |
+
+Die Zeile mit den Zahlen nennt die Nacht beim Namen: „Letzte Nacht 23:10 → 06:40" oder
+„Kommende Nacht ab 22:45". Vorher stand dort nur die Zeit, und ab zwölf Uhr wechselte
+die Karte stillschweigend von der vergangenen auf die kommende Nacht — wer nachmittags
+nachtragen wollte, was er letzte Nacht gemacht hat, trug es für die Nacht danach ein und
+sah dem Knopf nicht an, dass er etwas anderes tat als gemeint.
+
+In der Detailansicht steht oben ein Umschalter mit beiden Nächten, jede mit ihrer Spanne
+(*Do → Fr* und *Fr → Sa*). Damit ist die Zuordnung nie mehr eine Folge der Uhrzeit, zu
+der man die Ansicht geöffnet hat, sondern eine Entscheidung, die man sieht und ändern
+kann. Für ältere Nächte gibt es darunter weiterhin *Nacht davor*.
+
+Eine abends über *Schlafen gehen* eingetragene Zeit wandert automatisch auf die kommende
+Nacht; die Grenze liegt bei fünf Uhr früh, weil danach niemand mehr schlafen geht,
+sondern aufsteht.
+
+*Bin draußen* hängt nicht mehr an der Mittagsgrenze, sondern daran, dass das Aufwachen
+steht und das Licht fehlt — wer um halb eins aufsteht, geht auch um halb eins raus.
 
 Gerechnet wird die Zeit **im Bett**, nicht der tatsächliche Schlaf. Das steht auch so in
 der App: wer lange wach liegt, sieht hier eine bessere Zahl, als die Nacht war. Eine
