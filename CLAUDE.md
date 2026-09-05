@@ -55,6 +55,7 @@ Die Dokumente in `marketing/`:
 - **`prognose.md`** — Trichterrechnung, Erfolgswahrscheinlichkeit, drei Startwege im Vergleich
 - **`registrierungen.md`** — EAR, BattDG, LUCID, EORI: Reihenfolge, Dauer, Kosten
 - **`musterpruefung.md`** — Befunde am echten Gerät, Drucksensorik, was noch zu messen ist
+- **`testplan.md`** — der abzuarbeitende Prüfplan am Muster, mit Feldern zum Eintragen
 - **`lieferanten-nachrichten.md`** — fertige Anfragen an ScPanda und Youmei zum Kopieren
 - **`alibaba-leitfaden.md`** — Einkauf, Papiere, Zoll, plus die geprüften Lieferanten
 - **`wettbewerb.md`** — deutscher Wettbewerb
