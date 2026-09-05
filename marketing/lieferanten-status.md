@@ -121,3 +121,66 @@ Bruttogewichte mit Verpackung. Das Gerät allein ist entsprechend leichter, die
 
 **Die Ladeangabe der Seite ist stimmig.** 7,4 V ist die Akkuspannung (zwei Zellen),
 5 V der USB-Ladeeingang. Kein Widerspruch.
+
+---
+
+## Befunde aus dem Muster (5. September 2026)
+
+Aus Handbuch und Verpackung des gelieferten Geräts.
+
+### Bestätigt
+
+| Angabe | Wert | Quelle |
+|---|---|---|
+| Nennspannung | **7,4 V** | Handbuch |
+| Ladeeingang | **USB-C, 5 V / 2 A** | Handbuch |
+| Neun Stufen | ja | Karton und Handbuch |
+| Vier Aufsätze | Kugel, U-Form, Flach, Zylinder | Karton und Lieferumfang |
+| Farbe | Mattschwarz | Gerät |
+
+Die Landingpage stand bei **5 V / 1 A** — das war falsch und ist korrigiert. Der
+Anschluss ist Type-C, was gegenüber älteren Geräten der Klasse ein Vorteil ist.
+
+### Neu und unangenehm
+
+**Amplitude 7,5 mm.** Steht auf dem Karton, stand in keinem Listing. Das ist die
+Kennzahl, die darüber entscheidet, ob sich ein Massagegerät tief anfühlt oder nur
+kitzelt — und 7,5 mm ist das untere Ende der Kategorie:
+
+| Gerät | Amplitude |
+|---|---|
+| **dieses Gerät** | **7,5 mm** |
+| Amazon-Wettbewerber B0FSL89TTL | 8 mm |
+| RENPHO Reach | 8 mm |
+| Amazon-Wettbewerber B0FSDMX7XZ | 10 mm |
+| breo MG 2 | 12 mm |
+| Amazon-Wettbewerber B0CNRKKCFS | 16 mm |
+
+**45 dB auf dem Karton.** ScPanda hatte zuerst „unter 40 dB" behauptet, dann 36–45 dB.
+Der Karton nennt 45 dB. Damit gibt es **keinen Lautstärkevorteil** — RENPHO wirbt mit
+unter 45 dB bei bürstenlosem Motor.
+
+**Widerspruch bei der Schlagzahl.** Karton: 3000 rpm. Handbuch: 3200 r/min. Zwei
+Angaben desselben Herstellers zum selben Gerät. Die Seite nennt jetzt die niedrigere,
+gedruckte Zahl.
+
+**Der Karton widerspricht sich auch selbst:** einmal „9rd gear mode adjustment",
+einmal „Intelligent adjustment of 3rd gear mode".
+
+### Was auf der Verpackung fehlt
+
+Für den Verkauf in Deutschland fehlen auf dem gelieferten Karton:
+
+- [ ] **CE-Kennzeichnung** — nicht sichtbar
+- [ ] **Name und Anschrift des Importeurs** — GPSR-Pflicht seit Dezember 2024
+- [ ] **Durchgestrichene Mülltonne** — ElektroG-Pflicht
+- [ ] **Batteriesymbol** — BattG-Pflicht
+
+Das Handbuch nennt als Fertigungsnorm **GB4706.1-2005 und GB4706.10-2008** — das sind
+**chinesische Normen**, nicht die europäischen EN-Normen. Kein Beweis, dass keine
+CE-Konformität besteht, aber ein deutlicher Hinweis darauf, dass das Gerät für den
+chinesischen Markt zertifiziert wurde.
+
+**Konsequenz:** Die fehlenden Kennzeichnungen müssten vor dem Verkauf ergänzt werden.
+Das CE-Zeichen darf dabei nur anbringen, wer die Konformität auch erklären kann —
+also erst, wenn die Unterlagen vorliegen.
