@@ -1,7 +1,15 @@
 # Musterprüfung — Befunde am echten Gerät
 
-Muster angekommen: 5. September 2026. Bestellt am ~13. August.
-**Tatsächliche Laufzeit: rund drei Wochen** — die Schätzung im Plan war richtig.
+**Geprüftes Gerät: ScPanda GB-868.** Ein Muster, bestellt ~13. August, angekommen
+5. September — **23 Tage Laufzeit**, die Schätzung von drei Wochen war richtig.
+
+Von Youmei wurde **kein** Muster bestellt. Ein Quervergleich der beiden Bauformen ist
+damit nicht möglich; die Drucksensorik hängt allein an der schriftlichen Bestätigung
+durch ScPanda.
+
+**Stufe 1 des Testplans bestanden** (Stand 5. September): keine Wärmeentwicklung unter
+Dauerlast, und der Bogen erreicht den eigenen Rücken. Damit trägt das Kernversprechen
+der Landingpage.
 
 ---
 

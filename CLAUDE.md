@@ -100,13 +100,21 @@ deutsche Adresse, Prüfpapiere (CE, EMV, RoHS, UN38.3).
 
 ## Stand der Musterprüfung (5. September 2026)
 
-Muster nach rund drei Wochen angekommen. **Gemessener Befund: Das Gerät hat eine
-Drucksensorik** — unter Andruck steigt die Schlagfrequenz hörbar und geht über
+**Geprüftes Gerät: ScPanda GB-868**, ein einzelnes Muster. Bestellt ~13. August,
+angekommen 5. September — 23 Tage. **Von Youmei wurde kein Muster bestellt**, ein
+Quervergleich ist also nicht möglich.
+
+**Stufe 1 des Testplans bestanden:** keine Wärmeentwicklung unter Dauerlast, und der
+Bogen erreicht den eigenen Rücken. Das Kernversprechen der Seite trägt.
+
+**Gemessener Befund: Das Gerät hat eine Drucksensorik** — unter Andruck steigt die Schlagfrequenz hörbar und geht über
 Stufe 9 hinaus, während die Stufenanzeige stehen bleibt. Kein Defekt, sondern eine
 undokumentierte Funktion. Folgen und offene Messungen in `musterpruefung.md`.
 
-**Die Sammelbestellung ist offen**, bis das zweite Muster verglichen und die
-Wärmeprüfung gemacht ist.
+**Die Sammelbestellung ist offen**, bis Stufe 2 und 3 des `testplan.md` gemessen sind
+und ScPanda die Papiere geliefert hat (CE-Konformitätserklärung mit Modellbezeichnung
+GB-868, UN38.3 mit Test Summary). Ohne zweites Muster gibt es keinen Ersatzlieferanten
+in der Hinterhand — fallen die Papiere durch, kostet der Wechsel drei Wochen.
 
 ## Nächste Schritte
 

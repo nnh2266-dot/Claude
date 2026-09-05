@@ -112,8 +112,8 @@ Lautstärke, Verarbeitung und Laufzeit vergleichen, bevor die Sammelbestellung f
 
 | Lieferant | Muster bestellt am | Angekommen am | Laufzeit |
 |---|---|---|---|
-| ScPanda | | | |
-| Youmei | | | |
+| **ScPanda (GB-868)** | ~13. August 2026 | **5. September 2026** | **~23 Tage** |
+| Youmei (H8119-G3) | *nicht bestellt* | — | — |
 
 Die echte Laufzeit ist die Zahl, die später deine Lieferzeitangabe im Shop trägt —
 und die Meta-Kundenzufriedenheit hängt an nichts so sehr wie daran.
