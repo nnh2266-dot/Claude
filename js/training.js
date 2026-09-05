@@ -132,6 +132,39 @@ export const GROUP_LABEL = {
 };
 
 /**
+ * Gruppenbündel, die man an einem Tag als Ganzes weglassen will.
+ *
+ * Der Fall, für den das gebaut ist: morgen ein Spiel oder Wettkampf. Beine am
+ * Vortag sind die eine Sache, die man dann sicher nicht macht — schwere
+ * Kniebeugen und Ausfallschritte kosten am nächsten Tag Sprungkraft und
+ * Antritt, und zwar messbar. Der Rest der Einheit ist unproblematisch.
+ *
+ * Bei einem Ganzkörperplan hilft Tauschen dagegen nicht: Beine stehen in jedem
+ * der drei Tage. Deshalb braucht es das Weglassen einzelner Gruppen zusätzlich.
+ */
+export const GRUPPEN_BUENDEL = {
+  beine:   { label: 'Beine', gruppen: ['quad', 'ham', 'glute', 'waden'],
+             warum: 'Vor einem Spiel oder Wettkampf die wichtigste Auslassung.' },
+  druecken:{ label: 'Drücken', gruppen: ['brust', 'schulter', 'trizeps'],
+             warum: 'Wenn Schulter oder Ellenbogen zwickt.' },
+  ziehen:  { label: 'Ziehen', gruppen: ['ruecken', 'rdelt', 'bizeps'],
+             warum: 'Wenn die Stange fehlt oder der Rücken noch müde ist.' },
+};
+
+/** Übungen eines Tages ohne die genannten Bündel. */
+export function withoutBundles(day, buendel) {
+  if (!day || !buendel || !buendel.length) return day;
+  const raus = new Set(buendel.flatMap((b) => GRUPPEN_BUENDEL[b]?.gruppen || []));
+  if (!raus.size) return day;
+
+  const exercises = (day.exercises || []).filter((rx) => {
+    const uebung = exerciseById(rx.id);
+    return !uebung || !raus.has(uebung.group);
+  });
+  return { ...day, exercises };
+}
+
+/**
  * Übungen, die ein Gerät brauchen, das nicht jeder zuhause hat.
  * Das ist unabhängig von der Hantelfrage: ein Klimmzug braucht kein Gewicht,
  * aber sehr wohl eine Stange. Bank und Stuhl stehen hier nicht — irgendeine
@@ -713,7 +746,14 @@ export function missedDays(plan, sessions, dateKey, tage = 10) {
     if (!planTag) continue;
 
     const session = (sessions || []).find((s) => s.date === tag);
-    if (session && (session.done || session.movedTo)) continue;
+
+    // Eine Einheit deckt ihren eigenen Plantag nur ab, wenn sie auch dessen
+    // Übungen gemacht hat. Wer getauscht oder nachgeholt hat, hat an dem Tag
+    // etwas anderes trainiert — der eigene Tag ist dann weiterhin offen.
+    const eigenerTag = session
+      && !session.holtNach
+      && typeof session.swapWeekday !== 'number';
+    if (eigenerTag && (session.done || session.movedTo)) continue;
 
     // Woanders nachgeholt? Dann ist der Tag erledigt, auch ohne Eintrag bei ihm.
     if ((sessions || []).some((s) => s.holtNach === tag && s.done)) continue;

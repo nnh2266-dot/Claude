@@ -14,7 +14,7 @@ import {
   exerciseById, GROUP_LABEL, blockWeek, forWeek, dayForWeekday, nextStep, BLOCK_WEEKS,
   travelDay, restSeconds, sessionMinutes, REST_TEMPO,
   replaceExercise, setExercise, missedDays, SKIP_REASONS, deloadHinweis,
-  isUnilateral,
+  isUnilateral, GRUPPEN_BUENDEL, withoutBundles,
 } from '../training.js';
 import {
   ladderFor, harderRung, easierRung, pickNearestRung, topOutStreak, STREAK_FOR_NEXT,
@@ -40,6 +40,151 @@ const WOCHENTAG = ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'F
  * einer durchwachten Nacht ist Nichttrainieren die richtige Entscheidung — die
  * App soll dafür nicht schimpfen.
  */
+/**
+ * Welche Muskelgruppen ein Tag hauptsächlich trainiert.
+ * Ohne das ist die Auswahl beim Tauschen ein Ratespiel aus Namen wie
+ * „Ganzkörper B" — und genau die Frage, die man hat, ist ja: sind da Beine drin?
+ */
+function gruppenVon(day, grenze = 4) {
+  const zaehler = new Map();
+  for (const rx of day.exercises || []) {
+    const uebung = exerciseById(rx.id);
+    if (!uebung) continue;
+    zaehler.set(uebung.group, (zaehler.get(uebung.group) || 0) + 1);
+  }
+  return [...zaehler.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, grenze)
+    .map(([g]) => GROUP_LABEL[g] || g);
+}
+
+/**
+ * Heute eine andere Einheit machen.
+ *
+ * Der Plan legt Wochentage fest, das Leben hält sich nicht daran. Der häufigste
+ * Fall ist nicht „ich kann heute gar nicht", sondern „heute passt eine andere
+ * besser" — vor einem Spiel keine Beine, mit Muskelkater keine Wiederholung
+ * derselben Gruppe, ohne Stange nichts zum Ziehen.
+ *
+ * Getauscht wird nur für heute. Der Plan selbst bleibt stehen, und der
+ * verdrängte Tag landet in der Liste der offenen Einheiten, statt still zu
+ * verschwinden.
+ */
+function tauschKarte(ctx, plan, sessions, session, day, dateKey) {
+  if (session.done || session.skipped) return null;
+
+  const wochentag = new Date(`${dateKey}T12:00:00`).getDay();
+  const eigenerTag = dayForWeekday(plan, wochentag);
+  const getauscht = typeof session.swapWeekday === 'number';
+  const ohne = session.ohneGruppen || [];
+
+  const buendelSchalten = async (id) => {
+    const neu = ohne.includes(id) ? ohne.filter((x) => x !== id) : [...ohne, id];
+    session.ohneGruppen = neu;
+    await saveSession(session);
+    await ctx.refreshTraining();
+    ctx.reload();
+    toast(neu.includes(id)
+      ? `${GRUPPEN_BUENDEL[id].label} heute weggelassen.`
+      : `${GRUPPEN_BUENDEL[id].label} wieder dabei.`);
+  };
+
+  // Nur Bündel anbieten, die im heutigen Tag überhaupt vorkommen.
+  const moeglich = Object.entries(GRUPPEN_BUENDEL).filter(([id]) =>
+    ohne.includes(id) || withoutBundles(day, [id]).exercises.length < (day.exercises || []).length);
+
+  const weglassen = moeglich.length
+    ? el('div', { class: 'stack' },
+        el('div', { class: 'suppzeit', text: 'Oder nur eine Gruppe weglassen' }),
+        ...moeglich.map(([id, b]) => el('button', {
+          class: `tauschzeile${ohne.includes(id) ? ' aus' : ''}`, type: 'button',
+          'aria-pressed': ohne.includes(id) ? 'true' : 'false',
+          onClick: () => buendelSchalten(id),
+        },
+          el('div', { class: 'grow' },
+            el('div', { class: 'tauschname', text: `Ohne ${b.label}` }),
+            el('div', { class: 'muted small', text: b.warum })),
+          el('span', { class: 'muted small', text: ohne.includes(id) ? 'weggelassen' : '' }))))
+    : null;
+
+  const setzen = async (weekday, name) => {
+    session.swapWeekday = weekday;
+    // Die Übungen des alten Tages gehören nicht zum neuen.
+    session.entries = {};
+    session.dayName = name;
+    await saveSession(session);
+    await ctx.refreshTraining();
+    ctx.reload();
+    toast(`Heute ${name}.`);
+  };
+
+  const zurueck = async () => {
+    session.swapWeekday = null;
+    session.entries = {};
+    session.dayName = eigenerTag ? eigenerTag.name : '';
+    await saveSession(session);
+    await ctx.refreshTraining();
+    ctx.reload();
+    toast('Zurück zum Plan.');
+  };
+
+  if (getauscht || ohne.length) {
+    const teile = [];
+    if (getauscht) {
+      teile.push(`Statt ${eigenerTag ? eigenerTag.name : 'der geplanten Einheit'} machst du `
+        + `heute ${day.name}. ${eigenerTag ? eigenerTag.name : 'Die geplante Einheit'} steht ab `
+        + 'morgen unter den offenen Einheiten.');
+    }
+    if (ohne.length) {
+      teile.push(`${ohne.map((id) => GRUPPEN_BUENDEL[id].label).join(' und ')} heute `
+        + 'weggelassen — im Wochenbericht steht das Volumen entsprechend niedriger.');
+    }
+
+    return el('div', { class: 'card stack' },
+      el('div', { class: 'row-between' },
+        el('h3', { class: 'card-title', text: 'Heute angepasst' }),
+        el('span', { class: 'pill pill-kcal', text: 'nur heute' })),
+      ...teile.map((t) => el('p', { class: 'small', text: t })),
+      weglassen,
+      getauscht
+        ? el('button', { class: 'btn btn-block', type: 'button', onClick: zurueck },
+            'Doch die geplante Einheit')
+        : null);
+  }
+
+  // Zur Auswahl: alle anderen Tage des Plans. Der eigene fehlt — ihn zu
+  // „tauschen" wäre ein Nichts.
+  const andere = (plan.days || []).filter((d) => d.weekday !== wochentag);
+  if (!andere.length) return null;
+
+  const zeile = (d) => el('button', {
+    class: 'tauschzeile', type: 'button',
+    onClick: () => setzen(d.weekday, d.name),
+  },
+    el('div', { class: 'grow' },
+      el('div', { class: 'tauschname', text: d.name }),
+      el('div', { class: 'muted small', text: gruppenVon(d).join(' · ') })),
+    el('span', { class: 'muted small', text: WOCHENTAG[d.weekday].slice(0, 2) }));
+
+  return el('details', { class: 'card klappkarte tauschwahl' },
+    el('summary', null,
+      el('span', { class: 'grow', text: 'Heute passt das nicht?' }),
+      el('span', { class: 'muted small', text: 'anpassen' })),
+    el('div', { class: 'stack mt-16' },
+      el('p', { class: 'muted small',
+        text: 'Nur für heute — der Plan bleibt stehen. Typische Gründe: morgen ein Spiel '
+          + 'oder Wettkampf, Muskelkater in der Gruppe, die dran wäre, oder ein Gerät '
+          + 'fehlt.' }),
+      // Bei einem Ganzkörperplan steht in jedem Tag alles drin. Dann bringt
+      // Tauschen wenig und Weglassen alles — deshalb steht der Hinweis dabei.
+      andere.length
+        ? el('div', { class: 'stack' },
+            el('div', { class: 'suppzeit', text: 'Andere Einheit machen' }),
+            ...andere.map(zeile))
+        : null,
+      weglassen));
+}
+
 function ausfallenKarte(ctx, session, day, dateKey) {
   if (session.done) return null;
 
@@ -965,21 +1110,31 @@ export async function render(container, ctx) {
   const nachholTag = session.holtNach
     ? dayForWeekday(plan, new Date(`${session.holtNach}T12:00:00`).getDay())
     : null;
-  const geplanterTag = nachholTag || dayForWeekday(plan, weekday);
+  // Getauscht: heute gilt die Einheit eines anderen Wochentags. Sonntag ist 0,
+  // deshalb der Typtest statt einer Wahrheitsprüfung.
+  const tauschTag = typeof session.swapWeekday === 'number'
+    ? dayForWeekday(plan, session.swapWeekday)
+    : null;
+  const eigenerTag = dayForWeekday(plan, weekday);
+  const geplanterTag = nachholTag || tauschTag || eigenerTag;
 
   // Unterwegs zählt nicht der gespeicherte Plan, sondern das, was im Zimmer
   // geht. Der Plan selbst bleibt unangetastet — der Schalter ist umkehrbar.
   const tempo = ctx.settings.pausen || 'normal';
   const unterwegs = ctx.settings.unterwegs === true;
   const umgerechnet = unterwegs && geplanterTag ? travelDay(geplanterTag, profile, pickNearestRung) : null;
-  const day = umgerechnet
+  const vollerTag = umgerechnet
     ? { ...geplanterTag, exercises: umgerechnet.exercises }
     : geplanterTag;
+  // Weggelassene Gruppen zuletzt: erst umrechnen, dann filtern — sonst käme
+  // über die Zimmer-Variante eine Beinübung wieder herein.
+  const day = vollerTag ? withoutBundles(vollerTag, session.ohneGruppen || []) : vollerTag;
 
   const head = viewHead(
     day ? day.name : 'Ruhetag',
     `${formatDateKey(dateKey)} · ${BLOCK_WEEKS[week].label}`
-      + (nachholTag ? ` · nachgeholt vom ${WOCHENTAG[new Date(`${session.holtNach}T12:00:00`).getDay()]}` : ''),
+      + (nachholTag ? ` · nachgeholt vom ${WOCHENTAG[new Date(`${session.holtNach}T12:00:00`).getDay()]}` : '')
+      + (tauschTag && eigenerTag ? ` · statt ${eigenerTag.name}` : ''),
     iconButton('star', 'Ganzer Plan', () => ctx.go('plan'))
   );
 
@@ -1239,6 +1394,11 @@ export async function render(container, ctx) {
           : 'Etwas unter der Empfehlung. Kein Grund auszusetzen, aber wundere dich nicht, '
             + 'wenn die letzten Wiederholungen heute schwerer gehen.'));
     }
+
+    // Tauschen steht vor Ausfallenlassen: Wenn heute etwas nicht passt, ist
+    // eine andere Einheit fast immer die bessere Antwort als keine.
+    const tausch = tauschKarte(ctx, plan, sessions, session, vollerTag, dateKey);
+    if (tausch) body.push(el('div', { class: 'mt-16' }, tausch));
 
     const ausfallen = ausfallenKarte(ctx, session, day, dateKey);
     if (ausfallen) body.push(el('div', { class: 'mt-16' }, ausfallen));

@@ -727,6 +727,34 @@ bei einem frischen Foto — Portionsregler, Zutaten, Hinweis nachtragen — stat
 Stapel ungeprüft in den Tag rutscht. Kommt die Verbindung zurück, sagt die App einmal
 Bescheid; auswerten soll, wer gerade Zeit dafür hat.
 
+### Heute passt das nicht
+
+Der Plan legt Wochentage fest, das Leben hält sich nicht daran. Der häufigste Fall ist
+dabei nicht „ich kann heute gar nicht", sondern „heute passt eine andere Einheit besser".
+Auf jedem Trainingstag steht deshalb die Karte *Heute passt das nicht* mit zwei Wegen —
+beide gelten **nur für heute**, der Plan selbst bleibt stehen.
+
+**Andere Einheit machen.** Jeder andere Tag des Plans steht zur Auswahl, jeweils mit
+seinen Hauptmuskelgruppen daneben — ohne die wäre die Wahl zwischen „Ganzkörper B" und
+„Ganzkörper C" ein Ratespiel. Die verdrängte Einheit verschwindet nicht, sondern steht ab
+dem nächsten Tag unter den offenen Einheiten und lässt sich an einem Ruhetag nachholen.
+
+**Eine Gruppe weglassen.** Bei einem Ganzkörperplan hilft Tauschen allein nicht: Beine
+stehen in jedem der drei Tage. Deshalb lassen sich Bündel einzeln streichen — *Ohne
+Beine*, *Ohne Drücken*, *Ohne Ziehen*. Angeboten wird nur, was im heutigen Tag überhaupt
+vorkommt.
+
+Der Anlass für *Ohne Beine* ist der praktische Normalfall: **morgen ein Spiel oder
+Wettkampf.** Schwere Kniebeugen und Ausfallschritte am Vortag kosten messbar Sprungkraft
+und Antritt; der Rest der Einheit ist unproblematisch. Was weggelassen wurde, steht in
+der Karte und schlägt sich im Wochenvolumen nieder — es wird nicht so getan, als hätte
+die Einheit vollständig stattgefunden.
+
+Technisch merkt sich die Einheit dafür zwei Felder: `swapWeekday` (heute gilt der Plan
+eines anderen Wochentags) und `ohneGruppen`. Beide wirken auch auf die Liste der offenen
+Einheiten: Wer getauscht hat, hat seinen eigenen Plantag **nicht** gemacht, und der bleibt
+entsprechend offen.
+
 ### Ausfallen lassen
 
 Besser eine Einheit bewusst auslassen als eine halbe absolvieren. Nach zu wenig Schlaf

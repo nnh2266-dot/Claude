@@ -1531,3 +1531,25 @@ input[type="range"] {
 .nachtname { font-size: 14px; font-weight: 550; }
 .nachtdatum { font-size: 11.5px; color: var(--text-muted); }
 .nachtknopf.aktiv .nachtdatum { color: var(--kcal); opacity: .85; }
+
+/* ---------------- Einheit tauschen ---------------- */
+
+.tauschzeile {
+  display: flex; align-items: center; gap: 12px;
+  width: 100%; text-align: left;
+  padding: 11px 13px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  cursor: pointer;
+}
+.tauschzeile:active { background: var(--surface-2); }
+.tauschname { font-size: 14px; font-weight: 550; }
+.tauschzeile.aus {
+  border-color: var(--kcal);
+  background: var(--kcal-soft);
+  color: var(--kcal);
+}
+.tauschzeile.aus .muted { color: var(--kcal); opacity: .85; }

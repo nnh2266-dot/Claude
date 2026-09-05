@@ -345,6 +345,11 @@ export async function saveSession(session) {
     holtNach: session.holtNach || null,
     // … und dieser Tag wurde anderswo nachgeholt.
     movedTo: session.movedTo || null,
+    // Getauscht: heute wird die Einheit eines anderen Wochentags gemacht.
+    // Null ist ein gültiger Wochentag (Sonntag), deshalb der Typtest statt ||.
+    swapWeekday: typeof session.swapWeekday === 'number' ? session.swapWeekday : null,
+    // Gruppenbündel, die heute wegfallen (z. B. Beine vor einem Spiel).
+    ohneGruppen: Array.isArray(session.ohneGruppen) ? session.ohneGruppen : [],
     updatedAt: Date.now(),
   };
   await tx('sessions', 'readwrite', (s) => s.put(record));
