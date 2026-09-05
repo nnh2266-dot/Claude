@@ -4,7 +4,7 @@ Diese Datei wird von jeder Claude-Code-Session automatisch gelesen. Sie ersetzt 
 woran ich mich nicht erinnern kann: Chatverläufe sind zwischen Sessions nicht
 verfügbar, Dateien im Repo schon. Bei wichtigen Änderungen hier nachziehen.
 
-Stand: 12. August 2026
+Stand: 5. September 2026
 
 ---
 
@@ -54,6 +54,7 @@ Die Dokumente in `marketing/`:
 - **`kosten.md`** — was der Start kostet, Deckungsbeitrag, Break-even bei 50 Stück
 - **`prognose.md`** — Trichterrechnung, Erfolgswahrscheinlichkeit, drei Startwege im Vergleich
 - **`registrierungen.md`** — EAR, BattDG, LUCID, EORI: Reihenfolge, Dauer, Kosten
+- **`musterpruefung.md`** — Befunde am echten Gerät, Drucksensorik, was noch zu messen ist
 - **`lieferanten-nachrichten.md`** — fertige Anfragen an ScPanda und Youmei zum Kopieren
 - **`alibaba-leitfaden.md`** — Einkauf, Papiere, Zoll, plus die geprüften Lieferanten
 - **`wettbewerb.md`** — deutscher Wettbewerb
@@ -90,9 +91,21 @@ deutsche Adresse, Prüfpapiere (CE, EMV, RoHS, UN38.3).
   mindestens 30 Tage regulär bei 99,99 € gelaufen sein, bevor die Aktion ausgezeichnet
   wird (§ 11 PAngV, EuGH C-330/23). Eine selbst gesetzte UVP ist keine Option.
 - **Aufsätze:** Seite nennt vier, das Video-Prompt-Dokument fünf. Foto zeigt vier Typen.
-- **Laufzeit:** Seite 30–35 Minuten, Hersteller 2–3 Stunden. Rechnerisch sind ~27
-  Minuten plausibel. Am Muster messen.
+- **Laufzeit:** Seite 30–35 Minuten, Hersteller 2–3 Stunden. Rechnerisch ~27 Minuten
+  frei laufend — **unter Andruck wegen der Drucksensorik eher 18–21 Minuten.** Die
+  Seitenangabe ist damit vermutlich zu hoch. Unter Andruck messen, siehe
+  `musterpruefung.md`.
 - **Gewicht:** 590 g auf der Seite gegen 856–900 g Bruttoangabe der Hersteller.
+
+## Stand der Musterprüfung (5. September 2026)
+
+Muster nach rund drei Wochen angekommen. **Gemessener Befund: Das Gerät hat eine
+Drucksensorik** — unter Andruck steigt die Schlagfrequenz hörbar und geht über
+Stufe 9 hinaus, während die Stufenanzeige stehen bleibt. Kein Defekt, sondern eine
+undokumentierte Funktion. Folgen und offene Messungen in `musterpruefung.md`.
+
+**Die Sammelbestellung ist offen**, bis das zweite Muster verglichen und die
+Wärmeprüfung gemacht ist.
 
 ## Nächste Schritte
 
