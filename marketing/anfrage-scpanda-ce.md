@@ -156,3 +156,21 @@ Nik Hoffmann
 declaration of conformity? I cannot place the order without it." Kurze Nachrichten
 werden auf Alibaba schneller beantwortet als lange, und Schweigen auf genau diese Frage
 ist selbst eine Antwort.
+
+---
+
+## Zusatzbaustein — Bestimmungsland der Warenbestellung
+
+Anzuhängen, sobald ScPanda auf den Nachtrag antwortet. Hintergrund: Der Musterversand
+wurde vom Lieferanten mit **polnischer** Länderangabe deklariert, obwohl das
+Alibaba-Konto die deutsche Anschrift trägt. Bei den Mustern folgenlos, bei einer
+kommerziellen Sendung über 150 € nicht mehr — dort ist die Handelsrechnung das
+Zollwertdokument und bestimmt Verzollungsland, Einfuhrumsatzsteuer und die Person des
+Importeurs.
+
+```
+One more point for the bulk order: the commercial invoice and all shipping
+documents must show my German address and Germany as the country of
+destination. Please do not declare a different country as you did for the
+sample shipment. I need the import to be cleared in Germany in my name.
+```

@@ -497,19 +497,33 @@ aufgebracht werden, unabhängig davon, wie gut die Banderole aussieht.
 
 Quittung `#311793630501027279`, Bestellung vom 14. August 2026.
 
-### Falsche Anschrift im Konto — vor der Warenbestellung korrigieren
+### Länderangabe Polen — vom Lieferanten so deklariert
 
 > Buyer's company address: Nik Hoffmann, +48 17664298667, 6 Friedrich-Schauer-Weg,
 > Soest, Arnsberg, **000000, Poland**
 
-Land falsch, Postleitzahl `000000`, Telefonvorwahl `+48`. Die Muster kamen trotzdem an,
-weil FedEx den Adresstext gelesen und das Land ignoriert hat.
+**Das Alibaba-Konto ist korrekt hinterlegt.** Der Lieferant hat die Sendung bewusst mit
+polnischer Länderangabe, Platzhalter-PLZ `000000` und polnischer Vorwahl deklariert. Der
+Grund dafür ist nicht dokumentiert. Zugestellt wurde trotzdem nach Soest, weil FedEx den
+Adresstext gelesen und das Land ignoriert hat.
 
-**Bei der 60er-Bestellung ist die Handelsrechnung das Zollwertdokument.** Steht dort
-Polen, wird im Zweifel dort verzollt, die Einfuhrumsatzsteuer landet im falschen Land
-und der Buchhaltungsbeleg trägt eine falsche Anschrift.
+**Für die Muster ohne Bedeutung.** Zwei Geräte für 70 €.
 
-- [ ] **Im Alibaba-Konto korrigieren: Land Deutschland, PLZ 59494, deutsche Nummer.**
+**Für die 60er-Bestellung nicht mehr.** Dort ist die Handelsrechnung das
+Zollwertdokument und entscheidet über drei Dinge:
+
+- in welchem Land verzollt wird
+- wo die Einfuhrumsatzsteuer anfällt — die 146 € in `rechnung.md` setzen Deutschland
+  voraus
+- wer **Importeur of Record** ist, woran die gesamte EAR-Frage hängt
+
+Bei einer kommerziellen Sendung über 150 € prüft der Zoll genauer als bei zwei
+Musterstücken. Ob derselbe Umweg dort noch funktioniert, ist offen.
+
+- [ ] **ScPanda ausdrücklich festlegen:** Handelsrechnung und Versandpapiere der
+      Warenbestellung müssen die deutsche Anschrift und Deutschland als Bestimmungsland
+      tragen, Verzollung in Deutschland auf eigenen Namen. Textbaustein in
+      `anfrage-scpanda-ce.md`.
 
 ### Tatsächliche Kosten der Muster
 
