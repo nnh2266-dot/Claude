@@ -651,3 +651,40 @@ größer als jede Preisverhandlung über den Stückpreis.
 `37 × 27 × 12 cm` für zwei Stück entspricht genau zwei gestapelten Verkaufskartons zu
 37 × 26,5 × 6 cm. Die Maßangaben des Lieferanten stimmen, damit auch die Grundlage der
 Frachtberechnung.
+
+---
+
+## Block C — Laufzeittest, Zwischenstand (8. September 2026)
+
+**Fünf Durchläufe à 15 Minuten absolviert, das Gerät läuft weiter.** Verdacht: Die Stufe
+wurde nach einer Abschaltung nicht wieder eingestellt.
+
+### Die Rechnung stützt den Verdacht
+
+```
+Akku      1200 mAh × 7,4 V  =  8,9 Wh
+Laufzeit  5 × 15 min        =  75 min = 1,25 h
+                            →  rund 7 W mittlere Aufnahme
+```
+
+Der Karton nennt **17 W**. Bei 17 W wäre der Akku nach rund **31 Minuten** leer gewesen,
+also nach zwei Durchläufen. Das Gerät hat mit etwa **40 % der Nennleistung** gearbeitet —
+das entspricht keiner mittleren Stufe.
+
+### Daraus zwei Prüfungen
+
+- [ ] **Aktuelle Stufe am Display ablesen** — beantwortet die Frage ohne Rechnung
+- [ ] **Beim nächsten Abschalten: auf welcher Stufe startet das Gerät neu?** Das ist die
+      offene Frage „Merkt es sich die Stufe?" aus Block D. Springt es auf Stufe 1 zurück,
+      erklärt das die 75 Minuten, **gehört in die deutsche Anleitung** und ist ein
+      Bedienungsmangel, den man kennen muss, bevor man ihn beschreibt
+
+### Wie der Wert verwertet wird
+
+Der Test läuft trotzdem zu Ende. Über 75 Minuten Gesamtlaufzeit bedeuten: Ein Kunde mit
+zehn Minuten Anwendung täglich lädt **einmal pro Woche**. Das ist deutlich besser als die
+30–35 Minuten, die früher auf der Landingpage standen.
+
+**Aber ohne Stufenangabe.** Ist die Stufe zwischendurch gesprungen, lässt sich die Zahl
+keiner Stufe zuordnen. Auf die Seite darf dann nur die neutrale Aussage — Gesamtlaufzeit
+je Ladung — ohne Stufe. Belegbar und trotzdem stark.
