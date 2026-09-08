@@ -22,6 +22,7 @@ const CATALOG = [
   {
     id: 'handstand',
     name: 'Handstand',
+    avoid: ['handgelenk', 'schulter'],
     blurb: 'Vom Hohlkörper an der Wand bis zum freien Stand.',
     needs: 'eine freie Wandfläche',
     warmup: 'Handgelenke kreisen und dehnen, eine Minute. Ohne das rächt sich der Handstand schnell.',
@@ -44,6 +45,7 @@ const CATALOG = [
   },
   {
     id: 'lsit',
+    avoid: ['handgelenk'],
     name: 'L-Sit',
     blurb: 'Beine waagerecht, Körper frei gestützt.',
     needs: 'nichts weiter — mit zwei Blöcken geht es leichter',
@@ -65,6 +67,7 @@ const CATALOG = [
   },
   {
     id: 'pullup',
+    avoid: ['schulter', 'ellbogen'],
     name: 'Erster Klimmzug',
     blurb: 'Von aktivem Hängen bis zum sauberen Klimmzug.',
     gear: 'stange',
@@ -87,6 +90,7 @@ const CATALOG = [
   },
   {
     id: 'dip',
+    avoid: ['schulter'],
     name: 'Erster Dip',
     blurb: 'Stützkraft für Brust, Schulter und Trizeps.',
     gear: 'barren',
@@ -107,6 +111,7 @@ const CATALOG = [
   },
   {
     id: 'pistol',
+    avoid: ['knie'],
     name: 'Pistol Squat',
     blurb: 'Einbeinige Kniebeuge bis ganz nach unten.',
     needs: 'nichts weiter',
@@ -126,6 +131,7 @@ const CATALOG = [
   },
   {
     id: 'muscleup',
+    avoid: ['schulter', 'ellbogen', 'handgelenk'],
     name: 'Muscle-Up',
     blurb: 'Über die Stange — Klimmzug und Dip in einer Bewegung.',
     gear: 'stange',
@@ -146,6 +152,7 @@ const CATALOG = [
   },
   {
     id: 'frontlever',
+    avoid: ['schulter', 'ellbogen'],
     name: 'Front Lever',
     blurb: 'Waagerecht unter der Stange, Körper gestreckt.',
     gear: 'stange',
@@ -171,6 +178,14 @@ const CATALOG = [
 export const SKILLS = CATALOG;
 
 const BY_ID = new Map(CATALOG.map((s) => [s.id, s]));
+
+/** Fähigkeiten, die auf ein geschontes Gelenk gehen. */
+export function skillBlocked(id, limits) {
+  const s = skillById(id);
+  if (!s || !s.avoid || !limits || !limits.length) return null;
+  const treffer = s.avoid.filter((a) => limits.includes(a));
+  return treffer.length ? treffer : null;
+}
 
 export function skillById(id) {
   return BY_ID.get(id) || null;

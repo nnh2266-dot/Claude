@@ -727,6 +727,40 @@ bei einem frischen Foto — Portionsregler, Zutaten, Hinweis nachtragen — stat
 Stapel ungeprüft in den Tag rutscht. Kommt die Verbindung zurück, sagt die App einmal
 Bescheid; auswerten soll, wer gerade Zeit dafür hat.
 
+### Wenn etwas wehtut
+
+Im Fragebogen gibt es Einschränkungen schon als Dauerzustand — wer chronisch Probleme mit
+dem Knie hat, bekommt gar nicht erst Kniebeugen eingeplant. Was fehlte, war der viel
+häufigere Fall: **etwas tut gerade weh und in zwei Wochen wieder nicht.**
+
+Dafür steht auf jedem Trainingstag *Tut etwas weh?* mit fünf Gelenken: Knie, Schulter,
+Unterer Rücken, Handgelenk, Ellbogen. Eine Schonung unterscheidet sich bewusst von einer
+Änderung im Fragebogen:
+
+- Sie **baut den Plan nicht neu.** Ein neuer Plan würde die laufende Blockwoche und alle
+  Variantenleitern mitreißen — für etwas Vorübergehendes ein zu hoher Preis. Getauscht
+  wird beim Anzeigen, genau wie bei der Zimmer-Variante, und zwar **nach** dem Umrechnen:
+  sonst käme über den Umweg eine Übung herein, die aufs kranke Gelenk geht.
+- Sie **zeigt, was sie getan hat.** „Heute getauscht: Bankdips → Strecker am Boden" und
+  „Ohne Ersatz weggefallen: Liegestütze, Pike Push-Ups". Ein Plan, der ohne Erklärung
+  anders aussieht, ist ein kaputter Plan.
+- Sie **pausiert die Technik mit.** Ein Handstand mit gereiztem Handgelenk ist genau das,
+  was man gerade nicht üben will. Der Fortschritt bleibt gespeichert.
+- Sie **fragt nach.** Nach vierzehn Tagen will die App wissen, ob es noch gilt — eine
+  Einschränkung, die man einmal setzt und dann vergisst, macht den Plan still schlechter.
+- Sie **nennt den Ausweg.** Das ist der eigentliche Punkt: Beim Handgelenk fällt ohne
+  Geräte sonst *jedes* Drücken weg, weil die flache Hand am Boden das Gelenk streckt. Auf
+  Fäusten oder auf Liegestützgriffen bleibt es gerade. Zu jedem Gelenk steht so ein Satz.
+
+Und zu jeder Schonung steht der Satz, den keine App ersetzen kann: Schmerzen, die länger
+als ein bis zwei Wochen bleiben, nachts wehtun oder mit Taubheit einhergehen, gehören
+ärztlich abgeklärt.
+
+Bei der Gelegenheit sind die Übungsdaten nachgezogen worden. Für *Handgelenk* waren nur
+fünf Übungen gekennzeichnet — ausgerechnet Liegestütze fehlten, der Klassiker. Jetzt sind
+es zwölf: alle Liegestützvarianten am Boden, Bankdips und das Ab Wheel. Auch
+Fähigkeiten haben jetzt eine solche Kennzeichnung.
+
 ### Heute passt das nicht
 
 Der Plan legt Wochentage fest, das Leben hält sich nicht daran. Der häufigste Fall ist

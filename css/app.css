@@ -1553,3 +1553,20 @@ input[type="range"] {
   color: var(--kcal);
 }
 .tauschzeile.aus .muted { color: var(--kcal); opacity: .85; }
+
+/* ---------------- Schonung ---------------- */
+
+.schonkarte { border-left: 3px solid var(--kcal); }
+.schonzeile { display: grid; gap: 6px; }
+.schonname { font-size: 15px; font-weight: 600; }
+/* Der Ausweg ist der eigentliche Nutzen der Karte — er steht hervorgehoben,
+   nicht als Fußnote unter der Absage. */
+.schonausweg {
+  margin: 0;
+  padding: 9px 12px;
+  border-radius: var(--radius-sm);
+  background: var(--kcal-soft);
+  color: var(--text);
+  font-size: 13.5px;
+  line-height: 1.5;
+}

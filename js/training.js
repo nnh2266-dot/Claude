@@ -17,15 +17,15 @@ const RAW = [
   ['incdb','Schrägbank Kurzhantel','brust','c','gd','','30–35° Neigung, Handgelenke gerade.'],
   ['incbb','Schrägbankdrücken Langhantel','brust','c','g','schulter','Stange zur oberen Brust führen.'],
   ['chpress','Brustpresse Maschine','brust','c','g','','Sitz so, dass die Griffe auf Brusthöhe sind.'],
-  ['pushup','Liegestütze','brust','c','gdbw','','Körper bleibt eine Linie, Po anspannen.'],
+  ['pushup','Liegestütze','brust','c','gdbw','handgelenk','Körper bleibt eine Linie, Po anspannen.'],
   ['dips','Dips','brust','c','gw','schulter','Leicht vorlehnen für mehr Brust.'],
   ['cfly','Kabel-Fly','brust','i','g','','Leichte Ellbogenbeugung halten, Brust zusammendrücken.'],
   ['dbfly','Kurzhantel-Fly','brust','i','gd','schulter','Kontrolliert öffnen, nur bis Brusthöhe.'],
   ['bfly','Band-Fly','brust','i','b','','Am Endpunkt eine Sekunde halten.'],
-  ['pushele','Liegestütze erhöht','brust','c','w','','Hände auf Stuhl oder Tisch — die leichtere Variante.'],
-  ['pseudopu','Pseudo-Planche-Liegestütze','brust','c','w','schulter','Hände auf Bauchhöhe, Finger zu den Füßen. Die Schultern über die Hände schieben.'],
-  ['archerpu','Archer-Liegestütze','brust','c','w','schulter','Ein Arm beugt, der andere bleibt zur Seite gestreckt. Das Gewicht liegt auf dem beugenden Arm.'],
-  ['onearmneg','Einarmige Liegestütze negativ','brust','c','w','schulter','Eine Hand hinter dem Rücken, Füße weit auseinander. Nur langsam ablassen, mit beiden Händen hoch.'],
+  ['pushele','Liegestütze erhöht','brust','c','w','handgelenk','Hände auf Stuhl oder Tisch — die leichtere Variante.'],
+  ['pseudopu','Pseudo-Planche-Liegestütze','brust','c','w','schulter,handgelenk','Hände auf Bauchhöhe, Finger zu den Füßen. Die Schultern über die Hände schieben.'],
+  ['archerpu','Archer-Liegestütze','brust','c','w','schulter,handgelenk','Ein Arm beugt, der andere bleibt zur Seite gestreckt. Das Gewicht liegt auf dem beugenden Arm.'],
+  ['onearmneg','Einarmige Liegestütze negativ','brust','c','w','schulter,handgelenk','Eine Hand hinter dem Rücken, Füße weit auseinander. Nur langsam ablassen, mit beiden Händen hoch.'],
   // Rücken, vertikal
   ['pullup','Klimmzüge','ruecken','c','gw','','Brust zur Stange, Schulterblätter zuerst.'],
   ['latpull','Latzug','ruecken','c','g','','Ellbogen nach unten-hinten ziehen.'],
@@ -73,7 +73,7 @@ const RAW = [
   ['bhipth','Band Hip Thrust','glute','c','b','','Band über die Hüfte, oben halten.'],
   // Schultern
   ['ohp','Schulterdrücken Langhantel','schulter','c','g','schulter','Po und Bauch fest, Stange über die Mitte des Kopfes.'],
-  ['dbohp','Schulterdrücken Kurzhantel','schulter','c','gd','','Handflächen leicht zueinander drehen.'],
+  ['dbohp','Schulterdrücken Kurzhantel','schulter','c','gd','schulter','Handflächen leicht zueinander drehen.'],
   ['arnold','Arnold Press','schulter','c','gd','schulter','Rotation langsam, kein Schwung.'],
   ['pikepu','Pike Push-Ups','schulter','c','w','schulter','Hüfte hoch, Kopf Richtung Boden.'],
   ['hspuneg','Negative Handstand-Liegestütze','schulter','c','w','schulter,handgelenk','Im Handstand an der Wand langsam ablassen, dann mit den Füßen abstoßen und neu ansetzen.'],
@@ -95,7 +95,7 @@ const RAW = [
   ['pushdown','Trizepsdrücken Kabel','trizeps','i','g','','Oberarme fixiert, unten kurz halten.'],
   ['cgbp','Enges Bankdrücken','trizeps','c','g','handgelenk,schulter','Griff schulterbreit, Ellbogen eng.'],
   ['ohext','Überkopf-Trizeps','trizeps','i','gd','ellbogen','Dehnung hinten spüren, Ellbogen ruhig.'],
-  ['benchdip','Bankdips','trizeps','i','w','schulter','Hüfte nah an der Bank.'],
+  ['benchdip','Bankdips','trizeps','i','w','schulter,handgelenk','Hüfte nah an der Bank.'],
   ['bpush','Band-Pushdown','trizeps','i','b','','Am Endpunkt den Trizeps fest anspannen.'],
   ['diapu','Diamant-Liegestütze','trizeps','c','w','handgelenk','Hände unter der Brust, Ellbogen eng.'],
   ['bwskull','Strecker am Boden','trizeps','i','w','ellbogen','Im Kniestütz auf die Unterarme absenken, nur aus dem Trizeps zurückdrücken. Der Rumpf bleibt eine Linie.'],
@@ -107,7 +107,7 @@ const RAW = [
   ['plank','Unterarmstütz','core','i','w','','Po anspannen, Rippen runter. Wiederholungen sind hier Sekunden.'],
   ['hlr','Hängendes Beinheben','core','i','gw','','Becken einrollen, kein Schwingen.'],
   ['ccrunch','Kabel-Crunch','core','i','g','','Mit den Rippen einrollen, nicht mit der Hüfte.'],
-  ['abwheel','Ab Wheel','core','i','gd','ruecken','Nur so weit, wie der Rücken flach bleibt.'],
+  ['abwheel','Ab Wheel','core','i','gd','ruecken,handgelenk','Nur so weit, wie der Rücken flach bleibt.'],
   ['sideplank','Seitstütz','core','i','w','','Hüfte hoch, Schulter über dem Ellbogen.'],
   ['deadbug','Dead Bug','core','i','w','','Unterer Rücken bleibt am Boden.'],
   ['rtwist','Russian Twist','core','i','dw','ruecken','Die Brustwirbelsäule rotiert, nicht die Lende.'],
@@ -226,6 +226,34 @@ export const LIMIT_LABEL = {
   knie: 'Knie', schulter: 'Schulter', ruecken: 'Unterer Rücken',
   handgelenk: 'Handgelenk', ellbogen: 'Ellbogen',
 };
+
+/**
+ * Was man tun kann, wenn eine Gruppe geschont wird.
+ *
+ * Übungen herauszunehmen ist die halbe Antwort. Die andere Hälfte ist der
+ * Umweg, den es fast immer gibt — und den eine App nennen kann, ohne sich als
+ * Arzt aufzuspielen. Beim Handgelenk ist er entscheidend: Ohne Geräte fällt
+ * sonst jedes Drücken weg, weil die flache Hand am Boden das Gelenk streckt.
+ */
+export const LIMIT_AUSWEG = {
+  handgelenk: 'Nicht das Drücken ist das Problem, sondern die gestreckte Hand am Boden. '
+    + 'Auf Fäusten oder auf Liegestützgriffen bleibt das Gelenk gerade — damit geht '
+    + 'meist, was flach auf der Hand wehtut. Ziehen, Beine und Rumpf sind ohnehin frei.',
+  schulter: 'Über Kopf ist meist das Problem, nicht Drücken an sich. Enger Ellbogen und '
+    + 'nur so weit hinunter, wie es ruhig bleibt. Ziehen zum Bauch geht oft, wenn Ziehen '
+    + 'von oben wehtut.',
+  ruecken: 'Belastung mit rundem Rücken meiden, nicht Belastung überhaupt. Rumpfarbeit im '
+    + 'Liegen (Dead Bug, Unterarmstütz) ist in der Regel unproblematisch.',
+  knie: 'Der schmerzhafte Bereich ist meist die tiefe Beugung. Kürzerer Weg und langsames '
+    + 'Ablassen gehen oft, wo die volle Kniebeuge nicht geht. Hüftstrecken im Liegen ist frei.',
+  ellbogen: 'Meist trifft es die gestreckte Endposition und enge Griffe. Neutraler Griff '
+    + 'und weniger Bewegungsumfang helfen häufig.',
+};
+
+/** Der Satz, der bei jeder Schonung gilt und den keine App ersetzen kann. */
+export const SCHONUNG_ARZT = 'Schmerzen, die länger als ein bis zwei Wochen bleiben, nachts '
+  + 'wehtun oder mit Taubheit einhergehen, gehören ärztlich abgeklärt. Diese App kann '
+  + 'Übungen herausnehmen, mehr nicht — und Trainieren gegen den Schmerz macht es schlimmer.';
 
 /** Ersatzgruppe, wenn eine Muskelgruppe mit der vorhandenen Ausrüstung gar
  *  nicht trainierbar ist — etwa die seitliche Schulter ohne jedes Gerät. */
@@ -635,7 +663,19 @@ export function setExercise(plan, profile, dayIndex, exerciseIndex, neueId) {
  *
  * @returns {{exercises: object[], getauscht: {von: string, zu: string}[]}}
  */
-export function travelDay(day, profile, waehlen = null) {
+/**
+ * Übungen eines Tages ersetzen, die eine Bedingung nicht erfüllen.
+ *
+ * Zwei Fälle nutzen dasselbe Verfahren: unterwegs fällt alles weg, was mehr als
+ * Boden und Wand braucht, und bei einer Schonung alles, was auf das kranke
+ * Gelenk geht. In beiden Fällen soll nicht einfach gestrichen werden — gesucht
+ * wird zuerst Ersatz in derselben Gruppe und desselben Typs, dann in derselben
+ * Gruppe, dann in der Ersatzgruppe. Erst wenn nichts passt, fällt die Übung weg.
+ *
+ * @param {function} behalten  (uebung) => boolean — was unverändert bleibt
+ * @param {function} taugt     (kandidat) => boolean — was als Ersatz in Frage kommt
+ */
+function ersetzeIm(day, profile, behalten, taugt, waehlen) {
   if (!day || !day.exercises) return { exercises: [], getauscht: [] };
 
   // Was ohnehin bleibt, ist belegt — sonst schlägt der Tausch eine Übung vor,
@@ -643,7 +683,7 @@ export function travelDay(day, profile, waehlen = null) {
   const belegt = new Set(
     day.exercises.filter((v) => {
       const e = exerciseById(v.id);
-      return e && floorOnly(e);
+      return e && behalten(e);
     }).map((v) => v.id)
   );
 
@@ -651,9 +691,9 @@ export function travelDay(day, profile, waehlen = null) {
 
   const exercises = day.exercises.map((vorgabe, i) => {
     const uebung = exerciseById(vorgabe.id);
-    if (uebung && floorOnly(uebung)) return vorgabe;
+    if (uebung && behalten(uebung)) return vorgabe;
 
-    const passt = (e) => floorOnly(e) && isAvailable(e, profile) && !belegt.has(e.id);
+    const passt = (e) => taugt(e) && !belegt.has(e.id);
 
     const gruppe = uebung ? uebung.group : null;
     let auswahl = gruppe
@@ -681,6 +721,31 @@ export function travelDay(day, profile, waehlen = null) {
   }).filter(Boolean);
 
   return { exercises, getauscht };
+}
+
+/** Unterwegs: nur was mit Boden und Wand geht. */
+export function travelDay(day, profile, waehlen = null) {
+  return ersetzeIm(day, profile,
+    (e) => floorOnly(e),
+    (e) => floorOnly(e) && isAvailable(e, profile),
+    waehlen);
+}
+
+/**
+ * Schonung: Übungen, die auf ein gereiztes Gelenk gehen, gegen solche
+ * tauschen, die es nicht tun.
+ *
+ * `profile.limits` muss die Schonung bereits enthalten — dann macht
+ * `isAvailable` die eigentliche Arbeit, und dieses Verfahren sucht nur den
+ * Ersatz. Anders als eine Änderung im Fragebogen baut das den Plan nicht neu:
+ * Eine Schonung ist vorübergehend, und ein neuer Plan würde die laufende
+ * Blockwoche und alle Variantenleitern mitreißen.
+ */
+export function spareDay(day, profile, waehlen = null) {
+  return ersetzeIm(day, profile,
+    (e) => isAvailable(e, profile),
+    (e) => isAvailable(e, profile),
+    waehlen);
 }
 
 /* ---------------- 4-Wochen-Block ----------------

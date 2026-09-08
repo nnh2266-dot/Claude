@@ -14,8 +14,9 @@ import {
   exerciseById, GROUP_LABEL, blockWeek, forWeek, dayForWeekday, nextStep, BLOCK_WEEKS,
   travelDay, restSeconds, sessionMinutes, REST_TEMPO,
   replaceExercise, setExercise, missedDays, SKIP_REASONS, deloadHinweis,
-  isUnilateral, GRUPPEN_BUENDEL, withoutBundles,
+  isUnilateral, GRUPPEN_BUENDEL, withoutBundles, spareDay, LIMIT_LABEL,
 } from '../training.js';
+import { schonungsKarte, activeLimits } from './schonung.js';
 import {
   ladderFor, harderRung, easierRung, pickNearestRung, topOutStreak, STREAK_FOR_NEXT,
 } from '../ladders.js';
@@ -28,6 +29,7 @@ import {
 } from '../sleep.js';
 import {
   skillById, currentLevel, levelIndex, setsNeeded, levelCleared, hasNextLevel, MEASURE,
+  skillBlocked,
 } from '../skills.js';
 
 const WOCHENTAG = ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'];
@@ -1122,10 +1124,31 @@ export async function render(container, ctx) {
   // geht. Der Plan selbst bleibt unangetastet — der Schalter ist umkehrbar.
   const tempo = ctx.settings.pausen || 'normal';
   const unterwegs = ctx.settings.unterwegs === true;
-  const umgerechnet = unterwegs && geplanterTag ? travelDay(geplanterTag, profile, pickNearestRung) : null;
-  const vollerTag = umgerechnet
+
+  // Geschonte Gelenke wirken über dieselbe Prüfung wie die dauerhaften aus dem
+  // Fragebogen — nur eben erst hier, beim Anzeigen, und ohne den Plan neu zu
+  // bauen.
+  const schonung = ctx.settings.schonung || [];
+  const grenzen = activeLimits(schonung);
+  const profileMitSchonung = grenzen.length
+    ? { ...profile, limits: [...(profile.limits || []), ...grenzen] }
+    : profile;
+
+  const umgerechnet = unterwegs && geplanterTag
+    ? travelDay(geplanterTag, profileMitSchonung, pickNearestRung)
+    : null;
+  const nachReise = umgerechnet
     ? { ...geplanterTag, exercises: umgerechnet.exercises }
     : geplanterTag;
+
+  // Nach dem Umrechnen schonen, nicht davor: sonst käme über die
+  // Zimmer-Variante eine Übung herein, die aufs kranke Gelenk geht.
+  const geschont = grenzen.length && nachReise
+    ? spareDay(nachReise, profileMitSchonung, pickNearestRung)
+    : null;
+  const vollerTag = geschont
+    ? { ...nachReise, exercises: geschont.exercises }
+    : nachReise;
   // Weggelassene Gruppen zuletzt: erst umrechnen, dann filtern — sonst käme
   // über die Zimmer-Variante eine Beinübung wieder herein.
   const day = vollerTag ? withoutBundles(vollerTag, session.ohneGruppen || []) : vollerTag;
@@ -1156,6 +1179,10 @@ export async function render(container, ctx) {
   }
 
   body.push(unterwegsKarte(ctx, unterwegs, umgerechnet));
+
+  // Direkt darunter: Was heute geschont wird und warum der Plan anders aussieht.
+  body.push(el('div', { class: 'mt-16' },
+    schonungsKarte(ctx, { getauscht: geschont ? geschont.getauscht : [] })));
 
   if (!day) {
     // Am Ruhetag zuerst, was offen ist — danach der Trost.
@@ -1199,10 +1226,28 @@ export async function render(container, ctx) {
 
     // Technik zuerst, danach die Kraftübungen. Unterwegs fallen Fähigkeiten
     // weg, die eine Stange oder einen Barren brauchen — im Zimmer steht keiner.
+    // Fähigkeiten, die auf ein geschontes Gelenk gehen, pausieren mit. Ein
+    // Handstand mit gereiztem Handgelenk ist genau das, was man gerade nicht
+    // üben will — und ohne diese Zeile stünde er weiter im Plan.
+    const pausierteSkills = (profile.skills || [])
+      .map((id) => ({ id, treffer: skillBlocked(id, grenzen) }))
+      .filter((x) => x.treffer);
+
     const skillBlocks = (profile.skills || [])
       .filter((id) => !unterwegs || !(skillById(id) || {}).gear)
+      .filter((id) => !skillBlocked(id, grenzen))
       .map((id) => skillBlock(id, session, ctx, persist))
       .filter(Boolean);
+
+    if (pausierteSkills.length) {
+      body.push(el('div', { class: 'note mt-16' },
+        el('strong', { text: 'Technik pausiert. ' }),
+        `${pausierteSkills.map((x) => skillById(x.id).name).join(' und ')} `
+        + `${pausierteSkills.length === 1 ? 'geht' : 'gehen'} auf `
+        + `${[...new Set(pausierteSkills.flatMap((x) => x.treffer))]
+            .map((t) => LIMIT_LABEL[t]).join(' und ')} — solange geschont wird, steht `
+        + 'das aus. Der Fortschritt bleibt gespeichert.'));
+    }
 
     const warmup = warmupCard(day, skillBlocks.length > 0);
     if (warmup) body.push(warmup);

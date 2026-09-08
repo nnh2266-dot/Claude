@@ -14,7 +14,7 @@
  *   water     — Getrunkenes, ein Eintrag je Tag
  *   supps     — Nahrungsergänzung, ein Eintrag je Tag mit den Häkchen
  *   settings  — Key/Value (apiKey, model, goals, profile, plan, kcalAdjust,
- *               skillLevels, suppListe)
+ *               skillLevels, suppListe, schonung)
  */
 
 import { DEFAULT_GOALS, sumItems, newId, localDateKey } from './nutrition.js';
@@ -140,6 +140,10 @@ export async function getSettings() {
     pausen: ['kurz', 'normal', 'lang'].includes(raw.pausen) ? raw.pausen : 'normal',
     // Datum der letzten Sicherung — alles liegt nur auf diesem Gerät.
     lastBackup: typeof raw.lastBackup === 'string' ? raw.lastBackup : null,
+    // Vorübergehend geschonte Gelenke: [{ id, seit }]. Bewusst in den
+    // Einstellungen und nicht im Profil — eine Schonung ist zeitlich begrenzt
+    // und soll den Plan nicht neu bauen.
+    schonung: Array.isArray(raw.schonung) ? raw.schonung : [],
   };
 }
 
@@ -681,6 +685,7 @@ export async function exportData() {
     water,
     supps,
     suppListe,
+    schonung: settings.schonung,
   };
 }
 
@@ -779,6 +784,7 @@ export async function importData(data) {
   // Die eingerichtete Auswahl gehört mit in die Sicherung — sie von Hand neu
   // zusammenzuklicken wäre der ärgerlichste Teil einer Wiederherstellung.
   if (Array.isArray(data.suppListe)) await setSupplementList(data.suppListe);
+  if (Array.isArray(data.schonung)) await setSetting('schonung', data.schonung);
 
   return { meals, favorites, sessions, weights, activities, sleep, mobility, water, supps };
 }
