@@ -162,6 +162,30 @@ Modustaste — stand in keinem Listing und ist auf der Seite ergänzt.
 Leichter als angegeben, und das ist hier ein Vorteil: Das Gerät wird über die eigene
 Schulter gehalten, im ungünstigsten Hebel.
 
+### Block B — Lautstärke (8. September 2026)
+
+Gemessen mit Schallpegel-App, **Stufe 9**:
+
+| Abstand | Gemessen |
+|---|---|
+| direkt am Gerät | **52 dB** |
+| rund 1 m (1½ Schritte) | **45 dB** |
+| 50 cm, rechnerisch (−6 dB je Abstandsverdopplung) | **rund 50 dB** |
+
+**Der Karton nennt 45 dB ohne Abstandsangabe.** Auf 1 m stimmt das. Auf dem üblichen
+Prüfabstand von 50 cm sind es rund 50 dB. Damit ist die Herstellerangabe nicht falsch,
+aber auch **kein Vorteil** — RENPHO wirbt mit „unter 45 dB", vermutlich gleich gemessen.
+
+Einordnung: 52 dB entspricht leiser Unterhaltung. Kühlschrank ~40 dB, Gespräch ~60 dB.
+Für einen Bürstenmotor in Ordnung.
+
+**Konsequenz für die Seite: keine dB-Zahl nennen.** Eine Handy-App ist kein Messgerät,
+und eine falsche Lautstärkeangabe ist nach § 5 UWG abmahnfähig. Die Landingpage nennt
+derzeit keine dB-Zahl — das bleibt so. Zulässige Formulierung ohne Zahl: „Man kann sich
+daneben unterhalten."
+
+Offen: **Raumpegel ohne Gerät** (Eichung) und **Stufe 1** am selben Messpunkt.
+
 ### Block C — offen
 
 Das Ladegerät war ein altes Apple-Netzteil mit vermutlich 1 A statt der geforderten
