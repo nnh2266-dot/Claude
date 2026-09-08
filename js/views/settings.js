@@ -436,7 +436,7 @@ function dataSection(ctx, mealCount) {
     importInput,
     el('p', { class: 'hint' },
       'Der Export enthält Mahlzeiten, Favoriten, Trainingsplan, Einheiten, Gewichte, ' +
-      'Beweglichkeitstests, Aktivitäten, Schlaf, Trinken und Nahrungsergänzung. Nicht ' +
+      'Beweglichkeitstests, Aktivitäten, Schlaf, Trinken, Nahrungsergänzung und Beckenboden. Nicht ' +
       'enthalten sind der API-Key und ' +
       'alle Bilder: Fortschrittsfotos, Essensfotos und die Warteschlange. Bilder würden die ' +
       'Datei um ein Vielfaches vergrößern — dafür gibt es den eigenen Knopf darunter.'),

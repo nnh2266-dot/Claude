@@ -211,6 +211,19 @@ svg { display: block; }
 
 .stack     { display: flex; flex-direction: column; gap: 12px; }
 .stack-sm  { display: flex; flex-direction: column; gap: 8px; }
+.stack-tight { display: flex; flex-direction: column; gap: 4px; }
+
+/* Aufzählung ohne Wertung — anders als .nogo, das ein rotes Kreuz setzt. */
+.liste {
+  margin: 0; padding: 0; list-style: none;
+  display: flex; flex-direction: column; gap: 6px; line-height: 1.45;
+}
+.liste li { position: relative; padding-left: 16px; }
+.liste li::before {
+  content: '\2022';
+  position: absolute; left: 3px; top: -1px;
+  color: var(--text-muted);
+}
 .row       { display: flex; align-items: center; gap: 10px; }
 .row-between { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
 .grow      { flex: 1; min-width: 0; }
@@ -1614,6 +1627,10 @@ input[type="range"] {
 .kegelkreis.k-pause  { transform: scale(.88); }
 .kegelkreis.k-fertig { transform: scale(.95); border-color: var(--ok); background: var(--surface-2); }
 .kegelkreis.k-fertig::after { background: none; }
+/* Lösen läuft andersherum: Der Kreis wird beim Einatmen weit, nicht beim
+   Anspannen. Ruhiger als die Kraftseite, damit nichts zum Zupacken einlädt. */
+.kegelkreis.k-weit { transform: scale(1); background: var(--surface-2); border-color: var(--ok); }
+.kegelkreis.k-ruhe { transform: scale(.9); background: var(--surface-2); border-color: var(--border); }
 /* Bei den schnellen wäre die weiche Animation nur ein Nachziehen. */
 .kegelkreis.schnell { transition: transform .12s ease-out, background-color .12s; }
 
@@ -1625,6 +1642,6 @@ input[type="range"] {
 
 @media (prefers-reduced-motion: reduce) {
   .kegelkreis { transition: background-color .2s, border-color .2s; transform: none; }
-  .kegelkreis.k-an, .kegelkreis.k-aus,
+  .kegelkreis.k-an, .kegelkreis.k-aus, .kegelkreis.k-weit, .kegelkreis.k-ruhe,
   .kegelkreis.k-bereit, .kegelkreis.k-pause, .kegelkreis.k-fertig { transform: none; }
 }

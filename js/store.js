@@ -509,14 +509,22 @@ export async function listWater() {
 
 /* ---------------- Beckenboden ---------------- */
 
-/** Zählt einen abgeschlossenen Durchgang. */
-export async function addKegelRun(dateKey, stufe) {
+/**
+ * Zählt einen abgeschlossenen Durchgang.
+ *
+ * `art` trennt Kraft von Lösen, und die Trennung ist nicht kosmetisch: Die
+ * Stufe hängt an den Kraftdurchgängen. Ein Lösen-Durchgang darf einen nicht auf
+ * die nächste Stufe schieben — dann würde ausgerechnet das Entspannen die
+ * Anspannung steigern.
+ */
+export async function addKegelRun(dateKey, stufe, art = 'kraft') {
   const vorher = (await tx('kegel', 'readonly', (s) => s.get(dateKey))) || {};
   const record = {
     date: dateKey,
-    durchgaenge: (vorher.durchgaenge || 0) + 1,
+    durchgaenge: (vorher.durchgaenge || 0) + (art === 'loesen' ? 0 : 1),
+    loesen: (vorher.loesen || 0) + (art === 'loesen' ? 1 : 0),
     // Die zuletzt gemachte Stufe, damit der Bericht sie nennen kann.
-    stufe: stufe || vorher.stufe || 1,
+    stufe: (art === 'loesen' ? vorher.stufe : stufe) || vorher.stufe || 1,
     updatedAt: Date.now(),
   };
   await tx('kegel', 'readwrite', (s) => s.put(record));
@@ -524,14 +532,15 @@ export async function addKegelRun(dateKey, stufe) {
 }
 
 /** Nimmt einen Durchgang zurück — für den Fehlgriff. */
-export async function removeKegelRun(dateKey) {
+export async function removeKegelRun(dateKey, art = 'kraft') {
   const vorher = await tx('kegel', 'readonly', (s) => s.get(dateKey));
-  if (!vorher || !vorher.durchgaenge) return null;
-  if (vorher.durchgaenge <= 1) {
+  const feld = art === 'loesen' ? 'loesen' : 'durchgaenge';
+  if (!vorher || !vorher[feld]) return null;
+  const record = { ...vorher, [feld]: vorher[feld] - 1, updatedAt: Date.now() };
+  if (!record.durchgaenge && !record.loesen) {
     await tx('kegel', 'readwrite', (s) => s.delete(dateKey));
     return null;
   }
-  const record = { ...vorher, durchgaenge: vorher.durchgaenge - 1, updatedAt: Date.now() };
   await tx('kegel', 'readwrite', (s) => s.put(record));
   return record;
 }
@@ -830,10 +839,12 @@ export async function importData(data) {
 
   let kegel = 0;
   for (const eintrag of Array.isArray(data.kegel) ? data.kegel : []) {
-    if (!eintrag || !eintrag.date || !Number(eintrag.durchgaenge)) continue;
+    if (!eintrag || !eintrag.date) continue;
+    if (!Number(eintrag.durchgaenge) && !Number(eintrag.loesen)) continue;
     await tx('kegel', 'readwrite', (s) => s.put({
       date: eintrag.date,
-      durchgaenge: Math.max(0, Math.round(Number(eintrag.durchgaenge))),
+      durchgaenge: Math.max(0, Math.round(Number(eintrag.durchgaenge) || 0)),
+      loesen: Math.max(0, Math.round(Number(eintrag.loesen) || 0)),
       stufe: Number(eintrag.stufe) || 1,
       updatedAt: Number(eintrag.updatedAt) || Date.now(),
     }));

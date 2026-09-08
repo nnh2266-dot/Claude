@@ -1,17 +1,18 @@
 /**
- * Beckenboden: Kachel auf der Tagesleiste und die geführte Übung.
+ * Beckenboden: Kachel auf der Tagesleiste und die geführten Übungen.
  *
- * Die Übung braucht eine Uhr, die von selbst weiterläuft — anders als beim
+ * Zwei Übungen, nicht eine. Der Kraftdurchgang ist das, was überall „Kegel"
+ * heißt: anspannen, halten, loslassen. Der Lösen-Durchgang ist das Gegenteil
+ * und steht gleichberechtigt daneben, weil ein Beckenboden, der nur noch
+ * zumacht, eigene Probleme macht — bei Erektion und Samenerguss ist genau das
+ * eine bekannte Ursache. Wer hier nur die Kraftseite anbietet, verkauft die
+ * halbe Übung als ganze.
+ *
+ * Beide brauchen eine Uhr, die von selbst weiterläuft — anders als beim
  * Krafttraining. Dort misst man eine Leistung und tippt danach, hier folgt man
- * einer Ansage: anspannen, halten, loslassen, wieder. Wer dabei auf den Zähler
- * schauen muss, macht die Übung nicht richtig, deshalb sagen Ton und Vibration
- * jeden Wechsel an und der Bildschirm bleibt nur an, damit man sie zur Not
- * ablesen kann.
- *
- * Das Loslassen bekommt genauso viel Platz und Ansage wie das Anspannen. Das
- * ist keine Höflichkeit gegenüber der Pause, sondern der Punkt: Ein
- * Beckenboden, der nur noch anspannt und nicht mehr loslässt, macht eigene
- * Probleme.
+ * einer Ansage. Wer dabei auf den Zähler schauen muss, macht die Übung nicht
+ * richtig, deshalb sagen Ton und Vibration jeden Wechsel an und der Bildschirm
+ * bleibt nur an, damit man sie zur Not ablesen kann.
  */
 
 import {
@@ -20,22 +21,27 @@ import {
 import { addKegelRun, removeKegelRun } from '../store.js';
 import { localDateKey, shiftDateKey } from '../nutrition.js';
 import {
-  STUFEN, ablauf, dauerSekunden, stufeNach, bisNaechste, dayCount, streak, gesamt,
-  ANLEITUNG, NUTZEN, ARZT, GENUG_AM_TAG, DURCHGAENGE_JE_STUFE,
+  STUFEN, POSITION, ablauf, loesenAblauf, loesenSekunden, dauerSekunden,
+  stufeNach, bisNaechste, dayCount, dayLoesen, streak, gesamt,
+  ANLEITUNG, LOESEN_ANLEITUNG, NUTZEN, SEX, DAUER, ANZEICHEN_FEST, ANZEICHEN_RAT,
+  ARZT, GENUG_AM_TAG, DURCHGAENGE_JE_STUFE,
 } from '../kegel.js';
 
-const BELEG_TEXT = { gut: 'gut belegt', mittel: 'mittelmäßig belegt' };
+const BELEG_TEXT = { gut: 'gut belegt', mittel: 'mittelmäßig belegt', kein: 'nicht belegt' };
+
+const ohneSterne = (t) => t.replace(/\*\*/g, '');
 
 /* ---------------- Kachel für die Tagesleiste ---------------- */
 
 export function kegelStatus(ctx, dateKey) {
   const heute = dayCount(ctx.state.kegel, dateKey);
+  const geloest = dayLoesen(ctx.state.kegel, dateKey);
   return {
     id: 'becken',
     icon: '🔺',
     label: 'Becken',
-    wert: heute ? `${heute}×` : '—',
-    zustand: heute >= 2 ? 'gut' : heute ? 'offen' : 'leer',
+    wert: heute ? `${heute}×` : (geloest ? 'gelöst' : '—'),
+    zustand: heute >= 2 ? 'gut' : (heute || geloest) ? 'offen' : 'leer',
   };
 }
 
@@ -44,11 +50,13 @@ export function kegelStatus(ctx, dateKey) {
 export function kegelSection(ctx, dateKey) {
   const eintraege = ctx.state.kegel || [];
   const heute = dayCount(eintraege, dateKey);
+  const geloest = dayLoesen(eintraege, dateKey);
   const bisher = gesamt(eintraege);
   const s = stufeNach(bisher);
   const serie = streak(eintraege, dateKey, shiftDateKey);
   const fehlt = bisNaechste(bisher);
   const minuten = Math.round(dauerSekunden(s) / 60);
+  const pos = POSITION[s.position] || POSITION.liegend;
 
   return el('div', { class: 'card stack' },
     el('div', { class: 'row-between' },
@@ -56,9 +64,13 @@ export function kegelSection(ctx, dateKey) {
       el('span', { class: `pill ${heute ? 'pill-ok' : 'pill-kcal'} tabular`,
         text: heute ? `${heute}× heute` : 'offen' })),
 
+    // „Kegel" steht dabei, weil das der Name ist, unter dem man danach sucht.
+    el('p', { class: 'muted small', text: 'Kegel-Übungen — anderer Name, dieselbe Sache.' }),
+
     el('div', { class: 'row-between' },
       el('span', { class: 'small' },
-        el('strong', { text: `Stufe ${s.nr} · ${s.name}` })),
+        el('strong', { text: `Stufe ${s.nr} · ${s.name}` }),
+        el('span', { class: 'muted', text: ` · ${pos.kurz}` })),
       el('span', { class: 'muted small tabular',
         text: `${s.halten.wiederholungen}× ${s.halten.sekunden} s · ${s.schnell.wiederholungen} schnelle · ${minuten} Min` })),
 
@@ -73,6 +85,11 @@ export function kegelSection(ctx, dateKey) {
           text: `Noch ${fehlt} ${fehlt === 1 ? 'Durchgang' : 'Durchgänge'} bis Stufe ${s.nr + 1}.` })
       : null,
 
+    geloest
+      ? el('p', { class: 'muted small',
+          text: `${geloest}× gelöst heute — zählt nicht auf die Stufe, gehört aber dazu.` })
+      : null,
+
     // Ab drei am Tag bringt mehr nichts und kann schaden. Das steht da, statt
     // stillschweigend weiterzuzählen.
     heute >= GENUG_AM_TAG
@@ -84,28 +101,36 @@ export function kegelSection(ctx, dateKey) {
     el('div', { class: 'row' },
       el('button', {
         class: 'btn btn-primary grow', type: 'button',
-        onClick: () => { begin(); ctx.go('kegel'); },
+        onClick: () => { begin('kraft'); ctx.go('kegel'); },
       }, heute ? 'Noch ein Durchgang' : 'Durchgang starten'),
-      heute
-        ? el('button', {
-            class: 'btn', type: 'button',
-            onClick: async () => {
-              await removeKegelRun(dateKey);
-              await ctx.refreshDaily();
-              ctx.reload();
-              toast('Zurückgenommen.');
-            },
-          }, 'Rückgängig')
-        : null));
+      el('button', {
+        class: 'btn', type: 'button',
+        onClick: () => { begin('loesen'); ctx.go('kegel'); },
+      }, 'Lösen')),
+
+    heute || geloest
+      ? el('button', {
+          class: 'btn btn-block', type: 'button',
+          onClick: async () => {
+            await removeKegelRun(dateKey, heute ? 'kraft' : 'loesen');
+            await ctx.refreshDaily();
+            ctx.reload();
+            toast('Zurückgenommen.');
+          },
+        }, 'Letzten Durchgang zurücknehmen')
+      : null);
 }
 
-/* ---------------- Die geführte Übung ---------------- */
+/* ---------------- Die geführten Übungen ---------------- */
 
 /** Läuft gerade ein Durchgang? Überlebt keinen Ansichtswechsel. */
 let laufend = null;
+/** Welche der beiden Übungen die Ansicht zeigt. */
+let modus = 'kraft';
 
-export function begin() {
+export function begin(art = 'kraft') {
   laufend = null;
+  modus = art === 'loesen' ? 'loesen' : 'kraft';
 }
 
 /**
@@ -135,9 +160,12 @@ function uhr(schritte, { aufSchritt, fertig }) {
     try { navigator.vibrate?.(schritt.art === 'an' ? [140] : [60]); } catch { /* egal */ }
     if (!audio) return;
     // Anspannen höher als Loslassen — man soll die beiden ohne Hinsehen
-    // auseinanderhalten können.
+    // auseinanderhalten können. Beim Lösen liegen beide Töne tiefer und näher
+    // beieinander: Da soll nichts anspringen.
     if (schritt.art === 'an') beep(audio, 0.14, 880);
     else if (schritt.art === 'aus') beep(audio, 0.14, 520);
+    else if (schritt.art === 'weit') beep(audio, 0.18, 440);
+    else if (schritt.art === 'ruhe') beep(audio, 0.18, 330);
     else if (schritt.art === 'fertig') { beep(audio, 0.2, 660); setTimeout(() => beep(audio, 0.25, 880), 240); }
   };
 
@@ -172,10 +200,13 @@ export async function render(container, ctx) {
   const dateKey = localDateKey();
   const bisher = gesamt(ctx.state.kegel || []);
   const s = stufeNach(bisher);
-  const schritte = ablauf(s);
+  const loesenModus = modus === 'loesen';
+  const pos = POSITION[s.position] || POSITION.liegend;
+  const schritte = loesenModus ? loesenAblauf() : ablauf(s);
+  const sekunden = loesenModus ? loesenSekunden() : dauerSekunden(s);
 
-  const head = viewHead('Beckenboden',
-    `Stufe ${s.nr} · ${s.name}`,
+  const head = viewHead(loesenModus ? 'Lösen' : 'Beckenboden',
+    loesenModus ? 'Nichts anspannen — nur atmen' : `Stufe ${s.nr} · ${s.name} · ${pos.kurz}`,
     iconButton('back', 'Zurück', () => {
       laufend?.abbrechen();
       laufend = null;
@@ -186,6 +217,7 @@ export async function render(container, ctx) {
   const kreis = el('div', { class: 'kegelkreis' });
   const wort = el('div', { class: 'kegelwort', text: 'Bereit?' });
   const zaehler = el('div', { class: 'kegelzahl tabular', text: '' });
+  const hinweis = el('div', { class: 'muted small', text: loesenModus ? '' : pos.lang });
   const fortschritt = el('div', { class: 'muted small', text: '' });
 
   const knopf = el('button', { class: 'btn btn-primary btn-block btn-lg', type: 'button' });
@@ -195,6 +227,7 @@ export async function render(container, ctx) {
     kreis.className = `kegelkreis k-${schritt.art}${schritt.schnell ? ' schnell' : ''}`;
     wort.textContent = schritt.text;
     zaehler.textContent = schritt.sekunden > 1 ? String(sek) : '';
+    hinweis.textContent = schritt.hinweis || '';
     fortschritt.textContent = schritt.nummer
       ? `${schritt.nummer} von ${schritt.von}${schritt.schnell ? ' · schnelle' : ''}`
       : '';
@@ -206,12 +239,15 @@ export async function render(container, ctx) {
 
   const beenden = async () => {
     laufend = null;
-    await addKegelRun(dateKey, s.nr);
+    await addKegelRun(dateKey, s.nr, loesenModus ? 'loesen' : 'kraft');
     await ctx.refreshDaily();
     kreis.className = 'kegelkreis k-fertig';
     wort.textContent = 'Fertig.';
     zaehler.textContent = '';
-    fortschritt.textContent = `Durchgang eingetragen · ${dayCount(ctx.state.kegel, dateKey)}× heute`;
+    hinweis.textContent = '';
+    fortschritt.textContent = loesenModus
+      ? `Gelöst · ${dayLoesen(ctx.state.kegel, dateKey)}× heute`
+      : `Durchgang eingetragen · ${dayCount(ctx.state.kegel, dateKey)}× heute`;
     knopf.textContent = 'Zurück zur Übersicht';
     knopf.onclick = () => ctx.go('today');
   };
@@ -227,7 +263,7 @@ export async function render(container, ctx) {
     laufend = uhr(schritte, { aufSchritt: zeigen, fertig: beenden });
   };
 
-  const minuten = Math.round(dauerSekunden(s) / 60);
+  const minuten = Math.max(1, Math.round(sekunden / 60));
   knopf.textContent = `Start · rund ${minuten} ${minuten === 1 ? 'Minute' : 'Minuten'}`;
   knopf.onclick = starten;
 
@@ -235,16 +271,49 @@ export async function render(container, ctx) {
   // Punkt, nicht auf zwei.
   kreis.append(zaehler);
   const uhrKarte = el('div', { class: 'card stack kegelkarte' },
-    kreis, wort, fortschritt, knopf);
+    kreis, wort, hinweis, fortschritt, knopf);
 
-  /* --- Anleitung --- */
+  /* --- Anleitung, je nach Übung eine andere --- */
   const anleitung = el('details', { class: 'card klappkarte mt-16' },
     el('summary', null,
       el('span', { class: 'grow', text: 'Wie es richtig geht' }),
       el('span', { class: 'muted small', text: 'wichtig' })),
     el('div', { class: 'stack mt-16' },
-      ...ANLEITUNG.map((t) => el('p', { class: 'small', text: t })),
-      el('p', { class: 'hint', text: ARZT.replace(/\*\*/g, '') })));
+      ...(loesenModus ? LOESEN_ANLEITUNG : ANLEITUNG).map((t) => el('p', { class: 'small', text: t })),
+      el('p', { class: 'hint', text: ohneSterne(ARZT) })));
+
+  /* --- Sex: der Grund, aus dem die meisten hier landen --- */
+  const sex = el('details', { class: 'card klappkarte mt-16' },
+    el('summary', null,
+      el('span', { class: 'grow', text: 'Hilft das beim Sex?' }),
+      el('span', { class: 'muted small', text: 'mit Zahlen' })),
+    el('div', { class: 'stack mt-16' },
+      ...SEX.map((x) => el('div', { class: 'stack-tight' },
+        el('div', { class: 'row-between' },
+          el('span', { class: 'small grow' }, el('strong', { text: x.titel })),
+          el('span', { class: `pill supppill supp-${x.beleg === 'kein' ? 'duenn' : x.beleg}`,
+            text: BELEG_TEXT[x.beleg] })),
+        x.zahl ? el('div', { class: 'tabular', text: x.zahl }) : null,
+        el('p', { class: 'muted small', text: x.text }))),
+      el('p', { class: 'hint', text: DAUER })));
+
+  /* --- Der zu feste Beckenboden --- */
+  const fest = el('details', { class: 'card klappkarte mt-16' },
+    el('summary', null,
+      el('span', { class: 'grow', text: 'Wenn es sich fest anfühlt' }),
+      el('span', { class: 'muted small', text: 'dann nicht anspannen' })),
+    el('div', { class: 'stack mt-16' },
+      el('p', { class: 'small',
+        text: 'Ein dauerhaft verspannter Beckenboden verursacht dieselben Beschwerden, '
+          + 'gegen die man hier trainiert — Erektionsprobleme, zu frühen Samenerguss, '
+          + 'Schmerzen. Anspannen macht das schlimmer, nicht besser.' }),
+      el('ul', { class: 'liste small' },
+        ...ANZEICHEN_FEST.map((t) => el('li', { text: t }))),
+      el('p', { class: 'hint', text: ohneSterne(ANZEICHEN_RAT) }),
+      el('button', {
+        class: 'btn btn-block', type: 'button',
+        onClick: () => { begin('loesen'); ctx.reload(); },
+      }, 'Lösen statt anspannen')));
 
   /* --- Wofür --- */
   const nutzen = el('details', { class: 'card klappkarte mt-16' },
@@ -254,11 +323,7 @@ export async function render(container, ctx) {
     el('div', { class: 'stack mt-16' },
       ...NUTZEN.map((n) => el('div', { class: 'row-between' },
         el('span', { class: 'small grow', text: n.text }),
-        el('span', { class: `pill supppill supp-${n.beleg}`, text: BELEG_TEXT[n.beleg] }))),
-      el('p', { class: 'muted small',
-        text: 'Für „stärkerer Orgasmus" oder „mehr Leistung im Sport" gibt es keinen '
-          + 'belastbaren Beleg. Das steht hier, weil das die Versprechen sind, mit denen '
-          + 'solche Übungen sonst verkauft werden.' })));
+        el('span', { class: `pill supppill supp-${n.beleg}`, text: BELEG_TEXT[n.beleg] })))));
 
   /* --- Stufen --- */
   const stufenListe = el('details', { class: 'card klappkarte mt-16' },
@@ -270,8 +335,10 @@ export async function render(container, ctx) {
         el('div', { class: 'grow' },
           el('div', { text: `${x.nr}. ${x.name}${x.nr === s.nr ? ' · jetzt' : ''}` }),
           el('div', { class: 'muted small', text: x.ziel })),
-        el('div', { class: 'tabular small',
-          text: `${x.halten.wiederholungen}× ${x.halten.sekunden} s` })))));
+        el('div', { class: 'small' },
+          el('div', { class: 'tabular', text: `${x.halten.wiederholungen}× ${x.halten.sekunden} s` }),
+          el('div', { class: 'muted', text: (POSITION[x.position] || {}).kurz || '' }))))));
 
-  mount(container, head, el('div', null, uhrKarte, anleitung, nutzen, stufenListe));
+  mount(container, head,
+    el('div', null, uhrKarte, anleitung, sex, fest, nutzen, stufenListe));
 }
