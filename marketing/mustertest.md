@@ -394,3 +394,40 @@ Importeur of Record**. Diese Frage ist für den Steuerberater notiert.
 **Das gemessene Gewicht ist bestätigt.** 2 × 800 g Verkaufsverpackung plus rund 200 g
 Umkarton ergeben genau die aufgedruckten 1,80 kg. Die Herstellerangabe von 856 g brutto
 je Stück ist damit widerlegt.
+
+---
+
+## Korrektur und zwei Befunde am Gerät (8. September 2026)
+
+### Die 99 % waren kein Ladeproblem — Korrektur
+
+**Die Ladeanzeige hat zwei Stellen und kann 100 nicht darstellen.** Bei 99 Prozent ist
+der Akku voll.
+
+Damit ist die frühere Einordnung hinfällig, das alte 1-A-Netzteil sei die Ursache
+gewesen. Das Gerät war die ganze Zeit geladen. Die Empfehlung zum 2-A-Netzteil bleibt
+richtig — das Handbuch schreibt sie vor und mit 1 A dauert das Laden ein Vielfaches —
+aber der Zusammenhang zum Stehenbleiben bei 99 war falsch.
+
+**Auf der Landingpage stand die falsche Erklärung wörtlich** („die Anzeige bleibt kurz
+vor voll stehen"). Korrigiert in FAQ und JSON-LD.
+
+**Kommerzielle Bedeutung:** Ohne diesen Hinweis lädt jeder Kunde stundenlang, sieht 99
+und hält den Akku für defekt. Bei rund 11 € je Retoure ist ein einziger Satz auf der
+Seite und in der Anleitung die günstigste Maßnahme im ganzen Projekt. **Muss auch in die
+deutsche Bedienungsanleitung.**
+
+### Kein Typenschild am Gerät
+
+Griffende, Umgebung der USB-C-Buchse und Unterseite geprüft, auch auf Prägung im
+Streiflicht. **Das Gerät trägt keinerlei Kennzeichnung.**
+
+| Verlangt | Rechtsgrundlage | Vorhanden |
+|---|---|---|
+| CE-Zeichen | EMV 2014/30/EU, RoHS 2011/65/EU | ❌ |
+| Name und Anschrift des Herstellers | EMV Art. 7 Abs. 6, GPSR | ❌ |
+| Typ-, Chargen- oder Seriennummer zur Rückverfolgbarkeit | EMV Art. 7 Abs. 5 | ❌ |
+| Spannung und Leistung | — | ❌ |
+
+Damit ist das Gerät **weder auf dem Produkt noch auf der Verpackung noch in den
+Unterlagen** gekennzeichnet. Block G ist vollständig durchgefallen.
