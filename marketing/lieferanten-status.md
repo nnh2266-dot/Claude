@@ -7,6 +7,12 @@ nichts zweimal gefragt wird.
 
 ## ScPanda — GB-868
 
+**Stand 8. September 2026:** Nachtrag zur Dokumentenanfrage verschickt — CE-Befund aus
+dem Muster, Abgrenzung Konformitätserklärung gegen Laborzertifikat, UN38.3 unter Hinweis
+auf das UN3481-Etikett des Musterversands, Bedruckung des Kartons, Widersprüche 17/20 W
+und 3000/3200 rpm. Wortlaut in `anfrage-scpanda-ce.md`. **Antwort steht aus.**
+Nachfassen nach 48 Stunden mit einer Zeile.
+
 ### Beantwortet
 
 | Angabe | Wert | Quelle |
