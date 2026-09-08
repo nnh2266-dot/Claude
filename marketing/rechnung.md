@@ -48,11 +48,16 @@ wenn der CPA bekannt ist.
 | Einstandspreis je Stück | 16,37 € | 13,25 € |
 | Restbestand nach 20 Verkäufen | 40 Stück | 80 Stück |
 
-> **Größter offener Hebel: Lieferung aus dem EU-Lager.** Die Sendungsverfolgung des
-> Musters zeigt Abholung in Duiven, Niederlande — kein Flug aus China, kein Zollereignis.
-> Die Ware lag bereits in der EU. **Gilt das auch für Mengenaufträge, entfallen die
-> 470 € Luftfracht und die 146 € Einfuhrumsatzsteuer ganz oder teilweise** — zusammen
-> 616 € von 982 € Kapitaleinsatz. Frage an ScPanda gestellt, Antwort steht aus.
+> **Frachthebel, Stand 8. September 2026.** Die Sendungsverfolgung des Musters zeigt
+> Abholung in Duiven, Niederlande — kein Flug aus China, kein Zollereignis. **ScPanda hat
+> jedoch bestätigt: kein eigenes Lager in Europa, nur China.** Die Muster liefen also über
+> die Sammelverzollung der Plattform, nicht über ein Lieferantenlager. **Luftfracht und
+> Einfuhrumsatzsteuer bleiben damit in der Rechnung.**
+>
+> Offen bleibt der Weg über die Plattform: Alibaba Logistics bietet dieselbe Route
+> China → Niederlande → Deutschland auch für Mengenaufträge als DDP-Angebot an. **Vor der
+> Bestellung beide Zahlen einholen** — DDP über Alibaba Logistics und das Angebot von
+> ScPanda. Der Unterschied kann mehrere hundert Euro betragen.
 
 > **Belegte Zahl statt Schätzung.** Die Musterbestellung ist abgerechnet: 9,92 € Ware,
 > 45,15 € Versand, 12,67 € Einfuhrumsatzsteuer über Alibaba, 2,04 € Zahlungsgebühr —

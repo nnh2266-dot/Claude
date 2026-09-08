@@ -241,3 +241,51 @@ Kommt in der nächsten Nachricht wieder nichts zu den Dokumenten: nach 48 Stunde
 Einzeiler. Läuft auch der ins Leere, dieselbe Frage bei **Youmei** stellen. **Ein
 Lieferant ohne Konformitätserklärung ist für dieses Geschäft kein Lieferant**, unabhängig
 vom Preis.
+
+---
+
+## Zweite Antwort von ScPanda (8. September 2026)
+
+> „CE/FCC/ROHS das sind die certificate vorhanden"
+> „Sorry, we don't have stock in Europe. We are only based in China."
+
+### Zur Dokumentenlage: noch nichts erreicht
+
+Er sagt **„certificates"**, nicht *Declaration of Conformity*, und er sagt es als
+Behauptung ohne Datei. **Solange kein PDF vorliegt, ist nichts belegt.**
+
+**Die Nennung von FCC ist ein Warnsignal.** FCC ist die US-Funkbehörde und für Europa
+wertlos. Die Kombination CE / FCC / RoHS deutet auf ein Prüfpaket eines chinesischen
+Labors für den Weltmarkt hin — nicht auf die EU-Konformitätserklärung, die der Importeur
+besitzen muss.
+
+### Zum EU-Lager: Hebel beim Lieferanten entfällt
+
+Die Muster liefen über die Sammelverzollung der Plattform, nicht über ein Lager von
+ScPanda. **Luftfracht und Einfuhrumsatzsteuer bleiben in der Kalkulation.**
+
+Nicht erledigt ist damit der Weg über **Alibaba Logistics**, das dieselbe Route auch für
+Mengenaufträge als DDP anbietet. Vor der Bestellung beide Angebote einholen.
+
+### Nächste Nachricht
+
+```
+Good. Then please attach them here as PDF files.
+
+To be precise about what I need:
+
+- The EU Declaration of Conformity for GB-868. This is your own signed
+  document, one or two pages, naming EMC 2014/30/EU and RoHS 2011/65/EU,
+  with your company name and address and a signature. It is not a
+  laboratory certificate.
+- The EMC test report behind it.
+- The RoHS test report.
+- The UN38.3 test summary and the MSDS.
+
+Please do not send the FCC certificate. FCC is a US approval and has no
+value for the European market.
+
+Understood on the European stock. Then please quote the 60 piece order as
+air freight from Shenzhen, DDP Germany, including all duties and taxes,
+with the lead time.
+```
