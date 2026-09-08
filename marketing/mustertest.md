@@ -553,3 +553,43 @@ kalkuliert.
 
 - [ ] **Beobachten:** Stellt FedEx zusätzlich Einfuhrabgaben in Rechnung, wurde doppelt
       erhoben. Rückerstattung über den Link „Jetzt beantragen" in den Steuerdetails.
+
+---
+
+## Wie die zwei offenen Nebenpunkte geklärt werden
+
+### FedEx-Rechnung
+
+**Erwartung: es kommt keine.** Alibaba hat die 12,67 € über das IOSS-Verfahren selbst
+eingezogen, weil die Sendung unter 150 € lag. FedEx verzollt dann unter Alibabas
+IOSS-Nummer und stellt dem Empfänger nichts in Rechnung.
+
+Prüfung:
+
+1. `fedex.com/de-de`, Sendungsverfolgung, TRK-Nummer vom Etikett — gelesen als
+   **8763 0052 1420**, am Original gegenlesen
+2. Im Verlauf nach einem Eintrag zu Zoll- oder Einfuhrabgaben suchen
+3. Notfalls FedEx-Kundenservice Deutschland: „Wurden dem Empfänger Einfuhrabgaben
+   berechnet?"
+
+Kommt nach sechs Wochen nichts, ist der Punkt erledigt und die Rückerstattung über
+Alibaba entfällt.
+
+### Zolltarifnummer
+
+Kostenlos selbst bestimmbar über **`auskunft.ezt-online.de`**, den Elektronischen
+Zolltarif des deutschen Zolls. Suchbegriff „Massagegerät".
+
+| Position | Bezeichnung | Bewertung |
+|---|---|---|
+| **9019 10 90** | Apparate für Mechanotherapie, Massageapparate | **übliche Einreihung** für Massagepistolen. Drittlandszollsatz im EZT nachlesen |
+| 8543 70 90 | elektrische Geräte mit eigener Funktion | Gegenkandidat, hier fällt Zoll an |
+
+Schnellster Weg zur Bestätigung: **ScPanda nach der HS-Nummer fragen**, unter der sie
+exportieren, und diese im EZT gegenprüfen. Stimmen beide auf 9019, ist die Frage
+geklärt.
+
+Eine verbindliche Zolltarifauskunft (vZTA) ist **nicht nötig** — kostenlos, aber bis zu
+drei Monate Bearbeitungszeit und erst bei wiederkehrenden Großmengen sinnvoll.
+
+Bei Einreihung unter 8543 statt 9019: rund 30 € mehr auf die 60er-Bestellung.
