@@ -105,10 +105,10 @@ sie beim ersten Durchsehen.
 
 | Kennzeichen | Auf Gerät? | Auf Verpackung? | Pflicht aus |
 |---|---|---|---|
-| **CE-Zeichen** | | | Produktsicherheit |
-| **Name und Anschrift des Importeurs** | | | GPSR (EU) 2023/988 |
-| **Durchgestrichene Mülltonne** | | | ElektroG |
-| **Batteriesymbol** | | | BattG |
+| **CE-Zeichen** | | **fehlt auf der Rückseite** | Produktsicherheit |
+| **Name und Anschrift des Importeurs** | | **fehlt auf der Rückseite** | GPSR (EU) 2023/988 |
+| **Durchgestrichene Mülltonne** | | **fehlt auf der Rückseite** | ElektroG |
+| **Batteriesymbol** | | **fehlt auf der Rückseite** | BattG |
 | Typenschild mit Spannung und Leistung | | | |
 
 **Wenn eines fehlt, muss es vor dem Verkauf ergänzt werden.** Das CE-Zeichen darf nur
@@ -185,6 +185,50 @@ derzeit keine dB-Zahl — das bleibt so. Zulässige Formulierung ohne Zahl: „M
 daneben unterhalten."
 
 Offen: **Raumpegel ohne Gerät** (Eichung) und **Stufe 1** am selben Messpunkt.
+
+### Kartonrückseite (8. September 2026)
+
+Aufgedruckte Produktinformation im Wortlaut:
+
+| Zeile auf dem Karton | Bewertung |
+|---|---|
+| Product Name: Fascial gun Massager | — |
+| Product material: ABS | deckt sich mit Listing und Seite |
+| Charging voltage: 5V | deckt sich mit Handbuch |
+| Product color: green/black/gray | deckt sich mit ScPanda-Listing |
+| **Product mode: 9 modes** | **belegt die neun Rhythmen** |
+| **Product gear: 9-speed adjustment** | belegt die neun Kraftstufen |
+| Charging method: Type-C | deckt sich mit Handbuch und Seite |
+| **Rated voltage: 17W** | **dritte Leistungsangabe** — Listings sagen 20 W, und „Watt" ist hier als Spannung beschriftet |
+| Start method: One click start | — |
+| EAN 6985847522455 | Präfix 698 = chinesische GS1-Nummer |
+| MADE IN CHINA | — |
+
+**Die neun Modi und die neun Stufen stehen als getrennte Zeilen auf dem Karton.** Damit
+ist die Rhythmusfunktion gedruckt belegt und der frühere Widerspruch („3rd gear mode"
+auf einer anderen Kartonseite) als Druckfehler einzuordnen.
+
+**Zur Leistungsangabe:** 17 W auf dem Karton gegen 20 W in allen drei Listings. Die
+Landingpage nennt **keine Wattzahl** mehr — das bleibt so. Eine beworbene Leistung, die
+der Hersteller selbst dreifach unterschiedlich angibt, ist nicht haltbar.
+
+### Aufsätze — Namen und Zonen laut Karton
+
+| Karton | Zone laut Hersteller | Name auf der Seite |
+|---|---|---|
+| Bullet massage head | Handflächen, Fußsohlen | **Spitz** ✅ passend |
+| U-shaped massage head | Schultern, Achillessehne | U-Form ✅ |
+| Flat massage head | große Muskelgruppen, Latissimus | Flach ✅ |
+| Spherical massage head | Arme, Taille, Hüfte, Oberschenkel, Waden | Kugel ✅ |
+
+Der Widerspruch „Seite sagt Spitz, Handbuch sagt Cylindrical" ist damit **zugunsten der
+Seite entschieden** — der Karton nennt ihn Bullet, und die Form ist kegelförmig gerillt.
+
+**Abweichung bei den Zonen:** Der Hersteller ordnet den U-Kopf Schultern und
+Achillessehne zu, **nicht der Wirbelsäule**. Die Aussage der Landingpage, der U-Kopf
+laufe links und rechts an der Wirbelsäule vorbei, ist eine **eigene Behauptung**.
+Anwendungsempfehlungen sind keine Spezifikation, die Aussage ist also zulässig — sie
+muss aber in Block E praktisch bestätigt werden, sonst muss sie von der Seite.
 
 ### Block C — offen
 
