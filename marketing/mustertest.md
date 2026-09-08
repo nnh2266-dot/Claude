@@ -688,3 +688,36 @@ zehn Minuten Anwendung täglich lädt **einmal pro Woche**. Das ist deutlich bes
 **Aber ohne Stufenangabe.** Ist die Stufe zwischendurch gesprungen, lässt sich die Zahl
 keiner Stufe zuordnen. Auf die Seite darf dann nur die neutrale Aussage — Gesamtlaufzeit
 je Ladung — ohne Stufe. Belegbar und trotzdem stark.
+
+### Präzisierung: drei Durchläufe waren sicher Stufe 9
+
+Damit ist eine belastbare Untergrenze erreicht: **45 Minuten auf höchster Stufe, und der
+Akku war danach nicht leer.**
+
+Die Aussage hält unabhängig davon, was in den übrigen Durchläufen eingestellt war: Wer
+45 Minuten Stufe 9 **plus** zwei weitere Durchläufe aus einer Ladung schafft, schafft
+45 Minuten Stufe 9 aus einer vollen Ladung erst recht.
+
+**In Kundensprache: drei volle Anwendungen auf höchster Stufe je Ladung.**
+
+### Die Wattangaben sind damit widerlegt
+
+```
+Akku                      8,9 Wh
+45 min Stufe 9 = 0,75 h
+bei 17 W wären das       12,75 Wh   →  mehr als der Akku hat
+```
+
+**Stufe 9 kann keine 17 W ziehen.** Unter Berücksichtigung der übrigen Durchläufe liegt
+die tatsächliche Dauerleistung auf Stufe 9 **unter 10 W**.
+
+Die 17 W auf dem Karton und die 20 W im Listing sind Spitzen- oder Blockierwerte, keine
+Betriebsleistung. **Bestätigt die Entscheidung, keine Wattzahl auf der Seite zu nennen** —
+auch dann nicht, wenn ScPanda einen der beiden Werte bestätigt.
+
+### Vorgesehene Formulierung für die Technik-Sektion
+
+> **Über 45 Minuten auf höchster Stufe je Ladung** — drei volle Anwendungen
+
+Einzusetzen, sobald der Durchlauf abgeschlossen ist. Konkreter als die Angaben von
+RENPHO und den Amazon-Listings.
