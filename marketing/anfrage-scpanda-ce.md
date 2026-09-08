@@ -289,3 +289,57 @@ Understood on the European stock. Then please quote the 60 piece order as
 air freight from Shenzhen, DDP Germany, including all duties and taxes,
 with the lead time.
 ```
+
+---
+
+## Dritte Antwort von ScPanda (8. September 2026)
+
+> „We can deliver 60pcs in black to your address by Air. We will add the labels on the
+> package." — Unterlagen und Zahlen kommen laut Zusage am Folgetag aus dem Büro.
+
+### Erste belastbare Zusage — mit einer Falle
+
+**Ein CE-Zeichen darf nur anbringen, wer die Konformität erklärt hat.** Wird es gedruckt,
+weil der Kunde danach gefragt hat, ohne dass eine Erklärung dahintersteht, ist es eine
+**falsche Kennzeichnung** — und die Haftung liegt beim Importeur in Deutschland, nicht
+beim Hersteller in Shenzhen.
+
+| Fall | Folge |
+|---|---|
+| Erklärung liegt vor, CE wird gedruckt | in Ordnung |
+| Erklärung fehlt, CE wird trotzdem gedruckt | **Ware unverkäuflich, im schlimmsten Fall zu vernichten** |
+
+Ohne CE-Zeichen ist die Ware ebenfalls unverkäuflich — das kostet aber nur die
+Bestellung, kein Bußgeldverfahren.
+
+### Bedingung, die vorher festgeschrieben werden muss
+
+```
+Thank you.
+
+One important condition on the labels: the CE mark may only be printed if
+the declaration of conformity actually exists. If it does not exist, please
+print the other markings but leave the CE mark off. A CE mark without a
+declaration would make the goods unsellable for me.
+
+For the address I will send you the exact text and layout once the documents
+are confirmed.
+
+Please also include in tomorrow's message the total price for 60 pieces in
+black, DDP Germany by air, and the lead time.
+```
+
+Der Satz **prüft den Lieferanten**: Eine ehrliche Antwort lautet „dann drucken wir CE
+nicht". Wer ihn überliest, hat die Erklärung nicht.
+
+### Vorzubereiten: Inhalt des Etiketts
+
+Damit der Lieferant nicht selbst zusammenstellt, was er für richtig hält:
+
+- Firmenname und vollständige Anschrift (Importeur nach GPSR)
+- CE-Zeichen — **nur bei vorliegender Erklärung**
+- Durchgestrichene Mülltonne (ElektroG)
+- Batteriesymbol (BattG)
+- Modell- und Chargenbezeichnung zur Rückverfolgbarkeit (EMV Art. 7)
+- 7,4 V · Ladung 5 V / 2 A
+- Made in China
