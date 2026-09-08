@@ -173,6 +173,14 @@ export function weightTrend(weights, todayKey = localDateKey()) {
  *
  * Eine Hochrechnung aus wenigen Wochen, und die Zahl dahinter ist entsprechend
  * grob — deshalb kommt die Zahl der Wochen mit zurück, auf der sie beruht.
+ *
+ * Der zweite, größere Grund für die Unschärfe steckt in der Sache selbst: Die
+ * Rechnung „7700 kcal je Kilogramm" unterstellt eine gleichbleibende Rate. Das
+ * stimmt nicht — mit sinkendem Gewicht sinkt auch der Verbrauch, die Kurve
+ * flacht ab. Eine geradlinige Hochrechnung überschätzt deshalb systematisch,
+ * und zwar umso mehr, je weiter sie reicht. Für die laufende Nachsteuerung ist
+ * die Regel trotzdem brauchbar: Dort wird sie auf eine **gemessene**
+ * Abweichung angewandt und nächste Woche wieder korrigiert.
  * Bewegt sich das Gewicht in die falsche Richtung oder gar nicht, gibt es
  * keinen Termin, sondern diesen Befund.
  *

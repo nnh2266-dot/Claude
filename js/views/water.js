@@ -77,7 +77,8 @@ export function waterSection(ctx, dateKey, eintraege) {
     el('span', { class: 'muted small',
       text: minuten > 0 && ziel
         ? `${ML_PRO_KG} ml je kg, plus ${ML_PRO_SPORTMINUTE} ml je Sportminute (${minuten} min heute)`
-        : ziel ? `Richtwert: ${ML_PRO_KG} ml je kg Körpergewicht` : 'Ohne Profil kein Richtwert' }),
+        : ziel ? `Richtwert: ${ML_PRO_KG} ml je kg — nur Getränke, Essen kommt obendrauf`
+          : 'Ohne Profil kein Richtwert' }),
     ml > 0
       ? el('button', { class: 'btn btn-ghost btn-sm', type: 'button',
           onClick: async () => {

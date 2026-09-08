@@ -137,6 +137,19 @@ function punkteAus(werte, wert) {
  * kräftig. Deshalb wird gedeckelt — lieber eine vorsichtige Schätzung als eine
  * Bestleistung, die nie stattgefunden hat.
  */
+/**
+ * Geschätztes Einwiederholungsmaximum nach Epley.
+ *
+ * Die Formel ist im Bereich von zwei bis zehn Wiederholungen brauchbar — dort
+ * liegt der Fehler bei etwa fünf Prozent. Darüber wächst er deutlich, weil
+ * Ermüdung und Technik dazwischenkommen; bei fünfzehn Wiederholungen sind
+ * Abweichungen von fünfzehn bis zwanzig Prozent normal. Deshalb der Deckel:
+ * Alles über zwölf wird als zwölf gerechnet, statt eine Zahl auszurechnen, die
+ * niemand halten kann.
+ *
+ * Ohne Zusatzgewicht wird die Formel gar nicht erst benutzt — dann zählt die
+ * Wiederholungszahl selbst.
+ */
 export function estimate1RM(weight, reps) {
   return weight * (1 + Math.min(reps, 12) / 30);
 }

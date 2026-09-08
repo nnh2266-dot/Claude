@@ -90,9 +90,11 @@ export const SUPPLEMENTS = [
     menge: '3–6 mg je kg Körpergewicht',
     zeit: 'vor',
     wofuer: 'Messbar mehr Kraft und Ausdauer, und die Einheit fühlt sich leichter an.',
-    hinweis: 'Die Halbwertszeit liegt bei fünf bis sechs Stunden. Nachmittags genommen '
-      + 'ist abends noch die Hälfte im Blut — das kostet Tiefschlaf, auch wenn du '
-      + 'problemlos einschläfst.',
+    hinweis: 'Die Halbwertszeit liegt bei drei bis sechs Stunden, individuell zwischen '
+      + 'zwei und zehn. In einer kontrollierten Studie kosteten 400 mg noch sechs Stunden '
+      + 'vor dem Zubettgehen rund vierzig Minuten Schlaf — auch bei Leuten, die problemlos '
+      + 'einschliefen. Kleine Mengen sind vier Stunden vorher unkritisch, eine volle '
+      + 'Vorher-Portion eher acht.',
     wirkt: ['schlaf'],
   },
   {
@@ -160,11 +162,13 @@ export const SUPPLEMENTS = [
   {
     id: 'betaalanin',
     name: 'Beta-Alanin',
-    beleg: 'mittel',
+    beleg: 'gut',
     menge: '3–5 g täglich',
     zeit: 'egal',
-    wofuer: 'Hilft bei Belastungen von etwa einer bis vier Minuten. Für schwere Sätze mit '
-      + 'wenigen Wiederholungen bringt es nichts.',
+    wofuer: 'Der Effekt selbst ist gut belegt — das Australische Sportinstitut führt es in '
+      + 'derselben Gruppe wie Kreatin und Koffein. Er gilt aber nur für Belastungen von '
+      + 'etwa einer bis vier Minuten. Für schwere Sätze mit wenigen Wiederholungen bringt '
+      + 'es nichts, und genau die machst du.',
     hinweis: 'Kribbeln in Gesicht und Händen ist normal und harmlos. Die Wirkung baut sich '
       + 'über Wochen auf, nicht am Tag der Einnahme.',
     wirkt: [],

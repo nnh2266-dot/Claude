@@ -480,9 +480,15 @@ Der Richtwert lag schon lange im Energieplan, aber nur zum Anschauen. Jetzt läs
 sich eintragen — mit vier Knöpfen für Glas, kleine Flasche, Flasche und große Flasche.
 Kein Zahlenfeld: Wer trinkt, hat ein Glas in der Hand und höchstens einen Daumen frei.
 
-Gerechnet wird mit **35 ml je Kilogramm Körpergewicht**, plus **10 ml je Sportminute**
-— das ist der untere Rand dessen, was beim Schwitzen verloren geht. An einem Tag mit
-einer Stunde Training steigt der Richtwert damit von 2,8 auf 3,4 Liter.
+Gerechnet wird mit **25 ml je Kilogramm Körpergewicht**, plus **10 ml je Sportminute** —
+das ist der untere Rand dessen, was beim Schwitzen verloren geht. An einem Tag mit einer
+Stunde Training steigt der Richtwert damit von 2,0 auf 2,6 Liter.
+
+Hier stand lange 35, und das war zu hoch. Die überall zitierten „30 bis 40 ml je
+Kilogramm" und die 2,5 Liter der EFSA meinen **Gesamtwasser**: Getränke plus das Wasser
+im Essen, aus dem 20 bis 30 Prozent kommen. Diese App zählt aber nur Gläser und Flaschen.
+Ein Ziel von 2,8 l Getränken hätte rund 40 Prozent über der eigentlichen Empfehlung
+gelegen — mit einem Balken, der sich trotz normalen Trinkens nie füllt.
 
 Über die Menge wird nicht dramatisiert. Der Körper reguliert Flüssigkeit gut, und Durst
 ist ein brauchbarer Melder. Der Richtwert hilft an Tagen, an denen man das Trinken

@@ -13,8 +13,26 @@
  * Wie training.js ohne DOM-Zugriff.
  */
 
-/** Milliliter je Kilogramm Körpergewicht. */
-export const ML_PRO_KG = 35;
+/**
+ * Milliliter je Kilogramm Körpergewicht — **für das, was man trinkt.**
+ *
+ * Hier stand lange 35, und das war zu hoch. Die überall zitierten „30 bis 40 ml
+ * je Kilogramm" und die 2,5 Liter der EFSA meinen **Gesamtwasser**: Getränke
+ * plus das Wasser im Essen. Aus Lebensmitteln kommen davon 20 bis 30 Prozent.
+ * Für einen 80 kg schweren Mann heißt das: rund 2,5 l gesamt, davon etwa 1,8
+ * bis 2,0 l getrunken.
+ *
+ * Diese App zählt aber nur Gläser und Flaschen. Ein Ziel von 35 ml je kg hätte
+ * bedeutet, 2,8 l zu trinken und damit rund 40 Prozent über dem zu liegen, was
+ * die Empfehlung eigentlich sagt — mit einem Balken, der sich trotz normalen
+ * Trinkens nie füllt. Deshalb 25: das ist der Trinkanteil, und das Essen kommt
+ * ungezählt obendrauf.
+ *
+ * Quelle: EFSA, Dietary Reference Values for water (2010) — 2,5 l/Tag für
+ * Männer, 2,0 l für Frauen, jeweils Gesamtwasser bei mäßiger Temperatur und
+ * mäßiger Aktivität. Sport kommt hier getrennt dazu.
+ */
+export const ML_PRO_KG = 25;
 
 /** Gängige Gefäße, in Millilitern. */
 export const PORTIONEN = [

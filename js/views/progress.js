@@ -133,13 +133,15 @@ function prognoseText(p, profile) {
   if (p.art === 'weit') {
     const monate = Math.round(p.wochen / 4.3);
     return `Bei ${tempo} dauert es rund ${monate} Monate bis ${ziel}. Ein genaues Datum `
-      + 'steht hier bewusst nicht: so weit voraus ist die Hochrechnung geraten.';
+      + 'steht hier bewusst nicht: Mit sinkendem Gewicht sinkt auch der Verbrauch, die '
+      + 'Abnahme wird also langsamer statt gleichmäßig weiterzulaufen.';
   }
 
   const wochen = Math.round(p.tage / 7);
   return `Bei ${tempo} wärst du am ${formatDateKey(p.datum)} bei ${ziel} — in etwa `
-    + `${wochen} ${wochen === 1 ? 'Woche' : 'Wochen'}. Das ist aus zwei Wochen Messwerten `
-    + 'hochgerechnet und kann leicht um Monate danebenliegen.';
+    + `${wochen} ${wochen === 1 ? 'Woche' : 'Wochen'}. Geradlinig hochgerechnet aus zwei `
+    + 'Wochen Messwerten — in Wirklichkeit wird die Abnahme langsamer, je leichter du '
+    + 'wirst. Die Zahl ist also eher zu optimistisch als zu vorsichtig.';
 }
 
 /* ---------------- Ansicht ---------------- */

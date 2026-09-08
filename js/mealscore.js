@@ -32,8 +32,17 @@ export const EIWEISS_MITTEL = 4;
 
 /**
  * Kalorien je 100 Gramm.
+ *
  * Der beste Schätzer für Sättigung, den vier Zahlen hergeben: Wasser und
  * Ballaststoffe machen Volumen ohne Kalorien, Fett macht Kalorien ohne Volumen.
+ * In kontrollierten Versuchen essen Menschen weniger, wenn die Energiedichte
+ * ihrer Mahlzeiten sinkt — ohne dass sie es merken oder hungriger sind.
+ *
+ * Die Grenze bei 150 kcal je 100 g ist nicht gegriffen: Sie entspricht der
+ * oberen Kante der Kategorie „niedrige Energiedichte" (bis 1,5 kcal/g) in der
+ * gängigen Einteilung. Die obere Grenze liegt hier bei 350 statt bei den
+ * 400 kcal je 100 g, ab denen dort „hoch" beginnt — bewusst etwas früher, weil
+ * die Meldung ein Hinweis sein soll und keine Grenzwertüberschreitung.
  */
 export const DICHTE_LEICHT = 150;
 export const DICHTE_DICHT = 350;
@@ -165,8 +174,10 @@ export function dayPicture(meals, ziele) {
   const gesamt = proteinJe.reduce((a, b) => a + b, 0);
   const groesste = Math.max(...proteinJe);
 
-  // Als „Eiweißmahlzeit" zählt, was mindestens 20 g bringt — darunter ist der
-  // Reiz für den Muskelaufbau klein.
+  // Als „Eiweißmahlzeit" zählt, was mindestens 20 g bringt. Das ist keine
+  // gegriffene Zahl: Die Sportnährstoff-Fachgesellschaft ISSN empfiehlt 20 bis
+  // 25 g je Hauptmahlzeit (etwa 0,25 g je kg) mit höchstens drei bis vier
+  // Stunden Abstand — darunter fällt der Reiz für den Muskelaufbau ab.
   const tragende = proteinJe.filter((p) => p >= 20).length;
 
   return {
