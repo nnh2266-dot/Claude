@@ -343,3 +343,55 @@ Damit der Lieferant nicht selbst zusammenstellt, was er für richtig hält:
 - Modell- und Chargenbezeichnung zur Rückverfolgbarkeit (EMV Art. 7)
 - 7,4 V · Ladung 5 V / 2 A
 - Made in China
+
+---
+
+## Logo bei 60 Stück — Entscheidung: nein (8. September 2026)
+
+ScPanda bietet an, das Logo bereits bei 60 statt wie bisher ab 100 Stück zu drucken.
+**Für diese Bestellung wird abgelehnt.** Die Begründung ist rechtlich, nicht
+kaufmännisch.
+
+> Wer ein Produkt unter eigenem Namen oder eigener Marke in Verkehr bringt, gilt als
+> **Hersteller** — Art. 6 GPSR, ebenso der Blue Guide der EU-Kommission.
+
+| Weg | Folge |
+|---|---|
+| Ware trägt ScPanda als Hersteller, eigene Anschrift als Importeur | **es genügt die Konformitätserklärung des Lieferanten** |
+| Ware trägt „NackenFrei" | eigene Erklärung nötig: EMV-Messung 800–2.000 €, RoHS 300–600 €, technische Unterlagen zehn Jahre, volle Produkthaftung |
+
+**Bei 982 € Gesamteinsatz ist das nicht tragbar.** Das Logo kostet 68 € und löst
+Folgekosten aus, die den Test um ein Vielfaches übersteigen.
+
+### Die Unterscheidung, die dabei oft verwechselt wird
+
+**Die Webseite darf „NackenFrei" heißen.** Ein Händler mit eigenem Shopnamen, der fremde
+Ware vertreibt, ist normaler Vertrieb. Auslöser ist die Marke **auf dem Produkt oder der
+Verpackung** — dort kippt die Rolle vom Importeur zum Hersteller.
+
+Für den Test also: Marke auf der Seite, in den Anzeigen, auf Rechnung und Paketaufkleber.
+**Nicht auf Gerät und Karton.**
+
+Ab 500 Stück ändert sich die Rechnung — dann verteilen sich rund 1.500 € Prüfkosten über
+die Menge und die eigene Marke ist der eigentliche Zweck.
+
+### Antworttext
+
+```
+Thank you for offering the logo at 60 pieces. For this first order I do not
+want the logo printed - neither on the device nor on the box.
+
+The reason is legal, not commercial. Under EU rules a product sold under my
+own brand makes me the manufacturer, which means I would have to issue the
+declaration of conformity myself instead of relying on yours. For a 60 piece
+test order that is not workable.
+
+So for this order please keep your own manufacturer identification on the
+product and the packaging, and add my company name and address as the
+importer. We can discuss the logo again for a larger repeat order.
+```
+
+### Wirkung auf die Kalkulation
+
+Die 68 € für das Logo entfallen, dafür kommen rund 100 € für die Banderole hinzu. **Das
+hebt sich auf** — die Zahlen in `rechnung.md` bleiben unverändert gültig.
