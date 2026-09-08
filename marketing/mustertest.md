@@ -721,3 +721,50 @@ auch dann nicht, wenn ScPanda einen der beiden Werte bestätigt.
 
 Einzusetzen, sobald der Durchlauf abgeschlossen ist. Konkreter als die Angaben von
 RENPHO und den Amazon-Listings.
+
+---
+
+## Präzisionsdurchlauf — Protokoll für die Wiederholung
+
+Entscheidung vom 8. September 2026: Block C wird sauber wiederholt.
+
+### Was eine Wiederholung besser macht
+
+**Nur Block C** — Ladezeit und Laufzeit sind die einzigen Werte, die durch ein Protokoll
+präziser werden. Dazu die zwei fehlenden Schallmessungen aus Block B.
+
+### Was sie nicht besser macht
+
+| Block | Grund |
+|---|---|
+| A | binäre Fakten werden nicht präziser |
+| D | bestanden ist bestanden |
+| F | der Karton wird beim zweiten Ansehen nicht wertiger |
+| G | Abwesenheit ist Abwesenheit |
+| Etikett, Quittung, Tracking | ausgelesen |
+| **E** | **hat kein Messprotokoll** — die Frage hat eine Antwort oder keine |
+
+### Ablauf, rund 3 Stunden, davon 2,5 Warten
+
+Das **zweite Gerät** verwenden, es ist weniger gelaufen.
+
+1. Vollständig entladen, dann mit dem **2-A-Netzteil** laden. Start- und Endzeit bei 99 %
+   → **Ladezeit**
+2. **Raumpegel ohne Gerät**, Handy 50 cm → die fehlende Eichung
+3. **Stufe 1**, 50 cm, dB
+4. **Stufe 9**, 50 cm, dB
+5. **Entladen auf Stufe 9:** nach jeder Abschaltung neu starten, **jedes Mal notieren,
+   welche Stufe das Display zeigt** und ob sie neu eingestellt werden musste. Bis leer,
+   Minuten summieren
+6. Optional am Folgetag dasselbe auf **Stufe 1**
+
+Schritt 5 beantwortet zugleich die offene Frage aus Block D, ob sich das Gerät die Stufe
+merkt.
+
+### Zeitpunkt
+
+Der Präzisionsdurchlauf verzögert nichts — der eigentliche Blocker ist die
+Konformitätserklärung.
+
+**Block E gehört aber nicht hinein.** Er wird durch Warten nicht genauer und entscheidet
+als Einziges noch darüber, ob der Preis bei 79 € oder bei 59 € liegt.
