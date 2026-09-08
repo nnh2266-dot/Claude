@@ -141,3 +141,51 @@ Nicht für die Prüfung, sondern weil du sie später brauchst.
 
 **Nach dem Test steht die Entscheidung über die 60 Stück.** Vorher fließt kein Geld für
 Ware — die Registrierungen laufen unabhängig davon weiter, weil sie Wochen brauchen.
+
+---
+
+## Ergebnisse (8. September 2026)
+
+### Block A — bestanden
+
+Neun Stufen, vier Aufsätze in den erwarteten Formen, mattschwarz, USB-C, ABS und
+Silikon, Griff fest gebogen. **Zusätzlich gefunden: neun Rhythmen** über eine separate
+Modustaste — stand in keinem Listing und ist auf der Seite ergänzt.
+
+### Block B — teilweise
+
+| | Soll | Gemessen |
+|---|---|---|
+| Gewicht ohne Zubehör | 590 g | **500 g** — Seite korrigiert |
+| Gewicht Gesamtpaket | 856 g | **800 g** |
+
+Leichter als angegeben, und das ist hier ein Vorteil: Das Gerät wird über die eigene
+Schulter gehalten, im ungünstigsten Hebel.
+
+### Block C — offen
+
+Das Ladegerät war ein altes Apple-Netzteil mit vermutlich 1 A statt der geforderten
+2 A. Die Ladeanzeige blieb stundenlang bei 99 %. **Mit einem 2-A-Netzteil zu
+wiederholen.**
+
+### Block D — bestanden, beide Abbruchkriterien geklärt
+
+| Prüfung | Ergebnis |
+|---|---|
+| **Stalltest** | **Kein Blockieren.** Bei leichtem und mittlerem Druck läuft es sauber. Bei sehr starkem Druck wird es schneller statt langsamer — der Hub verkürzt sich, das Schlagwerk taktet höher |
+| **Biegt sich der Bogen?** | **Nein.** Damit hält die Aussage des Vergleichsabschnitts |
+| Aufsatz unter Zug | fest |
+| Dauerlauf Stufe 9 | rund 15 Minuten, **kein Heißwerden**, kein Geruch, kein Kraftverlust |
+| Verarbeitung | in Ordnung |
+| Bedienung | in Ordnung |
+| Silikonaufsätze | in Ordnung, kein Chemiegeruch |
+
+**Damit ist kein Ausschlusskriterium eingetreten.**
+
+### Was das Gesamtbild ergibt
+
+Ein **leichtes, sauber verarbeitetes Gerät ohne Ausfälle** — aber technisch am unteren
+Ende der Kategorie: 7,5 mm Amplitude, Bürstenmotor, 45 dB, 8,4 W.
+
+Es ist kein Kraftpaket. Es ist ein leichtes, gut zu führendes Gerät, das dorthin kommt,
+wo die Hand nicht hinkommt. Genau darauf ist die Landingpage aufgebaut.
