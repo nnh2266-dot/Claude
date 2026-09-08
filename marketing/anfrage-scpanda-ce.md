@@ -102,3 +102,57 @@ Lieferanten aus als jede weitere Frage.
 | Nur ein Laborzertifikat | nachhaken, nicht ausreichend |
 | „We have CE" ohne Datei | leere Zusage, gilt als nicht vorhanden |
 | Keine Antwort auf Punkt 1 | Warnsignal — dann auch Youmei dieselbe Frage stellen |
+
+---
+
+## Nachtrag — die tatsächlich verschickte Fassung
+
+Die erste, kürzere Dokumentenanfrage war bereits raus, bevor der Karton auf
+Kennzeichnungen abgesucht wurde. Deshalb geht nicht die lange Fassung oben hinterher,
+sondern dieser Nachtrag: Er bezieht sich auf die erste Nachricht, statt sie zu
+wiederholen.
+
+```
+Hello again,
+
+One addition to my last message. I have now checked the samples for
+markings.
+
+There is no CE mark on the device or on the retail box - I checked all six
+sides. There is also no WEEE crossed-out bin symbol, no battery symbol, and
+no manufacturer name or address anywhere. Without these the product cannot
+be sold in the European Union, so this decides whether I can order.
+
+To be precise about what I need, because this is often misunderstood: I need
+your EU Declaration of Conformity for model GB-868 - the manufacturer's own
+signed document, naming EMC 2014/30/EU and RoHS 2011/65/EU, with your company
+name and address, the standards applied, and a signature. A "CE certificate"
+from a testing laboratory is not sufficient for these two directives, because
+here the manufacturer declares conformity himself.
+
+On UN38.3: my sample shipment was already labelled UN3481 by your forwarder,
+so the test summary exists in your supply chain. Please just forward it
+together with the MSDS.
+
+Two more things:
+
+- Can you print CE mark, crossed-out bin symbol, battery symbol and my German
+  company address on the retail box? At what minimum quantity and what cost?
+
+- Your own printing contradicts itself. The box says "Rated voltage: 17W",
+  your listing says 20W. The box says 3000 rpm, the manual says 3200 r/min.
+  Which is correct? I have to publish these figures and I am liable for them.
+
+I am ready to place the 60 piece order as soon as the declaration of
+conformity and the battery documents are in my hands. If the declaration does
+not exist, please tell me directly - I would rather know now than after
+paying.
+
+Best regards
+Nik Hoffmann
+```
+
+**Nachfassen:** Nach 48 Stunden ohne Antwort nur eine Zeile — „Any update on the
+declaration of conformity? I cannot place the order without it." Kurze Nachrichten
+werden auf Alibaba schneller beantwortet als lange, und Schweigen auf genau diese Frage
+ist selbst eine Antwort.
