@@ -48,6 +48,12 @@ wenn der CPA bekannt ist.
 | Einstandspreis je Stück | 16,37 € | 13,25 € |
 | Restbestand nach 20 Verkäufen | 40 Stück | 80 Stück |
 
+> **Offener Punkt: Verpackung.** Der Originalkarton reicht für 79 € nicht — er bewirbt
+> drei Farbvarianten und zeigt vorn ein graues statt eines schwarzen Geräts. Zugleich
+> fehlen alle vier Pflichtkennzeichen. Beides löst dieselbe Maßnahme: eine bedruckte
+> **Papierbanderole**, geschätzt rund 100 € für 100 Stück, also **etwa 1,50 € je
+> verkauftem Gerät**. Der Deckungsbeitrag sinkt damit von 54 € auf rund **52,50 €**.
+
 > **Offener Punkt: Zollsatz.** Die 146 € sind genau 19 % Einfuhrumsatzsteuer auf Ware
 > plus Fracht — **ein Zoll ist nicht eingerechnet.** Das trifft zu, wenn das Gerät unter
 > Position **9019** (Massagegeräte) eingereiht wird. Bei Einreihung unter **8543**

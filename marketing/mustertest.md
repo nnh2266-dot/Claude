@@ -454,3 +454,39 @@ Folgen:
       (Massagegeräte) eingereiht wird. Bei Einreihung unter 8543 kämen einige Prozent
       hinzu, bei 768 € Bemessungsgrundlage rund 30 €. **Frage an den Spediteur, nicht an
       ScPanda.**
+
+---
+
+## Block F — Wertigkeit des Kartons: nicht ausreichend (8. September 2026)
+
+Urteil nach dem Auspacken: **für ein 79-€-Produkt reicht der Karton nicht.** Drei
+getrennte Befunde:
+
+| Befund | Bedeutung |
+|---|---|
+| Drei Farben aufgedruckt (grün / schwarz / grau) | **Generikkarton für alle Varianten.** Eine Auflage für das gesamte Sortiment — das Signal ist Massenware, nicht Marke |
+| Vorderseite zeigt ein **graues** Gerät, geliefert wurde ein schwarzes | Die Verpackung bildet ein anderes Produkt ab als den Inhalt. Bei einem 79-€-Preis unschön und angreifbar |
+| Wirkt nicht wertig | subjektiv, aber eindeutig |
+| Beschädigt angekommen | **für das Geschäft der harmloseste Punkt** — Kunden erhalten den Karton in einer DHL-Umverpackung, nicht nackt per Luftfracht |
+
+### Der Zusammenhang mit Block G
+
+Die Verpackung muss **ohnehin** angefasst werden: CE, Mülltonne, Batteriesymbol und
+Anschrift fehlen alle vier. **Kennzeichnung und Aufwertung sind dieselbe Arbeit.**
+
+### Optionen bei 60 Stück
+
+Eigene Verpackung liefert ScPanda erst ab 300 Stück — für den Test nicht verfügbar.
+
+| Lösung | je Stück (Schätzung, 100er-Auflage) | Bewertung |
+|---|---|---|
+| **Papierbanderole um den Karton** | **rund 1–1,50 €** | **Empfohlen.** Verdeckt Farbliste und graues Foto, trägt alle vier Pflichtzeichen und die Anschrift, wirkt wie eine Marke |
+| Großer bedruckter Aufkleber vorn | 0,30–0,60 € | billiger, sieht nach Aufkleber aus |
+| Eigener bedruckter Mailer | 3–5 € | zu teuer bei kleiner Auflage, Originalkarton steckt trotzdem darin |
+| Originalkarton verwerfen, eigene Verpackung | 3–6 € | beste Optik, macht aber zum Hersteller im Rechtssinn |
+
+**Empfehlung: Banderole.** Rund 100 € für den ganzen Test, löst die Kennzeichnung mit
+und wirkt auf den Deckungsbeitrag mit etwa 1,50 € je Stück — von 54 € auf rund 52,50 €.
+
+**Voraussetzung bleibt die Konformitätserklärung.** Ohne sie darf kein CE-Zeichen
+aufgebracht werden, unabhängig davon, wie gut die Banderole aussieht.
