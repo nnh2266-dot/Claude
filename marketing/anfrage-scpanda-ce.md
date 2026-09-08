@@ -174,3 +174,19 @@ documents must show my German address and Germany as the country of
 destination. Please do not declare a different country as you did for the
 sample shipment. I need the import to be cleared in Germany in my name.
 ```
+
+---
+
+## Zusatzbaustein — Lieferung aus dem EU-Lager
+
+Hintergrund: Die Sendungsverfolgung des Musters zeigt Abholung in **Duiven,
+Niederlande**, kein Zollereignis und keinen Flug aus China. Die Ware lag bereits in der
+EU. Falls das auch für Mengenaufträge gilt, entfallen Luftfracht und
+Einfuhrumsatzsteuer — in der Kalkulation zusammen 616 € von 982 € Kapitaleinsatz.
+
+```
+One question about logistics for the 60 piece order: my sample shipment was
+picked up in Duiven, Netherlands, not shipped from China. Do you also serve
+bulk orders from your European stock? If yes, what is the price and lead time
+delivered to Germany from there, compared to air freight from Shenzhen?
+```

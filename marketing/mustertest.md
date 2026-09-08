@@ -593,3 +593,61 @@ Eine verbindliche Zolltarifauskunft (vZTA) ist **nicht nötig** — kostenlos, a
 drei Monate Bearbeitungszeit und erst bei wiederkehrenden Großmengen sinnvoll.
 
 Bei Einreihung unter 8543 statt 9019: rund 30 € mehr auf die 60er-Bestellung.
+
+---
+
+## Sendungsverfolgung ausgewertet (8. September 2026)
+
+Tracking-ID **876300521420**, FedEx Regional Economy.
+
+### Es kommt keine FedEx-Rechnung
+
+- **TERMS: Shipper** — die Frachtkosten gehen an den Versender
+- **In der Travel history steht kein einziges Zollereignis**
+
+Der Punkt „auf eine FedEx-Rechnung warten" ist damit erledigt, ebenso die Frage nach
+einer doppelt erhobenen Einfuhrumsatzsteuer. Es gab nur eine Erhebung, die über Alibaba.
+
+### Die Sendung kam nicht aus China
+
+```
+8/26  Shipment information sent to FedEx
+9/03  Picked up            DUIVEN NL
+9/04  On the way           DUIVEN NL
+9/04  Departed FedEx hub   DUIVEN NL
+9/04  At local facility    LUENEN DE
+9/04  On FedEx vehicle     LUENEN DE
+9/04  Delivered            SOEST DE      signiert H. HOFFMANN
+```
+
+**Abholung in Duiven, Niederlande** — eine innereuropäische Paketsendung. Die Ware lag
+bereits in einem niederländischen Lager.
+
+| Beobachtung | Erklärung |
+|---|---|
+| Keine Rechnung im Karton | keine Verzollung nötig |
+| Länderangabe „Poland" folgenlos | es gab keine Zollanmeldung |
+| 14. August bestellt, 3. September abgeholt | die drei Wochen waren China → Niederlande |
+| Absenderadresse Maastricht-Airport | Lager, nicht Hersteller |
+
+**Der Empfänger war zu keinem Zeitpunkt Importeur.** Die EU-Einfuhr erfolgte in den
+Niederlanden auf fremden Namen.
+
+### Der größte offene Hebel der Kalkulation
+
+`rechnung.md` rechnet mit **470 € Luftfracht und 146 € Einfuhrumsatzsteuer** — zusammen
+616 € und damit **63 % des gesamten Kapitaleinsatzes von 982 €.** Beide Posten setzen
+voraus, dass die Ware aus China eingeflogen wird.
+
+**Bedient ScPanda auch größere Aufträge aus dem niederländischen Lager, entfallen beide
+oder fallen deutlich niedriger aus.** Das wäre der größte Kostenhebel im Projekt —
+größer als jede Preisverhandlung über den Stückpreis.
+
+- [ ] **ScPanda fragen**, ob Mengenaufträge aus dem EU-Lager geliefert werden können.
+      Textbaustein in `anfrage-scpanda-ce.md`.
+
+### Nebenbefund: Kartonmaße bestätigt
+
+`37 × 27 × 12 cm` für zwei Stück entspricht genau zwei gestapelten Verkaufskartons zu
+37 × 26,5 × 6 cm. Die Maßangaben des Lieferanten stimmen, damit auch die Grundlage der
+Frachtberechnung.

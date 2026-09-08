@@ -48,6 +48,12 @@ wenn der CPA bekannt ist.
 | Einstandspreis je Stück | 16,37 € | 13,25 € |
 | Restbestand nach 20 Verkäufen | 40 Stück | 80 Stück |
 
+> **Größter offener Hebel: Lieferung aus dem EU-Lager.** Die Sendungsverfolgung des
+> Musters zeigt Abholung in Duiven, Niederlande — kein Flug aus China, kein Zollereignis.
+> Die Ware lag bereits in der EU. **Gilt das auch für Mengenaufträge, entfallen die
+> 470 € Luftfracht und die 146 € Einfuhrumsatzsteuer ganz oder teilweise** — zusammen
+> 616 € von 982 € Kapitaleinsatz. Frage an ScPanda gestellt, Antwort steht aus.
+
 > **Belegte Zahl statt Schätzung.** Die Musterbestellung ist abgerechnet: 9,92 € Ware,
 > 45,15 € Versand, 12,67 € Einfuhrumsatzsteuer über Alibaba, 2,04 € Zahlungsgebühr —
 > zusammen **69,76 €** statt der geschätzten 50 €. Die Fixkosten sind entsprechend
