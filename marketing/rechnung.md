@@ -42,10 +42,16 @@ wenn der CPA bekannt ist.
 | Ware | 298 € | 496 € |
 | Luftfracht | 470 € (3 Kartons, 79 kg) | 550 € (5 Kartons, 132 kg) |
 | Einfuhrumsatzsteuer | 146 € | 199 € |
+| Zoll | **offen — siehe Hinweis unten** | offen |
 | Logo inkl. Klischee | 68 € | 80 € |
 | **Kapitaleinsatz** | **982 €** | 1.325 € |
 | Einstandspreis je Stück | 16,37 € | 13,25 € |
 | Restbestand nach 20 Verkäufen | 40 Stück | 80 Stück |
+
+> **Offener Punkt: Zollsatz.** Die 146 € sind genau 19 % Einfuhrumsatzsteuer auf Ware
+> plus Fracht — **ein Zoll ist nicht eingerechnet.** Das trifft zu, wenn das Gerät unter
+> Position **9019** (Massagegeräte) eingereiht wird. Bei Einreihung unter **8543**
+> kämen einige Prozent hinzu, hier rund 30 €. Vor der Bestellung beim Spediteur klären.
 
 ---
 

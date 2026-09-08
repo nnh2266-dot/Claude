@@ -431,3 +431,26 @@ Streiflicht. **Das Gerät trägt keinerlei Kennzeichnung.**
 
 Damit ist das Gerät **weder auf dem Produkt noch auf der Verpackung noch in den
 Unterlagen** gekennzeichnet. Block G ist vollständig durchgefallen.
+
+---
+
+## Block F — Papiere im Paket (8. September 2026)
+
+**Keine Rechnung im Karton.** Das ist bei FedEx normal: Der Musterversand lief mit
+Electronic Trade Documents, die Handelsrechnung geht rein digital an den Zoll. Kein
+Warnsignal.
+
+Folgen:
+
+- [ ] **Alibaba-Beleg sichern.** Bestellung im Konto öffnen, Order-PDF und Zahlungsbeleg
+      herunterladen und lokal ablegen. Die 50 € für die Muster sind eine Betriebsausgabe
+      und ohne Beleg nicht buchbar.
+- [ ] **Auf eine FedEx-Rechnung warten.** Einfuhrabgaben und Auslagepauschale kommen oft
+      Wochen nach der Zustellung. Kommt sie: aufbewahren, das ist der Einfuhrbeleg.
+      Kommt nach vier Wochen keine, hat der Lieferant DDP gezahlt.
+- [ ] **Zolltarifnummer vor der 60er-Bestellung klären.** Die Kalkulation in
+      `rechnung.md` rechnet 146 € Einfuhrumsatzsteuer — genau 19 % auf Ware plus Fracht,
+      **ohne jeden Zollsatz**. Das trifft nur zu, wenn das Gerät unter Position 9019
+      (Massagegeräte) eingereiht wird. Bei Einreihung unter 8543 kämen einige Prozent
+      hinzu, bei 768 € Bemessungsgrundlage rund 30 €. **Frage an den Spediteur, nicht an
+      ScPanda.**
