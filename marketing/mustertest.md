@@ -189,3 +189,72 @@ Ende der Kategorie: 7,5 mm Amplitude, Bürstenmotor, 45 dB, 8,4 W.
 
 Es ist kein Kraftpaket. Es ist ein leichtes, gut zu führendes Gerät, das dorthin kommt,
 wo die Hand nicht hinkommt. Genau darauf ist die Landingpage aufgebaut.
+
+---
+
+## Befunde aus der Anleitung (8. September 2026)
+
+### Die 15 Minuten sind eine Funktion, kein Akkuende
+
+> *„it has its own intelligent protection mode, and automatically stops working for
+> 15 minutes"* · *„Internally scheduled for 15 minutes"*
+
+**Das Gerät schaltet nach 15 Minuten selbst ab.** Die gemessenen 15:05 auf Stufe 9 waren
+also nicht die Akkulaufzeit, sondern die Abschaltautomatik. Damit ist die frühere
+Rechnung („35 Watt wären unmöglich") hinfällig — sie ging von einem leeren Akku aus.
+
+**Die echte Akkulaufzeit ist weiterhin unbekannt.** Um sie zu messen, muss man das Gerät
+nach jeder Abschaltung neu starten und die Minuten summieren.
+
+Die Kachel „Laufzeit, Stufe 1: 30–35 min" ist von der Seite genommen. Dort steht jetzt
+**„15 min Abschaltautomatik"** — eine belegte Angabe statt einer unbelegten.
+
+### Das Netzteil war tatsächlich die Ursache
+
+> *„Note: the output is 5v-2a mobile phone charging head, otherwise the charging
+> progress will be affected"*
+
+Die Anleitung schreibt selbst, dass ein 2-A-Netzteil nötig ist. Das alte Apple-Netzteil
+war das Problem. **Kein Gerätefehler.**
+
+Außerdem: **Es liegt kein Netzteil bei**, nur das USB-C-Kabel. Das steht jetzt im
+Lieferumfang und in einem eigenen FAQ-Eintrag — sonst ist es ein Retourengrund.
+
+### Die Anleitung macht medizinische Aussagen
+
+Unter „Indication" stehen unter anderem *„Pain and spasm"*, *„Help the edema fluid
+flow"*, *„Reduce the accumulation of lactic acid"*.
+
+**Diese Aussagen dürfen nicht auf die Landingpage.** Das Gerät ist als Wellnessprodukt
+positioniert, nicht als Medizinprodukt. Wer solche Wirkversprechen übernimmt, macht es
+zum Medizinprodukt — mit allem, was daran hängt.
+
+### Die Gegenanzeigen sind breiter als bisher auf der Seite
+
+Die Anleitung nennt zusätzlich **Aneurysmen, Blutungsneigung, Herzerkrankungen und
+Krebserkrankungen**, dazu Implantate innerhalb von 90 Tagen nach einer Operation. Die
+Seite listet das jetzt mit auf.
+
+### Herstellergarantie deckt nicht, was du schuldest
+
+> *„This product is guaranteed for one year and the built-in battery is guaranteed for
+> six months."*
+
+| | |
+|---|---|
+| Was du dem Kunden schuldest | **2 Jahre** gesetzliche Gewährleistung |
+| Was der Hersteller dir gibt | **1 Jahr**, Akku **6 Monate** |
+
+**Die Lücke trägst du.** Ein Gerät, das im 14. Monat ausfällt, ersetzt du dem Kunden,
+ohne beim Hersteller Rückgriff zu haben. Bei 60 Stück verkraftbar, bei 500 ein Posten,
+der in die Kalkulation gehört.
+
+### Lieferumfang laut Anleitung
+
+Gerät · USB-C-Kabel · Anleitung · Kugelkopf · U-Kopf · Zylinderkopf · Flachkopf.
+**Kein Netzteil.** Deckt sich mit dem Karton.
+
+### Weiterhin nur Englisch
+
+Die Anleitung ist englisch, die Prüfnorm chinesisch (GB4706). **Eine deutsche
+Bedienungsanleitung muss vor dem Verkauf erstellt und beigelegt werden.**
