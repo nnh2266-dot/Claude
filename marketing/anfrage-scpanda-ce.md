@@ -39,8 +39,10 @@ declaration is the document I am legally required to hold.
 
 **3. The RoHS test report** or material declaration.
 
-**4. UN38.3 test summary and MSDS** for the lithium battery. Air freight cannot be
-booked without them.
+**4. UN38.3 test summary and MSDS** for the lithium battery. My sample shipment was
+already labelled **UN3481** by your forwarder, so these documents exist in your supply
+chain. Please forward them — air freight for the bulk order cannot be booked without
+them.
 
 **5. Printing.** Can you print the following on the retail box for my order: CE mark,
 crossed-out wheeled bin symbol, battery symbol, and a field with my company name and
@@ -70,6 +72,11 @@ wertlos. Deshalb steht die Abgrenzung ausdrücklich im Text.
 **Punkt 5 entscheidet über die Rolle.** Lässt er die Anschrift drucken, bleibst du
 Importeur. Kommt später deine Marke aufs Gerät, wirst du Hersteller — mit eigener
 Erklärungspflicht.
+
+**Punkt 4 ist belegbar.** Der Musterversand trug bereits ein UN3481-Etikett. Kein
+Spediteur klebt das ohne UN38.3-Prüfzusammenfassung in der Akte — die verlangt jede
+Airline. Die Unterlage existiert also in der Kette, es geht nur noch darum, sie zu
+bekommen.
 
 **Der letzte Satz gibt ihm einen ehrlichen Ausweg.** Ob er ihn nimmt, sagt mehr über den
 Lieferanten aus als jede weitere Frage.

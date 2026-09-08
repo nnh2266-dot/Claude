@@ -366,3 +366,31 @@ Kategorie mit sechs No-Name-Anbietern auf Amazon ein reales Risiko.
 Art. 6 GPSR und der Blue Guide: Wer ein Produkt unter eigenem Namen oder eigener Marke
 vertreibt, gilt als Hersteller. **Damit sind die 68 € fürs Logo nicht der wahre Preis
 der eigenen Marke.** Diese Entscheidung gehört nach den Test, nicht davor.
+
+---
+
+## Versandetikett des Musters (8. September 2026)
+
+FedEx Express, Regional Economy. Aufgedruckt:
+
+| Angabe | Wert | Bedeutung |
+|---|---|---|
+| **UN3481** mit Gefahrgutetikett | Lithiumionen-Batterien in Ausrüstung, PI 967 II | **Transport**kennzeichnung — kein Ersatz für CE, Mülltonne oder Batteriesymbol |
+| Absender | HORSTERWEG 24, 6199 MAASTRICHT-AIRPORT, **NL** | Einfuhr in die EU erfolgte in den Niederlanden |
+| Zielhub | CGN | Köln |
+| **ACT WGT** | **1,80 kg** | zwei Geräte |
+
+### Was daraus folgt
+
+**Die UN38.3-Prüfzusammenfassung existiert in der Lieferkette.** Kein Spediteur bringt
+ein UN3481-Etikett an, ohne sie in der Akte zu haben — jede Airline verlangt sie. Für
+die Luftfracht der 60 Stück ist das die entscheidende Voraussetzung, und sie ist damit
+grundsätzlich erfüllt. Die Anfrage an ScPanda ist entsprechend geschärft.
+
+**Der Importstatus bestätigt sich.** Die Ware kam über Maastricht in die EU, nicht über
+Deutschland und nicht auf eigenen Namen. Bei den Mustern war der Empfänger **nicht
+Importeur of Record**. Diese Frage ist für den Steuerberater notiert.
+
+**Das gemessene Gewicht ist bestätigt.** 2 × 800 g Verkaufsverpackung plus rund 200 g
+Umkarton ergeben genau die aufgedruckten 1,80 kg. Die Herstellerangabe von 856 g brutto
+je Stück ist damit widerlegt.
