@@ -1570,3 +1570,11 @@ input[type="range"] {
   font-size: 13.5px;
   line-height: 1.5;
 }
+
+/* Ein Hinweis, der eine Handlung verlangt — etwa eine veraltete Fassung. */
+.hint-warn {
+  padding: 9px 12px;
+  border-radius: var(--radius-sm);
+  background: var(--kcal-soft);
+  color: var(--text);
+}

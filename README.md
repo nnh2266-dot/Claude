@@ -256,7 +256,20 @@ brauchen eine neue `CACHE_VERSION` in `sw.js` **und** eine neue `APP_VERSION` in
 die andere macht in der App sichtbar, welcher Stand läuft.
 
 **Zur Aktualisierung:** Der Service Worker holt statische Dateien erst aus dem Netz
-und nutzt den Cache nur als Rückfalllösung. Andersherum wäre es schneller, hätte aber
+und nutzt den Cache nur als Rückfalllösung — und zwar mit `cache: 'no-cache'`, was der
+entscheidende Teil ist. Ohne das ist „erst das Netz" eine Behauptung und keine Tatsache:
+`fetch(request)` benutzt den normalen HTTP-Cache des Browsers, und GitHub Pages liefert
+die Dateien mit zehn Minuten Gültigkeit aus. Solange die läuft, gibt der Browser die alte
+Datei zurück, ohne den Server überhaupt zu fragen. Nach außen sah das so aus, als bliebe
+die App auf einer alten Fassung stehen — gemessen: Server auf Fassung 36, Seite neu
+geladen, ausgeliefert wurde 35, Anfragen an den Server: null. `no-cache` heißt nicht
+„nicht speichern", sondern „vor dem Ausliefern nachfragen"; bei unveränderter Datei
+antwortet der Server mit 304 und es fließen keine Daten. Beim Vorabspeichern gilt
+dasselbe über `new Request(url, { cache: 'reload' })`.
+
+Unter *Mehr → Fassung* steht deshalb jetzt auch, welche Fassung **auf dem Server** liegt.
+Damit lässt sich „die App bleibt bei 33" überhaupt erst auseinanderhalten: Ist die neue
+Fassung nicht veröffentlicht, oder hält das Gerät eine alte Kopie fest? Andersherum wäre es schneller, hätte aber
 zur Folge, dass eine neue Fassung erst beim übernächsten Start erscheint — auf einem
 Handy, das die App tagelang im Hintergrund hält, kann das ewig dauern. Zusätzlich
 prüft die App beim Start und bei jeder Rückkehr in den Vordergrund auf eine neue

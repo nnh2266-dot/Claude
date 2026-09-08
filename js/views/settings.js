@@ -515,13 +515,50 @@ function dataSection(ctx, mealCount) {
  * festhält — die eingetragenen Daten bleiben davon unberührt, die liegen in der
  * Datenbank und nicht im Zwischenspeicher.
  */
+/**
+ * Was liegt auf dem Server?
+ *
+ * „Bleibt bei 33" ist ohne diese Zeile nicht zu unterscheiden: Liegt es daran,
+ * dass die neue Fassung gar nicht veröffentlicht wurde, oder daran, dass das
+ * Gerät eine alte Kopie festhält? Die Frage lässt sich beantworten, indem man
+ * die Fassungsdatei einmal ohne jeden Cache holt und nachsieht.
+ */
+async function serverFassung() {
+  const antwort = await fetch(`./js/version.js?frisch=${Date.now()}`, { cache: 'no-store' });
+  if (!antwort.ok) throw new Error(String(antwort.status));
+  const treffer = (await antwort.text()).match(/APP_VERSION\s*=\s*'([^']+)'/);
+  if (!treffer) throw new Error('unlesbar');
+  return treffer[1];
+}
+
 function versionSection() {
   const status = el('p', { class: 'hint' });
+  const vergleich = el('p', { class: 'hint' });
+
+  // Beim Öffnen der Einstellungen einmal nachsehen — ungefragt, weil genau das
+  // die Frage ist, die man hier hat.
+  if (navigator.onLine !== false) {
+    serverFassung().then((dort) => {
+      if (dort === APP_VERSION) {
+        vergleich.textContent = `Aktuell — auf dem Server liegt ebenfalls Fassung ${dort}.`;
+        vergleich.className = 'hint';
+      } else {
+        vergleich.textContent = `Auf dem Server liegt Fassung ${dort}, dein Gerät zeigt `
+          + `${APP_VERSION}. Es hält also eine alte Kopie fest. Der Knopf darunter räumt sie `
+          + 'weg; hilft das nicht, schließ die App einmal ganz (nicht nur in den Hintergrund) '
+          + 'und öffne sie neu.';
+        vergleich.className = 'hint hint-warn';
+      }
+    }).catch(() => {
+      vergleich.textContent = 'Die Fassung auf dem Server war nicht abrufbar.';
+    });
+  }
 
   return el('div', { class: 'card stack' },
     el('div', { class: 'row-between' },
       el('span', { class: 'd-name', text: `Fassung ${APP_VERSION}` }),
       el('span', { class: 'muted small', text: APP_DATE })),
+    vergleich,
     el('button', {
       class: 'btn', type: 'button',
       onClick: async (event) => {
@@ -538,9 +575,15 @@ function versionSection() {
             await Promise.all(regs.map((r) => r.unregister()));
           }
           status.textContent = 'Lade neu …';
-          // Ohne kurze Pause startet der Neuladevorgang, bevor das Aufräumen
-          // beim Browser angekommen ist.
-          setTimeout(() => location.reload(), 300);
+          // Mit veränderter Adresse statt location.reload(): Eine neue Adresse
+          // umgeht den HTTP-Cache des Browsers, ein einfaches Neuladen nicht.
+          // Genau daran ist die Aktualisierung vorher hängen geblieben.
+          setTimeout(() => {
+            const ziel = new URL(location.href);
+            ziel.hash = '';
+            ziel.searchParams.set('frisch', String(Date.now()));
+            location.replace(ziel.toString());
+          }, 300);
         } catch (err) {
           button.disabled = false;
           status.textContent = 'Hat nicht geklappt. Schließ die App ganz und öffne sie neu.';

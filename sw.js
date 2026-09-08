@@ -7,7 +7,7 @@
  * CACHE_VERSION bei jeder Änderung an den App-Dateien erhöhen.
  */
 
-const CACHE_VERSION = 'naehrwerte-v34';   // muss zu APP_VERSION in js/version.js passen
+const CACHE_VERSION = 'naehrwerte-v35';   // muss zu APP_VERSION in js/version.js passen
 
 const APP_SHELL = [
   './',
@@ -63,13 +63,35 @@ const APP_SHELL = [
   './icons/apple-touch-icon.png',
 ];
 
+/**
+ * Eine Anfrage, die den HTTP-Cache des Browsers übergeht.
+ *
+ * Das ist der Kern der Sache und war lange falsch: `fetch(request)` benutzt den
+ * normalen Browser-Cache. GitHub Pages liefert die Dateien mit einer
+ * Gültigkeitsdauer aus — solange die läuft, gibt der Browser die **alte** Datei
+ * zurück, ohne den Server überhaupt zu fragen. Der Service Worker holte also
+ * brav „erst aus dem Netz" und bekam trotzdem den alten Stand. Nach außen sah
+ * das so aus, als bliebe die App auf einer alten Fassung stehen.
+ *
+ * `no-cache` heißt nicht „nicht cachen", sondern „vor dem Ausliefern beim
+ * Server nachfragen". Hat sich nichts geändert, antwortet der mit 304 und es
+ * werden keine Daten übertragen — der Weg kostet also fast nichts.
+ */
+function frisch(url) {
+  return fetch(url, { cache: 'no-cache', credentials: 'same-origin' });
+}
+
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches
       .open(CACHE_VERSION)
       // addAll bricht komplett ab, wenn eine Datei fehlt — deshalb einzeln,
       // damit ein fehlendes Icon nicht die ganze Installation kippt.
-      .then((cache) => Promise.all(APP_SHELL.map((url) => cache.add(url).catch(() => null))))
+      // `reload` übergeht dabei den HTTP-Cache: Sonst füllt sich der neue
+      // Speicher mit genau den alten Dateien, wegen derer er angelegt wurde.
+      .then((cache) => Promise.all(APP_SHELL.map(
+        (url) => cache.add(new Request(url, { cache: 'reload' })).catch(() => null)
+      )))
       .then(() => self.skipWaiting())
   );
 });
@@ -96,7 +118,7 @@ self.addEventListener('fetch', (event) => {
   // Navigationen: erst Netz (frische Version), sonst der gecachte App-Shell.
   if (request.mode === 'navigate') {
     event.respondWith(
-      fetch(request)
+      frisch(request.url)
         .then((response) => {
           const copy = response.clone();
           caches.open(CACHE_VERSION).then((cache) => cache.put('./index.html', copy));
@@ -115,8 +137,11 @@ self.addEventListener('fetch', (event) => {
   // einem Handy, das die App tagelang im Hintergrund hält, kann das ewig dauern.
   // Die App ist klein genug, dass der Netzweg nicht auffällt, und ohne Netz
   // greift weiterhin der Cache.
+  //
+  // Wichtig ist dabei `frisch`: ohne das Übergehen des HTTP-Caches ist „erst
+  // das Netz" eine Behauptung und keine Tatsache.
   event.respondWith(
-    fetch(request)
+    frisch(request.url)
       .then((response) => {
         if (response && response.ok) {
           const copy = response.clone();
