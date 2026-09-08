@@ -803,6 +803,11 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 #rw-mit:checked~.rw .rw-b2{fill:var(--heat);opacity:.95}
 #rw-mit:checked~.rw .rw-lab-mid{fill:var(--heat)}
 @media(min-width:820px){.rw__body{grid-template-columns:1fr 1fr;align-items:center}.rw__note{padding:0 2rem 0 0}}
+
+/* ── Rhythmen ─────────────────────────────────────────────────────── */
+.rhy{margin-top:.4rem;padding-top:1.1rem;border-top:1px solid var(--line-soft)}
+.rhy__t{font-family:var(--font-mono);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin:0 0 .45rem}
+.rhy__d{margin:0;font-size:.88rem;line-height:1.55;color:var(--muted);max-width:56ch}
 </style>
 <!-- Fragen und Antworten, wortgleich aus den <details> unten. Wer eines von beiden
      ändert, muss das andere mitziehen. -->
@@ -825,6 +830,14 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
       "acceptedAnswer": {
         "@type": "Answer",
         "text": "Auf den unteren Stufen nicht. Fang mit Stufe 1 an und taste dich hoch — Perkussion soll spürbar sein, nicht schmerzhaft. Wird eine Stelle empfindlich, geh eine Stufe zurück oder wechsle auf einen Aufsatz mit größerer Auflage."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Was ist der Unterschied zwischen Stufen und Rhythmen?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Die neun Stufen regeln die Kraft, die neun Rhythmen den Takt — von durchgehendem Anschlag bis zu Folgen mit Pausen. Für die Fläche nimmst du den Dauerbetrieb, für empfindliche Stellen und für das Arbeiten am eigenen Rücken einen getakteten Rhythmus: Die Pausen geben dir Zeit, neu anzusetzen, ohne abzusetzen."
       }
     },
     {
@@ -957,7 +970,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
           <p class="lede">
             Die Muskeln, die am meisten verspannen, liegen dort, wo die Hand nicht mehr hinkommt.
             Der gebogene Griff führt den Kopf über die Schulter und an der Wirbelsäule entlang —
-            neun Kraftstufen, vier Aufsätze, 590 Gramm.
+            neun Kraftstufen, neun Rhythmen, vier Aufsätze, 590 Gramm.
           </p>
           <div class="hero__cta">
             <a class="btn btn--solid" href="#preis">Zum Angebot</a>
@@ -1221,6 +1234,14 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
           <span>Stufe 1 — Aufwärmen und empfindliche Stellen</span>
           <span>Stufe 9 — tiefe Muskelgruppen</span>
         </div>
+
+        <div class="rhy">
+          <p class="rhy__t">Neun Rhythmen</p>
+          <p class="rhy__d">Neben der Kraft lässt sich der Takt wählen: von durchgehendem
+          Anschlag bis zu getakteten Folgen mit Pausen. Die Pausen sind bei der
+          Selbstanwendung der eigentliche Nutzen — sie geben die Zeit, das Gerät neu
+          anzusetzen, ohne es abzusetzen.</p>
+        </div>
       </div>
 
       <dl class="daten">
@@ -1228,6 +1249,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
         <div><dt>Akku</dt><dd>1200 mAh, Lithium</dd></div>
         <div><dt>Ladung</dt><dd>USB-C, 5 V – 2 A</dd></div>
         <div><dt>Schlagzahl</dt><dd>bis 3.000 / min</dd></div>
+        <div><dt>Rhythmen</dt><dd>9</dd></div>
         <div><dt>Kartonmaß</dt><dd>34 × 25 × 5 cm</dd></div>
         <div><dt>Farbe</dt><dd>Schwarz</dd></div>
       </dl>
@@ -1403,6 +1425,13 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
           </summary>
           <p class="qa__a">Auf den unteren Stufen nicht. Fang mit Stufe 1 an und taste dich hoch — Perkussion soll spürbar sein, nicht schmerzhaft. Wird eine Stelle empfindlich, geh eine Stufe zurück oder wechsle auf einen Aufsatz mit größerer Auflage.</p>
         </details>
+        <details class="qa">
+          <summary>Was ist der Unterschied zwischen Stufen und Rhythmen?
+            <svg class="qa__plus" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M8 2v12M2 8h12"/></svg>
+          </summary>
+          <p class="qa__a">Die neun Stufen regeln die Kraft, die neun Rhythmen den Takt — von durchgehendem Anschlag bis zu Folgen mit Pausen. Für die Fläche nimmst du den Dauerbetrieb, für empfindliche Stellen und für das Arbeiten am eigenen Rücken einen getakteten Rhythmus: Die Pausen geben dir Zeit, neu anzusetzen, ohne abzusetzen.</p>
+        </details>
+
         <details class="qa">
           <summary>Wie lange soll ich das machen?
             <svg class="qa__plus" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M8 2v12M2 8h12"/></svg>
