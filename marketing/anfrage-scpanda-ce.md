@@ -190,3 +190,54 @@ picked up in Duiven, Netherlands, not shipped from China. Do you also serve
 bulk orders from your European stock? If yes, what is the price and lead time
 delivered to Germany from there, compared to air freight from Shenzhen?
 ```
+
+---
+
+## Erste Antwort von ScPanda (8. September 2026)
+
+> „The label is written 'Maastricht Airport in the Netherlands' because that's where
+> FedEx picked the good from. Since FedEx is just the last mile courier. Packages are
+> usually first shipped from China to Netherland then distributed from Netherland to
+> other EU addresses."
+
+**Bestätigt die Sendungsverfolgung.** Sammelverkehr China → Niederlande, von dort
+Verteilung, FedEx nur die letzte Meile.
+
+**Beantwortet aber nicht die kaufmännische Frage.** Er beschreibt, wie Pakete üblicherweise
+laufen — nicht, ob ein Mengenauftrag denselben Weg nimmt.
+
+| | Kleinsendung | Mengenauftrag |
+|---|---|---|
+| Route | Lagerbestand in NL, dann Paketdienst | meist eigene Luftfracht ab Shenzhen |
+| Einfuhr | fremder Name, in NL erledigt | **auf eigenen Namen, in Deutschland** |
+| Kosten | im Preis enthalten | 470 € Fracht + 146 € EUSt |
+
+**Nicht dazu geantwortet: Konformitätserklärung, EMV, RoHS, UN38.3, MSDS.** Das bleibt
+der eigentliche Blocker.
+
+### Nachfassbrief
+
+```
+Thank you, that explains the routing.
+
+For the 60 piece order I need concrete numbers on that same route:
+
+- Can you deliver 60 pieces in black from your European stock?
+- What is the total price delivered to my address in Germany, DDP?
+- What is the lead time from payment to delivery?
+- Is EU import VAT already included in that price, or will I be charged
+  separately on arrival?
+- Who is the importer of record for that route - you, your forwarder, or me?
+
+Please compare it to the alternative: 60 pieces air freighted from Shenzhen,
+total price DDP Germany and lead time.
+
+I need both numbers to decide.
+```
+
+### Eskalationsregel
+
+Kommt in der nächsten Nachricht wieder nichts zu den Dokumenten: nach 48 Stunden der
+Einzeiler. Läuft auch der ins Leere, dieselbe Frage bei **Youmei** stellen. **Ein
+Lieferant ohne Konformitätserklärung ist für dieses Geschäft kein Lieferant**, unabhängig
+vom Preis.
