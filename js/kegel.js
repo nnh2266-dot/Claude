@@ -206,15 +206,18 @@ export const SEX = [
     text: 'In der besten Untersuchung dazu (55 Männer, 2005) hatten nach drei Monaten '
       + '67 % der Übenden eine bessere Erektion — gegen 30 % in der Vergleichsgruppe, die '
       + 'nur Ratschläge zum Lebensstil bekam. Nach sechs Monaten war es bei 40 % wieder '
-      + 'normal, bei weiteren 36 % besser, bei knapp einem Viertel unverändert.',
+      + 'normal, bei weiteren 36 % besser, bei knapp einem Viertel unverändert. Die Übung '
+      + 'wurde von einem Physiotherapeuten beigebracht; zu Hause geübt wurde danach.',
     beleg: 'mittel',
   },
   {
     titel: 'Vorzeitiger Samenerguss',
     zahl: 'von 32 auf 146 Sekunden',
     text: 'Bei 40 Männern, die es seit jeher zu früh kam, stieg die Zeit bis zum Erguss in '
-      + 'zwölf Wochen Beckenbodentraining im Schnitt von 32 auf 146 Sekunden. 33 der 40 '
-      + 'sprachen an, fünf gar nicht. Der Effekt hielt über sechs Monate Nachbeobachtung.',
+      + 'zwölf Wochen im Schnitt von 32 auf 146 Sekunden — 33 der 40 sprachen an. Wichtig '
+      + 'dazu: Das war keine Übung für zu Hause, sondern dreimal die Woche eine Stunde in '
+      + 'der Praxis, mit Reizstrom und Rückmeldegerät. Was Anspannen allein auf dem Sofa '
+      + 'bringt, ist damit nicht gemessen.',
     beleg: 'mittel',
   },
   {
@@ -227,13 +230,48 @@ export const SEX = [
 ];
 
 /**
+ * Wie viele Durchgänge am Tag.
+ *
+ * Ehrliche Vorbemerkung: **Es gibt kein Standardprogramm.** Die
+ * Übersichtsarbeiten sagen das ausdrücklich — jede Studie hat anders geübt,
+ * und keiner kann sagen, welche Menge die richtige ist. Was überall gleich
+ * ist, ist die Häufigkeit: täglich, über Monate.
+ *
+ * Zwei am Tag ist deshalb die Empfehlung hier, und der Grund ist die
+ * Muskelgröße. Der Beckenboden ist klein und ermüdet schnell. Eine zweite
+ * kurze Runde am Abend bringt mehr als eine doppelt so lange am Morgen, weil
+ * die zweite Hälfte einer zu langen Runde nur noch schlampig ausgeführt wird —
+ * und schlampig heißt hier: Po und Bauch machen mit, der Beckenboden nicht.
+ */
+export const DOSIS = 2;
+
+export const DOSIS_TEXT = 'Zwei Durchgänge am Tag, zum Beispiel morgens und abends. '
+  + 'Drei sind das Höchste, mehr bringt nichts.';
+
+/**
+ * Warum die erste Stufe so kurz ist.
+ *
+ * Weil sie es sein soll. Wer noch nicht sicher weiß, welchen Muskel er
+ * anspannt, übt mit fünf Wiederholungen dasselbe wie mit fünfzig — nur dass er
+ * bei fünfzig anfängt, mit dem Po nachzuhelfen. Die Länge kommt mit den
+ * Stufen: Stufe 5 dauert das Vierfache von Stufe 1.
+ */
+export const WARUM_KURZ = 'Kurz ist Absicht. Der Beckenboden ist ein kleiner Muskel — nach '
+  + 'wenigen sauberen Anspannungen ist er müde, und was danach kommt, machen Po und Bauch. '
+  + 'Die Dauer wächst mit den Stufen: Stufe 5 dauert viermal so lange wie Stufe 1. Was '
+  + 'wirkt, ist nicht die Länge der einzelnen Runde, sondern dass du sie zwölf Wochen lang '
+  + 'jeden Tag machst.';
+
+/**
  * Wie lange es dauert, bevor man urteilen darf.
  * Beide Studien oben liefen zwölf Wochen, die Erektionsstudie hat erst nach
  * sechs Monaten abschließend bewertet. Wer nach zwei Wochen aufhört, weil
  * nichts passiert, hat nichts falsch gemacht außer zu früh aufzuhören.
  */
 export const DAUER = 'Rechne mit zwölf Wochen täglich, bevor sich etwas zeigt — die Studien '
-  + 'haben so lange gemessen, und die abschließende Bewertung kam erst nach einem halben Jahr.';
+  + 'haben so lange gemessen, und die abschließende Bewertung kam erst nach einem halben Jahr. '
+  + 'In beiden hat ein Fachmensch die Übung beigebracht und kontrolliert. Das ist der Teil, '
+  + 'den eine App nicht kann: ob du wirklich den richtigen Muskel triffst, sieht sie nicht.';
 
 /**
  * Anzeichen für einen zu **festen** Beckenboden.

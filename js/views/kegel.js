@@ -24,7 +24,7 @@ import {
   STUFEN, POSITION, ablauf, loesenAblauf, loesenSekunden, dauerSekunden,
   stufeNach, bisNaechste, dayCount, dayLoesen, streak, gesamt,
   ANLEITUNG, LOESEN_ANLEITUNG, NUTZEN, SEX, DAUER, ANZEICHEN_FEST, ANZEICHEN_RAT,
-  ARZT, GENUG_AM_TAG, DURCHGAENGE_JE_STUFE,
+  ARZT, DOSIS, DOSIS_TEXT, WARUM_KURZ, GENUG_AM_TAG, DURCHGAENGE_JE_STUFE,
 } from '../kegel.js';
 
 const BELEG_TEXT = { gut: 'gut belegt', mittel: 'mittelmäßig belegt', kein: 'nicht belegt' };
@@ -40,8 +40,9 @@ export function kegelStatus(ctx, dateKey) {
     id: 'becken',
     icon: '🔺',
     label: 'Becken',
-    wert: heute ? `${heute}×` : (geloest ? 'gelöst' : '—'),
-    zustand: heute >= 2 ? 'gut' : (heute || geloest) ? 'offen' : 'leer',
+    // Über der Tagesmenge steht die blanke Zahl — „3/2" liest sich wie ein Fehler.
+    wert: heute ? (heute > DOSIS ? `${heute}×` : `${heute}/${DOSIS}`) : (geloest ? 'gelöst' : '—'),
+    zustand: heute >= DOSIS ? 'gut' : (heute || geloest) ? 'offen' : 'leer',
   };
 }
 
@@ -61,8 +62,8 @@ export function kegelSection(ctx, dateKey) {
   return el('div', { class: 'card stack' },
     el('div', { class: 'row-between' },
       el('h3', { class: 'card-title', text: 'Beckenboden' }),
-      el('span', { class: `pill ${heute ? 'pill-ok' : 'pill-kcal'} tabular`,
-        text: heute ? `${heute}× heute` : 'offen' })),
+      el('span', { class: `pill ${heute >= DOSIS ? 'pill-ok' : 'pill-kcal'} tabular`,
+        text: heute > DOSIS ? `${heute}× heute` : `${heute} von ${DOSIS} heute` })),
 
     // „Kegel" steht dabei, weil das der Name ist, unter dem man danach sucht.
     el('p', { class: 'muted small', text: 'Kegel-Übungen — anderer Name, dieselbe Sache.' }),
@@ -75,6 +76,13 @@ export function kegelSection(ctx, dateKey) {
         text: `${s.halten.wiederholungen}× ${s.halten.sekunden} s · ${s.schnell.wiederholungen} schnelle · ${minuten} Min` })),
 
     el('p', { class: 'muted small', text: s.ziel }),
+
+    // Die häufigste Frage überhaupt, deshalb ungefragt beantwortet.
+    heute < DOSIS
+      ? el('p', { class: 'muted small', text: DOSIS_TEXT })
+      : heute < GENUG_AM_TAG
+        ? el('p', { class: 'hint', text: 'Zwei geschafft — das reicht für heute.' })
+        : null,
 
     serie >= 3
       ? el('p', { class: 'hint', text: `${serie} Tage in Folge.` })
@@ -217,7 +225,9 @@ export async function render(container, ctx) {
   const kreis = el('div', { class: 'kegelkreis' });
   const wort = el('div', { class: 'kegelwort', text: 'Bereit?' });
   const zaehler = el('div', { class: 'kegelzahl tabular', text: '' });
-  const hinweis = el('div', { class: 'muted small', text: loesenModus ? '' : pos.lang });
+  // Steht vor dem Start: Position und Tagesmenge. Sobald die Uhr läuft,
+  // trägt dieselbe Zeile die Ansage des Abschnitts.
+  const hinweis = el('div', { class: 'muted small' });
   const fortschritt = el('div', { class: 'muted small', text: '' });
 
   const knopf = el('button', { class: 'btn btn-primary btn-block btn-lg', type: 'button' });
@@ -264,6 +274,7 @@ export async function render(container, ctx) {
   };
 
   const minuten = Math.max(1, Math.round(sekunden / 60));
+  if (!loesenModus) hinweis.textContent = `${pos.lang} ${DOSIS_TEXT}`;
   knopf.textContent = `Start · rund ${minuten} ${minuten === 1 ? 'Minute' : 'Minuten'}`;
   knopf.onclick = starten;
 
@@ -280,6 +291,7 @@ export async function render(container, ctx) {
       el('span', { class: 'muted small', text: 'wichtig' })),
     el('div', { class: 'stack mt-16' },
       ...(loesenModus ? LOESEN_ANLEITUNG : ANLEITUNG).map((t) => el('p', { class: 'small', text: t })),
+      loesenModus ? null : el('p', { class: 'hint', text: WARUM_KURZ }),
       el('p', { class: 'hint', text: ohneSterne(ARZT) })));
 
   /* --- Sex: der Grund, aus dem die meisten hier landen --- */
