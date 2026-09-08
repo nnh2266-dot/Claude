@@ -232,6 +232,7 @@ js/ladders.js            Variantenleitern für Übungen ohne Zusatzgewicht
 js/activities.js         Sport außer dem Training: MET-Werte, Schätzung, Anrechnung
 js/sleep.js              Schlafdauer, Morgenlicht, Nachtzuordnung
 js/water.js              Trinkrichtwert, Portionen, Serie
+js/kegel.js              Beckenboden: Stufen, Ablauf, Anleitung, Belege
 js/supplements.js        Nahrungsergänzung: Katalog, Belegstufen, Wechselwirkungen
 js/mealscore.js          Einordnung einzelner Mahlzeiten aus vier Zahlen
 js/suggest.js            Essensvorschläge aus Favoriten und Bausteinen
@@ -246,6 +247,7 @@ js/views/                today · capture · history · favorites · settings
                          training · plan · progress · setup · mobility
                          report · photos · strength · activity · sleep
                          water · supplements · suggest · coach · tagesleiste
+                         schonung · kegel
 sw.js                    Service Worker (Offline-Betrieb)
 manifest.webmanifest     PWA-Manifest
 ```
@@ -625,6 +627,59 @@ Beides läuft ohne Verbindung und ohne API-Key. Sortiert wird nach drei Dingen: 
 Wer Lust auf etwas Neues hat, kann zusätzlich Claude fragen — das ist ein eigener Knopf
 und ausdrücklich nicht der Normalfall. Ohne API-Key gibt es stattdessen die fertige
 Frage zum Kopieren, derselbe Weg wie bei den Essensfotos.
+
+## Beckenboden
+
+Passt in keinen der bestehenden Teile, und das hat Gründe. Es ist keine Kraftübung im
+Sinne des Plans — kein Gewicht, keine Wiederholung, die jemand von außen sähe, und es
+läuft täglich statt dreimal die Woche. Es ist eine Gewohnheit mit Uhr, näher am
+Morgenlicht als an der Kniebeuge. Deshalb sitzt es als fünfte Kachel in der Tagesleiste.
+
+**Geführt, nicht gestoppt.** Beim Krafttraining misst man eine Leistung und trägt sie
+danach ein; hier folgt man einer Ansage. Der Kreis wächst beim Anspannen und schrumpft
+beim Loslassen, ein Ring zeigt die verbleibende Zeit des Abschnitts, und jeder Wechsel
+kommt zusätzlich als Ton und Vibration — höher beim Anspannen, tiefer beim Loslassen.
+Wer während der Übung auf einen Zähler starren muss, macht sie nicht richtig.
+
+**Zwei Reize.** Der Beckenboden hat zwei Aufgaben: dauerhaft halten und schnell zumachen,
+wenn man niest. Ein Programm mit nur langen Halten trainiert die Hälfte — deshalb hat
+jeder Durchgang beides.
+
+**Fünf Stufen**, je zwölf Durchgänge, von *5 × 3 s* bis *10 × 10 s*. Ab Stufe 5 wird
+gehalten und nicht weiter gesteigert.
+
+### Was die meisten Anleitungen weglassen
+
+Zwei Dinge sind hier fest eingebaut, weil sie sonst fehlen:
+
+- **Mehr ist nicht besser.** Ein dauerhaft verspannter Beckenboden macht eigene Probleme —
+  Schmerzen, Harndrang, schlechteres Entleeren. Das Loslassen ist die halbe Übung, deshalb
+  ist die Pause genauso lang wie die Anspannung und wird genauso angesagt. Ab drei
+  Durchgängen am Tag sagt die App, dass es reicht, statt stillschweigend weiterzuzählen.
+- **Nicht am Harnstrahl üben.** Den Strahl anzuhalten ist der übliche Trick, um den Muskel
+  überhaupt zu finden — *einmal*. Als Übung wiederholt gemacht stört es die
+  Blasenentleerung und begünstigt Infekte.
+
+Dazu die Anleitung gegen den häufigsten Fehler: Es ist ein Anheben nach innen und oben,
+kein Pressen. Po, Oberschenkel und Bauchdecke bleiben locker, und die Luft wird nicht
+angehalten.
+
+### Wofür es belegt ist
+
+| | Beleg |
+| --- | --- |
+| Belastungsinkontinenz — Tröpfeln beim Niesen, Husten, Heben | gut |
+| Rückkehr der Kontinenz nach einer Prostataoperation | gut |
+| Erektionsfunktion und vorzeitiger Samenerguss | mittel |
+| Stabilität des Rumpfes mit der tiefen Bauchmuskulatur | mittel |
+
+Für *stärkerer Orgasmus* oder *mehr Leistung im Sport* gibt es keinen belastbaren Beleg.
+Das steht in der App ausdrücklich dabei, weil das die Versprechen sind, mit denen solche
+Übungen sonst verkauft werden.
+
+Und: Bei Schmerzen im Beckenbereich, ständigem Harndrang oder wenn sich nach sechs bis
+acht Wochen nichts tut, gehört das abgeklärt — dann kann ein zu **fester** Beckenboden
+dahinterstecken, und der braucht das Gegenteil von diesem Training.
 
 ## Schlaf und Morgenlicht
 

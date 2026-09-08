@@ -10,7 +10,7 @@ import {
   getSettings, getTrainingProfile, getPlan, getKcalAdjust, getSkillLevels,
   listSessions, listWeights, listMobilityTests, listProgressPhotos, listPending,
   getActivitiesByDate, listSleep, listActivities,
-  listWater, listSupplementDays, getSupplementList, listFavorites,
+  listWater, listSupplementDays, getSupplementList, listFavorites, listKegel,
 } from './store.js';
 import { targetsForDate } from './energy.js';
 import { toast } from './ui.js';
@@ -31,6 +31,7 @@ import * as strengthView from './views/strength.js';
 import * as activityView from './views/activity.js';
 import * as sleepView from './views/sleep.js';
 import * as suppsView from './views/supplements.js';
+import * as kegelView from './views/kegel.js';
 
 const VIEWS = {
   today: todayView,
@@ -49,6 +50,7 @@ const VIEWS = {
   activity: activityView,
   sleep: sleepView,
   supps: suppsView,
+  kegel: kegelView,
 };
 
 const state = {
@@ -81,6 +83,8 @@ const state = {
   suppListe: [],
   /** Favoriten — die Essensvorschläge greifen darauf zurück. */
   favorites: [],
+  /** Beckenbodentraining je Tag. */
+  kegel: [],
 };
 
 let current = { name: null, param: null };
@@ -122,7 +126,7 @@ async function handleRoute() {
   const TAB_OF = {
     plan: 'training', progress: 'training', setup: 'training', mobility: 'training',
     photos: 'training', strength: 'training', report: 'today', activity: 'today', sleep: 'today',
-    supps: 'today',
+    supps: 'today', kegel: 'today',
   };
   const activeTab = TAB_OF[route.name] || route.name;
   for (const tab of document.querySelectorAll('.tab')) {
@@ -188,11 +192,11 @@ const ctx = {
 
   /** Lädt Trinken und Nahrungsergänzung neu — beide hängen an derselben Karte. */
   async refreshDaily() {
-    const [water, supps, suppListe, favorites] = await Promise.all([
-      listWater(), listSupplementDays(), getSupplementList(), listFavorites(),
+    const [water, supps, suppListe, favorites, kegel] = await Promise.all([
+      listWater(), listSupplementDays(), getSupplementList(), listFavorites(), listKegel(),
     ]);
-    Object.assign(state, { water, supps, suppListe, favorites });
-    return { water, supps, suppListe, favorites };
+    Object.assign(state, { water, supps, suppListe, favorites, kegel });
+    return { water, supps, suppListe, favorites, kegel };
   },
 
   /** Lädt die Aktivitäten des angezeigten Tages. */

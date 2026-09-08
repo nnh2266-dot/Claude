@@ -13,6 +13,7 @@
  *   sleep     — Schlaf und Morgenlicht, ein Eintrag je Nacht
  *   water     — Getrunkenes, ein Eintrag je Tag
  *   supps     — Nahrungsergänzung, ein Eintrag je Tag mit den Häkchen
+ *   kegel     — Beckenbodentraining, ein Eintrag je Tag
  *   settings  — Key/Value (apiKey, model, goals, profile, plan, kcalAdjust,
  *               skillLevels, suppListe, schonung)
  */
@@ -20,7 +21,7 @@
 import { DEFAULT_GOALS, sumItems, newId, localDateKey } from './nutrition.js';
 
 const DB_NAME = 'naehrwert';
-const DB_VERSION = 8;
+const DB_VERSION = 9;
 
 export const DEFAULT_MODEL = 'claude-haiku-4-5';
 
@@ -91,6 +92,11 @@ function openDB() {
       }
       if (!db.objectStoreNames.contains('supps')) {
         db.createObjectStore('supps', { keyPath: 'date' });
+      }
+      // Ab Version 9: Beckenboden. Gezählt werden Durchgänge, nicht Sätze —
+      // was innerhalb eines Durchgangs passiert, gibt die Stufe vor.
+      if (!db.objectStoreNames.contains('kegel')) {
+        db.createObjectStore('kegel', { keyPath: 'date' });
       }
     };
 
@@ -501,6 +507,40 @@ export async function listWater() {
   return (rows || []).sort((a, b) => (a.date < b.date ? -1 : 1));
 }
 
+/* ---------------- Beckenboden ---------------- */
+
+/** Zählt einen abgeschlossenen Durchgang. */
+export async function addKegelRun(dateKey, stufe) {
+  const vorher = (await tx('kegel', 'readonly', (s) => s.get(dateKey))) || {};
+  const record = {
+    date: dateKey,
+    durchgaenge: (vorher.durchgaenge || 0) + 1,
+    // Die zuletzt gemachte Stufe, damit der Bericht sie nennen kann.
+    stufe: stufe || vorher.stufe || 1,
+    updatedAt: Date.now(),
+  };
+  await tx('kegel', 'readwrite', (s) => s.put(record));
+  return record;
+}
+
+/** Nimmt einen Durchgang zurück — für den Fehlgriff. */
+export async function removeKegelRun(dateKey) {
+  const vorher = await tx('kegel', 'readonly', (s) => s.get(dateKey));
+  if (!vorher || !vorher.durchgaenge) return null;
+  if (vorher.durchgaenge <= 1) {
+    await tx('kegel', 'readwrite', (s) => s.delete(dateKey));
+    return null;
+  }
+  const record = { ...vorher, durchgaenge: vorher.durchgaenge - 1, updatedAt: Date.now() };
+  await tx('kegel', 'readwrite', (s) => s.put(record));
+  return record;
+}
+
+export async function listKegel() {
+  const rows = await tx('kegel', 'readonly', (s) => s.getAll());
+  return (rows || []).sort((a, b) => (a.date < b.date ? -1 : 1));
+}
+
 /* ---------------- Nahrungsergänzung ---------------- */
 
 /** Setzt oder löscht das Häkchen für ein Mittel an einem Tag. */
@@ -665,6 +705,7 @@ export async function exportData() {
   const water = await listWater();
   const supps = await listSupplementDays();
   const suppListe = await getSupplementList();
+  const kegel = await listKegel();
 
   return {
     format: 'naehrwert-export',
@@ -686,6 +727,7 @@ export async function exportData() {
     supps,
     suppListe,
     schonung: settings.schonung,
+    kegel,
   };
 }
 
@@ -786,7 +828,19 @@ export async function importData(data) {
   if (Array.isArray(data.suppListe)) await setSupplementList(data.suppListe);
   if (Array.isArray(data.schonung)) await setSetting('schonung', data.schonung);
 
-  return { meals, favorites, sessions, weights, activities, sleep, mobility, water, supps };
+  let kegel = 0;
+  for (const eintrag of Array.isArray(data.kegel) ? data.kegel : []) {
+    if (!eintrag || !eintrag.date || !Number(eintrag.durchgaenge)) continue;
+    await tx('kegel', 'readwrite', (s) => s.put({
+      date: eintrag.date,
+      durchgaenge: Math.max(0, Math.round(Number(eintrag.durchgaenge))),
+      stufe: Number(eintrag.stufe) || 1,
+      updatedAt: Number(eintrag.updatedAt) || Date.now(),
+    }));
+    kegel++;
+  }
+
+  return { meals, favorites, sessions, weights, activities, sleep, mobility, water, supps, kegel };
 }
 
 /** Löscht alle Mahlzeiten und Favoriten. Einstellungen bleiben erhalten. */

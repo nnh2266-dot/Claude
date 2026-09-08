@@ -136,3 +136,40 @@ export function field(label, input, hint) {
     hint ? el('p', { class: 'hint', text: hint }) : null
   );
 }
+
+/* ---------------- Uhren, Ton und Zeitformat ----------------
+   Von der Trainingsansicht hierher gezogen, als die Beckenboden-Übung
+   dieselbe Uhr brauchte. Zwei Uhren in einer App sollen gleich klingen und
+   sich beim Ansichtswechsel gleich verhalten — dafür müssen sie dieselben
+   Bausteine benutzen, nicht zwei Kopien davon.
+------------------------------------------------------------ */
+
+export const laufendeUhren = new Set();
+
+export function stoppeAlleUhren() {
+  for (const abbrechen of laufendeUhren) abbrechen();
+  laufendeUhren.clear();
+}
+
+/** Kurzer Ton. Läuft nur nach einer Nutzergeste, deshalb erst beim Start erzeugt. */
+export function beep(context, dauer = 0.18, frequenz = 880) {
+  try {
+    const osc = context.createOscillator();
+    const gain = context.createGain();
+    osc.frequency.value = frequenz;
+    osc.type = 'sine';
+    // Sanft ein- und ausblenden, sonst knackt es.
+    gain.gain.setValueAtTime(0, context.currentTime);
+    gain.gain.linearRampToValueAtTime(0.35, context.currentTime + 0.01);
+    gain.gain.linearRampToValueAtTime(0, context.currentTime + dauer);
+    osc.connect(gain).connect(context.destination);
+    osc.start();
+    osc.stop(context.currentTime + dauer);
+  } catch { /* Ton ist Zugabe. */ }
+}
+
+export function mmss(sekunden) {
+  const m = Math.floor(sekunden / 60);
+  const s = sekunden % 60;
+  return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+}

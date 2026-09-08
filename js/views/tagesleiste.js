@@ -27,6 +27,7 @@ import { sleepSection } from './sleep.js';
 import { activitySection } from './activity.js';
 import { waterSection } from './water.js';
 import { supplementSection } from './supplements.js';
+import { kegelSection, kegelStatus } from './kegel.js';
 
 /** Welche Kachel offen ist. Überlebt das Neuzeichnen, nicht den Neustart. */
 const SCHLUESSEL = 'tagesleiste-offen';
@@ -110,6 +111,9 @@ function kacheln(ctx, dateKey) {
     });
   }
 
+  /* Beckenboden */
+  liste.push(kegelStatus(ctx, dateKey));
+
   return liste;
 }
 
@@ -119,6 +123,7 @@ function inhalt(id, ctx, dateKey) {
   if (id === 'sport') return activitySection(ctx, dateKey, ctx.state.activities || []);
   if (id === 'trinken') return waterSection(ctx, dateKey, ctx.state.water);
   if (id === 'ergaenzung') return supplementSection(ctx, dateKey);
+  if (id === 'becken') return kegelSection(ctx, dateKey);
   return null;
 }
 

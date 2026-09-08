@@ -4,7 +4,10 @@
  * ob die Kalorien stimmen.
  */
 
-import { el, mount, viewHead, emptyState, toast, iconButton } from '../ui.js';
+import {
+  el, mount, viewHead, emptyState, toast, iconButton,
+  beep, mmss, laufendeUhren, stoppeAlleUhren,
+} from '../ui.js';
 import { localDateKey, formatDateKey, parseNumber, shiftDateKey } from '../nutrition.js';
 import {
   getSession, saveSession, saveWeight, setSkillLevel, setPlan, setTrainingProfile,
@@ -580,36 +583,6 @@ function pauseStarten(sekunden, uebungsname, audioAn = true) {
  * Laufende Uhren, damit sie beim Neuzeichnen der Ansicht angehalten werden.
  * Sonst tickt eine vergessene Uhr in einem längst ersetzten Block weiter.
  */
-const laufendeUhren = new Set();
-
-function stoppeAlleUhren() {
-  for (const abbrechen of laufendeUhren) abbrechen();
-  laufendeUhren.clear();
-}
-
-/** Kurzer Ton. Läuft nur nach einer Nutzergeste, deshalb erst beim Start erzeugt. */
-function beep(context, dauer = 0.18, frequenz = 880) {
-  try {
-    const osc = context.createOscillator();
-    const gain = context.createGain();
-    osc.frequency.value = frequenz;
-    osc.type = 'sine';
-    // Sanft ein- und ausblenden, sonst knackt es.
-    gain.gain.setValueAtTime(0, context.currentTime);
-    gain.gain.linearRampToValueAtTime(0.35, context.currentTime + 0.01);
-    gain.gain.linearRampToValueAtTime(0, context.currentTime + dauer);
-    osc.connect(gain).connect(context.destination);
-    osc.start();
-    osc.stop(context.currentTime + dauer);
-  } catch { /* Ton ist Zugabe. */ }
-}
-
-function mmss(sekunden) {
-  const m = Math.floor(sekunden / 60);
-  const s = sekunden % 60;
-  return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-}
-
 /**
  * @param {object} o
  * @param {number} o.target     Zielzeit in Sekunden

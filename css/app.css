@@ -1578,3 +1578,53 @@ input[type="range"] {
   background: var(--kcal-soft);
   color: var(--text);
 }
+
+/* ---------------- Beckenboden ---------------- */
+
+.kegelkarte { align-items: center; text-align: center; }
+
+/* Der Kreis ist die eigentliche Anzeige: Er wächst über die Dauer eines
+   Abschnitts, damit man am Rand sieht, wie lange noch — ohne die Zahl zu
+   lesen. Anspannen und Loslassen unterscheiden sich in Farbe UND Größe,
+   nicht nur in der Farbe: Aus dem Augenwinkel ist Größe schneller. */
+.kegelkreis {
+  --anteil: 0;
+  position: relative;
+  width: 190px; height: 190px;
+  border-radius: 50%;
+  display: grid; place-items: center;
+  background: var(--surface-2);
+  border: 3px solid var(--border);
+  transition: transform .5s ease-out, background-color .4s, border-color .4s;
+  transform: scale(.82);
+}
+.kegelkreis::after {
+  content: '';
+  position: absolute; inset: -3px;
+  border-radius: 50%;
+  /* Ein Ring, der sich im Uhrzeigersinn füllt. */
+  background: conic-gradient(var(--kcal) calc(var(--anteil) * 360deg), transparent 0);
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 5px), #000 calc(100% - 4px));
+  mask: radial-gradient(farthest-side, transparent calc(100% - 5px), #000 calc(100% - 4px));
+  opacity: .9;
+}
+.kegelkreis.k-an     { transform: scale(1); background: var(--kcal-soft); border-color: var(--kcal); }
+.kegelkreis.k-aus    { transform: scale(.78); background: var(--surface-2); border-color: var(--border-strong); }
+.kegelkreis.k-bereit,
+.kegelkreis.k-pause  { transform: scale(.88); }
+.kegelkreis.k-fertig { transform: scale(.95); border-color: var(--ok); background: var(--surface-2); }
+.kegelkreis.k-fertig::after { background: none; }
+/* Bei den schnellen wäre die weiche Animation nur ein Nachziehen. */
+.kegelkreis.schnell { transition: transform .12s ease-out, background-color .12s; }
+
+.kegelzahl {
+  font-size: 46px; font-weight: 700; line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.kegelwort { font-size: 19px; font-weight: 600; }
+
+@media (prefers-reduced-motion: reduce) {
+  .kegelkreis { transition: background-color .2s, border-color .2s; transform: none; }
+  .kegelkreis.k-an, .kegelkreis.k-aus,
+  .kegelkreis.k-bereit, .kegelkreis.k-pause, .kegelkreis.k-fertig { transform: none; }
+}
