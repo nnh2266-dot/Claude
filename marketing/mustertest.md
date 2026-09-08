@@ -105,10 +105,10 @@ sie beim ersten Durchsehen.
 
 | Kennzeichen | Auf Gerät? | Auf Verpackung? | Pflicht aus |
 |---|---|---|---|
-| **CE-Zeichen** | | **fehlt auf der Rückseite** | Produktsicherheit |
-| **Name und Anschrift des Importeurs** | | **fehlt auf der Rückseite** | GPSR (EU) 2023/988 |
-| **Durchgestrichene Mülltonne** | | **fehlt auf der Rückseite** | ElektroG |
-| **Batteriesymbol** | | **fehlt auf der Rückseite** | BattG |
+| **CE-Zeichen** | offen | ❌ **fehlt, alle Seiten geprüft** | EMV 2014/30/EU, RoHS 2011/65/EU |
+| **Name und Anschrift** | offen | ❌ **fehlt** | GPSR (EU) 2023/988 |
+| **Durchgestrichene Mülltonne** | offen | ❌ **fehlt** | ElektroG § 9 |
+| **Batteriesymbol** | offen | ❌ **fehlt** | BattG |
 | Typenschild mit Spannung und Leistung | | | |
 
 **Wenn eines fehlt, muss es vor dem Verkauf ergänzt werden.** Das CE-Zeichen darf nur
@@ -137,6 +137,7 @@ Nicht für die Prüfung, sondern weil du sie später brauchst.
 | Einzelne Zahlen weichen ab | Seite korrigieren, Rest bleibt |
 | Motor bleibt unter Druck stehen | **Abbruch.** Ein Massagegerät, das stehenbleibt, verkauft sich einmal und kommt zurück |
 | Bogen biegt sich sichtbar | Vergleichsabschnitt streichen — dann bleibt kein Argument |
+| **Keine CE-Kennzeichnung und keine Konformitätserklärung** | **Bedingter Abbruch.** Kein Verkauf, solange die Unterlagen fehlen |
 | Gerät wirkt billig | Preis auf 59–69 € senken oder ganz absehen |
 
 **Nach dem Test steht die Entscheidung über die 60 Stück.** Vorher fließt kein Geld für
@@ -326,3 +327,42 @@ Gerät · USB-C-Kabel · Anleitung · Kugelkopf · U-Kopf · Zylinderkopf · Fla
 
 Die Anleitung ist englisch, die Prüfnorm chinesisch (GB4706). **Eine deutsche
 Bedienungsanleitung muss vor dem Verkauf erstellt und beigelegt werden.**
+
+---
+
+## Block G — Ergebnis: durchgefallen (8. September 2026)
+
+Karton vollständig geprüft: Rückseite, Unterseite, alle Kanten. **Keines der vier
+Pflichtkennzeichen ist vorhanden.** Aufgedruckt sind nur Barcode und „MADE IN CHINA".
+
+### Welche Richtlinien tatsächlich greifen
+
+| Richtlinie | Gilt? | Warum |
+|---|---|---|
+| Niederspannung 2014/35/EU | **nein** | gilt erst ab 75 V Gleichspannung, das Gerät läuft mit 7,4 V |
+| **EMV 2014/30/EU** | **ja** | Motor mit Elektronik, verlangt CE |
+| **RoHS 2011/65/EU** | **ja** | Elektrogerät, verlangt CE |
+| Funkanlagen 2014/53/EU | nein | kein Funk verbaut |
+| **GPSR (EU) 2023/988** | **ja** | verlangt Name und Anschrift auf Produkt oder Verpackung |
+
+**Ohne CE-Zeichen darf das Gerät in der EU nicht in Verkehr gebracht werden.** Dazu ist
+fehlendes CE ein anerkannter Abmahngrund unter Wettbewerbern nach § 3a UWG — in einer
+Kategorie mit sechs No-Name-Anbietern auf Amazon ein reales Risiko.
+
+### Noch zu prüfen
+
+- [ ] **Typenschild am Gerät selbst** — CE, Spannung, Leistung? Wo das Produkt groß
+      genug ist, muss das CE-Zeichen auf dem Gerät stehen; nur wenn das nicht geht,
+      darf es auf Verpackung und Unterlagen ausweichen
+- [ ] **Letzte Seite der Anleitung** — CE-Logo oder europäische Anschrift?
+
+### Die Logo-Entscheidung ist dadurch eine andere geworden
+
+| Rolle | Wodurch | Was du schuldest |
+|---|---|---|
+| **Importeur** | Verkauf ohne eigene Marke | Prüfen, dass der Hersteller die Konformitätserklärung besitzt, eigene Anschrift ergänzen |
+| **Hersteller** | **„NackenFrei" auf Gerät oder Karton** | Konformitätserklärung und technische Unterlagen **selbst**: EMV-Messung grob 800–2.000 €, RoHS-Nachweis 300–600 € |
+
+Art. 6 GPSR und der Blue Guide: Wer ein Produkt unter eigenem Namen oder eigener Marke
+vertreibt, gilt als Hersteller. **Damit sind die 68 € fürs Logo nicht der wahre Preis
+der eigenen Marke.** Diese Entscheidung gehört nach den Test, nicht davor.
