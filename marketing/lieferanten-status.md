@@ -7,6 +7,14 @@ nichts zweimal gefragt wird.
 
 ## ScPanda — GB-868
 
+**Vollständige Firmierung laut Alibaba-Quittung:**
+**Shenzhen ScPanda Technology Co., Limited**, 6D, No.5 Golf Avenue, Guangpei Community,
+Guanlan Street, Longhua District, Shenzhen, Guangdong, CN.
+
+> **Prüfmaßstab für die Konformitätserklärung:** Genau dieser Name und diese Anschrift
+> müssen darauf stehen. Nennt sie eine andere Firma, stammt die Erklärung nicht vom
+> Lieferanten und ist wertlos.
+
 **Stand 8. September 2026:** Nachtrag zur Dokumentenanfrage verschickt — CE-Befund aus
 dem Muster, Abgrenzung Konformitätserklärung gegen Laborzertifikat, UN38.3 unter Hinweis
 auf das UN3481-Etikett des Musterversands, Bedruckung des Kartons, Widersprüche 17/20 W

@@ -490,3 +490,52 @@ und wirkt auf den Deckungsbeitrag mit etwa 1,50 € je Stück — von 54 € auf
 
 **Voraussetzung bleibt die Konformitätserklärung.** Ohne sie darf kein CE-Zeichen
 aufgebracht werden, unabhängig davon, wie gut die Banderole aussieht.
+
+---
+
+## Alibaba-Quittung zur Musterbestellung (8. September 2026)
+
+Quittung `#311793630501027279`, Bestellung vom 14. August 2026.
+
+### Falsche Anschrift im Konto — vor der Warenbestellung korrigieren
+
+> Buyer's company address: Nik Hoffmann, +48 17664298667, 6 Friedrich-Schauer-Weg,
+> Soest, Arnsberg, **000000, Poland**
+
+Land falsch, Postleitzahl `000000`, Telefonvorwahl `+48`. Die Muster kamen trotzdem an,
+weil FedEx den Adresstext gelesen und das Land ignoriert hat.
+
+**Bei der 60er-Bestellung ist die Handelsrechnung das Zollwertdokument.** Steht dort
+Polen, wird im Zweifel dort verzollt, die Einfuhrumsatzsteuer landet im falschen Land
+und der Buchhaltungsbeleg trägt eine falsche Anschrift.
+
+- [ ] **Im Alibaba-Konto korrigieren: Land Deutschland, PLZ 59494, deutsche Nummer.**
+
+### Tatsächliche Kosten der Muster
+
+| Posten | Betrag |
+|---|---|
+| Ware, 2 × 4,96 € | 9,92 € |
+| Versand | 45,15 € |
+| Einfuhrumsatzsteuer über Alibaba | 12,67 € |
+| Zahlungsgebühr | 2,04 € |
+| **Gesamt** | **69,76 €** |
+
+Kalkuliert waren 50 €. **In `rechnung.md` auf 70 € korrigiert**, Fixkosten der Testphase
+damit 788 € statt 768 €.
+
+Der Stückpreis von **4,96 €** ist damit gedruckt bestätigt — der frühere Verdacht, das
+Angebot liege über dem Listenpreis, ist endgültig ausgeräumt.
+
+### Zur Steuerfrage
+
+Alibaba hat die Einfuhrumsatzsteuer selbst erhoben, weil der Auftrag mit 67,73 € **unter
+der 150-€-Grenze** lag. Der angebotene Weg, eine USt-IdNr. zu hinterlegen und sich
+befreien zu lassen, **gilt für einen Kleinunternehmer nach § 19 nicht** — es gibt keine
+USt-IdNr. und keinen Vorsteuerabzug. Die 12,67 € sind Wareneinsatz.
+
+Die 60er-Bestellung liegt über 150 €; dort wird am Zoll erhoben, wie in `rechnung.md`
+kalkuliert.
+
+- [ ] **Beobachten:** Stellt FedEx zusätzlich Einfuhrabgaben in Rechnung, wurde doppelt
+      erhoben. Rückerstattung über den Link „Jetzt beantragen" in den Steuerdetails.

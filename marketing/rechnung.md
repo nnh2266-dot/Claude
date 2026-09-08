@@ -48,6 +48,12 @@ wenn der CPA bekannt ist.
 | Einstandspreis je Stück | 16,37 € | 13,25 € |
 | Restbestand nach 20 Verkäufen | 40 Stück | 80 Stück |
 
+> **Belegte Zahl statt Schätzung.** Die Musterbestellung ist abgerechnet: 9,92 € Ware,
+> 45,15 € Versand, 12,67 € Einfuhrumsatzsteuer über Alibaba, 2,04 € Zahlungsgebühr —
+> zusammen **69,76 €** statt der geschätzten 50 €. Die Fixkosten sind entsprechend
+> angehoben. Der Frachtsatz von rund 25 €/kg für 1,8 kg Express bestätigt zugleich, dass
+> die 6 €/kg für 79 kg Luftfracht in der richtigen Größenordnung liegen.
+>
 > **Offener Punkt: Verpackung.** Der Originalkarton reicht für 79 € nicht — er bewirbt
 > drei Farbvarianten und zeigt vorn ein graues statt eines schwarzen Geräts. Zugleich
 > fehlen alle vier Pflichtkennzeichen. Beides löst dieselbe Maßnahme: eine bedruckte
@@ -89,9 +95,9 @@ Einnahme (ohne USt., § 19)                    79,00 €
 | Rechtstexte (Mitgliedschaft statt Anwalt) | 50 € | 200 € |
 | Shopify (Aktionspreis ~1 €/Monat) | 3 € | 200 € |
 | Domain | 15 € | 15 € |
-| Muster | 50 € | 50 € |
+| Muster (tatsächlich abgerechnet) | 70 € | 70 € |
 | Steuerberater (anteilig) | 100 € | 400 € |
-| **Summe** | **≈ 768 €** | **≈ 1.445 €** |
+| **Summe** | **≈ 788 €** | **≈ 1.465 €** |
 
 Die EPR-Registrierungen gelten für **jedes** Elektrogerät, das du künftig importierst.
 Sie sind nicht an dieses Produkt gebunden.
@@ -124,11 +130,11 @@ Drei Monate, 700 € Werbebudget, 60 Stück Bestand, CPA 35 € (guter Fall):
 
 ```
 AUSGABEN
-  Fixkosten                                     768 €
+  Fixkosten                                     788 €
   Ware inkl. Fracht, Zoll, Logo                 982 €
   Werbung (700 € × 1,19 Reverse Charge)         833 €
   Kundenversand und Zahlungsgebühren, 20 Stk    150 €
-                                            = 2.733 €
+                                            = 2.753 €
 
 EINNAHMEN
   20 Verkäufe à 79 €                          1.580 €
@@ -140,9 +146,9 @@ Was am Ende bleibt, hängt weniger am Kampagnenverlauf als am Restbestand:
 
 | CPA | Verkäufe | Rest zu 35 € | Rest zu 25 € | abgeschrieben |
 |---|---|---|---|---|
-| **35 €** | 20 | **+247 €** | −153 € | −1.153 € |
-| **45 €** | 15 | **+84 €** | −361 € | −1.474 € |
-| **55 €** | 13 | **−19 €** | −492 € | −1.675 € |
+| **35 €** | 20 | **+227 €** | −173 € | −1.173 € |
+| **45 €** | 15 | **+64 €** | −381 € | −1.494 € |
+| **55 €** | 13 | **−39 €** | −512 € | −1.695 € |
 
 **Mit abverkauftem Restbestand endet der Test bei plus/minus null** — selbst im
 schlechten Fall. Der Grund: Bei 16,36 € Einstandspreis behält die Ware auch im
@@ -198,7 +204,8 @@ Start noch drehen kannst.
 
 ## 9. Der letzte günstige Ausstieg
 
-Bisher ausgegeben: rund **50 € für Muster.**
+Bisher ausgegeben: **69,76 € für die Muster** — Ware 9,92 €, Versand 45,15 €,
+Einfuhrumsatzsteuer über Alibaba 12,67 €, Zahlungsgebühr 2,04 €.
 
 Die nächsten Schritte sind die teuren: EPR-Registrierungen, Warenbestellung,
 Werbebudget. **Jetzt ist der Punkt, an dem ein Abbruch fast nichts kostet.**
