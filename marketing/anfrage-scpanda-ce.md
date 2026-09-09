@@ -395,3 +395,136 @@ importer. We can discuss the logo again for a larger repeat order.
 
 Die 68 € für das Logo entfallen, dafür kommen rund 100 € für die Banderole hinzu. **Das
 hebt sich auf** — die Zahlen in `rechnung.md` bleiben unverändert gültig.
+
+---
+
+## Die gelieferten Unterlagen — Auswertung (9. September 2026)
+
+Fünf Dateien geschickt, alle geöffnet und ausgelesen.
+
+| Datei | Was es tatsächlich ist | Firma darauf | Modell |
+|---|---|---|---|
+| „Certificate of Conformity", ZOL250324Y8079-3EC | **Laborzertifikat** von Ningbo Zhengou Testing, EMV 2014/30/EU | **Wenzhou Yi Xiang Electronic Technology Co., Ltd.**, Zhejiang | **KK-26** |
+| 73 S., ZOL250324Y8079-2RC | **FCC-Bericht**, FCC Part 15 — USA | Wenzhou Yi Xiang | KK-26 |
+| 60 S., ZOL250324Y8079-1RC | **RoHS-Prüfbericht**, 2011/65/EU + (EU) 2015/863 | Wenzhou Yi Xiang | — |
+| 23 S. | **MSDS** einer Akkuzelle, Shanghai Institute of Chemical Industry | — | INR14500-800mAh |
+| klein | Alibaba-Quittung | — | — |
+
+### Kernbefund: die Papiere gehören zu einem anderen Produkt
+
+| | Bestellt | Auf den Papieren |
+|---|---|---|
+| Firma | Shenzhen ScPanda Technology Co., Limited, Guangdong | Wenzhou Yi Xiang Electronic Technology Co., Ltd., Zhejiang |
+| Modell | **GB-868** | **KK-26** |
+
+Andere Firma, andere Provinz, andere Modellnummer.
+
+### Es ist weiterhin keine Konformitätserklärung dabei
+
+Das EMV-Dokument ist ein **Laborzertifikat** und sagt das selbst:
+
+> „The CE markings as shown below can be affixed on the product **after preparation of
+> necessary technical documentation**."
+> „This certificate applies specifically to the sample investigated in our test reference
+> number only."
+
+**Weiterhin fehlen:** unterschriebene EU-Konformitätserklärung für GB-868 · **UN38.3-Prüfzusammenfassung** (MSDS ist kein Ersatz, ohne UN38.3 keine Luftfracht).
+**Wertlos:** der FCC-Bericht.
+
+### Der Akku widerspricht sich
+
+Das MSDS beschreibt **800 mAh / 3,7 V / 2,96 Wh**. Zwei Zellen in Reihe ergäben 7,4 V bei
+**800 mAh** — nicht 1200 mAh.
+
+Listing, Karton und Lieferant nennen 1200 mAh, **die Landingpage an fünf Stellen**.
+Entweder gehört das MSDS zu einer anderen Zelle oder die 1200 mAh stimmen nicht.
+**Derzeit nicht belegbar.**
+
+### Zwei neue Angaben des Lieferanten
+
+**„Rated Power: 8.4W"** — glaubwürdig, deckt sich mit dem Laufzeittest (aus über 45 min
+auf Stufe 9 folgten unter 10 W). **Damit sind sowohl die 17 W des Kartons als auch die
+20 W des Listings falsch.** Bestätigt die Entscheidung, keine Wattzahl zu nennen.
+
+**„Rated Voltage: 5V-1A, bitte diese verwenden"** — **wird nicht übernommen.** Die
+beiliegende gedruckte Anleitung verlangt 5 V / 2 A und warnt vor langsamerem Laden. Eine
+Veröffentlichung von 1 A widerspräche der mitgelieferten Anleitung und erzeugt genau die
+Supportfälle, die der 99-%-Hinweis vermeiden soll. **Die Seite bleibt bei 2 A.**
+
+### „Importer of record wird nicht geprüft"
+
+Verkäufereinschätzung, nicht Rechtslage. Für die Zollabfertigung bei DDP zutreffend, für
+die **Produkthaftung nicht**: Wer in Deutschland an Verbraucher abgibt, trägt die
+Pflichten unabhängig davon, wer beim Zoll steht.
+
+---
+
+## Das Angebot für 60 Stück
+
+```
+Ware       $5,60 × 60      =  $336,00
+Fracht, Zoll und EUSt      =  $552,20
+Logo (wird gestrichen)     = ($45,00)
+                           =  $888,20   ≈  778 €
+```
+
+Produktionszeit 5 Tage, Versand 8–15 Tage, keine Nachforderungen bei Ankunft.
+
+| | Kalkulation bisher | Angebot |
+|---|---|---|
+| Kapitaleinsatz | 982 € | **778 €** |
+| Einstandspreis je Stück | 16,37 € | **12,96 €** |
+| mit Banderole | — | 14,46 € |
+| Deckungsbeitrag bei 79 € | 54 € | **rund 56 €** |
+| Break-even-CPA | 45 € | **47 €** |
+
+**204 € günstiger als geplant.** Kaufmännisch ist das Angebot gut — es nützt nur nichts,
+solange die Unterlagen zu einem anderen Produkt gehören.
+
+---
+
+## Antwort auf die Unterlagen
+
+```
+Thank you for the files. I have read all of them. There is a problem.
+
+All three ZOL documents name a different company and a different model:
+
+- Applicant and manufacturer: Wenzhou Yi Xiang Electronic Technology Co.,
+  Ltd., Zhejiang - not Shenzhen ScPanda Technology Co., Limited
+- Model: KK-26 - not GB-868
+
+So my questions:
+
+1. What is the relationship between ScPanda and Wenzhou Yi Xiang? Are they
+   your factory, and is KK-26 the same device as GB-868 under a different
+   internal model code? If so, please confirm this in writing.
+
+2. The EMC document is a laboratory certificate, not a declaration of
+   conformity. It states itself that the CE mark may only be affixed after
+   the technical documentation has been prepared. I need the manufacturer's
+   own signed EU Declaration of Conformity that names the model I am buying.
+
+3. The UN38.3 test summary is still missing. The MSDS is not a substitute
+   and air freight cannot be booked without it.
+
+4. The FCC report is for the United States and has no value for me.
+
+5. The MSDS describes a cell of 800mAh / 3.7V / 2.96Wh. You and your listing
+   state 1200mAh. Which is correct? Please confirm the exact cell: capacity,
+   voltage, number of cells and chemistry.
+
+6. On the charging input: your message says 5V-1A, but the printed manual
+   inside the box says 5V-2A and warns that a weaker adapter slows charging.
+   I will publish 5V-2A as printed in your own manual unless you tell me the
+   manual is wrong.
+
+On the quotation: please remove the $45 logo fee, I do not want the logo on
+this order. Otherwise the offer is acceptable and I am ready to proceed once
+points 1 to 3 are resolved.
+```
+
+### Offene Folge für die Landingpage
+
+- [ ] **1200 mAh** steht an fünf Stellen auf der Seite und ist derzeit nicht belegt.
+      Nach der Antwort entweder bestätigen oder entfernen.
