@@ -605,18 +605,25 @@ to be resolved before I can order.
    CE mark on the box.
 
 3. The battery documents describe a cell INR14500, 800mAh, 3.7V, 2.96Wh
-   from Xinxiang Hongli. Two of those in series give 5.92Wh, but you and
-   your listing state 1200mAh, and my own runtime test indicates the pack is
-   larger than 5.92Wh. Please confirm exactly what is inside GB-868: cell
-   type, capacity, number of cells and total Wh. The UN38.3 report must
-   match the battery that is actually shipped, otherwise the dangerous goods
-   declaration for the air freight is wrong.
+   from Xinxiang Hongli. Two of those in series give 800mAh at 7.4V and
+   5.92Wh. But your listing, the retail box and your own message all state
+   1200mAh. These cannot both be correct.
+
+   Please confirm exactly what is inside GB-868: cell type, capacity, number
+   of cells and total Wh. The UN38.3 report must match the battery that is
+   actually shipped, otherwise the dangerous goods declaration for the air
+   freight is wrong.
 
 On the quotation: please remove the $45 logo fee, I do not want the logo on
 this order. Everything else is acceptable and I am ready to proceed as soon
 as points 1 to 3 are answered.
 ```
 
-**Bewusst weggelassen:** der Widerspruch 5 V/1 A gegen 5 V/2 A. Bei sechs Punkten wurde
+**Die eigene Laufzeitmessung ist bewusst nicht Teil der Nachricht.** Sie wird noch
+präzise wiederholt, und der Widerspruch trägt ohne sie besser: 800 mAh laut Akkupapieren
+gegen 1200 mAh in Listing, Karton und eigener Nachricht ist **sein** Widerspruch, den er
+nicht durch Zweifel an einer fremden Messung entkräften kann.
+
+**Ebenfalls weggelassen:** der Widerspruch 5 V/1 A gegen 5 V/2 A. Bei sechs Punkten wurde
 zuletzt nur der einfachste beantwortet. Die Landingpage bleibt bei **2 A**, wie in der
 gedruckten Anleitung des Herstellers.
