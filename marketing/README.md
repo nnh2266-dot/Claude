@@ -1,9 +1,27 @@
-# NackenFrei — Projektübersicht
+# NackenFrei — Projektübersicht und Übergabe
 
 Einstiegspunkt für alles, was zu diesem Vorhaben entschieden, recherchiert und gebaut
 wurde. Die Einzelheiten stehen in den verlinkten Dateien; hier steht, was gilt.
 
-Zuletzt zusammengefasst: 5. September 2026.
+**Stand: 9. September 2026.**
+
+---
+
+## 0. Arbeitsanweisung für jede Sitzung
+
+> **Nach jeder Antwort die Prüfliste des Mustertests mit aktuellem Stand anhängen.**
+> Ausdrücklicher Wunsch des Inhabers, gilt dauerhaft.
+
+Weitere feste Regeln aus dem bisherigen Verlauf:
+
+- **Beim Thema bleiben.** Nicht vom laufenden Test auf Registrierungen oder andere
+  Baustellen umlenken, solange der Test läuft.
+- **Nachrichten an Lieferanten ohne Markdown-Sternchen** — die erscheinen im
+  Alibaba-Chat als Zeichen.
+- **Höchstens drei bis vier Punkte je Lieferantennachricht.** Bei sechs Punkten wurde
+  nur der einfachste beantwortet.
+- **Behauptungen belegen.** Erfundene Zahlen sind auf dieser Seite schon einmal
+  passiert und wurden entfernt.
 
 ---
 
@@ -14,6 +32,8 @@ Shop in Deutschland, beworben über Meta-Anzeigen. Das Verkaufsargument: Der Bog
 den Massagekopf über die Schulter an die Stelle zwischen den Schulterblättern, die
 weder von oben noch von unten mit der Hand erreichbar ist.
 
+**Diese Kernbehauptung ist am Muster bestätigt.**
+
 ---
 
 ## 2. Die Firma
@@ -21,118 +41,338 @@ weder von oben noch von unten mit der Hand erreichbar ist.
 | | |
 |---|---|
 | Rechtsform | Deutsches Einzelunternehmen, Gewerbe angemeldet |
-| Umsatzsteuer | **Kleinunternehmer nach § 19 UStG** — keine MwSt. auf Rechnungen, kein Vorsteuerabzug |
-| Folge daraus | Auf der Seite darf **nicht** „inkl. MwSt." stehen, sondern der § 19-Hinweis |
+| Inhaber | Nik Hoffmann, Friedrich-Schauer-Weg 6, 59494 Soest |
+| Umsatzsteuer | **Kleinunternehmer nach § 19 UStG** — keine MwSt., kein Vorsteuerabzug |
+| Folge | Auf der Seite steht der § 19-Hinweis, **nicht** „inkl. MwSt." |
 | Grenze | 25.000 € Vorjahresumsatz = **250 Geräte**, danach Regelbesteuerung |
-| Sitz des Inhabers | zeitweise Thailand, Rückkehr nach Deutschland Anfang September 2026 |
 
-**Wichtige Konsequenz:** Meta und Shopify rechnen im Reverse-Charge ab. Die deutschen
-19 % schuldet das Unternehmen selbst nach § 13b UStG und kann sie als Kleinunternehmer
-**nicht abziehen**. Werbung kostet real 19 % mehr, als Meta anzeigt.
+**Konsequenz:** Meta und Shopify rechnen im Reverse-Charge ab. Die 19 % nach § 13b UStG
+sind als Kleinunternehmer **nicht abziehbar**. Werbung kostet real 19 % mehr, als Meta
+anzeigt.
 
 ---
 
 ## 3. Das Produkt
 
-**Modell GB-868**, Hersteller Shenzhen ScPanda Technology Co., Limited.
+**Modell GB-868**, verkauft von Shenzhen ScPanda Technology Co., Limited.
+**Gefertigt von Wenzhou Yi Xiang Electronic Technology Co., Ltd.** unter der
+Werksbezeichnung **KK-26** — bestätigt, siehe Abschnitt 6.
 
-| Angabe | Wert | Stand |
+### Am Muster gemessen und belegt
+
+| Angabe | Wert | Quelle |
 |---|---|---|
-| Kraftstufen | 9 | von drei Listings bestätigt |
-| Schlagzahl | 2.000–3.200 / min | vom Lieferanten bestätigt |
-| Akku | 1200 mAh | bestätigt |
-| Ladung | USB, 5 V – 1 A | bestätigt |
-| Ladezeit | 2–3 h | Lieferantenangabe |
-| Leistung | **8,4 W** | Lieferant hat die 20 W seines Listings als Fehler zurückgezogen |
-| Aufsätze | 4 — Kugel, Flach, U-Form, Spitz | bestätigt |
-| Material | ABS-Gehäuse, Silikonaufsätze | bestätigt |
-| Motor | **Bürstenmotor**, 36–45 dB | bestätigt, Messbedingungen unbekannt |
-| Gewicht | 856 g brutto mit Verpackung | Gerät allein noch ungewogen |
-| Farbkarton | 37 × 26,5 × 6 cm | bestätigt |
-| Umkarton | 63 × 38 × 54,5 cm, 20 Stück, 18 kg | bestätigt |
+| Kraftstufen | **9** | geprüft |
+| **Rhythmen** | **9**, separate Modustaste | geprüft, steht auf dem Karton |
+| Aufsätze | 4: Kugel, U-Form, Flach, Spitz („Bullet") | geprüft |
+| Farbe | Mattschwarz | geprüft |
+| Ladeanschluss | **USB-C, 5 V / 2 A** | Handbuch |
+| Akkuspannung | 7,4 V | Handbuch |
+| **Gewicht ohne Zubehör** | **500 g** | gewogen, Seite korrigiert |
+| Gewicht Gesamtpaket | **800 g** | gewogen, durch Frachtbrief bestätigt |
+| **Abschaltautomatik** | **15 Minuten** | Handbuch, kein Akkuende |
+| Lautstärke Stufe 9 | 52 dB direkt, 45 dB auf ~1 m | Handy-App |
+| Amplitude | 7,5 mm | Karton |
+| Griff | **fest gebogen, nicht steckbar** | geprüft — Kernargument |
+| Kein Netzteil im Lieferumfang | nur USB-C-Kabel | Karton und Handbuch |
 
-**Noch ungeprüft und am Muster zu messen:** Gewicht ohne Zubehör (Seite sagt 590 g),
-Laufzeit auf Stufe 1 und 9, echte Lautstärke, tatsächliche Leistung vom Typenschild.
+### Widersprüchliche Herstellerangaben
 
----
+| Angabe | Karton | Listing | Lieferant | Bewertung |
+|---|---|---|---|---|
+| Leistung | 17 W | 20 W | **8,4 W** | 8,4 W ist plausibel. **Keine Wattzahl auf der Seite.** |
+| Schlagzahl | 3.000 rpm | 2.000–3.200 | — | Seite nennt die niedrigere gedruckte Zahl |
+| Akku | 1200 mAh | 1200 mAh | 1200 mAh | **UN38.3 und MSDS nennen 800 mAh** — ungeklärt |
+| Ladeeingang | — | — | 5 V / 1 A | **Handbuch sagt 2 A. Seite bleibt bei 2 A.** |
 
-## 4. Lieferanten
+### Wichtiger Bedienbefund
 
-Ausführlich in [`lieferanten-status.md`](lieferanten-status.md) und
-[`alibaba-leitfaden.md`](alibaba-leitfaden.md).
+**Die Ladeanzeige hat zwei Stellen und kann 100 nicht darstellen. Bei 99 % ist der Akku
+voll.** Ohne diesen Hinweis hält jeder Kunde den Akku für defekt — das ist ein
+vermeidbarer Retourengrund. Steht jetzt in FAQ und JSON-LD, **muss auch in die deutsche
+Anleitung**.
 
-| | ScPanda GB-868 | Youmei H8119-G3 | Xingou XO-8817 |
-|---|---|---|---|
-| Preis 50–100 Stk | 5,66 $ | 5,95 / 4,80 $ | 6,13 $ |
-| Jahre auf Alibaba | 7 | 4 | 3 |
-| Bewertungen | 962 (4,5) | 1.292 (4,7) | 41 (4,6) |
-| Logo ab | **100 Stück**, Klischee 45 $ | 500 Stück | — |
-| Verpackung bedruckt ab | 200 Stück (148,5 $) | 1.000 Stück | — |
-| Status | **gewählt** | antwortet nicht mehr | ausgeschieden |
-
-**Warnsignale bei ScPanda, die bestehen bleiben:**
-
-1. Er hat die Musterbestellung auf **Polen** deklariert, weil Alibaba Lieferungen nach
-   Deutschland ohne EPR-Nummern sperrt. Sein Reflex bei einer Compliance-Sperre ist,
-   sie zu umgehen.
-2. Auf die Frage nach den Produktunterlagen antwortete er: *„DDP means we handle all
-   the declarations and you won't have to provide any documentation."* Das heißt: Die
-   Ware wird **nicht auf die eigene EORI-Nummer angemeldet.**
-3. **UN38.3 und MSDS fehlen weiterhin.** Ohne sie nimmt keine Fluggesellschaft die
-   Lithiumakkus an. CE hat er bestätigt, ohne die Datei zu schicken.
-
-**Bedingung für die Sammelbestellung:** Dokumente als Dateien, und Anmeldung auf die
-eigene EORI-Nummer mit Zollanmeldung — sonst DAP und selbst verzollen. Wenn er das
-nicht liefert, gibt es dieselbe Bauform bei anderen Herstellern; die Bauform ist nicht
-knapp, die Papiere sind das Auswahlkriterium.
+**Die Prozentanzeige taugt nicht als Messgröße.** Nach 60 Minuten auf Stufe 9 stand sie
+noch bei 81 %; die Lithium-Spannungskurve ist im mittleren Bereich flach. Nur Minuten
+bis zum Stillstand zählen.
 
 ---
 
-## 5. Preis und Rechnung
+## 4. Der Mustertest
+
+Vollständig in [`mustertest.md`](mustertest.md), einschließlich Protokoll für den
+Präzisionsdurchlauf.
+
+| Block | Stand |
+|---|---|
+| **A — Sofort** | ✅ **bestanden** |
+| **B — Messen** | 🟡 Gewicht ✅ · Lautstärke Stufe 9 ✅ · **offen: Raumpegel, Stufe 1** |
+| **C — Zeiten** | 🟡 **über 45 min auf Stufe 9 belegt** · saubere Messung offen |
+| **D — Belastung** | ✅ **bestanden**, beide Abbruchkriterien geklärt |
+| **E — Anwendung** | 🔴 **offen — die entscheidende Lücke** |
+| **F — Verpackung** | ✅ **abgeschlossen** |
+| **G — Kennzeichnung** | 🟡 Prüfberichte da, **Konformitätserklärung fehlt** |
+| **H — Fotos** | 🔴 offen |
+
+### Block D — bestanden
+
+Kein Blockieren des Motors unter Arbeitsdruck. Der Bogen gibt unter Kraft nicht nach.
+Kein Heißwerden, kein Geruch, kein Kraftverlust. **Kein Ausschlusskriterium eingetreten.**
+
+### Block E — was noch fehlt
+
+Erreichbarkeit zwischen den Schulterblättern ist ✅ bestätigt. Offen bleiben:
+
+- **Fühlt es sich dort nach etwas an?** (7,5 mm Amplitude ist das untere Ende der Klasse)
+- Knickt das Handgelenk ab? Rutscht der Griff?
+- Nacken, Lende, Gesäß erreichbar?
+- Läuft der U-Kopf wirklich **neben** der Wirbelsäule?
+- **Würde der Inhaber selbst 79 € dafür bezahlen?**
+
+**Das ist die einzige verbleibende Frage, die über 79 € gegen 59 € entscheidet, und sie
+hat kein Messprotokoll.**
+
+### Block F — Ergebnis: Verpackung reicht nicht
+
+Der Karton bewirbt drei Farbvarianten und zeigt vorn ein **graues** Gerät, geliefert
+wurde ein schwarzes. Generikware, für 79 € nicht wertig genug.
+
+**Lösung: bedruckte Papierbanderole**, rund 1–1,50 € je Stück bei 100er-Auflage. Sie
+verdeckt Farbliste und falsches Foto **und trägt zugleich die vier fehlenden
+Pflichtkennzeichen**. Kennzeichnung und Aufwertung sind dieselbe Arbeit.
+
+### Block G — was fehlt und was da ist
+
+Weder auf dem Gerät noch auf dem Karton noch in der Anleitung steht **CE, eine
+Anschrift, die durchgestrichene Mülltonne oder ein Batteriesymbol.** Das Gerät hat
+überhaupt kein Typenschild — auch keine Rückverfolgbarkeitskennung nach EMV Art. 7.
+
+Welche Richtlinien greifen:
+
+| Richtlinie | Gilt | Grund |
+|---|---|---|
+| Niederspannung 2014/35/EU | **nein** | erst ab 75 V Gleichspannung, hier 7,4 V |
+| **EMV 2014/30/EU** | **ja** | verlangt CE |
+| **RoHS 2011/65/EU** | **ja** | verlangt CE |
+| **GPSR (EU) 2023/988** | **ja** | Name und Anschrift auf Produkt oder Verpackung |
+
+---
+
+## 5. Die Anleitung
+
+Nur Englisch, Prüfnorm chinesisch (GB4706). **Eine deutsche Bedienungsanleitung muss vor
+dem Verkauf erstellt und beigelegt werden.**
+
+**Drei Befunde, die zählen:**
+
+1. **Die Anleitung macht medizinische Aussagen** — *„Pain and spasm"*, *„Help the edema
+   fluid flow"*, *„Reduce the accumulation of lactic acid"*. **Diese dürfen nicht auf die
+   Landingpage.** Wer sie übernimmt, macht aus dem Wellnessprodukt ein Medizinprodukt.
+2. **Die Gegenanzeigen sind breiter als bisher angenommen** — zusätzlich Aneurysmen,
+   Blutungsneigung, Herzerkrankungen, Krebserkrankungen, Implantate binnen 90 Tagen nach
+   einer Operation. Auf der Seite ergänzt.
+3. **Garantielücke:** Hersteller gibt 1 Jahr, Akku 6 Monate. Dem Kunden geschuldet sind
+   **2 Jahre** gesetzliche Gewährleistung. **Die Lücke trägt der Verkäufer.**
+
+---
+
+## 6. Lieferant und Unterlagen
+
+Vollständig in [`lieferanten-status.md`](lieferanten-status.md) und
+[`anfrage-scpanda-ce.md`](anfrage-scpanda-ce.md).
+
+### Wer ist wer
+
+| Rolle | Firma |
+|---|---|
+| Verkäufer auf Alibaba | **Shenzhen ScPanda Technology Co., Limited**, 6D, No.5 Golf Avenue, Guangpei Community, Guanlan Street, Longhua District, Shenzhen, Guangdong |
+| **Fabrik** | **Wenzhou Yi Xiang Electronic Technology Co., Ltd.**, B17-7 Mechanical Industrial Park, Wanquan Light Industry Production Base, Pingyang County, Wenzhou City, Zhejiang |
+| Prüflabor | Ningbo Zhengou Testing Technology Co., Ltd (ZOL) |
+| Akkuzelle | Xinxiang Hongli Supply Source Technology Co., Ltd |
+| Akkuprüfung | Shanghai Institute of Chemical Industry Testing Co., Ltd |
+
+**KK-26 und GB-868 sind dasselbe Gerät.** Bestätigt vom Lieferanten und belegt durch das
+Foto „General Appearance of the EUT" im EMV-Prüfbericht: fest gebogener Griff,
+montierter Kugelkopf, daneben U-Kopf, Spitzkopf, Flachkopf und USB-Kabel.
+
+### Was vorliegt
+
+| Dokument | Für Deutschland | Status |
+|---|---|---|
+| EMV-Zertifikat ZOL250324Y8079-3EC | ✅ relevant | **liegt vor** |
+| EMV-Prüfbericht, 42 Seiten | ✅ relevant | **liegt vor** |
+| RoHS-Zertifikat ZOL250304Y6040-1RC | ✅ relevant | **liegt vor** |
+| RoHS-Prüfbericht, 20 Seiten | ✅ relevant | **liegt vor** |
+| UN38.3-Prüfbericht Nr. 1125100232 | ✅ Luftfracht | **liegt vor**, bestanden |
+| MSDS | ✅ Luftfracht | **liegt vor** |
+| FCC-Bericht und FCC-Erklärung | ❌ USA | wertlos für die EU |
+| **EU-Konformitätserklärung** | ✅ **Pflicht** | ❌ **fehlt** |
+
+**Es fehlt genau ein Dokument.** Alle Prüfungen dahinter existieren. Ein ausfüllfertiges
+Formular ist erstellt und verschickt:
+[`konformitaetserklaerung-vorlage.md`](konformitaetserklaerung-vorlage.md) und
+[`dokumente/EU-Declaration-of-Conformity-TEMPLATE.pdf`](dokumente/EU-Declaration-of-Conformity-TEMPLATE.pdf).
+
+**Reihenfolge, die eingehalten werden muss:** erst die unterschriebene Erklärung, **dann**
+darf das CE-Zeichen auf die Verpackung. Ein CE-Zeichen ohne Erklärung ist eine falsche
+Kennzeichnung, und die Haftung liegt beim Importeur in Deutschland.
+
+### Offene Punkte beim Lieferanten
+
+- [ ] **Unterschriebene EU-Konformitätserklärung** für GB-868
+- [ ] **Akku:** Zelltyp, Kapazität, Zellenzahl, Gesamt-Wh — die Papiere nennen 800 mAh,
+      alle anderen Quellen 1200 mAh. Der UN38.3-Bericht muss zum verbauten Akku passen,
+      sonst ist die Gefahrgutdeklaration falsch
+- [ ] **Logo-Gebühr von 45 $ streichen** — kein Logo bei dieser Bestellung
+- [ ] Bestimmungsland Deutschland auf Handelsrechnung und Versandpapieren
+- [ ] HS-Nummer, unter der exportiert wird
+
+---
+
+## 7. Das Angebot für 60 Stück
+
+```
+Ware       $5,60 × 60      =  $336,00
+Fracht, Zoll und EUSt      =  $552,20
+Logo (wird gestrichen)     = ($45,00)
+                           =  $888,20   entspricht rund 778 €
+```
+
+Produktionszeit 5 Tage, Versand 8–15 Tage, **DDP, keine Nachforderungen bei Ankunft.**
+
+| | Kalkulation bisher | Angebot |
+|---|---|---|
+| Kapitaleinsatz | 982 € | **778 €** |
+| Einstandspreis je Stück | 16,37 € | **12,96 €** |
+| mit Banderole | — | 14,46 € |
+| Deckungsbeitrag bei 79 € | 54 € | **rund 56 €** |
+| Break-even-CPA | 45 € | **47 €** |
+
+**204 € günstiger als geplant.** Nützt nichts ohne die Konformitätserklärung.
+
+---
+
+## 8. Die Logo-Entscheidung: kein Logo bei 60 Stück
+
+> Wer ein Produkt unter eigenem Namen oder eigener Marke in Verkehr bringt, gilt als
+> **Hersteller** — Art. 6 GPSR, ebenso der Blue Guide der EU-Kommission.
+
+| Weg | Folge |
+|---|---|
+| Ware trägt ScPanda/Wenzhou als Hersteller, eigene Anschrift als Importeur | **die Konformitätserklärung des Lieferanten genügt** |
+| Ware trägt „NackenFrei" | eigene Erklärung nötig: EMV-Messung 800–2.000 €, RoHS 300–600 €, technische Unterlagen zehn Jahre, volle Produkthaftung |
+
+**Die Marke auf Webseite, Anzeigen, Rechnung und Paketaufkleber ist unproblematisch.**
+Auslöser ist die Marke **auf Produkt oder Verpackung**. Ab 500 Stück ändert sich die
+Rechnung.
+
+---
+
+## 9. Preis und Rechnung
 
 Vollständig in [`rechnung.md`](rechnung.md).
 
-**Verkaufspreis: 79 €.** Nicht 99,99 €, weil dieselbe Bauform in Deutschland zwischen
-45 und 75 € liegt und RENPHO im Angebot bei 39,99 € steht. Bei 99,99 € steht das Gerät
-neben dem Beurer MG 180 für 117 €, einer bekannten Marke mit Testnote 1,7.
-
-**Bestellmenge: 60 Stück**, drei Kartons.
-
-```
-Einnahme (ohne USt.)                          79,00 €
-./. Einstandspreis (Ware, Fracht, EUSt, Logo) 16,36 €
-./. Versand an den Kunden                      5,30 €
-./. Zahlungsgebühr                             2,17 €
-./. Retouren
-= Deckungsbeitrag                        rund 54,00 €
-```
+**Verkaufspreis 79 €**, Bestellmenge **60 Stück**.
 
 | | |
 |---|---|
-| Fixkosten Testphase | rund 768 € |
-| Kapitaleinsatz 60 Stück | rund 982 € |
+| Fixkosten Testphase | rund 788 € |
+| Muster tatsächlich | **69,76 €** (Ware 9,92 · Versand 45,15 · EUSt 12,67 · Gebühr 2,04) |
 | Werbebudget | 700 € (real 833 € mit Reverse Charge) |
-| **Break-even-CPA** | rund **45 €** |
 | **Nötige Kaufrate der Seite** | **über 2,3 %** |
 
 **Kernaussage:** Die erste Bestellung ist kein Geschäft, sondern der Kauf einer Zahl —
-des CPA. Mit abverkauftem Restbestand endet die Testphase bei plus/minus null, weil die
-Ware bei 16,36 € Einstand ihren Wert behält. Wer den Restbestand liegen lässt, verliert
-1.100 bis 1.700 €.
+des CPA. Mit abverkauftem Restbestand endet die Testphase bei plus/minus null. Erst die
+Nachbestellung über 500 Stück ist ein Geschäft: bei CPA 35 € rund **+7.300 €** im Jahr.
 
-Erst die Nachbestellung über 500 Stück ist ein Geschäft: bei CPA 35 € rund **+7.300 €**
-im Jahr.
+**Offener Punkt: Zollsatz.** Die kalkulierten 146 € sind reine Einfuhrumsatzsteuer, ohne
+Zoll. Das trifft bei Einreihung unter **9019** (Massagegeräte) zu; bei **8543** kämen
+rund 30 € hinzu. Beim Spediteur klären, oder aus der HS-Nummer des Lieferanten.
 
 ---
 
-## 6. Was rechtlich zwingend ist
+## 10. Was über die Musterlieferung gelernt wurde
+
+- **Die Sendung kam nicht aus China**, sondern wurde in **Duiven, Niederlande** abgeholt.
+  Kein Zollereignis in der Sendungsverfolgung. Die EU-Einfuhr erfolgte in den
+  Niederlanden auf fremden Namen — der Empfänger war **nie Importeur of Record**.
+- **ScPanda hat aber kein eigenes EU-Lager** („We are only based in China"). Die Muster
+  liefen über die Sammelverzollung der Plattform. **Luftfracht und Einfuhrumsatzsteuer
+  bleiben in der Kalkulation.**
+- **Es kommt keine FedEx-Rechnung.** Terms: Shipper, kein Zollereignis. Die 12,67 € hat
+  Alibaba über IOSS erhoben, weil die Sendung unter 150 € lag.
+- **Die Länderangabe „Poland" stammt vom Lieferanten**, nicht aus dem Alibaba-Konto. Bei
+  den Mustern folgenlos; bei der Warenbestellung ist die Handelsrechnung das
+  Zollwertdokument und muss Deutschland nennen.
+- **Keine Papierrechnung im Karton** — bei FedEx mit Electronic Trade Documents normal.
+
+---
+
+## 11. Wettbewerb
+
+Ausführlich in [`wettbewerb.md`](wettbewerb.md). **Vorbehalt: Shop-Seiten waren beim
+Recherchieren blockiert, die Preise sind Größenordnungen.**
+
+```
+  40 €  --  RENPHO Reach im Angebot
+  46 €  --  RENPHO regulär, No-Name unteres Ende
+  75 €  --  No-Name oberes Ende
+ 117 €  --  Beurer MG 180
+ 300 €  --  Theragun
+```
+
+**Der gebogene Griff ist kein Alleinstellungsmerkmal mehr.** Das einzige verbliebene
+Argument: **fest gebauter Bogen statt ansteckbarem Verlängerungsgriff** — und der Bogen
+hat im Belastungstest nicht nachgegeben, das Argument trägt also.
+
+**Kein Lautstärkevorteil.** RENPHO wirbt mit bürstenlosem Motor unter 45 dB.
+
+---
+
+## 12. Die Webseite
+
+`index.html` im Wurzelverzeichnis. Eine Datei, keine externen Abhängigkeiten,
+eingebettete Schriften, hell und dunkel, ohne JavaScript bedienbar.
+
+**Abschnitte:** Bühne · Reichweite · Aufsätze und Zonen · Technik · Vergleich ·
+Bestellen · Fragen
+
+**Was aus dem Mustertest geändert wurde:**
+
+- Gewicht 590 g → **500 g** an neun Stellen
+- Laufzeit-Kachel „30–35 min" → **„15 min Abschaltautomatik"**
+- Ladung 5 V/1 A → **USB-C, 5 V / 2 A**
+- „20 Watt" entfernt → **„bis 3.000/min"**
+- **„Netzteil nicht enthalten"** im Lieferumfang und als FAQ
+- **99-%-Hinweis** in FAQ und JSON-LD — Retourenvermeidung
+- Gegenanzeigen erweitert
+- Rhythmus-Abschnitt neu
+
+**Noch offen: zehn Platzhalter**, die alle den Shop brauchen —
+`SHOPIFY_PRODUKT_URL_EINTRAGEN` (2×), `SHOPIFY_SHOPDOMAIN_EINTRAGEN`,
+`SHOPIFY_IMPRESSUM_URL`, `SHOPIFY_DATENSCHUTZ_URL` (2×), `SHOPIFY_WIDERRUF_URL`,
+`LIEFERZEIT_EINTRAGEN` (3×).
+
+**Zwei offene Fragen zur Seite:**
+
+1. **„1200 mAh" steht an fünf Stellen** und wird vom MSDS bestritten. Nach der Antwort
+   des Lieferanten bestätigen oder entfernen.
+2. **„Reichweite" und „Aufsätze und Zonen" zeigen dieselbe Torso-Silhouette zweimal.**
+   Der Inhaber hat das als „zu viel" bemängelt. Vorschlag: beide zu einem Abschnitt
+   zusammenlegen — eine Figur, zwei Steuerungen. Nicht entschieden.
+
+**Einzusetzen, sobald die Laufzeit sauber gemessen ist:**
+„Über 45 Minuten auf höchster Stufe je Ladung — drei volle Anwendungen."
+
+**Ein auskommentierter Bewertungsabschnitt** wird erst aktiviert, wenn echte
+Rückmeldungen vorliegen. Erfundene Bewertungen sind wettbewerbswidrig und bei Meta ein
+Sperrgrund.
+
+---
+
+## 13. Was rechtlich zwingend ist
 
 Ausführlich in [`checkliste.md`](checkliste.md), Block 1.
-
-**Wer die Ware nach Deutschland einführt und verkauft, ist im Rechtssinn Hersteller.**
-Das ist der Inhaber, nicht die Fabrik und nicht die Plattform. Das gilt auch bei
-Dropshipping mit Direktversand aus China — deshalb ist die Spocket-Variante keine
-Abkürzung.
 
 | Register | Warum | Aufwand |
 |---|---|---|
@@ -143,161 +383,101 @@ Abkürzung.
 | **EORI-Nummer** | gewerbliche Einfuhr | kostenlos beim Zoll |
 | **USt-IdNr.** | Reverse Charge bei Meta | kostenlos beim BZSt |
 
-Dazu Rechtstexte (Impressum, Datenschutz, Widerruf, AGB) und die GPSR-Angabe von Name
-und Anschrift auf Produkt oder Verpackung. ScPanda klebt Adressaufkleber bei 60 und
-100 Stück kostenlos auf.
+Dazu Rechtstexte und die GPSR-Angabe von Name und Anschrift auf Produkt oder Verpackung.
 
-**Kostenrahmen erstes Jahr: 400 bis 800 €.** Ohne diese Registrierungen kann nicht
-bestellt, nicht eingeführt und nicht verkauft werden.
+**Offene Frage für den Steuerberater:** Da die Ware über eine Sammelverzollung in den
+Niederlanden kommt und der Inhaber nicht Importeur of Record ist — ändert das etwas an
+den EAR-Pflichten? Er bringt die Ware in Deutschland in Verkehr, die Pflichten dürften
+bleiben. **Belegt: die Sendungsverfolgung des Musters.**
 
----
+**Ebenfalls für die Rechtsberatung:** Die Batterieverordnung (EU) 2023/1542 begründet
+eigene Pflichten und ist bisher nicht bearbeitet.
 
-## 7. Wettbewerb
-
-Ausführlich in [`wettbewerb.md`](wettbewerb.md).
-
-```
-  40 €  ──  RENPHO Reach im Angebot
-  46 €  ──  RENPHO regulär · No-Name unteres Ende
-  75 €  ──  No-Name oberes Ende
- 117 €  ──  Beurer MG 180
- 300 €  ──  Theragun
-```
-
-**Der gebogene Griff ist kein Alleinstellungsmerkmal mehr** — mindestens sechs
-No-Name-Listings auf Amazon.de und zwei Marken haben ihn.
-
-**Das einzige verbliebene Differenzierungsargument: fest gebauter Bogen statt
-ansteckbarem Verlängerungsgriff.** RENPHO Reach hat einen abnehmbaren Griff. Der
-Lautstärkevorteil existiert nicht — RENPHO wirbt mit bürstenlosem Motor unter 45 dB,
-das eigene Gerät hat Bürsten und liegt bei bis zu 45 dB.
+**Vor dem ersten Verkauf:** Konformitätserklärung vom Rechtstexte-Anbieter gegenlesen
+lassen. Die 50 € Mitgliedschaft stehen ohnehin in der Kalkulation.
 
 ---
 
-## 8. Die Webseite
+## 14. Marke und Werbung
 
-`index.html` im Wurzelverzeichnis. Eine Datei, keine externen Abhängigkeiten,
-eingebettete Schriften, hell und dunkel, ohne JavaScript bedienbar.
-
-**Abschnitte:** Bühne · Reichweite · Aufsätze und Zonen · Technik · Vergleich ·
-Bestellen · Fragen
-
-**Was geändert wurde:**
-
-- Preis auf 79 €, Newsletter-Rabatt auf 71,10 €
-- „Inkl. MwSt." ersetzt durch den § 19-Hinweis
-- Rückgabe von selbst gesetzten 30 auf die gesetzlichen 14 Tage
-- Schweiz aus den Versandländern entfernt — Kunden dort zahlen Einfuhrabgaben an der Tür
-- **Reichweiten-Abschnitt** neu: zeigt die Lücke am eigenen Rücken, CSS-Umschalter
-- **Vergleichsabschnitt** neu: fest gebaut gegen angesteckt
-- 20-Watt-Angabe entfernt, ersetzt durch 2.000–3.200 Schläge pro Minute
-- Ladezeit auf 2–3 h
-
-**Noch offen: zehn Platzhalter**, die alle den Shop brauchen —
-`SHOPIFY_PRODUKT_URL_EINTRAGEN` (2×), `SHOPIFY_SHOPDOMAIN_EINTRAGEN`,
-`SHOPIFY_IMPRESSUM_URL`, `SHOPIFY_DATENSCHUTZ_URL` (2×), `SHOPIFY_WIDERRUF_URL`,
-`LIEFERZEIT_EINTRAGEN` (3×).
-
-Dazu ein **auskommentierter Bewertungsabschnitt**, der erst aktiviert wird, wenn echte
-Rückmeldungen vorliegen. Erfundene Bewertungen sind wettbewerbswidrig und bei Meta ein
-Sperrgrund.
-
-**Offene Gestaltungsfrage:** „Reichweite" und „Aufsätze und Zonen" zeigen dieselbe
-Torso-Silhouette zweimal. Vorschlag war, beide zu einem Abschnitt zusammenzulegen —
-eine Figur, zwei Steuerungen. Noch nicht entschieden.
-
----
-
-## 9. Marke
-
-`logo/` — Wortmarke „NACKENFREI" in Fira Sans Condensed, Versalien, 6 % Laufweite,
-Schrift in Pfade ausgelegt.
-
-| Datei | Zweck |
-|---|---|
-| `nackenfrei-wortmarke.pdf` | **Druckdatei für den Lieferanten** |
-| `nackenfrei-wortmarke.png` | Rückfallebene, 4000 px, transparent |
-| `nackenfrei-logo.svg` | Volle Lockup mit Bildmarke |
-| `nackenfrei-marke.svg` | Nur Bildmarke |
-
-Auf dem schwarzen Gehäuse wird **in Weiß** gedruckt. Klischeekosten 45 $, zwei Monate
-wiederverwendbar.
-
-**Ehrliche Einschätzung:** Die Wortmarke ist zweckmäßig, nicht herausragend. Die
-Bildmarke zeigt eine Gerade, während das Produkt eine Kurve verkauft — deshalb für den
-Gehäusedruck **nur der Schriftzug**. Ein richtiges Logo lohnt, wenn die ersten hundert
-verkauft sind.
-
----
-
-## 10. Werbung
+`logo/` — Wortmarke „NACKENFREI" in Fira Sans Condensed, Schrift in Pfade ausgelegt.
+**Wird bei dieser Bestellung nicht gedruckt** (siehe Abschnitt 8).
 
 Kampagnenplan in [`instagram-plan.md`](instagram-plan.md), Creatives in
 [`werbevideos.md`](werbevideos.md).
 
-**Nicht „Instagram", sondern Meta.** Die kaufkräftigere Zielgruppe ab 55 sitzt auf
-Facebook. Anzeigen laufen über beide Plattformen.
-
-**Vier Anzeigenkonzepte**, drei davon aus dem Produktfoto generierbar:
-
-1. „Der Bogen" — Kamera zieht vom Massagekopf zurück (Hauptanzeige)
-2. „Vier Aufsätze" — schweben auf (Retargeting)
-3. „Neun Stufen" — nur der Kopf vibriert, steigend
-4. „Die Stelle" — Mensch am eigenen Rücken, braucht Handyaufnahme
+**Nicht „Instagram", sondern Meta.** Vier Anzeigenkonzepte, drei aus dem Produktfoto
+generierbar, das vierte braucht eine Handyaufnahme am eigenen Rücken.
 
 **Regel, die über allem steht:** über das Produkt sprechen, nie über die Person.
-Anzeigen, die dem Betrachter ein Leiden unterstellen, werden von Meta abgelehnt.
+Anzeigen, die dem Betrachter ein Leiden unterstellen, werden abgelehnt.
 
-**Kampagnenrahmen:** eine Kampagne, breite Zielgruppe DE 30–65, 25 €/Tag, 4–6
-Creatives, Auswertung nur montags. Kein Interessen-Micro-Targeting.
+**Kampagnenrahmen:** eine Kampagne, breite Zielgruppe DE 30–65, 25 €/Tag, 4–6 Creatives,
+Auswertung nur montags.
 
 **Meta-Kundenzufriedenheitswert im Blick behalten** — unter 2,0 werden Anzeigen
-eingeschränkt, unter 1,0 wird das Konto gesperrt. Der wahrscheinlichste Weg, dieses
-Geschäft zu verlieren.
+eingeschränkt, unter 1,0 wird das Konto gesperrt.
+
+⚠️ **Alle technischen Angaben in `werbevideos.md` sind veraltet** — dort stehen noch
+590 g und 20 W. Vor Verwendung gegen Abschnitt 3 abgleichen.
 
 ---
 
-## 11. Stand und nächste Schritte
+## 15. Nächste Schritte
 
-**Muster bestellt** — 2 Stück, rund 69 €, DDP per Luft, deklariert nach Polen,
-geliefert nach Deutschland mit Sendungsverfolgung.
+**Sofort, hängt an niemandem:**
 
-**Der nächste Meilenstein ist der Mustertest.** Er ist der letzte günstige Ausstieg,
-bevor Geld für Registrierungen oder Ware fließt.
+1. **Block E** — der Anwendungstest. Die letzte offene Frage vor der Preisentscheidung
+2. **Block H** — Fotos, vor allem das Gerät am eigenen Rücken angesetzt
+3. **Präzisionsdurchlauf** nach dem Protokoll in `mustertest.md`
 
-Beim Auspacken zu prüfen:
+**Wartet auf ScPanda:** Konformitätserklärung, Akkuangaben, Logo-Gebühr streichen
 
-- [ ] Typenschild fotografieren — Watt, mAh, Spannung
-- [ ] Gerät ohne Zubehör wiegen (Seite behauptet 590 g)
-- [ ] Lautstärke mit App messen, 50 cm Abstand, Stufe 1 und Stufe 9
-- [ ] Laufzeit auf Stufe 1 stoppen, Ladezeit stoppen
-- [ ] Neun Stufen durchzählen, vier Aufsätze prüfen
-- [ ] **Kommt man damit allein zwischen die eigenen Schulterblätter?**
-- [ ] Verpackung fotografieren, auf beiliegende Rechnung prüfen
-
-Danach in dieser Reihenfolge: LUCID · Stiftung EAR (dauert am längsten, sofort starten)
-· Batterieregister · EORI · USt-IdNr. · Rechtstexte · Shopify mit den zehn Platzhaltern
-· Pixel und Conversions-API · Testkauf · Instagram-Profil · dann die 60 Stück · dann
-Anzeigen.
+**Danach in dieser Reihenfolge:** LUCID · Stiftung EAR (dauert am längsten) ·
+Batterieregister · EORI · USt-IdNr. · Rechtstexte · Banderole gestalten und drucken ·
+Shopify mit den zehn Platzhaltern · Pixel und Conversions-API · Testkauf ·
+Instagram-Profil · **dann die 60 Stück** · dann Anzeigen.
 
 ---
 
-## 12. Was unterwegs korrigiert wurde
+## 16. Was unterwegs korrigiert wurde
 
 Damit dieselben Irrtümer nicht zweimal passieren.
 
 - **Der Vorwurf, ScPanda biete über Listenpreis an, war falsch.** 5,66 $ entsprechen
   4,96 € — Alibaba zeigt Europreise nur umgerechnet an.
-- **Der Gewichtskonflikt löste sich auf.** 856 g und 900 g sind Bruttogewichte mit
-  Verpackung; die 590 g der Seite sind plausibel.
-- **Die Ladeangabe der Seite stimmt.** 7,4 V ist die Akkuspannung, 5 V der USB-Eingang.
-- **ScPanda war nicht wegen der Frachtdichte im Vorteil.** Beide Hersteller verwenden
-  denselben Umkarton.
-- **Konzept A im alten Video-Prompt-Dokument ist unbrauchbar** — es animiert einen
-  ausfahrbaren Teleskopgriff, den dieses Produkt nicht hat.
-- **„Rund ein Fünftel des Rückens" war eine erfundene Zahl** und wurde von der Seite
-  entfernt.
-- **Der Spocket-Weg spart keine Registrierungen**, weil aus China direkt versendet wird
-  und der Verkäufer damit Einführer bleibt.
+- **„Rund ein Fünftel des Rückens" war eine erfundene Zahl** und wurde entfernt.
+- **Die 590 g der Seite waren falsch**, es sind 500 g.
+- **Die 15:05 Laufzeit waren nicht der leere Akku**, sondern die Abschaltautomatik. Die
+  daraus gezogene Schlussfolgerung „35 W wären unmöglich" ging von einer falschen
+  Prämisse aus.
+- **Das 1-A-Netzteil war nicht die Ursache des Stehenbleibens bei 99 %.** Die Anzeige
+  kann 100 gar nicht darstellen. Die falsche Erklärung stand wörtlich auf der Seite und
+  ist ersetzt.
+- **Der Frachthebel über ein EU-Lager existiert nicht.** ScPanda hat kein Lager in Europa.
+- **Die Länderangabe Polen war nicht der Fehler des Inhabers**, sondern die Deklaration
+  des Lieferanten.
+- **Die Vorlage der Konformitätserklärung hatte in drei Durchgängen Fehler** — acht statt
+  sieben Punkte nach Anhang IV, falsche Fundstelle für das RoHS-Verfahren (Modul A des
+  Anhangs II zum Beschluss 768/2008/EG, nicht Anhang II der RoHS-Richtlinie), fehlende
+  Chargenangabe. **Konsequenz: PDFs werden seither nach dem Erzeugen ausgelesen und
+  gegen eine Prüfliste kontrolliert, statt sich auf die Absicht zu verlassen.**
 - **100 Stück waren die falsche Empfehlung.** Ein 700-€-Test verkauft nur 15 bis 25
-  Geräte; eine größere Bestellung verbessert die Stückkosten, verkauft aber nichts mehr.
+  Geräte.
+
+---
+
+## 17. Arbeitsumgebung
+
+- Branch: `claude/website-instagram-werbung-l2dx07`
+- **Der Netzwerkzugang blockiert amtliche Quellen** — EUR-Lex, ec.europa.eu,
+  legislation.gov.uk, auskunft.ezt-online.de, Shop-Seiten. `code.claude.com` und die
+  Websuche funktionieren.
+- **Abhilfe:** claude.ai/code → Wolken-Symbol über dem Eingabefeld → Zahnrad an der
+  Umgebung → **Network access** von *Trusted* auf **Custom** → Domains eintragen, Häkchen
+  bei *Also include default list of common package managers*. Gilt erst für **neue**
+  Sitzungen. Empfohlene Liste: `*.europa.eu`, `auskunft.ezt-online.de`, `*.zoll.de`,
+  `*.amazon.de`, `*.geizhals.de`, `*.stiftung-ear.de`, `*.verpackungsregister.org`
+- **PDFs mit Bildinhalt** lassen sich auslesen: JPEG-Ströme extrahieren und als Bild
+  lesen; verschlüsselte PDFs über `pypdf` mit leerem Passwort, wobei das gebrochene
+  `cryptography`-Modul über einen Shim ausgeblendet werden muss.
