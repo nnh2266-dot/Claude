@@ -20,33 +20,64 @@ Das Labor sagt „wir haben gemessen", der Hersteller sagt „ich hafte dafür".
 
 ---
 
-## Prüfung der Vorlage (9. September 2026)
+## Prüfung der Vorlage — zweiter, aktiver Durchgang (9. September 2026)
 
-Die erste Fassung wurde gegen den Richtlinientext und die Prüfberichte geprüft. **Vier
-Fehler gefunden und behoben:**
+Gegen den Richtlinientext geprüft, nicht gegen die eigene Erinnerung. **Drei Fehler
+gefunden, einer davon in der ersten Korrektur.**
 
-| Fehler | Korrektur |
+### Fehler 1 — die erste Korrektur war selbst falsch
+
+Es hieß zunächst, Anhang IV habe acht Punkte; dann wurde auf sieben „korrigiert".
+**Richtig sind acht:**
+
+| | Inhalt |
 |---|---|
-| Acht nummerierte Punkte | Anhang IV hat **sieben**. Die Prüfberichte stehen jetzt unter Punkt 7 „Additional information", nicht als eigener Abschnitt |
-| Erklärungsnummer fehlte in der PDF | Feld `No. ____` wieder eingesetzt |
-| Untertitel nannte nur die EMV-Richtlinie | Die Erklärung deckt auch RoHS ab — jetzt **Anhang IV 2014/30/EU und Anhang VI 2011/65/EU** |
-| Gedankenstriche als Sonderzeichen | Alles auf reines ASCII umgestellt, damit beim Druck in China kein Kästchen erscheint |
+| 1 | Apparatus model / Product *(product, type, batch or serial number)* |
+| 2 | Name and address of the manufacturer |
+| 3 | Sole responsibility of the manufacturer |
+| 4 | Object of the declaration |
+| 5 | Conformity with Union harmonisation legislation |
+| 6 | Harmonised standards used, **mit Datum** |
+| 7 | **Where applicable, the notified body** |
+| 8 | Additional information + Unterschriftsblock |
 
-### Zusätzlich: Sprachfassung
+Punkt 7 lautet jetzt ausdrücklich **„Not applicable"**. Bei EMV gibt es keine benannte
+Stelle; ein leeres Feld sähe nach Versehen aus, ein ausdrückliches „nicht anwendbar"
+zeigt, dass die Richtlinie gelesen wurde.
 
-**Die Konformitätserklärung muss in Deutschland auf Deutsch vorliegen.** Die Richtlinie
-verlangt die Übersetzung in die Sprache des Mitgliedstaats, in dem in Verkehr gebracht
-wird.
+### Fehler 2 — falsche Fundstelle für das RoHS-Verfahren
 
-Vorgehen: **Die Fabrik unterschreibt die englische Fassung.** Der Importeur legt eine
-deutsche Übersetzung bei. Diese wird erstellt, sobald das unterschriebene Original
-vorliegt — dann stimmen Nummer und Datum überein.
+Im Entwurf stand „Annex II of Directive 2011/65/EU" als Konformitätsbewertungsverfahren.
+**Anhang II der RoHS-Richtlinie ist die Liste der verbotenen Stoffe.** Das Verfahren steht
+in **Modul A des Anhangs II zum Beschluss Nr. 768/2008/EG**. Korrigiert.
 
-### Nicht abgedeckt und getrennt zu behandeln
+### Fehler 3 — Punkt 1 war unvollständig
 
-Die Batterieverordnung (EU) 2023/1542 begründet **eigene** Pflichten — Registrierung,
-Kennzeichnung, Sorgfaltspflichten. Sie gehört nicht in diese Erklärung. **Für den
-Steuerberater beziehungsweise die Rechtsberatung notieren.**
+Anhang IV verlangt *„product, type, **batch or serial number**"*. Modellnummern allein
+genügen nicht. Ergänzt um ein Feld **„Batch or production date"** — zugleich der
+Anknüpfungspunkt für die Rückverfolgbarkeit, die dem Gerät bisher vollständig fehlt.
+
+### Bestätigt
+
+- **Sprachfassung:** Die Erklärung muss in der Sprache des Mitgliedstaats vorliegen, in
+  dem in Verkehr gebracht wird — für Deutschland auf Deutsch. Vorgehen: Die Fabrik
+  unterschreibt die englische Fassung, der Importeur legt die deutsche Übersetzung bei.
+  Wird erstellt, sobald das unterschriebene Original vorliegt, damit Nummer und Datum
+  übereinstimmen.
+- **Punkt 6 verlangt die Normdaten.** Alle aufgeführten Normen tragen welche.
+- **Die Erklärungsnummer ist laut Fußnote zu Anhang IV optional.** Das Feld bleibt
+  trotzdem, es kostet nichts und erleichtert die Ablage.
+- Alle Sachangaben stimmen wörtlich mit den Prüfzertifikaten überein.
+- PDF-Text ausgelesen und gegengeprüft: **kein Sonderzeichen**, alle acht Punkte
+  vorhanden.
+
+### Bewusst nicht enthalten
+
+- **FCC.** Gehört in kein EU-Dokument. Steht es drin, wirkt die Erklärung wie ein
+  Textbaustein.
+- **Batterieverordnung (EU) 2023/1542.** Begründet eigene Pflichten — Registrierung,
+  Kennzeichnung, Sorgfaltspflichten — und gehört nicht in diese Erklärung. **Für die
+  Rechtsberatung notieren.**
 
 ---
 
@@ -59,9 +90,10 @@ Als PDF unter `dokumente/EU-Declaration-of-Conformity-TEMPLATE.pdf`. Inhalt:
   Annex IV of Directive 2014/30/EU | Annex VI of Directive 2011/65/EU
                         No. __________
 
-1. Apparatus model / product
+1. Apparatus model / product   (product, type, batch or serial number)
    Percussion massage gun
    Model(s):  KK-26 / GB-868
+   Batch or production date: ____________
 
 2. Name and address of the manufacturer
    Wenzhou Yi Xiang Electronic Technology Co., Ltd.
@@ -73,10 +105,10 @@ Als PDF unter `dokumente/EU-Declaration-of-Conformity-TEMPLATE.pdf`. Inhalt:
    This declaration of conformity is issued under the sole
    responsibility of the manufacturer.
 
-4. Object of the declaration
+4. Object of the declaration   (identification allowing traceability)
    Hand-held battery-powered percussion massage device, models
    KK-26 and GB-868, as identified in the test reports listed
-   under point 7.
+   under point 8.
 
 5. The object of the declaration described above is in conformity
    with the relevant Union harmonisation legislation:
@@ -92,7 +124,13 @@ Als PDF unter `dokumente/EU-Declaration-of-Conformity-TEMPLATE.pdf`. Inhalt:
    EN 61000-3-3:2013+A1:2019+A2:2021
    EN IEC 63000:2018
 
-7. Additional information
+7. Notified body
+   Not applicable. Conformity has been assessed by internal
+   production control: Annex II of Directive 2014/30/EU, and
+   Module A of Annex II to Decision No 768/2008/EC for
+   Directive 2011/65/EU.
+
+8. Additional information
    EMC test report   ZOL250324Y8079-3EC
    RoHS test report  ZOL250324Y8079-1RC
    both issued by Ningbo Zhengou Testing Technology Co., Ltd
@@ -102,7 +140,7 @@ Signed for and on behalf of:
 
    Place of issue ________   Date of issue ________
    Name __________________   Function _____________
-   Signature _____________________________________
+   Signature and company stamp ___________________
 ```
 
 ---
