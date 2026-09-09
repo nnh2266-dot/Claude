@@ -627,3 +627,95 @@ nicht durch Zweifel an einer fremden Messung entkräften kann.
 **Ebenfalls weggelassen:** der Widerspruch 5 V/1 A gegen 5 V/2 A. Bei sechs Punkten wurde
 zuletzt nur der einfachste beantwortet. Die Landingpage bleibt bei **2 A**, wie in der
 gedruckten Anleitung des Herstellers.
+
+---
+
+## Vierte Antwort: die Konformitätserklärung existiert nicht (9. September 2026)
+
+Der Lieferant hat auf Nachfrage direkt geantwortet, dass es die Erklärung nicht gibt.
+
+**Das ist eine redliche Antwort auf eine ausdrücklich gestellte Frage** — die Nachricht
+enthielt den Satz „If the declaration does not exist, please tell me directly".
+
+**Es fehlt der billige Teil, nicht der teure.** EMV-Bericht über 42 Seiten,
+RoHS-Bericht und UN38.3 liegen vor; das sind die Posten, die Geld und Wochen kosten.
+Fehlt nur ein unterschriebenes Blatt.
+
+**Typische Ursache:** Fabriken, die über Handelsfirmen exportieren, haben fast immer
+Laborberichte und nie eine Konformitätserklärung, weil nie jemand danach gefragt hat.
+Erkennbar an der Rückfrage des Lieferanten: „you mean we can just have the factory write
+a one page signed paper?"
+
+### Vorgehen: zwei Nachrichten parallel
+
+Nacheinander kostet eine Woche.
+
+**An ScPanda — zweiter und letzter Versuch:**
+
+```
+Thank you for telling me directly, that helps.
+
+To be clear about what I am asking for, because it is often
+misunderstood: I am not asking for a new test and not for a laboratory
+document. The testing is already done - you sent me the EMC report
+ZOL250324Y8079-3EC and the RoHS report ZOL250324Y8079-1RC.
+
+What is missing is one page in which the factory states, based on those
+existing reports, that the product conforms. It costs nothing, requires
+no laboratory, and only the manufacturer can issue it. Under EU law the
+importer must hold this document, and a laboratory certificate cannot
+replace it.
+
+Please forward the form I attached to Wenzhou Yi Xiang. Every technical
+entry is already filled in from their own reports. They only need to
+print it on their letterhead, fill in place, date, name and position,
+sign it and send back a scan.
+
+If the factory still will not sign, please tell me. Then I will have to
+look for another supplier - not because of the price, which is good, but
+because without this document I cannot legally sell the product in
+Germany.
+
+In that case, please do not print the CE mark on the packaging. A CE
+mark with no declaration behind it would make the goods unsellable for
+me.
+```
+
+**An Youmei — Papiere zuerst, Preis später:**
+
+```
+Hello,
+
+I am importing percussion massage guns with a fixed curved handle to
+Germany. Before discussing price or quantity, I have one question that
+decides everything else.
+
+For model H8119-G3, can you provide:
+
+1. The EU Declaration of Conformity - the manufacturer's own signed
+   document naming EMC 2014/30/EU and RoHS 2011/65/EU, with the model
+   number, the harmonised standards applied and a signature. Not a
+   laboratory certificate.
+2. The EMC and RoHS test reports behind it.
+3. The UN38.3 test summary and the MSDS for the battery.
+
+If you can send these as PDF files I will proceed with a 60 piece order.
+If not, please tell me directly.
+```
+
+**Diese Frage wird ab jetzt jedem Lieferanten als erste gestellt, bevor über Preise
+geredet wird.** Die Bauform ist nicht knapp — die Papiere sind das Auswahlkriterium.
+
+### Wenn beide ablehnen
+
+| Weg | Kosten | Bewertung |
+|---|---|---|
+| Selbst Hersteller werden | EMV 800–2.000 € plus RoHS 300–600 € | sprengt das Testbudget von 778 € um ein Vielfaches, erst ab 500 Stück sinnvoll |
+| **Abbruch** | bisher ausgegeben **69,76 €** | der in `rechnung.md` beschriebene letzte günstige Ausstieg |
+
+### Unbedingt sicherstellen
+
+**Ohne unterschriebene Erklärung darf ScPanda kein CE-Zeichen auf die Verpackung
+drucken.** Ein CE-Zeichen ohne Erklärung ist eine falsche Kennzeichnung, deren Haftung
+beim Importeur in Deutschland liegt — und macht die Ware unverkäuflich statt nur
+unvollständig gekennzeichnet.

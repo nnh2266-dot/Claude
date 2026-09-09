@@ -208,7 +208,8 @@ montierter Kugelkopf, daneben U-Kopf, Spitzkopf, Flachkopf und USB-Kabel.
 | FCC-Bericht und FCC-Erklärung | ❌ USA | wertlos für die EU |
 | **EU-Konformitätserklärung** | ✅ **Pflicht** | ❌ **fehlt** |
 
-**Es fehlt genau ein Dokument.** Alle Prüfungen dahinter existieren. Ein ausfüllfertiges
+**Es fehlt genau ein Dokument — und der Lieferant hat am 9. September mitgeteilt, dass
+es nicht existiert.** Alle Prüfungen dahinter existieren. Ein ausfüllfertiges
 Formular ist erstellt und verschickt:
 [`konformitaetserklaerung-vorlage.md`](konformitaetserklaerung-vorlage.md) und
 [`dokumente/EU-Declaration-of-Conformity-TEMPLATE.pdf`](dokumente/EU-Declaration-of-Conformity-TEMPLATE.pdf).
@@ -431,7 +432,11 @@ eingeschränkt, unter 1,0 wird das Konto gesperrt.
 2. **Block H** — Fotos, vor allem das Gerät am eigenen Rücken angesetzt
 3. **Präzisionsdurchlauf** nach dem Protokoll in `mustertest.md`
 
-**Wartet auf ScPanda:** Konformitätserklärung, Akkuangaben, Logo-Gebühr streichen
+**Lieferantenfrage, offen und entscheidend:** ScPanda hat mitgeteilt, dass die
+Konformitätserklärung **nicht existiert**. Zweiter und letzter Versuch läuft, parallel
+dazu dieselbe Frage an **Youmei** — Papiere zuerst, Preis später. Wortlaut beider
+Nachrichten in `anfrage-scpanda-ce.md`. Lehnen beide ab, bleiben nur eigene Prüfungen
+(800–2.600 €) oder Abbruch bei bisher 69,76 € Aufwand.
 
 **Danach in dieser Reihenfolge:** LUCID · Stiftung EAR (dauert am längsten) ·
 Batterieregister · EORI · USt-IdNr. · Rechtstexte · Banderole gestalten und drucken ·
