@@ -528,3 +528,95 @@ points 1 to 3 are resolved.
 
 - [ ] **1200 mAh** steht an fünf Stellen auf der Seite und ist derzeit nicht belegt.
       Nach der Antwort entweder bestätigen oder entfernen.
+
+---
+
+## Vollständige Unterlagen — Auswertung nach der zweiten Lieferung (9. September 2026)
+
+Insgesamt neun unterschiedliche Dokumente, mehrfach als Dubletten geschickt.
+
+| Dokument | Aussteller | Firma / Modell darauf | Für Deutschland |
+|---|---|---|---|
+| EMV-Zertifikat ZOL250324Y8079-3EC | Ningbo Zhengou Testing | Wenzhou Yi Xiang / KK-26 | ✅ relevant |
+| EMV-Prüfbericht, 42 Seiten | Ningbo Zhengou Testing | Wenzhou Yi Xiang / KK-26 | ✅ relevant |
+| RoHS-Zertifikat ZOL250304Y6040-1RC | Ningbo Zhengou Testing | Wenzhou Yi Xiang / KK-26 | ✅ relevant |
+| RoHS-Prüfbericht, 20 Seiten | Ningbo Zhengou Testing | Wenzhou Yi Xiang | ✅ relevant |
+| **UN38.3-Prüfbericht Nr. 1125100232** | Shanghai Institute of Chemical Industry Testing | Zelle INR14500, Xinxiang Hongli | ✅ Luftfracht |
+| MSDS | Shanghai Institute of Chemical Industry Testing | dieselbe Zelle | ✅ Luftfracht |
+| FCC-Prüfbericht | Ningbo Zhengou Testing | Wenzhou Yi Xiang / KK-26 | ❌ USA |
+| FCC Supplier's Declaration of Conformity | Ningbo Zhengou Testing | Wenzhou Yi Xiang / KK-26 | ❌ USA, Unterschriftsfeld leer |
+| Alibaba-Quittung | Alibaba Singapore | — | Beleg |
+
+### Der UN38.3-Bericht ist echt und vollständig
+
+Geprüft nach **UN Manual of Tests and Criteria ST/SG/AC.10/11 Rev. 8, Section 38.3**:
+Höhensimulation, Temperaturtest, Vibration, Schock, äußerer Kurzschluss, Quetschung,
+Zwangsentladung — **bestanden**, gültig ab 20. November 2025.
+
+### Es fehlt genau ein Dokument
+
+**Die EU-Konformitätserklärung.** Alle Prüfungen dahinter existieren; der Hersteller muss
+nur noch erklären, dass sein Produkt konform ist. Das kostet ihn nichts und erfordert
+kein weiteres Labor.
+
+### Der Akku passt nicht zu den Papieren
+
+UN38.3-Bericht und MSDS beschreiben beide die Zelle **INR14500, 800 mAh, 3,7 V, 2,96 Wh**.
+Zwei in Reihe ergeben **5,92 Wh**.
+
+```
+45 min auf Stufe 9 bei 8,4 W  =  6,3 Wh   →  mehr als 5,92 Wh
+plus zwei weitere Durchläufe
+```
+
+**Der eigene Laufzeittest widerlegt die Akkudokumente.** Bei 1200 mAh und 8,9 Wh geht die
+Rechnung dagegen auf. Wahrscheinlich steckt im Gerät ein **größerer Akku als der, für den
+UN38.3 und MSDS ausgestellt sind.**
+
+**Das ist mehr als eine Zahlenfrage:** Die Gefahrgutdeklaration für die Luftfracht richtet
+sich nach den Wattstunden. Stimmt der Prüfbericht nicht mit dem verbauten Akku überein,
+ist die Deklaration falsch — mit Folgen für Absender und Empfänger.
+
+### Antworttext
+
+```
+Thank you, I now have the full set. The EMC report, the RoHS report, the
+UN38.3 test report and the MSDS are all proper documents. Three things need
+to be resolved before I can order.
+
+1. All EU documents name a different company and a different model.
+   Applicant and manufacturer: Wenzhou Yi Xiang Electronic Technology Co.,
+   Ltd., Zhejiang. Model: KK-26.
+   I am buying GB-868 from Shenzhen ScPanda Technology Co., Limited.
+   Is Wenzhou Yi Xiang your factory, and is KK-26 the same device as GB-868
+   under a different internal model code? Please confirm this in writing.
+
+2. The EU Declaration of Conformity is still missing. Everything you sent
+   are laboratory certificates and test reports. The EMC certificate itself
+   states that the CE mark may only be affixed after the technical
+   documentation has been prepared.
+
+   What I need is one page, signed by the manufacturer, declaring that the
+   product conforms to EMC 2014/30/EU and RoHS 2011/65/EU, listing the
+   standards already tested in your reports, and naming the model I am
+   buying. The factory can issue this from the reports it already has.
+
+   Without it I cannot legally sell the product, and you must not print the
+   CE mark on the box.
+
+3. The battery documents describe a cell INR14500, 800mAh, 3.7V, 2.96Wh
+   from Xinxiang Hongli. Two of those in series give 5.92Wh, but you and
+   your listing state 1200mAh, and my own runtime test indicates the pack is
+   larger than 5.92Wh. Please confirm exactly what is inside GB-868: cell
+   type, capacity, number of cells and total Wh. The UN38.3 report must
+   match the battery that is actually shipped, otherwise the dangerous goods
+   declaration for the air freight is wrong.
+
+On the quotation: please remove the $45 logo fee, I do not want the logo on
+this order. Everything else is acceptable and I am ready to proceed as soon
+as points 1 to 3 are answered.
+```
+
+**Bewusst weggelassen:** der Widerspruch 5 V/1 A gegen 5 V/2 A. Bei sechs Punkten wurde
+zuletzt nur der einfachste beantwortet. Die Landingpage bleibt bei **2 A**, wie in der
+gedruckten Anleitung des Herstellers.
