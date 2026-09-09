@@ -43,7 +43,8 @@ Block 6–7 in Woche 3 · Block 8 nach Ankunft · Block 9–10 danach.
       Damit entfallen EU-Bevollmächtigter, EAR-Bevollmächtigter und IOSS-Vermittler —
       die brauchst du nicht. Der Aufenthalt in Thailand ändert daran nichts.
 - [x] **Umsatzsteuer:** Kleinunternehmer nach § 19 UStG. Keine MwSt. auf Rechnungen,
-      kein Vorsteuerabzug. Deckungsbeitrag rund **66 € je Verkauf**.
+      kein Vorsteuerabzug. Deckungsbeitrag rund **56 € je Verkauf** bei 79 €
+      Verkaufspreis.
 
 Daraus ergeben sich vier neue Punkte, die vorher nicht sichtbar waren:
 
@@ -56,9 +57,9 @@ Daraus ergeben sich vier neue Punkte, die vorher nicht sichtbar waren:
       angezeigt — 700 € Budget sind 833 € *(dort)*
 - [ ] **Umsatzsteuer-Voranmeldung** für diese § 13b-Umsätze einrichten. Gilt auch für
       Kleinunternehmer und wird regelmäßig übersehen *(dort)*
-- [ ] **§-19-Grenze im Blick behalten:** 25.000 € Vorjahresumsatz = **250 Geräte**.
-      Danach Regelbesteuerung, Deckungsbeitrag fällt auf rund 50 €. Die Kampagne muss
-      auch damit funktionieren *(laufend)*
+- [ ] **§-19-Grenze im Blick behalten:** 25.000 € Vorjahresumsatz = bei 79 €
+      **316 Geräte**. Danach Regelbesteuerung, Deckungsbeitrag fällt auf rund 43 €.
+      Die Kampagne muss auch damit funktionieren *(laufend)*
 
 Offen bleibt:
 
@@ -145,9 +146,10 @@ handle massager". Deutsch: „Massagepistole mit Verlängerungsgriff".
       **12 Geschwindigkeitsstufen**, deine Seite nennt **neun Kraftstufen**. Nach der
       Lieferantenwahl müssen Technikabschnitt, Zählerwerte und FAQ an das echte Gerät
       angepasst werden *(dort/DE)*
-- [ ] **Preisprüfung:** Dieselbe Bauform liegt auf Amazon.de und Kaufland zwischen
-      etwa 46 € und 73 €. Bevor 99,99 € bleiben, prüfen, was die nächstliegenden
-      Angebote kosten — siehe Notiz unten *(dort)*
+- [x] **Preisprüfung:** Dieselbe Bauform liegt auf Amazon.de und Kaufland zwischen
+      etwa 46 € und 73 €. **Ergebnis: Preis auf 79 € gesetzt**, nicht 99,99 €. Der
+      Aufschlag gegenüber dem oberen No-Name-Ende trägt allein der fest gebaute
+      Bogen — siehe `wettbewerb.md` *(erledigt)*
 - [ ] **Von jedem ein Muster an die deutsche Heimatadresse bestellen** *(dort)*
 - [ ] Beim Lieferanten **vor** der Bestellung erfragen: keine Rechnung, kein Preis,
       kein Werbematerial im Paket *(dort)*
@@ -161,7 +163,7 @@ handle massager". Deutsch: „Massagepistole mit Verlängerungsgriff".
 
 ## Block 3 — Shop aufsetzen
 
-- [ ] Shopify-Konto, Produkt anlegen, Preis 99,99 € *(dort)*
+- [ ] Shopify-Konto, Produkt anlegen, Preis 79 € *(dort)*
 - [ ] Versandzonen: **Deutschland und Österreich**, kostenfrei. **Schweiz nicht
       anbieten** *(dort)*
 - [ ] Zahlungsarten einrichten (Karte, PayPal, Klarna oder Kauf auf Rechnung) *(dort)*
@@ -265,11 +267,18 @@ Alles gegen das echte Gerät, nicht gegen das Datenblatt.
       900 g zugleich als Bruttogewicht mit Verpackung — die 590 g der Seite dürften
       also das nackte Gerät meinen. Gerät ohne Zubehör wiegen, dann mit einem Aufsatz,
       dann das Gesamtpaket *(DE)*
-- [ ] **Akku 1200 mAh**, Ladung USB 5 V *(DE)*
-- [ ] **Laufzeit auf Stufe 1 messen — Konflikt.** Die Seite sagt 30–35 Minuten,
-      ScPanda wirbt mit 2–3 Stunden. Rechnerisch (8,9 Wh bei 20 W) sind rund
-      27 Minuten plausibel, die Herstellerangabe also nicht. Auf Stufe 1 **und**
-      Stufe 9 messen *(DE)*
+- [x] **Akku: 800 mAh bei 7,4 V = 5,9 Wh**, Ladung USB-C 5 V / 2 A. Belegt durch
+      MSDS und UN38.3 (Zelle INR14500-800mAh, zwei in Reihe). **Nicht 1200 mAh** —
+      diese Zahl von Karton und Listing ist durch kein Dokument gedeckt. Muss so auch
+      in die deutsche Anleitung *(DE)*
+- [ ] **Laufzeit messen — der Konflikt ist offen.** Die Seite macht seit dem
+      9. September 2026 **keine Laufzeitangabe mehr**, weil keine belegt ist. Bekannt
+      ist nur: fünf Durchläufe à 15 Minuten absolviert, Gerät lief weiter. Bei 5,9 Wh
+      entspricht das rund **4,7 W mittlerer Aufnahme** — plausibel nur, wenn nicht
+      durchgehend auf Stufe 9 gelaufen wurde. **Was fehlt, ist die Leistungsaufnahme:**
+      ohne sie lässt sich aus der Laufzeit weder die Kapazität noch umgekehrt
+      bestätigen. Auf Stufe 1 **und** Stufe 9 messen, Stufe nach jeder Abschaltung
+      neu setzen *(DE)*
 - [ ] **Lautstärke in dB messen.** Der Motor ist ein Bürstenmotor; die Konkurrenz wirbt
       mit bürstenlos unter 45 dB. Lautstärke ist der häufigste Retourengrund dieser
       Warengruppe und steht bisher nirgends auf der Seite *(DE)*
@@ -314,8 +323,8 @@ Wöchentlich prüfen:
 | Hook-Rate (3-Sek.-Views ÷ Impressionen) | > 25 % | Neue erste drei Sekunden, Rest behalten |
 | Ausgehende Klickrate | > 1,0 % | Versprechen zu schwach oder unklar |
 | Kaufrate der Seite | > 1,5 % | Anzeige und Seite versprechen Verschiedenes |
-| Kosten pro Kauf | < 42 € | Break-even liegt zwar bei 55 €, aber 42 € ist der Wert, der auch nach dem Wechsel in die Regelbesteuerung trägt |
-| ROAS | > 1,8 | Unter Break-even |
+| Kosten pro Kauf | < 43 € | Break-even liegt zwar bei 47 €, aber 43 € ist der Wert, der auch nach dem Wechsel in die Regelbesteuerung trägt |
+| ROAS | > 1,7 | Unter Break-even |
 | Meta-Kundenzufriedenheit | > 3,0 | Lieferzeit oder Produkt — sofort handeln |
 
 **Entscheidung nach vier Wochen und rund 700 € Budget:**

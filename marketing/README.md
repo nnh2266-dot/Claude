@@ -44,7 +44,7 @@ weder von oben noch von unten mit der Hand erreichbar ist.
 | Inhaber | Nik Hoffmann, Friedrich-Schauer-Weg 6, 59494 Soest |
 | Umsatzsteuer | **Kleinunternehmer nach § 19 UStG** — keine MwSt., kein Vorsteuerabzug |
 | Folge | Auf der Seite steht der § 19-Hinweis, **nicht** „inkl. MwSt." |
-| Grenze | 25.000 € Vorjahresumsatz = **250 Geräte**, danach Regelbesteuerung |
+| Grenze | 25.000 € Vorjahresumsatz = bei 79 € **316 Geräte**, danach Regelbesteuerung |
 
 **Konsequenz:** Meta und Shopify rechnen im Reverse-Charge ab. Die 19 % nach § 13b UStG
 sind als Kleinunternehmer **nicht abziehbar**. Werbung kostet real 19 % mehr, als Meta
@@ -82,8 +82,48 @@ Werksbezeichnung **KK-26** — bestätigt, siehe Abschnitt 6.
 |---|---|---|---|---|
 | Leistung | 17 W | 20 W | **8,4 W** | 8,4 W ist plausibel. **Keine Wattzahl auf der Seite.** |
 | Schlagzahl | 3.000 rpm | 2.000–3.200 | — | Seite nennt die niedrigere gedruckte Zahl |
-| Akku | 1200 mAh | 1200 mAh | 1200 mAh | **UN38.3 und MSDS nennen 800 mAh** — ungeklärt |
+| Akku | 1200 mAh | 1200 mAh | 1200 mAh | **Geklärt: 800 mAh.** MSDS und UN38.3 nennen die Zelle INR14500-800mAh. Seite korrigiert |
 | Ladeeingang | — | — | 5 V / 1 A | **Handbuch sagt 2 A. Seite bleibt bei 2 A.** |
+
+### Der Akku — geklärt am 9. September 2026
+
+MSDS und UN38.3-Bericht nennen übereinstimmend dieselbe Zelle:
+
+> **INR14500-800mAh · 3,7 V · 800 mAh · 2,96 Wh**
+
+Das Gerät läuft mit 7,4 V, das sind **zwei Zellen in Reihe**. In Reihenschaltung
+verdoppelt sich die Spannung, die Kapazität bleibt gleich:
+
+> **800 mAh bei 7,4 V = 5,92 Wh**
+
+Die 1200 mAh von Karton, Listing und Landingpage sind durch kein Dokument gedeckt.
+**Sie sind an allen sechs Stellen von der Seite entfernt.**
+
+**Was die Laufzeitmessung dazu sagt — und was nicht.** Gemessen wurden fünf Durchläufe
+à 15 Minuten, danach lief das Gerät weiter: mindestens 75 Minuten je Ladung. Daraus die
+mittlere Leistungsaufnahme:
+
+| Annahme | Wattstunden | mittlere Aufnahme über 75 min |
+|---|---|---|
+| **800 mAh** (belegt) | 5,92 Wh | **4,7 W** |
+| 1200 mAh (Karton, Listing) | 8,88 Wh | 7,1 W |
+
+Beide Werte sind möglich. Der Karton nennt 17 W, das Listing 20 W, der Lieferant 8,4 W —
+bei 17 W wäre der Akku in beiden Fällen längst leer gewesen. **Die Laufzeit entscheidet
+die Kapazitätsfrage also nicht**, solange die Leistungsaufnahme nicht gemessen ist. Sie
+zeigt nur, dass das Gerät weit unter Nennleistung lief; im Mustertest steht der Verdacht,
+dass die Stufe nach den Abschaltungen nicht wieder gesetzt wurde.
+
+**Entschieden wird die Frage durch die Dokumente, nicht durch die Uhr** — und die
+Dokumente sagen 800 mAh.
+
+> **Frühere Fassung von `anfrage-scpanda-ce.md` zog den umgekehrten Schluss** — der
+> Laufzeittest „widerlege die Akkudokumente", vermutlich sei ein größerer Akku
+> verbaut. Dieselbe 8-%-Lücke, andere Richtung gelesen. Dagegen steht, dass MSDS und
+> UN38.3 zwei unabhängige Dokumente eines CNAS-akkreditierten Labors sind, beauftragt
+> vom Zellhersteller. Damit sie falsch sind, müssten beide dieselbe falsche Zelle
+> beschreiben. **Belastbar entscheidet das nur der Lieferant** — die Frage steht in der
+> Nachricht. Bis dahin gilt auf der Seite die belegte Zahl, nicht die beworbene.
 
 ### Wichtiger Bedienbefund
 
@@ -197,19 +237,28 @@ montierter Kugelkopf, daneben U-Kopf, Spitzkopf, Flachkopf und USB-Kabel.
 
 ### Was vorliegt
 
+**Seit dem 9. September 2026 liegen die Belege im Repo** unter
+[`dokumente/`](dokumente/) statt nur in Chat-Verläufen. Das ist keine Ordnungsfrage:
+Die technische Dokumentation ist **zehn Jahre aufbewahrungspflichtig**.
+
 | Dokument | Für Deutschland | Status |
 |---|---|---|
-| EMV-Zertifikat ZOL250324Y8079-3EC | ✅ relevant | **liegt vor** |
-| EMV-Prüfbericht, 42 Seiten | ✅ relevant | **liegt vor** |
-| RoHS-Zertifikat ZOL250304Y6040-1RC | ✅ relevant | **liegt vor** |
-| RoHS-Prüfbericht, 20 Seiten | ✅ relevant | **liegt vor** |
-| UN38.3-Prüfbericht Nr. 1125100232 | ✅ Luftfracht | **liegt vor**, bestanden |
-| MSDS | ✅ Luftfracht | **liegt vor** |
-| FCC-Bericht und FCC-Erklärung | ❌ USA | wertlos für die EU |
+| EMV-Zertifikat ZOL250324Y8079-3EC | ✅ relevant | **im Repo** |
+| EMV-Prüfbericht, 42 Seiten | ✅ relevant | ❌ **nicht im Repo** — nachfordern |
+| RoHS-Zertifikat ZOL250304Y6040-1RC | ✅ relevant | **im Repo** |
+| RoHS-Prüfbericht ZOL250324Y8079-1RC, 20 Seiten | ✅ relevant | **im Repo**, bestanden |
+| UN38.3-Prüfbericht Nr. 1125100232 | ✅ Luftfracht | **im Repo** — deckt nur die **Zelle** |
+| MSDS Nr. 262670100929 | ✅ Luftfracht | **im Repo** |
+| FCC-Bericht und FCC-Erklärung | ❌ USA | im Repo, wertlos für die EU |
 | **EU-Konformitätserklärung** | ✅ **Pflicht** | ❌ **fehlt** |
 
+**Achtung bei den Nummern.** `-3EC` und `-1RC` tragen die Überschrift *Certificate of
+Conformity*, `ZOL250324Y8079-1RC` die Überschrift *Test Report*. Die Vorlage nannte
+`-3EC` früher fälschlich einen Prüfbericht; das ist korrigiert. Jede Zeile in Punkt 8
+der Erklärung benennt jetzt die Dokumentart, die auf dem Dokument selbst steht.
+
 **Es fehlt genau ein Dokument.** Alle Prüfungen dahinter existieren. Ein ausfüllfertiges
-Formular ist erstellt und verschickt:
+Formular liegt bereit:
 [`konformitaetserklaerung-vorlage.md`](konformitaetserklaerung-vorlage.md) und
 [`dokumente/EU-Declaration-of-Conformity-TEMPLATE.pdf`](dokumente/EU-Declaration-of-Conformity-TEMPLATE.pdf).
 
@@ -220,9 +269,16 @@ Kennzeichnung, und die Haftung liegt beim Importeur in Deutschland.
 ### Offene Punkte beim Lieferanten
 
 - [ ] **Unterschriebene EU-Konformitätserklärung** für GB-868
-- [ ] **Akku:** Zelltyp, Kapazität, Zellenzahl, Gesamt-Wh — die Papiere nennen 800 mAh,
-      alle anderen Quellen 1200 mAh. Der UN38.3-Bericht muss zum verbauten Akku passen,
-      sonst ist die Gefahrgutdeklaration falsch
+- [ ] **Akku bestätigen:** zwei Zellen INR14500-800mAh in Reihe, 7,4 V, 5,92 Wh?
+      Die Papiere sagen das, Karton und Listing sagen 1200 mAh. **Die Seite steht
+      jetzt auf 800 mAh** — die Bestätigung schließt den Punkt
+- [ ] **UN38.3 auf Akkuebene:** Der vorliegende Bericht deckt nur die Einzelzelle.
+      Für den zusammengebauten 7,4-V-Akku ist in der Regel eine eigene Prüfung nötig,
+      sonst ist die Gefahrgutdeklaration unvollständig
+- [ ] **EMV-Prüfbericht** (42 Seiten) nachfordern — nur das Zertifikat liegt vor
+- [ ] **GB-868 für EMV bestätigen:** Beide Zertifikate nennen nur KK-26. Für RoHS
+      trägt der Satz im Prüfbericht *„All models are same as the samples except model
+      name and appearance"*; für EMV steht ein solcher Satz nirgends
 - [ ] **Logo-Gebühr von 45 $ streichen** — kein Logo bei dieser Bestellung
 - [ ] Bestimmungsland Deutschland auf Handelsrechnung und Versandpapieren
 - [ ] HS-Nummer, unter der exportiert wird
@@ -347,22 +403,23 @@ Bestellen · Fragen
 - **99-%-Hinweis** in FAQ und JSON-LD — Retourenvermeidung
 - Gegenanzeigen erweitert
 - Rhythmus-Abschnitt neu
+- **Akku 1200 mAh → 800 mAh (7,4 V, 5,9 Wh)** an allen sechs Stellen, belegt durch
+  MSDS und UN38.3
+- **FAQ „Wie lange hält der Akku?"** — die unbelegten „30 bis 35 Minuten auf Stufe 1"
+  sind ersetzt durch die gemessene Untergrenze **„über 45 Minuten auf höchster Stufe"**
 
 **Noch offen: zehn Platzhalter**, die alle den Shop brauchen —
 `SHOPIFY_PRODUKT_URL_EINTRAGEN` (2×), `SHOPIFY_SHOPDOMAIN_EINTRAGEN`,
 `SHOPIFY_IMPRESSUM_URL`, `SHOPIFY_DATENSCHUTZ_URL` (2×), `SHOPIFY_WIDERRUF_URL`,
 `LIEFERZEIT_EINTRAGEN` (3×).
 
-**Zwei offene Fragen zur Seite:**
+**Eine offene Frage zur Seite:**
 
-1. **„1200 mAh" steht an fünf Stellen** und wird vom MSDS bestritten. Nach der Antwort
-   des Lieferanten bestätigen oder entfernen.
-2. **„Reichweite" und „Aufsätze und Zonen" zeigen dieselbe Torso-Silhouette zweimal.**
+1. **„Reichweite" und „Aufsätze und Zonen" zeigen dieselbe Torso-Silhouette zweimal.**
    Der Inhaber hat das als „zu viel" bemängelt. Vorschlag: beide zu einem Abschnitt
    zusammenlegen — eine Figur, zwei Steuerungen. Nicht entschieden.
 
-**Einzusetzen, sobald die Laufzeit sauber gemessen ist:**
-„Über 45 Minuten auf höchster Stufe je Ladung — drei volle Anwendungen."
+*(Die Akku-Frage ist erledigt, siehe Abschnitt 3.)*
 
 **Ein auskommentierter Bewertungsabschnitt** wird erst aktiviert, wenn echte
 Rückmeldungen vorliegen. Erfundene Bewertungen sind wettbewerbswidrig und bei Meta ein
@@ -431,7 +488,11 @@ eingeschränkt, unter 1,0 wird das Konto gesperrt.
 2. **Block H** — Fotos, vor allem das Gerät am eigenen Rücken angesetzt
 3. **Präzisionsdurchlauf** nach dem Protokoll in `mustertest.md`
 
-**Wartet auf ScPanda:** Konformitätserklärung, Akkuangaben, Logo-Gebühr streichen
+**Wartet auf ScPanda** — fünf Punkte, Wortlaut der Nachricht in
+[`anfrage-scpanda-ce.md`](anfrage-scpanda-ce.md): unterschriebene
+Konformitätserklärung, EMV-Prüfbericht, Akkubestätigung, UN38.3 auf Akkuebene,
+Logo-Gebühr streichen. **Die ausfüllfertige Vorlage liegt bei** und ist gegen 38
+Punkte geprüft.
 
 **Danach in dieser Reihenfolge:** LUCID · Stiftung EAR (dauert am längsten) ·
 Batterieregister · EORI · USt-IdNr. · Rechtstexte · Banderole gestalten und drucken ·
@@ -464,6 +525,33 @@ Damit dieselben Irrtümer nicht zweimal passieren.
   gegen eine Prüfliste kontrolliert, statt sich auf die Absicht zu verlassen.**
 - **100 Stück waren die falsche Empfehlung.** Ein 700-€-Test verkauft nur 15 bis 25
   Geräte.
+- **Die 1200 mAh waren nie belegt.** MSDS und UN38.3 nennen eine 800-mAh-Zelle; zwei
+  davon in Reihe ergeben 7,4 V bei weiterhin 800 mAh. Die Zahl stand an sechs Stellen
+  auf der Seite und ist entfernt.
+- **Die Konformitätserklärung nannte das EMV-Zertifikat einen Prüfbericht.**
+  `ZOL250324Y8079-3EC` trägt die Überschrift *Certificate of Conformity*. Punkt 8
+  benennt jetzt jedes Dokument mit seiner echten Art.
+- **Der Produktname war nicht die Laborschreibweise.** Alle vier ZOL-Dokumente sagen
+  **FASCIAL GUN MASSAGE**; die Vorlage sagte „Percussion massage gun" bzw. „Fascial
+  gun massager". Jetzt wörtlich übernommen, damit die Fabrik nichts vergleichen muss.
+- **`instagram-plan.md` und `checkliste.md` rechneten weiter mit 99,99 €** und
+  AliExpress-Bezug. Der maximale CPA stand dort auf 55 € statt 47 € — eine Kampagne
+  nach diesen Zahlen hätte rechnerisch im Plus und real im Minus gelaufen. Beide
+  Dokumente sind auf 79 € durchgerechnet.
+- **Die §-19-Grenze waren nie 250 Geräte.** 250 × 99,99 € ergeben 25.000 €; bei 79 €
+  sind es **316 Geräte**. Die Zahl war aus der alten Preisannahme stehengeblieben und
+  stand auch in dieser Übersicht.
+- **Der maximale CPA nach dem Wechsel in die Regelbesteuerung war falsch gerechnet.**
+  Er stand mit 42 € da, also durch 1,19 geteilt. Dieser Faktor gilt nur unter § 19,
+  wo die Steuer auf die Werbung nicht abziehbar ist.
+- **Eine ältere Fassung der Konformitätserklärung war fast abgeschickt worden.** Die
+  Datei war byte-identisch mit dem Stand vor allen drei Korrekturdurchgängen. Deshalb
+  wird die Vorlage jetzt aus
+  [`dokumente/make-konformitaetserklaerung.py`](dokumente/make-konformitaetserklaerung.py)
+  erzeugt und von
+  [`dokumente/check-konformitaetserklaerung.py`](dokumente/check-konformitaetserklaerung.py)
+  gegen 38 Punkte geprüft — es gibt nur noch eine gültige Fassung, und sie liegt im
+  Repo.
 
 ---
 
@@ -478,6 +566,14 @@ Damit dieselben Irrtümer nicht zweimal passieren.
   bei *Also include default list of common package managers*. Gilt erst für **neue**
   Sitzungen. Empfohlene Liste: `*.europa.eu`, `auskunft.ezt-online.de`, `*.zoll.de`,
   `*.amazon.de`, `*.geizhals.de`, `*.stiftung-ear.de`, `*.verpackungsregister.org`
-- **PDFs mit Bildinhalt** lassen sich auslesen: JPEG-Ströme extrahieren und als Bild
-  lesen; verschlüsselte PDFs über `pypdf` mit leerem Passwort, wobei das gebrochene
-  `cryptography`-Modul über einen Shim ausgeblendet werden muss.
+- **PDFs mit Bildinhalt** lassen sich auslesen: JPEG-Ströme mit `pypdf` extrahieren
+  und als Bild lesen; verschlüsselte PDFs über `pypdf` mit leerem Passwort, wobei das
+  gebrochene `cryptography`-Modul über einen Shim ausgeblendet werden muss.
+- **`poppler-utils` fehlt und lässt sich nicht nachinstallieren**, `pdftoppm` also
+  nicht verfügbar. Ganze PDF-Seiten können nicht gerendert werden — deshalb der Weg
+  über die eingebetteten JPEG-Ströme. Nachzuinstallieren sind dagegen problemlos:
+  `pypdf`, `pillow`, `reportlab`.
+- **Hochgeladene Dateien liegen unter `/root/.claude/uploads/<sitzung>/` und sind
+  flüchtig.** Sie verschwinden mit der Sitzung. Alles, was aufbewahrungspflichtig ist,
+  gehört sofort ins Repo — die acht Belege lagen bis zum 9. September 2026 nur in
+  Chat-Verläufen.

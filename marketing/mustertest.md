@@ -661,15 +661,28 @@ wurde nach einer Abschaltung nicht wieder eingestellt.
 
 ### Die Rechnung stützt den Verdacht
 
+> **Nachtrag 9. September 2026: Die Kapazität in dieser Rechnung ist falsch.** MSDS
+> und UN38.3 belegen die Zelle INR14500-800mAh; zwei in Reihe ergeben 7,4 V bei
+> **800 mAh = 5,9 Wh**, nicht 8,9 Wh. Die Rechnung ist unten mit beiden Werten
+> geführt, weil ihre Aussage dieselbe bleibt.
+
 ```
-Akku      1200 mAh × 7,4 V  =  8,9 Wh
-Laufzeit  5 × 15 min        =  75 min = 1,25 h
-                            →  rund 7 W mittlere Aufnahme
+Akku      800 mAh × 7,4 V  =  5,9 Wh   (belegt)
+          1200 mAh × 7,4 V =  8,9 Wh   (Karton und Listing, unbelegt)
+Laufzeit  5 × 15 min       =  75 min = 1,25 h
+                           →  4,7 W mittlere Aufnahme bei 5,9 Wh
+                           →  7,1 W mittlere Aufnahme bei 8,9 Wh
 ```
 
-Der Karton nennt **17 W**. Bei 17 W wäre der Akku nach rund **31 Minuten** leer gewesen,
-also nach zwei Durchläufen. Das Gerät hat mit etwa **40 % der Nennleistung** gearbeitet —
-das entspricht keiner mittleren Stufe.
+Der Karton nennt **17 W**. Bei 17 W wäre der Akku nach rund **21 Minuten** leer gewesen
+(bei 5,9 Wh), also noch vor dem zweiten Durchlauf. Selbst mit den vom Lieferanten
+genannten 8,4 W reicht es nur für **42 Minuten**. Das Gerät hat also deutlich unter
+Nennleistung gearbeitet — das entspricht keiner hohen Stufe und stützt den Verdacht,
+dass die Stufe nach den Abschaltungen nicht wieder gesetzt wurde.
+
+**Der eigentliche Befund:** Solange die **Leistungsaufnahme nicht gemessen** ist, lässt
+sich aus der Laufzeit weder die Akkukapazität bestätigen noch widerlegen. Genau deshalb
+macht die Landingpage seit dem 9. September 2026 keine Laufzeitangabe mehr.
 
 ### Daraus zwei Prüfungen
 

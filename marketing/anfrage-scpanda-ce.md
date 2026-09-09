@@ -526,7 +526,8 @@ points 1 to 3 are resolved.
 
 ### Offene Folge für die Landingpage
 
-- [ ] **1200 mAh** steht an fünf Stellen auf der Seite und ist derzeit nicht belegt.
+- [x] **1200 mAh** stand an sechs Stellen auf der Seite und war nicht belegt.
+      **Am 9. September 2026 auf 800 mAh (7,4 V, 5,9 Wh) korrigiert.**
       Nach der Antwort entweder bestätigen oder entfernen.
 
 ---
@@ -569,9 +570,26 @@ Zwei in Reihe ergeben **5,92 Wh**.
 plus zwei weitere Durchläufe
 ```
 
-**Der eigene Laufzeittest widerlegt die Akkudokumente.** Bei 1200 mAh und 8,9 Wh geht die
-Rechnung dagegen auf. Wahrscheinlich steckt im Gerät ein **größerer Akku als der, für den
-UN38.3 und MSDS ausgestellt sind.**
+> **Dieser Schluss ist am 9. September 2026 zurückgenommen worden.** Er lautete: Der
+> Laufzeittest widerlege die Akkudokumente, wahrscheinlich sei ein größerer Akku
+> verbaut als der, für den UN38.3 und MSDS ausgestellt sind.
+>
+> **Die Rechnung trägt das nicht.** Sie steht und fällt mit den 8,4 W, und die sind
+> die Angabe des Lieferanten — Karton und Listing nennen 17 W und 20 W, gemessen wurde
+> die Leistungsaufnahme nie. Bei 8,4 W ergeben 5,92 Wh rund 42 Minuten; gemessen wurden
+> über 45. Die Lücke beträgt rund 8 % und liegt innerhalb der Unsicherheit einer
+> ungeprüften Wattzahl. Bei 1200 mAh wären es dagegen 63 Minuten gewesen — davon ist
+> die Messung weit entfernt.
+>
+> **Die Dokumente sind das stärkere Indiz:** MSDS und UN38.3 stammen aus zwei
+> unabhängigen Prüfungen eines CNAS-akkreditierten Labors, beauftragt vom
+> Zellhersteller. Damit die 1200 mAh stimmen, müssten beide dieselbe falsche Zelle
+> beschreiben.
+>
+> **Was bleibt, ist die Frage an den Lieferanten** — Zelltyp, Zellenzahl, Wattstunden.
+> Sie steht in der Nachricht und entscheidet den Punkt in beide Richtungen. Der
+> Gefahrguthinweis unten gilt unverändert: Stimmt der Prüfbericht nicht zum verbauten
+> Akku, ist die Deklaration falsch.
 
 **Das ist mehr als eine Zahlenfrage:** Die Gefahrgutdeklaration für die Luftfracht richtet
 sich nach den Wattstunden. Stimmt der Prüfbericht nicht mit dem verbauten Akku überein,
@@ -627,3 +645,125 @@ nicht durch Zweifel an einer fremden Messung entkräften kann.
 **Ebenfalls weggelassen:** der Widerspruch 5 V/1 A gegen 5 V/2 A. Bei sechs Punkten wurde
 zuletzt nur der einfachste beantwortet. Die Landingpage bleibt bei **2 A**, wie in der
 gedruckten Anleitung des Herstellers.
+
+---
+
+## Nachricht vom 9. September 2026 — die drei letzten Dokumentenfragen
+
+**Stand:** Alle Belege sind ausgewertet und liegen unter
+[`dokumente/`](dokumente/). Es fehlt **ein** Dokument, und ohne das darf nicht
+verkauft werden.
+
+### Warum genau drei Punkte
+
+Offen sind eigentlich neun Dinge — Erklärung, EMV-Bericht, Akkuangaben, UN38.3 auf
+Akkuebene, Modellbestätigung für EMV, Logo-Gebühr, Bestimmungsland, HS-Nummer, kein
+CE-Druck ohne Erklärung. **Neun Punkte in einer Nachricht bedeuten null Antworten.**
+Bei sechs Punkten wurde zuletzt nur der einfachste beantwortet.
+
+Deshalb enthält diese Nachricht drei Fragen, alle drei zu Dokumenten:
+
+| | Punkt | Warum jetzt |
+|---|---|---|
+| 1 | Unterschriebene Konformitätserklärung | **Der Blocker.** Ohne sie kein Verkauf |
+| 2 | Akku: Zellenzahl und Wattstunden | Entscheidet die 800-gegen-1200-Frage **und** die Richtigkeit der Gefahrgutdeklaration |
+| 3 | EMV-Prüfbericht | Gehört zur zehn Jahre aufbewahrungspflichtigen Dokumentation |
+
+**Zwei Punkte sind elegant untergebracht statt gefragt:** Die Erklärung nennt
+**KK-26 und GB-868** nebeneinander — wer sie unterschreibt, bestätigt damit, dass
+beide Bezeichnungen dasselbe Gerät meinen. Das ersetzt die separate Modellfrage, für
+die es beim EMV-Zertifikat sonst keinen Beleg gäbe.
+
+**Was bewusst wartet:** Logo-Gebühr, Bestimmungsland und HS-Nummer sind
+**kaufmännische** Punkte. Sie gehören in die Bestellnachricht, nicht hierher. Sie
+kosten nichts, wenn sie eine Woche später kommen — die Erklärung schon.
+
+### Text zum Kopieren
+
+Ohne Sternchen, weil die im Alibaba-Chat als Zeichen erscheinen. Überschriften
+deshalb in Großbuchstaben.
+
+```
+Hello,
+
+Thank you for the documents. I now have the EMC certificate, the RoHS
+certificate, the RoHS test report, the UN38.3 report and the MSDS. These
+are all proper documents and the testing behind them is done.
+
+One document is still missing, and I cannot sell the product without it.
+I have attached it, already filled in, so that it is as little work as
+possible for the factory.
+
+1. THE EU DECLARATION OF CONFORMITY
+
+Please forward the attached PDF to Wenzhou Yi Xiang Electronic
+Technology Co., Ltd.
+
+This is not a laboratory document and it needs no new testing. It is one
+page in which the factory states, on the basis of the reports that
+already exist, that the product conforms. Only the manufacturer can
+issue it. Under EU law the importer must hold this document, and a
+laboratory certificate cannot replace it.
+
+Every technical entry is already filled in from the factory's own
+certificates: the directives, the harmonised standards, the report
+numbers. The factory only needs to print it on company letterhead, fill
+in place, date, name and position, sign it, add the company stamp, and
+send me back a scan.
+
+The declaration names both KK-26 and GB-868, because I buy under GB-868.
+By signing it, the factory also confirms that both names refer to the
+same device.
+
+2. THE BATTERY
+
+The MSDS and the UN38.3 report both describe one cell: INR14500, 3.7 V,
+800 mAh, 2.96 Wh. The device runs on 7.4 V, so I assume two of these
+cells in series, which would give 7.4 V, 800 mAh, 5.92 Wh in total.
+
+Please confirm two things: how many cells are in the device, and what is
+the total watt-hour rating of the assembled battery?
+
+I ask because the listing and the box both say 1200 mAh. If the battery
+actually fitted is not the one covered by the UN38.3 report, then the
+dangerous goods declaration for the air shipment is wrong. That is a
+problem for the shipper and for me, so I would rather have it correct
+before the goods move.
+
+3. THE EMC TEST REPORT
+
+I have the EMC certificate ZOL250324Y8079-3EC, but not the test report
+behind it. Please send me the full EMC test report as a PDF.
+
+ONE IMPORTANT NOTE
+
+Please do not print the CE mark on the packaging until the declaration
+is signed. A CE mark with no declaration behind it would make the goods
+unsellable for me, not merely incompletely labelled. Your own EMC
+certificate says the same: the CE mark may be affixed after the
+technical documentation has been prepared.
+
+Once I have these three items, I will place the order for 60 pieces.
+
+Best regards
+Nik Hoffmann
+```
+
+### Was mitgeschickt werden muss
+
+**Die Datei
+[`dokumente/EU-Declaration-of-Conformity-TEMPLATE.pdf`](dokumente/EU-Declaration-of-Conformity-TEMPLATE.pdf)
+anhängen.** Ohne den Anhang ist Punkt 1 eine Bitte um etwas Abstraktes; mit dem
+Anhang ist es eine Bitte um eine Unterschrift.
+
+### Wenn die Antwort ausbleibt oder ablehnend ist
+
+| Lage | Nächster Schritt |
+|---|---|
+| Fabrik unterschreibt | Bestellnachricht mit den kaufmännischen Punkten, dann bestellen |
+| Fabrik antwortet nicht auf Punkt 1 | Genau einmal nachfassen, nur mit Punkt 1, nichts sonst |
+| Fabrik lehnt ab | Zweitlieferant anfragen — **Papiere zuerst, Preis später.** Die Bauform ist nicht knapp, die Papiere sind das Auswahlkriterium |
+| Kein Lieferant liefert die Erklärung | Selbst Hersteller werden (EMV 800–2.000 €, RoHS 300–600 €) — sprengt das Testbudget um ein Vielfaches — oder Abbruch bei bisher 69,76 € Aufwand |
+
+**Diese Frage wird ab jetzt jedem Lieferanten als erste gestellt, bevor über Preise
+geredet wird.**
