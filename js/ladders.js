@@ -80,6 +80,46 @@ export function hasLadder(exerciseId) {
 }
 
 /**
+ * Übungen eines Tages, die auf derselben Leiter stehen.
+ *
+ * Zwei Sprossen derselben Leiter an einem Tag sind fast immer ein Versehen:
+ * Es ist dieselbe Bewegung, einmal schwerer und einmal leichter. Wenn die
+ * schwerere geht, ist die leichtere kein Satz mehr, sondern Aufwärmen.
+ *
+ * Ganz vermeiden lässt es sich nicht. Ohne Ausrüstung stehen zum Beispiel
+ * alle sechs Kniebeuge-Varianten auf einer Leiter — ein Beintag mit zwei
+ * Kniebeugeplätzen kann dann gar nichts anderes hinstellen. Deshalb gibt
+ * diese Funktion nur Auskunft und entscheidet nichts.
+ *
+ * @param {string[]} ids  Übungs-IDs eines Tages, in der Reihenfolge des Plans
+ * @returns {{leiter: object, stufen: {id: string, index: number, platz: number}[]}[]}
+ */
+export function sameLadderGroups(ids) {
+  const nach = new Map();
+  (ids || []).forEach((id, platz) => {
+    const stand = ladderFor(id);
+    if (!stand) return;
+    if (!nach.has(stand.leiter.id)) nach.set(stand.leiter.id, { leiter: stand.leiter, stufen: [] });
+    nach.get(stand.leiter.id).stufen.push({ id, index: stand.index, platz });
+  });
+  return [...nach.values()].filter((g) => g.stufen.length > 1);
+}
+
+/**
+ * Stünde diese Übung auf einer Leiter, die heute schon besetzt ist?
+ * Als Prüffunktion für den Tausch gedacht — der soll eine Doppelung meiden,
+ * solange es überhaupt etwas anderes gibt.
+ */
+export function wiederholtBewegung(kandidat, idsImTag) {
+  const stand = ladderFor(kandidat && kandidat.id);
+  if (!stand) return false;
+  return (idsImTag || []).some((id) => {
+    const andere = ladderFor(id);
+    return andere && andere.leiter.id === stand.leiter.id && id !== kandidat.id;
+  });
+}
+
+/**
  * Nächste machbare Sprosse in eine Richtung.
  *
  * @param {string} exerciseId

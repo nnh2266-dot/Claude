@@ -16,12 +16,13 @@ import {
 import {
   exerciseById, GROUP_LABEL, blockWeek, forWeek, dayForWeekday, nextStep, BLOCK_WEEKS,
   travelDay, restSeconds, sessionMinutes, REST_TEMPO,
-  replaceExercise, setExercise, missedDays, SKIP_REASONS, deloadHinweis,
+  replaceExercise, setExercise, removeExercise, missedDays, SKIP_REASONS, deloadHinweis,
   isUnilateral, GRUPPEN_BUENDEL, withoutBundles, spareDay, LIMIT_LABEL,
 } from '../training.js';
 import { schonungsKarte, activeLimits } from './schonung.js';
 import {
   ladderFor, harderRung, easierRung, pickNearestRung, topOutStreak, STREAK_FOR_NEXT,
+  sameLadderGroups, wiederholtBewegung,
 } from '../ladders.js';
 import { energyPlan, weightTrend } from '../energy.js';
 import { activityById } from '../activities.js';
@@ -344,6 +345,118 @@ function nachholKarte(ctx, plan, sessions, dateKey, { nachholenMoeglich = true }
  * nichts, aber vierzehn davon sind eine halbe Stunde Dastehen. Erst die
  * Gesamtdauer macht die Entscheidung entscheidbar.
  */
+/**
+ * Zweimal dieselbe Bewegung an einem Tag.
+ *
+ * Kommt auf zwei Wegen zustande. Beim Tauschen, wenn für die abgewählte Übung
+ * nur noch eine Sprosse übrig ist, die schon besetzt ist — dagegen hilft der
+ * Filter im Tausch, aber nicht immer: Ohne Ausrüstung gibt es für die Rückseite
+ * der Beine schlicht nichts anderes. Und beim Bauen des Plans, wenn eine Gruppe
+ * zwei Plätze hat und alle Übungen dieser Gruppe auf derselben Leiter stehen —
+ * ohne Geräte trifft das auf jede Kniebeugevariante zu.
+ *
+ * Gemeldet wird deshalb nur, wo es sicher ein Versehen ist, und das sind genau
+ * zwei Fälle:
+ *
+ * 1. **Die ganze Leiter an einem Tag.** Bei der Hüftstreckung gibt es nur zwei
+ *    Sprossen — beidbeinige und einbeinige Glute Bridge. Wer beide dastehen
+ *    hat, hat dieselbe Übung zweimal, einmal leicht und einmal schwer.
+ * 2. **Der Tausch hat es gerade angerichtet.** Dann steht es auf dem Tag
+ *    vermerkt, und die Karte weiß, dass sie gemeint ist.
+ *
+ * Ausdrücklich **nicht** gemeldet wird der Beintag ohne Geräte mit Kniebeuge,
+ * Step-Up und Bulgarian Split Squat. Die stehen zwar auf einer Leiter, sind
+ * aber drei Übungen, die sich unterschiedlich anfühlen — und ohne Geräte gibt
+ * es für zwei Kniebeugeplätze gar nichts anderes. Eine Karte, die jeden
+ * Beintag lang dasteht, ist keine Warnung mehr, sondern Möblierung.
+ *
+ * Wer die Doppelung behalten will, sagt einmal „passt so" und wird zu dieser
+ * Kombination nicht wieder gefragt.
+ */
+const DOPPELT_OK = 'dopplung-ok';
+
+function dopplungAbgenickt(schluessel) {
+  try { return (localStorage.getItem(DOPPELT_OK) || '').split(',').includes(schluessel); }
+  catch { return false; }
+}
+
+function dopplungAbnicken(schluessel) {
+  try {
+    const alt = (localStorage.getItem(DOPPELT_OK) || '').split(',').filter(Boolean);
+    localStorage.setItem(DOPPELT_OK, [...new Set([...alt, schluessel])].join(','));
+  } catch { /* egal */ }
+}
+
+function dopplungsKarte(ctx, plan, day, dayIndex, unterwegs) {
+  const gruppen = sameLadderGroups((day.exercises || []).map((e) => e.id))
+    .filter((g) => g.stufen.length >= g.leiter.stufen.length || day.dopplung === g.leiter.id);
+  if (!gruppen.length) return null;
+
+  // Immer nur eine auf einmal. Zwei solche Karten übereinander liest niemand.
+  //
+  // Welche zuerst: die mit dem kleinsten Abstand auf der Leiter. Zwei
+  // benachbarte Sprossen sind wirklich dieselbe Übung — beidbeinige und
+  // einbeinige Glute Bridge. Drei Sprossen auseinander fühlt sich dagegen nach
+  // zwei Übungen an, auch wenn dieselbe Leiter darunter liegt.
+  const abstand = (g) => {
+    const idx = g.stufen.map((x) => x.index).sort((a, b) => a - b);
+    return Math.min(...idx.slice(1).map((v, i) => v - idx[i]));
+  };
+  const treffer = gruppen
+    .map((g) => ({ ...g, schluessel: [...g.stufen].map((x) => x.id).sort().join('-') }))
+    .filter((g) => !dopplungAbgenickt(g.schluessel))
+    .sort((a, b) => abstand(a) - abstand(b))[0];
+  if (!treffer) return null;
+
+  const sortiert = [...treffer.stufen].sort((a, b) => a.index - b.index);
+  const leichteste = sortiert[0];
+  const schwerste = sortiert[sortiert.length - 1];
+  const nameVon = (x) => exerciseById(x.id)?.name || x.id;
+
+  // Streichen nur, wenn danach noch ein Tag übrig bleibt, der diesen Namen
+  // verdient — und nicht unterwegs, wo der Tag ohnehin nur gerechnet ist.
+  const darfStreichen = !unterwegs && (day.exercises || []).length >= 5;
+
+  return el('div', { class: 'card stack mt-16' },
+    el('div', { class: 'row-between' },
+      el('h3', { class: 'card-title', text: 'Zweimal dieselbe Bewegung' }),
+      el('span', { class: 'pill pill-kcal', text: treffer.leiter.name })),
+
+    el('p', { class: 'small' },
+      `${sortiert.map(nameVon).join(' und ')} sind Sprossen derselben Leiter — dieselbe `
+      + 'Bewegung, nur unterschiedlich schwer. Wenn die schwerere sauber geht, ist die '
+      + 'leichtere kein Arbeitssatz mehr, sondern Aufwärmen.'),
+
+    el('p', { class: 'muted small' },
+      `Die schwerere ist ${nameVon(schwerste)} — das ist der Satz, der zählt.`),
+
+    el('div', { class: 'row' },
+      darfStreichen
+        ? el('button', {
+            class: 'btn grow', type: 'button',
+            onClick: async () => {
+              await setPlan(removeExercise(plan, dayIndex, leichteste.platz));
+              await ctx.refreshTraining();
+              ctx.reload();
+              toast(`${nameVon(leichteste)} gestrichen.`);
+            },
+          }, `${nameVon(leichteste)} streichen`)
+        : null,
+      el('button', {
+        class: 'btn grow', type: 'button',
+        onClick: () => { dopplungAbnicken(treffer.schluessel); ctx.reload(); },
+      }, 'Passt so')),
+
+    el('p', { class: 'hint',
+      text: darfStreichen
+        ? 'Streichen lässt den Tag eine Übung kürzer. Das ist besser als zwei, die '
+          + 'dasselbe tun — und die gestrichene kannst du weiter als Aufwärmsatz machen, '
+          + 'sie zählt dann nur nicht mit.'
+        : 'Mit deiner Ausrüstung steht für diese Bewegung nichts anderes zur Wahl. '
+          + 'Dann mach die leichtere bewusst als Aufwärmen und gib beim schwereren Satz '
+          + 'alles — das ist der ganze Unterschied.' }));
+}
+
 function pausenKarte(ctx, tempo, exercises) {
   const waehlen = async (wert) => {
     await setSetting('pausen', wert);
@@ -1272,7 +1385,14 @@ export async function render(container, ctx) {
         return;
       }
 
-      const { plan: neuerPlan, ersatz } = replaceExercise(plan, profile, dayIndex, exerciseIndex);
+      // Was heute schon dransteht, ohne die Übung, die gerade weggeht: Der
+      // Ersatz soll keine Bewegung wiederholen, die eine Reihe weiter unten
+      // ohnehin kommt.
+      const sonstImTag = day.exercises.filter((_, j) => j !== exerciseIndex).map((e) => e.id);
+      const { plan: neuerPlan, ersatz, dopplung } = replaceExercise(
+        plan, profile, dayIndex, exerciseIndex,
+        { meide: (e) => wiederholtBewegung(e, sonstImTag) },
+      );
 
       if (!ersatz) {
         toast('Dafür gibt es mit deiner Ausrüstung keinen Ersatz mehr.');
@@ -1281,7 +1401,16 @@ export async function render(container, ctx) {
 
       const blocked = [...new Set([...(profile.blocked || []), alteId])];
       await setTrainingProfile({ ...profile, blocked });
-      await setPlan(neuerPlan);
+      // Blieb nur eine Sprosse übrig, die heute schon besetzt ist, dann merkt
+      // sich der Tag das — sonst müsste die Karte raten, ob die Doppelung
+      // gewollt ist oder gerade erst entstanden.
+      const merker = ladderFor(ersatz.id)?.leiter.id || null;
+      await setPlan(dopplung && merker
+        ? {
+            ...neuerPlan,
+            days: neuerPlan.days.map((d, i) => (i === dayIndex ? { ...d, dopplung: merker } : d)),
+          }
+        : neuerPlan);
 
       // Aufgezeichnete Sätze der alten Übung gehören nicht zur neuen.
       if (session.entries[alteId]) {
@@ -1291,7 +1420,12 @@ export async function render(container, ctx) {
 
       await ctx.refreshTraining();
       ctx.reload();
-      toast(`Getauscht: ${exerciseById(ersatz.id).name}.`);
+      // Wenn nichts anderes übrig war, muss der Hinweis stehen — sonst wundert
+      // man sich später, warum dieselbe Bewegung zweimal im Tag steht.
+      toast(dopplung
+        ? `Getauscht: ${exerciseById(ersatz.id).name}. Achtung — dieselbe Bewegung wie eine `
+          + 'andere Übung heute. Der Hinweis oben sagt, was du damit machst.'
+        : `Getauscht: ${exerciseById(ersatz.id).name}.`);
     };
 
     /**
@@ -1345,6 +1479,12 @@ export async function render(container, ctx) {
       .filter(Boolean);
 
     body.push(pausenKarte(ctx, tempo, day.exercises));
+
+    // Vor die Übungsliste, nicht dahinter: Wer scrollt, um die erste Übung zu
+    // sehen, hat den Hinweis sonst schon hinter sich.
+    const doppelt = dopplungsKarte(ctx, plan, day, dayIndex, unterwegs);
+    if (doppelt) body.push(doppelt);
+
     body.push(el('div', { class: 'card card-flush mt-16' }, ...blocks));
 
     // Der Block läuft nach Kalender. Sprechen die letzten sieben Tage gegen

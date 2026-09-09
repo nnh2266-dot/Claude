@@ -603,15 +603,23 @@ export function buildPlan(profile, seed = 0) {
  * Gerät belegt. Die abgelehnte wandert in `profile.blocked` und kommt auch bei
  * späteren Neubauten des Plans nicht wieder.
  *
- * @returns {{plan: object, ersatz: object|null}} neuer Plan und die neue Übung
+ * `meide` ist der Filter gegen doppelte Bewegungen: Der Aufrufer sagt, welche
+ * Kandidaten eine Bewegung wiederholen, die heute schon dransteht — sonst
+ * bekommt man für die abgewählte Nordic Curl die einbeinige Glute Bridge,
+ * während die beidbeinige zwei Plätze weiter unten wartet. Gemieden wird nur,
+ * solange es überhaupt etwas anderes gibt; im Zweifel ist eine doppelte
+ * Bewegung besser als eine leere Stelle. Dass es so kam, steht dann in
+ * `dopplung` — der Aufrufer soll es sagen können, statt es zu verstecken.
+ *
+ * @returns {{plan, ersatz: object|null, dopplung: boolean}}
  */
-export function replaceExercise(plan, profile, dayIndex, exerciseIndex) {
+export function replaceExercise(plan, profile, dayIndex, exerciseIndex, { meide = null } = {}) {
   const day = plan.days[dayIndex];
   const alt = day && day.exercises[exerciseIndex];
-  if (!alt) return { plan, ersatz: null };
+  if (!alt) return { plan, ersatz: null, dopplung: false };
 
   const altExercise = exerciseById(alt.id);
-  if (!altExercise) return { plan, ersatz: null };
+  if (!altExercise) return { plan, ersatz: null, dopplung: false };
 
   const imTag = new Set(day.exercises.map((e) => e.id));
   const passt = (e) => isAvailable(e, profile) && e.id !== alt.id && !imTag.has(e.id);
@@ -622,9 +630,10 @@ export function replaceExercise(plan, profile, dayIndex, exerciseIndex) {
   if (!auswahl.length && FALLBACK_GROUP[altExercise.group]) {
     auswahl = EXERCISES.filter((e) => passt(e) && e.group === FALLBACK_GROUP[altExercise.group]);
   }
-  if (!auswahl.length) return { plan, ersatz: null };
+  if (!auswahl.length) return { plan, ersatz: null, dopplung: false };
 
-  const ersatz = auswahl[0];
+  const ersatz = (meide && auswahl.find((e) => !meide(e))) || auswahl[0];
+  const dopplung = Boolean(meide && meide(ersatz));
   const neueVorgabe = prescribe(ersatz, profile, exerciseIndex === 0);
 
   const days = plan.days.map((d, i) => (i !== dayIndex ? d : {
@@ -632,7 +641,30 @@ export function replaceExercise(plan, profile, dayIndex, exerciseIndex) {
     exercises: d.exercises.map((e, j) => (j === exerciseIndex ? neueVorgabe : e)),
   }));
 
-  return { plan: { ...plan, days }, ersatz };
+  return { plan: { ...plan, days }, ersatz, dopplung };
+}
+
+/**
+ * Streicht eine Übung aus einem Trainingstag.
+ *
+ * Der Ausweg, wenn ein Platz nicht sinnvoll zu besetzen ist — etwa weil die
+ * einzige übrige Übung dieselbe Bewegung wäre wie eine, die schon dransteht.
+ * Ein Tag mit sechs sinnvollen Übungen ist besser als einer mit sieben, von
+ * denen zwei dasselbe sind.
+ *
+ * Nicht in `blocked` eintragen: Die Übung ist nicht ungeeignet, sie ist an
+ * dieser Stelle nur überflüssig.
+ */
+export function removeExercise(plan, dayIndex, exerciseIndex) {
+  const day = plan.days[dayIndex];
+  if (!day || !day.exercises || !day.exercises[exerciseIndex]) return plan;
+  if (day.exercises.length <= 2) return plan;
+
+  const days = plan.days.map((d, i) => (i !== dayIndex ? d : {
+    ...d,
+    exercises: d.exercises.filter((e, j) => j !== exerciseIndex),
+  }));
+  return { ...plan, days };
 }
 
 /**
