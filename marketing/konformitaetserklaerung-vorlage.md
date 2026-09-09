@@ -71,6 +71,50 @@ Anknüpfungspunkt für die Rückverfolgbarkeit, die dem Gerät bisher vollständ
 - PDF-Text ausgelesen und gegengeprüft: **kein Sonderzeichen**, alle acht Punkte
   vorhanden.
 
+### Dritter Durchgang — aktiv gegen die Quellen geprüft
+
+**Eine Änderung:** Punkt 1 nannte das Produkt „Percussion massage gun". Die Prüfberichte
+nennen es **„FASCIAL GUN MASSAGE"**. Für die Rückverfolgbarkeit müssen Erklärung und
+Bericht denselben Produktnamen tragen — jetzt steht „Fascial gun massager (hand-held
+percussion massage device)".
+
+**Abgleich mit den Originalzertifikaten:**
+
+| Angabe | Quelle | Ergebnis |
+|---|---|---|
+| Herstellername | EMV- und RoHS-Zertifikat | wörtlich identisch |
+| Anschrift | beide Zertifikate | wörtlich identisch |
+| KK-26 | beide Zertifikate | stimmt |
+| vier EMV-Normen mit Datum | EMV-Zertifikat | vollständig |
+| RoHS mit beiden Änderungsrichtlinien | RoHS-Zertifikat | wörtlich |
+| Berichtsnummer EMV ZOL250324Y8079-3EC | Deckblatt EMV-Bericht | stimmt |
+| Berichtsnummer RoHS ZOL250324Y8079-1RC | Deckblatt RoHS-Bericht | stimmt |
+
+**Zwei Sachfragen extern belegt:**
+
+- **Eine gemeinsame Erklärung für EMV und RoHS ist zulässig** und wird vom Blue Guide
+  gegenüber getrennten Erklärungen ausdrücklich empfohlen.
+- **EN IEC 63000:2018 ist die richtige harmonisierte Norm für RoHS**, seit der
+  Kommissionsentscheidung (EU) 2020/659 als Nachfolgerin von EN 50581:2012. Sie regelt
+  die technische Dokumentation; die IEC-62321-Prüfungen des Laborberichts sind ihr
+  Unterbau.
+
+**Automatische Endkontrolle der PDF:** Text ausgelesen und gegen fünfzehn Prüfpunkte
+abgeglichen — acht Nummern, beide Modelle, Hersteller, Haftungssatz, beide Richtlinien,
+beide Änderungsrichtlinien, alle fünf Normen, Modul-A-Fundstelle, beide Berichtsnummern,
+Chargenfeld, Unterschriftsblock, reines ASCII. **Alle bestanden.**
+
+### Grenze der Prüfung
+
+**Der Netzwerkzugang der Arbeitsumgebung blockiert alle amtlichen Quellen** — EUR-Lex,
+legislation.gov.uk, ec.europa.eu und selbst Prüflabor-Seiten. Die Acht-Punkte-Struktur
+und Punkt 7 sind über zwei unabhängige Fundstellen belegt; die **wörtlichen
+Klammerzusätze des Anhangs sind nicht zeichengenau gegengelesen.**
+
+**Empfehlung: vor dem ersten Verkauf einmal vom Rechtstexte-Anbieter gegenlesen lassen.**
+Die Mitgliedschaft steht mit 50 € ohnehin in `rechnung.md`, und für Händlerbund oder
+IT-Recht Kanzlei ist eine Konformitätserklärung eine Standardfrage.
+
 ### Bewusst nicht enthalten
 
 - **FCC.** Gehört in kein EU-Dokument. Steht es drin, wirkt die Erklärung wie ein
