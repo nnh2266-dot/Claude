@@ -1,8 +1,16 @@
 # NackenFrei Solo — Instagram-Kanal und Meta-Werbung
 
-Bewertung, Ideen und Umsetzungsplan. Stand: 6. August 2026.
-Grundlage: `index.html` aus Branch `claude/side-landing-checklist-criteria-8rejna`
-(Produktseite, 99,99 €, Shopify, Versand DE/AT/CH).
+Bewertung, Ideen und Umsetzungsplan. Stand: 6. August 2026,
+**Zahlen durchgerechnet am 9. September 2026.**
+Grundlage: `index.html` (Produktseite, **79 €**, Shopify, Versand DE und AT).
+
+> **Alle Geldzahlen in diesem Dokument standen bis zum 9. September 2026 auf
+> 99,99 € Verkaufspreis und AliExpress-Bezug.** Verkauft wird für **79 €** aus
+> einer Alibaba-Bestellung über 60 Stück. Der Deckungsbeitrag ist damit nicht
+> 66 €, sondern **rund 56 €**, und der maximale CPA nicht 55 €, sondern
+> **47 €**. Die Abschnitte unten sind auf diesen Stand gebracht. Einzige
+> Ausnahme ist Abschnitt 3a — der beschreibt den **nicht gewählten** Weg über
+> AliExpress und behält seine eigene Grundlage.
 
 ---
 
@@ -65,21 +73,29 @@ Produkt — aber nur, wenn jede Anzeige mit der **Reichweite** öffnet und nie m
 Wort „Massagepistole". Sobald eine Anzeige wie eine generische Massagepistolen-Anzeige
 aussieht, wird sie wie eine behandelt: weggescrollt.
 
-Ausgangslage: Einkaufspreis 15,91 € pro Stück, Versand kommt oben drauf. Verkauft wird
-über ein **deutsches Einzelunternehmen als Kleinunternehmer nach § 19 UStG** — es wird
-also keine Umsatzsteuer erhoben, und die vollen 99,99 € bleiben im Haus.
+Ausgangslage: Einstandspreis **12,96 €** je Stück aus dem Angebot über 60 Stück —
+Ware, Fracht, Zoll und Einfuhrumsatzsteuer sind darin enthalten, es ist der
+Landepreis. Dazu **1,50 €** für die bedruckte Banderole, die den Originalkarton
+aufwertet und die vier fehlenden Pflichtkennzeichen trägt. Verkauft wird über ein
+**deutsches Einzelunternehmen als Kleinunternehmer nach § 19 UStG** — es wird also
+keine Umsatzsteuer erhoben, und die vollen 79 € bleiben im Haus.
 
 ```
-Einnahme je Verkauf (ohne USt.)       99,99 €
+Einnahme je Verkauf (ohne USt., § 19)   79,00 €
 
-./. Wareneinsatz                      15,91 €
-./. AliExpress-Versand                 6,00 €   Annahme — echten Wert einsetzen
-./. Zahlungsgebühr (~2,3 % + 0,35 €)   2,65 €
-= Rohertrag je Verkauf                75,43 €
+./. Einstandspreis (Landepreis)         12,96 €
+./. Banderole                            1,50 €
+./. Versand an den Kunden (DHL + Verp.)  5,30 €
+./. Zahlungsgebühr (2,3 % + 0,35 €)      2,17 €
+= Rohertrag je Verkauf                  57,07 €
 
-./. Retouren (12 %, faktisch Totalverlust je Fall)
-= Deckungsbeitrag je Verkauf     rund 66 €
+./. Retouren (12 %, je Fall rund 11 € — die Ware
+    kommt zurueck und ist wieder verkaeuflich)
+= Deckungsbeitrag je Verkauf       rund 56 €
 ```
+
+Die Rechenweise ist dieselbe wie in [`rechnung.md`](rechnung.md) Abschnitt 3, damit
+beide Dokumente dieselbe Zahl tragen.
 
 **Aber die Werbung ist für dich 19 % teurer, als Meta anzeigt.** Meta Platforms Ireland
 rechnet im Reverse-Charge-Verfahren ab: Die Rechnung kommt ohne Umsatzsteuer, die
@@ -91,37 +107,55 @@ Beides zusammen ergibt die Steuergrößen:
 
 | | |
 |---|---|
-| Deckungsbeitrag je Verkauf | **66 €** |
-| Maximaler CPA laut Meta bei Break-even | **55 €** (weil 55 € × 1,19 = 66 €) |
-| Break-even-ROAS | **1,8** |
-| CPA für 20 € Gewinn je Stück | **39 €** |
+| Deckungsbeitrag je Verkauf | **56 €** |
+| Maximaler CPA laut Meta bei Break-even | **47 €** (weil 47 € × 1,19 = 56 €) |
+| Break-even-ROAS | **1,7** |
+| CPA für 20 € Gewinn je Stück | **30 €** |
 | ROAS für 20 € Gewinn je Stück | **2,6** |
-| Verkäufe, damit sich der 700-€-Test selbst trägt | **13** |
+| Verkäufe, damit sich der 700-€-Test selbst trägt | **15** |
 
 Der Vorteil aus § 19 wird also zu einem guten Teil von der nicht abziehbaren Steuer auf
-die Werbeausgaben wieder aufgezehrt. Unterm Strich bleibt es beim selben
-Break-even-ROAS von 1,8 — der absolute Deckungsbeitrag je Verkauf ist mit 66 € aber
-deutlich höher, und das ist der Puffer, der die Sache tragfähig macht.
+die Werbeausgaben wieder aufgezehrt. Der Break-even-ROAS liegt bei **1,7**, und der
+Deckungsbeitrag von 56 € ist der Puffer, der die Sache tragfähig macht.
+
+**Der Abstand ist schmaler geworden.** Bei 99,99 € lagen zwischen einem realistischen
+CPA von 50 € und dem Break-even bei 55 € noch fünf Euro Luft. Bei 79 € liegt der
+Break-even bei 47 € — ein CPA von 50 € ist jetzt ein Verlust je Verkauf, kein Gewinn.
 
 ### Der Haken an § 19: Er endet genau dann, wenn es funktioniert
 
 Die Kleinunternehmergrenze liegt bei **25.000 € Vorjahresumsatz** und 100.000 € im
-laufenden Jahr. Bei 99,99 € sind das **250 verkaufte Geräte**. Läuft die Kampagne mit
+laufenden Jahr. Bei 79 € sind das **316 verkaufte Geräte**. Läuft die Kampagne mit
 drei Verkäufen am Tag, ist die Grenze in rund drei Monaten erreicht — und im Folgejahr
 gilt Regelbesteuerung.
 
-Dann sinkt die Einnahme je Verkauf von 99,99 € auf 84,03 €, der Deckungsbeitrag von
-66 € auf **rund 50 €**, und der maximale CPA von 55 € auf 42 €. Im Gegenzug wird die
-Vorsteuer abziehbar, die Werbung kostet also wieder das, was Meta anzeigt.
+Dann sinkt die Einnahme je Verkauf von 79 € auf 66,39 € netto und der Deckungsbeitrag
+von 56 € auf **rund 43 €**. Im Gegenzug wird die Vorsteuer abziehbar, die Werbung
+kostet also wieder genau das, was Meta anzeigt — der Faktor 1,19 fällt weg. **Der
+maximale CPA ist damit gleich dem Deckungsbeitrag: 43 €.**
 
-**Konsequenz für die Planung:** Die Kampagne muss auch mit 50 € Deckungsbeitrag
+> **Hier stand vorher ein Rechenfehler.** Der maximale CPA nach dem Wechsel war mit
+> „42 €" angegeben, also durch 1,19 geteilt. Dieser Faktor gilt aber nur unter § 19,
+> wo die Steuer auf die Werbung nicht abziehbar ist. Unter Regelbesteuerung ist sie
+> es — dann ist der maximale CPA der Deckungsbeitrag selbst.
+>
+> **Konservativ gerechnet:** Unter Regelbesteuerung wird auch die
+> Einfuhrumsatzsteuer im Einstandspreis abziehbar. Der Deckungsbeitrag liegt real
+> also etwas über 43 €. Die Zahl oben lässt das bewusst weg.
+
+**Konsequenz für die Planung:** Die Kampagne muss auch mit 43 € Deckungsbeitrag
 funktionieren. Wer sie so auslegt, dass sie nur unter § 19 trägt, baut etwas, das in
 dem Moment zusammenbricht, in dem es erfolgreich wird. Als Zielwert deshalb **CPA unter
-42 €** anpeilen, nicht unter 55 €.
+43 €** anpeilen, nicht unter 47 €.
 
 Realistisch in DE: CPM 9–15 €, Klickrate 1–2 %, also CPC um 1 €. Bei 2 % Kaufrate der
-Landingpage landet man bei einem CPA von rund 50 € — knapp im Plus. Bei 3 % bei rund
+Landingpage landet man bei einem CPA von rund 50 € — bei 79 € Verkaufspreis ist das
+**knapp im Minus**, denn der Break-even liegt bei 47 €. Bei 3 % landet man bei rund
 33 € — klar profitabel.
+
+**Damit steht die Anforderung an die Seite fest: Die Kaufrate muss über 2,3 % liegen.**
+Bei 99,99 € hätten 2 % noch getragen. Bei 79 € nicht mehr. Die Seite, nicht die
+Anzeige, entscheidet über den Test.
 
 **Der Hebel ist damit benannt: die Kaufrate der Landingpage.** Zwischen 2 % und 3 %
 liegt der Unterschied zwischen „trägt sich gerade so" und „verdient Geld". Der
@@ -131,14 +165,15 @@ entscheidet die Seite.
 Und da fehlt aktuell das Wichtigste: **auf der Seite steht kein einziger
 Sozialbeweis.** Die Abschnitte sind Bühne, Anwendung, Technik, Preis, Fragen — keine
 Bewertungen, keine Kundenstimmen, kein Vergleich mit einer geraden Massagepistole.
-Bei 99,99 € von einem unbekannten Anbieter ist das der größte einzelne Grund, warum
+Bei 79 € von einem unbekannten Anbieter ist das der größte einzelne Grund, warum
 jemand nicht bestellt. Eine frühere Fassung der Seite hatte „Vergleich" und „Stimmen";
 beides gehört zurück, sobald die ersten echten Rückmeldungen da sind.
 
-Zwei Zahlen sind noch Annahme und sollten geprüft werden: **Ist der Einkaufspreis
-von 15,91 € der Landepreis** — also inklusive Fracht, Zoll und Einfuhrabgaben — oder
-der reine Warenwert ab Werk? Im zweiten Fall kommen erfahrungsgemäß 15–25 % dazu, der
-Deckungsbeitrag sinkt auf etwa 51 € und der Break-even-ROAS steigt auf 2,0. Und:
+Die Frage, ob der Einkaufspreis der Landepreis ist, ist inzwischen **beantwortet**:
+Das Angebot über 60 Stück ist DDP kalkuliert, Fracht, Zoll und Einfuhrumsatzsteuer
+sind in den 12,96 € enthalten. Offen bleibt allein der **Zollsatz** — die Rechnung
+unterstellt Einreihung unter Position 9019 ohne Zoll; bei 8543 kämen rund 30 € auf die
+Gesamtbestellung hinzu, also gut 0,50 € je Gerät. Und:
 Versand in die **Schweiz** kostet ein Vielfaches des DE-Versands. Bei kostenfreiem
 Versand dorthin ist die Marge je CH-Bestellung deutlich dünner — im Test deshalb
 zunächst nur DE bewerben.
@@ -220,7 +255,7 @@ die als Anzeigentext weiterverwendbar sind.
 Kein Studio-Testimonial, sondern eine Aussage: „Ich musste immer meinen Mann fragen."
 Unabhängigkeit ist der emotionale Kern, nicht Entspannung.
 
-*Warum:* Bei 99,99 € ist Sozialbeweis der Hebel mit dem größten Effekt auf die Kaufrate.
+*Warum:* Bei 79 € ist Sozialbeweis der Hebel mit dem größten Effekt auf die Kaufrate.
 Deshalb ab der ersten Bestellung systematisch Rückmeldungen einsammeln.
 
 ### H — „Wann du keine Massagepistole brauchst"
@@ -253,7 +288,7 @@ Ohne diese Phase kein Werbe-Euro. Reihenfolge egal, Vollständigkeit nicht.
 - [ ] Registrierungen: Stiftung EAR (ElektroG), Batterierecht, LUCID (VerpackG);
       GPSR-Angaben und CE-Konformitätserklärung vom Lieferanten anfordern
 - [ ] Umsatzsteuer beim Import klären (IOSS, Vorsteuerabzug) — mit dem Steuerberater
-- [ ] Shopify-Shop aufsetzen, Produkt anlegen, Preis 99,99 €, Versand **DE und AT**
+- [ ] Shopify-Shop aufsetzen, Produkt anlegen, Preis 79 €, Versand **DE und AT**
       kostenfrei; CH vorerst nicht anbieten
 - [ ] Alle sechs Platzhalter in `index.html` ersetzen: Produkt-URL (2×), Shop-Domain,
       Impressum, Datenschutz, Widerruf, Lieferzeit (2×)
@@ -305,8 +340,8 @@ Zu beobachtende Zahlen, mit Zielwerten:
 | Hook-Rate (3-Sek.-Views ÷ Impressionen) | > 25 % | Die ersten drei Sekunden funktionieren nicht — neue Anfänge, gleicher Rest |
 | Ausgehende Klickrate | > 1,0 % | Das Versprechen ist zu schwach oder zu unklar |
 | Kaufrate der Seite | > 1,5 % | Anzeige und Seite versprechen Verschiedenes |
-| Kosten pro Kauf | < 55 € | Darüber zahlt jeder Verkauf drauf |
-| ROAS | > 1,8 | Unter Break-even |
+| Kosten pro Kauf | < 47 € | Darüber zahlt jeder Verkauf drauf. Zielwert **43 €** — der trägt auch nach dem Wechsel in die Regelbesteuerung |
+| ROAS | > 1,7 | Unter Break-even |
 
 ### Phase 3 — Entscheiden (Ende Woche 6)
 
@@ -317,8 +352,9 @@ Drei mögliche Ausgänge, vorab festgelegt, damit die Entscheidung nicht am Bauc
   eingepreist ist).
 - **ROAS 1,3–2,5 →** nicht skalieren, sondern reparieren. Erst die schwächste Kennzahl
   aus der Tabelle angehen — meist die Hook-Rate, danach die Kaufrate der Seite. Bei
-  55 € Deckungsbeitrag lohnt sich diese Arbeit: Von 2 % auf 3 % Kaufrate senkt den CPA
-  um rund ein Drittel.
+  56 € Deckungsbeitrag lohnt sich diese Arbeit: Von 2 % auf 3 % Kaufrate senkt den CPA
+  um rund ein Drittel — und genau dieser Schritt entscheidet bei 79 € über Plus oder
+  Minus.
 - **ROAS unter 1,3 nach 700 € →** Meta-Werbung für dieses Produkt aussetzen. Dann ist
   nicht die Marge das Problem — die reicht —, sondern die Nachfrage oder das
   Creative. Stattdessen: Google
@@ -339,6 +375,12 @@ Drei mögliche Ausgänge, vorab festgelegt, damit die Entscheidung nicht am Bauc
 ---
 
 ## 3a. Dropshipping von AliExpress — was daran hängt
+
+> **Dieser Weg wurde nicht gewählt.** Bestellt wird stattdessen über Alibaba, 60 Stück
+> auf Lager, Versand aus Deutschland. Der Abschnitt bleibt als Bewertung der
+> Alternative stehen; **seine Zahlen beruhen auf 99,99 € Verkaufspreis und
+> AliExpress-Bezug und sind nicht auf 79 € umgestellt.** Wer sie mit den Zahlen
+> weiter oben vergleicht, vergleicht zwei verschiedene Geschäftsmodelle.
 
 Die Ware geht direkt aus China an den Kunden. Das lässt die Marge weitgehend intakt,
 verändert aber alles andere.
