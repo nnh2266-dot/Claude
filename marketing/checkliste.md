@@ -268,8 +268,8 @@ Alles gegen das echte Gerät, nicht gegen das Datenblatt.
       also das nackte Gerät meinen. Gerät ohne Zubehör wiegen, dann mit einem Aufsatz,
       dann das Gesamtpaket *(DE)*
 - [x] **Akku: 800 mAh bei 7,4 V = 5,9 Wh**, Ladung USB-C 5 V / 2 A. Belegt durch
-      MSDS und UN38.3 (Zelle INR14500-800mAh, zwei in Reihe). **Nicht 1200 mAh** —
-      diese Zahl von Karton und Listing ist durch kein Dokument gedeckt. Muss so auch
+      MSDS und UN38.3 (Zelle INR14500-800mAh, zwei in Reihe) und **vom Lieferanten
+      bestätigt**. **Nicht 1200 mAh** — diese Zahl von Karton und Listing ist falsch. Muss so auch
       in die deutsche Anleitung *(DE)*
 - [ ] **Laufzeit messen — der Konflikt ist offen.** Die Seite macht seit dem
       9. September 2026 **keine Laufzeitangabe mehr**, weil keine belegt ist. Bekannt

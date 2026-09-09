@@ -115,7 +115,8 @@ zeigt nur, dass das Gerät weit unter Nennleistung lief; im Mustertest steht der
 dass die Stufe nach den Abschaltungen nicht wieder gesetzt wurde.
 
 **Entschieden wird die Frage durch die Dokumente, nicht durch die Uhr** — und die
-Dokumente sagen 800 mAh.
+Dokumente sagen 800 mAh. **Der Lieferant hat das inzwischen bestätigt.** Damit ist der
+Punkt geschlossen: Karton und Listing waren falsch, die Papiere richtig.
 
 > **Frühere Fassung von `anfrage-scpanda-ce.md` zog den umgekehrten Schluss** — der
 > Laufzeittest „widerlege die Akkudokumente", vermutlich sei ein größerer Akku
@@ -269,9 +270,9 @@ Kennzeichnung, und die Haftung liegt beim Importeur in Deutschland.
 ### Offene Punkte beim Lieferanten
 
 - [ ] **Unterschriebene EU-Konformitätserklärung** für GB-868
-- [ ] **Akku bestätigen:** zwei Zellen INR14500-800mAh in Reihe, 7,4 V, 5,92 Wh?
-      Die Papiere sagen das, Karton und Listing sagen 1200 mAh. **Die Seite steht
-      jetzt auf 800 mAh** — die Bestätigung schließt den Punkt
+- [x] **Akku: erledigt.** Der Lieferant hat **800 mAh** bestätigt, übereinstimmend
+      mit MSDS und UN38.3. Die 1200 mAh von Karton und Listing waren falsch. Die
+      Seite steht auf 800 mAh (7,4 V, 5,9 Wh)
 - [ ] **UN38.3 auf Akkuebene:** Der vorliegende Bericht deckt nur die Einzelzelle.
       Für den zusammengebauten 7,4-V-Akku ist in der Regel eine eigene Prüfung nötig,
       sonst ist die Gefahrgutdeklaration unvollständig
@@ -488,11 +489,13 @@ eingeschränkt, unter 1,0 wird das Konto gesperrt.
 2. **Block H** — Fotos, vor allem das Gerät am eigenen Rücken angesetzt
 3. **Präzisionsdurchlauf** nach dem Protokoll in `mustertest.md`
 
-**Wartet auf ScPanda** — fünf Punkte, Wortlaut der Nachricht in
-[`anfrage-scpanda-ce.md`](anfrage-scpanda-ce.md): unterschriebene
-Konformitätserklärung, EMV-Prüfbericht, Akkubestätigung, UN38.3 auf Akkuebene,
-Logo-Gebühr streichen. **Die ausfüllfertige Vorlage liegt bei** und ist gegen 38
-Punkte geprüft.
+**Wartet auf ScPanda — nur noch eines:** die **unterschriebene
+Konformitätserklärung**. Wortlaut der Nachricht in
+[`anfrage-scpanda-ce.md`](anfrage-scpanda-ce.md), die ausfüllfertige Vorlage liegt
+bei und ist gegen 38 Punkte geprüft.
+
+*Danach nachfordern, nicht jetzt:* EMV-Prüfbericht, UN38.3 auf Akkuebene, und in der
+Bestellnachricht Logo-Gebühr, Bestimmungsland und HS-Nummer.
 
 **Danach in dieser Reihenfolge:** LUCID · Stiftung EAR (dauert am längsten) ·
 Batterieregister · EORI · USt-IdNr. · Rechtstexte · Banderole gestalten und drucken ·
