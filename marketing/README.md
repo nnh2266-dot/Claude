@@ -148,7 +148,7 @@ Präzisionsdurchlauf.
 |---|---|
 | **A — Sofort** | ✅ **bestanden** |
 | **B — Messen** | 🟡 Gewicht ✅ · Lautstärke Stufe 9 ✅ · **offen: Raumpegel, Stufe 1** |
-| **C — Zeiten** | 🟡 **über 45 min auf Stufe 9 belegt** · saubere Messung offen |
+| **C — Zeiten** | 🟢 **150 min auf Stufe 9** gemessen (10.9.2026), Stufe je Durchlauf neu gesetzt · offen: lief das Gerät angesetzt oder frei? |
 | **D — Belastung** | ✅ **bestanden**, beide Abbruchkriterien geklärt |
 | **E — Anwendung** | ✅ **bestanden** (9.9.2026) — Amplitude spürbar, Ergonomie trägt, Reichweite bestätigt |
 | **F — Verpackung** | ✅ **abgeschlossen** |
