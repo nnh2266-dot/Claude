@@ -146,6 +146,16 @@ Stufe nach jeder Abschaltung neu setzen, Minuten zählen. Bis dahin steht auf de
 **keine Laufzeitangabe** — und die naheliegende Formulierung „zehn Anwendungen je
 Ladung" wäre falsch.
 
+**Die Ladezeit ist gemessen: drei Stunden** bis 99 %, am 2-A-Netzteil. Die Seite sagt
+jetzt „rund drei Stunden" statt „zwei bis drei" — die optimistische Hälfte der alten
+Spanne tritt nie ein. Nebenbei entschieden: Das Gerät zieht deutlich weniger als 2 A,
+die 1-A-Angabe des Lieferanten beschreibt die Wirklichkeit besser als das Handbuch.
+
+> **Dreimal ist jetzt dieselbe Frage an derselben Stelle gescheitert:** Laufzeit,
+> Leerlauf, Ladezeit — immer wurde Zeit gemessen und nie Strom. **Ein USB-Messgerät
+> für rund 10 €** zwischen Netzteil und Kabel zeigt die geflossenen Wattstunden und
+> beendet die Kapazitätsfrage endgültig.
+
 ---
 
 ## 4. Der Mustertest
@@ -157,7 +167,7 @@ Präzisionsdurchlauf.
 |---|---|
 | **A — Sofort** | ✅ **bestanden** |
 | **B — Messen** | 🟡 Gewicht ✅ · Lautstärke Stufe 9 ✅ · **offen: Raumpegel, Stufe 1** |
-| **C — Zeiten** | 🟡 **150 min Leerlauf** auf Stufe 9 (10.9.2026) — bestätigt den Akku, taugt aber nicht als Werbeaussage · **offen: Messung unter Last** |
+| **C — Zeiten** | 🟡 **150 min Leerlauf** auf Stufe 9 · **Ladezeit 3 h** gemessen · **offen: Laufzeit unter Last** |
 | **D — Belastung** | ✅ **bestanden**, beide Abbruchkriterien geklärt |
 | **E — Anwendung** | ✅ **bestanden** (9.9.2026) — Amplitude spürbar, Ergonomie trägt, Reichweite bestätigt |
 | **F — Verpackung** | ✅ **abgeschlossen** |

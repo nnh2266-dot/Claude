@@ -892,3 +892,35 @@ jeder 15-Minuten-Abschaltung neu setzen, Minuten mitzählen. Ein Nachmittag.
 Das Ergebnis ist die einzige Zahl, die auf die Seite darf — und in der Form, die für den
 Kunden zählt: **wie viele Anwendungen je Ladung.** Erwartungswert nach obiger Tabelle
 sind zwei bis drei, nicht zehn.
+
+### Ladezeit gemessen (10. September 2026)
+
+**Drei Stunden bis 99 %**, an einem Netzteil mit aufgedruckten 5 V / 2 A, von
+niedrigem Stand aus. Nach zwölf Minuten stand die Anzeige bereits hoch und kletterte
+danach nur noch langsam — die typische Lithium-Ladekurve: schneller Konstantstromteil,
+langer Ausklang.
+
+**Die Kapazität klärt auch das nicht:**
+
+| Annahme | mittlere Ladeleistung über 3 h | entspricht |
+|---|---|---|
+| 800 mAh = 5,92 Wh | 1,97 W | rund 0,4 A |
+| 1200 mAh = 8,88 Wh | 2,96 W | rund 0,6 A |
+
+Beides liegt im Bereich einfacher Ladeelektronik. **Zum dritten Mal scheitert die
+Kapazitätsfrage an derselben Stelle: Es wird Zeit gemessen, aber nie Strom.**
+
+**Der Widerspruch 1 A gegen 2 A ist damit praktisch entschieden.** Das Netzteil könnte
+2 A liefern; das Gerät zieht erkennbar deutlich weniger. Die Angabe des Lieferanten
+(5 V / 1 A) beschreibt die Wirklichkeit besser als die 2 A des Handbuchs. Auf der Seite
+bleibt die Handbuchangabe stehen — sie ist die Eingangsspezifikation, nicht die
+tatsächliche Aufnahme.
+
+**Auf der Seite steht jetzt „rund drei Stunden"** statt „zwei bis drei Stunden". Die
+optimistische Hälfte der alten Spanne tritt nie ein, und eine Angabe, die der Kunde
+nicht erreicht, ist ein Beschwerdegrund.
+
+> **Ein USB-Messgerät für rund 10 € beendet beide offenen Fragen auf einmal.** Zwischen
+> Netzteil und Kabel gesteckt zeigt es die geflossenen Wattstunden — das ist die
+> Kapazität, direkt abgelesen — und den Strom, womit auch der 1-A-gegen-2-A-Punkt
+> endgültig erledigt ist. Danach ist Block B und C vollständig.
