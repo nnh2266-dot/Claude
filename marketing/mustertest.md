@@ -781,3 +781,61 @@ Konformitätserklärung.
 
 **Block E gehört aber nicht hinein.** Er wird durch Warten nicht genauer und entscheidet
 als Einziges noch darüber, ob der Preis bei 79 € oder bei 59 € liegt.
+
+---
+
+## Block E — bestanden (9. September 2026)
+
+Der Anwendungstest am eigenen Rücken, mit dem Muster. **Das war die letzte offene
+Frage vor der Preisentscheidung.**
+
+### Ergebnis
+
+| Frage | Antwort |
+|---|---|
+| Fühlt sich die 7,5-mm-Amplitude überhaupt nach etwas an? | **Ja, auf Stufe 9 deutlich spürbar.** Das war das größte Einzelrisiko am Produkt |
+| Erreicht der Bogen Bereiche, an die die Hand nicht kommt? | **Ja.** Wörtlich: „Ich komme auf jeden Fall an Bereiche meines Rückens, wo ich ohne den jetzigen Griff nicht drankommen würde" |
+| Knickt das Handgelenk ab? | Nein |
+| Rutscht der Griff? | Nein |
+| Läuft der U-Kopf neben der Wirbelsäule? | **Ja, seitlich an ihr entlang.** Keine Warnung nötig, Anleitungshinweis erübrigt sich |
+| Nacken, Lende, Gesäß? | Über die Schulter kommt man weit; der untere Rücken und das Gesäß werden von der Seite erreicht — wie bei jedem Gerät dieser Bauform |
+
+### Was das für die Landingpage bedeutet: nichts
+
+Die Seite behauptet **den Streifen zwischen den Schulterblättern**, nicht mehr:
+„Die Stelle, an die keine Hand kommt" und „Der Streifen zwischen den Schulterblättern
+bleibt außen vor". Genau das ist bestätigt. Sie behauptet **nirgends**, dass man über
+die Schulter den unteren Rücken erreicht — das wäre bei jeder endlichen Grifflänge
+Unsinn. **Keine Formulierung muss geändert werden.**
+
+### Die 79-Euro-Frage
+
+Der Inhaber würde selbst keine 79 € zahlen — **aber ausdrücklich nicht wegen des
+Produkts**, sondern weil er das Geld nicht übrig hat und kaum Rückenprobleme kennt.
+Damit ist er nicht die Zielgruppe, und seine Antwort ist ehrlicherweise „weiß ich
+nicht". Sein Urteil über das Gerät ist positiv: lange Akkulaufzeit, hochwertige
+Verarbeitung, für Betroffene sinnvoll.
+
+**Die Zahlungsbereitschaft beantwortet der Markt, nicht der Test.** Genau dafür ist
+das 700-€-Werbebudget da.
+
+### Entscheidung: 79 Euro bleiben
+
+Ein niedrigerer Preis macht den Test nicht sicherer, sondern schwerer, weil der CPA
+nicht mit dem Preis sinkt:
+
+| | 79 € | 59 € |
+|---|---|---|
+| Deckungsbeitrag | **56 €** | 36 € |
+| Break-even-CPA | **47 €** | 30 € |
+| nötige Kaufrate der Seite | über 2,3 % | **über 3 %** |
+
+Bei 59 € wäre schon der optimistische Fall aus `instagram-plan.md` gerade eben
+Break-even. **79 € ist die risikoärmere Zahl** — und Verarbeitung, Spürbarkeit und
+Ergonomie tragen den Abstand zu den 46-€-No-Names.
+
+### Damit ist die Prüfliste bis auf die Fotos durch
+
+Offen bleiben nur noch **Block H** (Fotos, vor allem das Gerät am eigenen Rücken
+angesetzt) und die saubere Messung in Block B und C, für die die **Leistungsaufnahme**
+fehlt.

@@ -150,7 +150,7 @@ Präzisionsdurchlauf.
 | **B — Messen** | 🟡 Gewicht ✅ · Lautstärke Stufe 9 ✅ · **offen: Raumpegel, Stufe 1** |
 | **C — Zeiten** | 🟡 **über 45 min auf Stufe 9 belegt** · saubere Messung offen |
 | **D — Belastung** | ✅ **bestanden**, beide Abbruchkriterien geklärt |
-| **E — Anwendung** | 🔴 **offen — die entscheidende Lücke** |
+| **E — Anwendung** | ✅ **bestanden** (9.9.2026) — Amplitude spürbar, Ergonomie trägt, Reichweite bestätigt |
 | **F — Verpackung** | ✅ **abgeschlossen** |
 | **G — Kennzeichnung** | 🟡 Prüfberichte da, **Konformitätserklärung fehlt** |
 | **H — Fotos** | 🔴 offen |
@@ -160,18 +160,26 @@ Präzisionsdurchlauf.
 Kein Blockieren des Motors unter Arbeitsdruck. Der Bogen gibt unter Kraft nicht nach.
 Kein Heißwerden, kein Geruch, kein Kraftverlust. **Kein Ausschlusskriterium eingetreten.**
 
-### Block E — was noch fehlt
+### Block E — bestanden
 
-Erreichbarkeit zwischen den Schulterblättern ist ✅ bestätigt. Offen bleiben:
+Am 9. September 2026 am eigenen Rücken geprüft. Vollständig in
+[`mustertest.md`](mustertest.md).
 
-- **Fühlt es sich dort nach etwas an?** (7,5 mm Amplitude ist das untere Ende der Klasse)
-- Knickt das Handgelenk ab? Rutscht der Griff?
-- Nacken, Lende, Gesäß erreichbar?
-- Läuft der U-Kopf wirklich **neben** der Wirbelsäule?
-- **Würde der Inhaber selbst 79 € dafür bezahlen?**
+- **Die Amplitude ist spürbar** — auf Stufe 9 deutlich. Das war das größte Einzelrisiko
+  am Produkt, denn 7,5 mm sind das untere Ende der Klasse
+- **Die Reichweite trägt:** Bereiche, an die ohne den Bogen nicht heranzukommen ist
+- Handgelenk knickt nicht ab, Griff rutscht nicht
+- **U-Kopf läuft seitlich neben der Wirbelsäule** — keine Warnung nötig
+- Verarbeitung wird als hochwertig empfunden
 
-**Das ist die einzige verbleibende Frage, die über 79 € gegen 59 € entscheidet, und sie
-hat kein Messprotokoll.**
+**Zur 79-Euro-Frage:** Der Inhaber würde selbst nicht zahlen, aber ausdrücklich nicht
+wegen des Produkts — er hat das Geld nicht übrig und kaum Rückenprobleme. Er ist nicht
+die Zielgruppe. **Die Zahlungsbereitschaft beantwortet der Markt**, und genau dafür ist
+das Werbebudget da.
+
+**Entscheidung: 79 € bleiben.** Ein niedrigerer Preis macht den Test schwerer, nicht
+sicherer — bei 59 € fällt der Deckungsbeitrag auf 36 €, der Break-even-CPA auf 30 € und
+die nötige Kaufrate auf über 3 %.
 
 ### Block F — Ergebnis: Verpackung reicht nicht
 
@@ -485,9 +493,17 @@ eingeschränkt, unter 1,0 wird das Konto gesperrt.
 
 **Sofort, hängt an niemandem:**
 
-1. **Block E** — der Anwendungstest. Die letzte offene Frage vor der Preisentscheidung
-2. **Block H** — Fotos, vor allem das Gerät am eigenen Rücken angesetzt
-3. **Präzisionsdurchlauf** nach dem Protokoll in `mustertest.md`
+1. **Block H** — Fotos, vor allem das Gerät am eigenen Rücken angesetzt
+2. **Leistungsaufnahme messen** — die fehlende Zahl. Ohne sie bleibt die Laufzeitfrage
+   offen, und deshalb steht auf der Seite gerade keine Laufzeitangabe
+3. **Kostenlose Registrierungen:** EORI beim Zoll, USt-IdNr. beim BZSt, LUCID. Kosten
+   nichts, haben aber Vorlauf
+
+*(Block E ist am 9.9.2026 bestanden — siehe Abschnitt 4.)*
+
+> **Stiftung EAR bewusst noch nicht.** Die rund 500 € mit insolvenzsicherer Garantie
+> schließen den günstigen Ausstieg, der derzeit bei 69,76 € liegt. Erst ausgeben, wenn
+> die unterschriebene Konformitätserklärung da ist.
 
 **Wartet auf ScPanda — nur noch eines:** die **unterschriebene
 Konformitätserklärung**. Wortlaut der Nachricht in
