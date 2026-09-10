@@ -151,10 +151,13 @@ jetzt „rund drei Stunden" statt „zwei bis drei" — die optimistische Hälft
 Spanne tritt nie ein. Nebenbei entschieden: Das Gerät zieht deutlich weniger als 2 A,
 die 1-A-Angabe des Lieferanten beschreibt die Wirklichkeit besser als das Handbuch.
 
-> **Dreimal ist jetzt dieselbe Frage an derselben Stelle gescheitert:** Laufzeit,
-> Leerlauf, Ladezeit — immer wurde Zeit gemessen und nie Strom. **Ein USB-Messgerät
-> für rund 10 €** zwischen Netzteil und Kabel zeigt die geflossenen Wattstunden und
-> beendet die Kapazitätsfrage endgültig.
+> **Strommessung bewusst zurückgestellt — Entscheidung des Inhabers, 10.9.2026.**
+> Ein USB-Messgerät würde die Kapazität endgültig klären. Es blockiert aber nichts:
+> Die 800 mAh sind durch MSDS, UN38.3 **und die Bestätigung des Lieferanten** gedeckt,
+> und die Seite nennt genau diese Zahl. **Nicht erneut vorschlagen**, bevor die ersten
+> 60 Stück verkauft sind. Dann wieder aufgreifen — spätestens, wenn über eigenes Logo
+> oder eine Nachbestellung über 500 Stück entschieden wird, denn dann wird der Inhaber
+> zum Hersteller und die exakte Zahl ist seine eigene Verantwortung.
 
 ---
 
