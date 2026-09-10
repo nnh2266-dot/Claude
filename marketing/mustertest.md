@@ -863,21 +863,32 @@ gut vereinbar. Die Wattangaben von Lieferant (8,4 W), Karton (17 W) und Listing 
 sind offensichtlich **Nenn- oder Lastwerte**, keine Aufnahme im Leerlauf — bei 8,4 W
 wäre nach 42 Minuten Schluss gewesen.
 
-### Die eine Einschränkung, die zählt
+### Die Einschränkung, und sie ist entscheidend
 
-**Unter Last zieht ein Perkussionsgerät ein Vielfaches des Leerlaufs.** Wenn das Gerät
-während der 150 Minuten überwiegend frei lief und nicht gegen den Rücken gedrückt
-wurde, ist die reale Anwendungslaufzeit deutlich kürzer.
+**Das Gerät lief frei, nicht angesetzt.** Damit sind die 150 Minuten eine
+**Leerlaufzeit, keine Anwendungslaufzeit** — und als Werbeaussage unbrauchbar.
 
-**Zu klären, bevor eine Laufzeit auf die Seite geht:** Lief das Gerät angesetzt oder
-frei? Und war der Akku nach dem zehnten Durchlauf leer, oder wurde nur aufgehört?
+Unter Arbeitsdruck zieht ein Perkussionsgerät ein Vielfaches des Leerlaufs. Was daraus
+realistisch folgt:
 
-### Was auf die Seite dürfte
+| angenommene Aufnahme unter Last | Laufzeit aus 5,92 Wh | Anwendungen à 15 min |
+|---|---|---|
+| 8,4 W (Angabe des Lieferanten) | 42 min | **knapp 3** |
+| 10 W | 36 min | rund 2,5 |
+| 12 W | 30 min | 2 |
 
-Sobald das geklärt ist, ist die ehrlichste Formulierung die gemessene Tatsache statt
-einer Minutenzahl:
+**Die 8,4 W des Lieferanten sind damit vermutlich genau der Lastwert** — sie passen zu
+keiner Leerlaufmessung, aber gut in diesen Bereich.
 
-> **Zehn Anwendungen à 15 Minuten je Ladung.**
+> **Nicht auf die Seite:** „Zehn Anwendungen à 15 Minuten je Ladung." Diese Formulierung
+> war ein Vorschlag, solange unklar war, ob angesetzt gemessen wurde. **Sie ist falsch**
+> und wäre eine unbelegte Leistungsangabe — abmahnfähig und ein Retourengrund.
 
-Das ist genau das, was beobachtet wurde, es ist für den Kunden greifbarer als
-Wattstunden, und es nutzt die Abschaltautomatik als Maßeinheit statt sie zu verstecken.
+### Was jetzt fehlt: eine einzige Messung unter Last
+
+Gerät auf Stufe 9 **angesetzt** benutzen, bis es von selbst stehen bleibt, Stufe nach
+jeder 15-Minuten-Abschaltung neu setzen, Minuten mitzählen. Ein Nachmittag.
+
+Das Ergebnis ist die einzige Zahl, die auf die Seite darf — und in der Form, die für den
+Kunden zählt: **wie viele Anwendungen je Ladung.** Erwartungswert nach obiger Tabelle
+sind zwei bis drei, nicht zehn.

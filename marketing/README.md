@@ -131,15 +131,20 @@ Anleitung**.
 noch bei 81 %; die Lithium-Spannungskurve ist im mittleren Bereich flach. Nur Minuten
 bis zum Stillstand zählen.
 
-### Was noch offen ist, bevor eine Laufzeit auf die Seite darf
+### Die 150 Minuten sind eine Leerlaufzeit
 
-**Unter Last zieht ein Perkussionsgerät ein Vielfaches des Leerlaufs.** Lief das Gerät
-während der 150 Minuten angesetzt oder frei? Davon hängt ab, ob die Zahl eine
-Anwendungslaufzeit ist oder nur eine Leerlaufzeit. Solange das offen ist, steht auf der
-Seite **keine Laufzeitangabe**.
+**Das Gerät lief frei, nicht angesetzt.** Als Werbeaussage ist die Zahl damit
+unbrauchbar — unter Arbeitsdruck zieht ein Perkussionsgerät ein Vielfaches.
 
-Sobald es geklärt ist, wäre die ehrlichste Formulierung die beobachtete Tatsache statt
-einer Minutenzahl: **„Zehn Anwendungen à 15 Minuten je Ladung."**
+| Aufnahme unter Last | Laufzeit aus 5,92 Wh | Anwendungen à 15 min |
+|---|---|---|
+| 8,4 W (Lieferant) | 42 min | **knapp 3** |
+| 12 W | 30 min | 2 |
+
+**Es fehlt genau eine Messung:** Gerät angesetzt auf Stufe 9 benutzen, bis es steht,
+Stufe nach jeder Abschaltung neu setzen, Minuten zählen. Bis dahin steht auf der Seite
+**keine Laufzeitangabe** — und die naheliegende Formulierung „zehn Anwendungen je
+Ladung" wäre falsch.
 
 ---
 
@@ -152,7 +157,7 @@ Präzisionsdurchlauf.
 |---|---|
 | **A — Sofort** | ✅ **bestanden** |
 | **B — Messen** | 🟡 Gewicht ✅ · Lautstärke Stufe 9 ✅ · **offen: Raumpegel, Stufe 1** |
-| **C — Zeiten** | 🟢 **150 min auf Stufe 9** gemessen (10.9.2026), Stufe je Durchlauf neu gesetzt · offen: lief das Gerät angesetzt oder frei? |
+| **C — Zeiten** | 🟡 **150 min Leerlauf** auf Stufe 9 (10.9.2026) — bestätigt den Akku, taugt aber nicht als Werbeaussage · **offen: Messung unter Last** |
 | **D — Belastung** | ✅ **bestanden**, beide Abbruchkriterien geklärt |
 | **E — Anwendung** | ✅ **bestanden** (9.9.2026) — Amplitude spürbar, Ergonomie trägt, Reichweite bestätigt |
 | **F — Verpackung** | ✅ **abgeschlossen** |
