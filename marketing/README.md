@@ -506,7 +506,9 @@ eingeschränkt, unter 1,0 wird das Konto gesperrt.
 > die unterschriebene Konformitätserklärung da ist.
 
 **Wartet auf ScPanda — nur noch eines:** die **unterschriebene
-Konformitätserklärung**. Wortlaut der Nachricht in
+Konformitätserklärung**. **Nachricht mit Anhang am 10. September 2026 abgeschickt.**
+Bleibt eine Antwort bis etwa zum 17. September aus, genau einmal nachfassen — nur mit
+dieser einen Bitte. Wortlaut der Nachricht in
 [`anfrage-scpanda-ce.md`](anfrage-scpanda-ce.md), die ausfüllfertige Vorlage liegt
 bei und ist gegen 38 Punkte geprüft.
 

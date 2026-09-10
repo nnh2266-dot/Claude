@@ -650,7 +650,8 @@ gedruckten Anleitung des Herstellers.
 
 ## Nachricht vom 9. September 2026 — die eine fehlende Unterschrift
 
-**Stand:** Alle Belege sind ausgewertet und liegen unter [`dokumente/`](dokumente/).
+**Stand: am 10. September 2026 abgeschickt**, mit der Vorlage im Anhang. Alle Belege
+sind ausgewertet und liegen unter [`dokumente/`](dokumente/).
 Der Lieferant hat bereits bestätigt, dass er alles Vorhandene geschickt hat. Es fehlt
 **ein** Dokument, und ohne das darf nicht verkauft werden.
 
