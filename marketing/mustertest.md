@@ -839,3 +839,45 @@ Ergonomie tragen den Abstand zu den 46-€-No-Names.
 Offen bleiben nur noch **Block H** (Fotos, vor allem das Gerät am eigenen Rücken
 angesetzt) und die saubere Messung in Block B und C, für die die **Leistungsaufnahme**
 fehlt.
+
+---
+
+## Block C — Laufzeit gemessen (10. September 2026)
+
+**Zehn Durchläufe à 15 Minuten auf Stufe 9, die Stufe nach jeder Abschaltung wieder
+auf 9 gesetzt.** Damit ist der Verdacht aus dem ersten Durchlauf ausgeräumt — dort war
+offen, ob nach den Abschaltungen überhaupt noch auf hoher Stufe gelaufen wurde.
+
+> **Mindestens 150 Minuten je Ladung auf höchster Stufe.**
+
+### Was daraus folgt
+
+| Annahme | Wattstunden | mittlere Aufnahme über 150 min |
+|---|---|---|
+| **800 mAh** (belegt, vom Lieferanten bestätigt) | 5,92 Wh | **2,4 W** |
+| 1200 mAh (Karton, Listing) | 8,88 Wh | 3,6 W |
+
+**Der Akku steht damit nicht mehr in Frage.** 2,4 W mittlere Aufnahme sind für ein
+freilaufendes Gerät dieser Größe plausibel, und die Zahl ist mit den belegten 800 mAh
+gut vereinbar. Die Wattangaben von Lieferant (8,4 W), Karton (17 W) und Listing (20 W)
+sind offensichtlich **Nenn- oder Lastwerte**, keine Aufnahme im Leerlauf — bei 8,4 W
+wäre nach 42 Minuten Schluss gewesen.
+
+### Die eine Einschränkung, die zählt
+
+**Unter Last zieht ein Perkussionsgerät ein Vielfaches des Leerlaufs.** Wenn das Gerät
+während der 150 Minuten überwiegend frei lief und nicht gegen den Rücken gedrückt
+wurde, ist die reale Anwendungslaufzeit deutlich kürzer.
+
+**Zu klären, bevor eine Laufzeit auf die Seite geht:** Lief das Gerät angesetzt oder
+frei? Und war der Akku nach dem zehnten Durchlauf leer, oder wurde nur aufgehört?
+
+### Was auf die Seite dürfte
+
+Sobald das geklärt ist, ist die ehrlichste Formulierung die gemessene Tatsache statt
+einer Minutenzahl:
+
+> **Zehn Anwendungen à 15 Minuten je Ladung.**
+
+Das ist genau das, was beobachtet wurde, es ist für den Kunden greifbarer als
+Wattstunden, und es nutzt die Abschaltautomatik als Maßeinheit statt sie zu verstecken.
