@@ -3,7 +3,7 @@
 Einstiegspunkt für alles, was zu diesem Vorhaben entschieden, recherchiert und gebaut
 wurde. Die Einzelheiten stehen in den verlinkten Dateien; hier steht, was gilt.
 
-**Stand: 9. September 2026.**
+**Stand: 10. September 2026.**
 
 ---
 
@@ -99,32 +99,26 @@ verdoppelt sich die Spannung, die Kapazität bleibt gleich:
 Die 1200 mAh von Karton, Listing und Landingpage sind durch kein Dokument gedeckt.
 **Sie sind an allen sechs Stellen von der Seite entfernt.**
 
-**Was die Laufzeitmessung dazu sagt — und was nicht.** Gemessen wurden fünf Durchläufe
-à 15 Minuten, danach lief das Gerät weiter: mindestens 75 Minuten je Ladung. Daraus die
-mittlere Leistungsaufnahme:
+**Der Lieferant hat die 800 mAh bestätigt.** Karton und Listing waren falsch, die
+Papiere richtig. Der Punkt ist geschlossen.
 
-| Annahme | Wattstunden | mittlere Aufnahme über 75 min |
+**Die Laufzeitmessung passt dazu.** Am 10. September wurden **zehn Durchläufe à
+15 Minuten auf Stufe 9** gefahren, die Stufe nach jeder Abschaltung wieder gesetzt —
+mindestens **150 Minuten je Ladung**:
+
+| Annahme | Wattstunden | mittlere Aufnahme über 150 min |
 |---|---|---|
-| **800 mAh** (belegt) | 5,92 Wh | **4,7 W** |
-| 1200 mAh (Karton, Listing) | 8,88 Wh | 7,1 W |
+| **800 mAh** (belegt und bestätigt) | 5,92 Wh | **2,4 W** |
+| 1200 mAh (Karton, Listing) | 8,88 Wh | 3,6 W |
 
-Beide Werte sind möglich. Der Karton nennt 17 W, das Listing 20 W, der Lieferant 8,4 W —
-bei 17 W wäre der Akku in beiden Fällen längst leer gewesen. **Die Laufzeit entscheidet
-die Kapazitätsfrage also nicht**, solange die Leistungsaufnahme nicht gemessen ist. Sie
-zeigt nur, dass das Gerät weit unter Nennleistung lief; im Mustertest steht der Verdacht,
-dass die Stufe nach den Abschaltungen nicht wieder gesetzt wurde.
+2,4 W sind für ein freilaufendes Gerät dieser Größe plausibel. Die Wattangaben von
+Lieferant (8,4 W), Karton (17 W) und Listing (20 W) sind damit erkennbar **Nenn- oder
+Lastwerte** — bei 8,4 W wäre nach 42 Minuten Schluss gewesen.
 
-**Entschieden wird die Frage durch die Dokumente, nicht durch die Uhr** — und die
-Dokumente sagen 800 mAh. **Der Lieferant hat das inzwischen bestätigt.** Damit ist der
-Punkt geschlossen: Karton und Listing waren falsch, die Papiere richtig.
-
-> **Frühere Fassung von `anfrage-scpanda-ce.md` zog den umgekehrten Schluss** — der
-> Laufzeittest „widerlege die Akkudokumente", vermutlich sei ein größerer Akku
-> verbaut. Dieselbe 8-%-Lücke, andere Richtung gelesen. Dagegen steht, dass MSDS und
-> UN38.3 zwei unabhängige Dokumente eines CNAS-akkreditierten Labors sind, beauftragt
-> vom Zellhersteller. Damit sie falsch sind, müssten beide dieselbe falsche Zelle
-> beschreiben. **Belastbar entscheidet das nur der Lieferant** — die Frage steht in der
-> Nachricht. Bis dahin gilt auf der Seite die belegte Zahl, nicht die beworbene.
+> **Ein früherer Schluss in `anfrage-scpanda-ce.md` ist zurückgenommen:** der
+> Laufzeittest „widerlege die Akkudokumente", vermutlich sei ein größerer Akku verbaut.
+> Das war eine Überinterpretation einer ungeprüften Wattzahl. Die Dokumente hatten
+> recht.
 
 ### Wichtiger Bedienbefund
 
@@ -136,6 +130,16 @@ Anleitung**.
 **Die Prozentanzeige taugt nicht als Messgröße.** Nach 60 Minuten auf Stufe 9 stand sie
 noch bei 81 %; die Lithium-Spannungskurve ist im mittleren Bereich flach. Nur Minuten
 bis zum Stillstand zählen.
+
+### Was noch offen ist, bevor eine Laufzeit auf die Seite darf
+
+**Unter Last zieht ein Perkussionsgerät ein Vielfaches des Leerlaufs.** Lief das Gerät
+während der 150 Minuten angesetzt oder frei? Davon hängt ab, ob die Zahl eine
+Anwendungslaufzeit ist oder nur eine Leerlaufzeit. Solange das offen ist, steht auf der
+Seite **keine Laufzeitangabe**.
+
+Sobald es geklärt ist, wäre die ehrlichste Formulierung die beobachtete Tatsache statt
+einer Minutenzahl: **„Zehn Anwendungen à 15 Minuten je Ladung."**
 
 ---
 
