@@ -24,7 +24,7 @@ export const LADDERS = [
   {
     id: 'druecken-senkrecht',
     name: 'Drücken über Kopf',
-    stufen: ['pikepu', 'hspuneg', 'hspu'],
+    stufen: ['pikepu', 'pikeele', 'hspuneg', 'hspu'],
   },
   {
     id: 'ziehen-waagerecht',
@@ -45,6 +45,21 @@ export const LADDERS = [
     id: 'hueftstreckung',
     name: 'Hüftstreckung',
     stufen: ['gbridge', 'gbridge1'],
+  },
+  {
+    id: 'hueftbeuge',
+    name: 'Hüfte beugen',
+    // Die Bewegung des Kreuzhebens ohne Gewicht: Hüfte nach hinten, Rücken
+    // flach. Schwerer wird sie durch ein Bein, nicht durch mehr Wiederholungen.
+    stufen: ['bwgm', 'slrdl'],
+  },
+  {
+    id: 'beinbeuger',
+    name: 'Knie beugen',
+    // Die Lücke, die vorher am größten war: Ohne Geräte stand für die
+    // Rückseite der Beine nur die Nordic Curl da — und die ist für die meisten
+    // am Anfang schlicht unmöglich. Jetzt führen zwei Sprossen dorthin.
+    stufen: ['bridgecurl', 'slidecurl', 'nordic'],
   },
   {
     id: 'trizeps',

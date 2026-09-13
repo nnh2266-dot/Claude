@@ -18,6 +18,7 @@ import { localDateKey, shiftDateKey } from './nutrition.js';
 import { targetsForDate, weightTrend, calorieAdvice, weeklyRateFor } from './energy.js';
 import {
   exerciseById, dayForWeekday, blockWeek, BLOCK_WEEKS, SKIP_REASONS, isUnilateral, setSides,
+  isTimed,
 } from './training.js';
 import { skillById, levelIndex } from './skills.js';
 import { dayTotals, weekSummary } from './activities.js';
@@ -698,8 +699,9 @@ function uebungsFortschritt(sessions, wocheTage, vorTage) {
     const wdh = (v) => (v.seiten && v.seiten.links !== null && v.seiten.rechts !== null
       ? `${v.seiten.links}/${v.seiten.rechts}`
       : String(v.reps));
-    const wie = wert.weight > 0 ? `${einsNach(wert.weight)} kg × ${wdh(wert)}` : `${wdh(wert)} Wdh.`;
-    const wieAlt = alt.weight > 0 ? `${einsNach(alt.weight)} kg × ${wdh(alt)}` : `${wdh(alt)} Wdh.`;
+    const e = isTimed(id) ? 's' : 'Wdh.';
+    const wie = wert.weight > 0 ? `${einsNach(wert.weight)} kg × ${wdh(wert)}` : `${wdh(wert)} ${e}`;
+    const wieAlt = alt.weight > 0 ? `${einsNach(alt.weight)} kg × ${wdh(alt)}` : `${wdh(alt)} ${e}`;
     if (wert.score > alt.score) rauf.push(`${name} ${wieAlt} → ${wie}`);
     else if (wert.score < alt.score) runter.push(`${name} ${wieAlt} → ${wie}`);
   }

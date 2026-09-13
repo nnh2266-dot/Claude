@@ -6,8 +6,9 @@
 import { MINUTES_PER_SKILL } from './skills.js';
 
 /* ---------------- Übungsdatenbank ----------------
-   [id, Name, Muskelgruppe, c|i, Umgebung, Einschränkungen, Ausführungshinweis]
+   [id, Name, Muskelgruppe, c|i, Umgebung, Einschränkungen, Ausführungshinweis, Einheit]
    Umgebung: g = Studio, d = Kurzhanteln, b = Bänder, w = Körpergewicht
+   Einheit:  fehlt = Wiederholungen, 'sek' = Sekunden gehalten
 --------------------------------------------------- */
 
 const RAW = [
@@ -22,10 +23,13 @@ const RAW = [
   ['cfly','Kabel-Fly','brust','i','g','','Leichte Ellbogenbeugung halten, Brust zusammendrücken.'],
   ['dbfly','Kurzhantel-Fly','brust','i','gd','schulter','Kontrolliert öffnen, nur bis Brusthöhe.'],
   ['bfly','Band-Fly','brust','i','b','','Am Endpunkt eine Sekunde halten.'],
+  ['bpress','Band-Brustdrücken','brust','c','b','','Band um den Rücken, aus der Brust nach vorn drücken. Am Ende nicht durchdrücken.'],
+  ['machfly','Butterfly Maschine','brust','i','g','schulter','Ellbogen auf Brusthöhe, vorn eine Sekunde zusammendrücken.'],
   ['pushele','Liegestütze erhöht','brust','c','w','handgelenk','Hände auf Stuhl oder Tisch — die leichtere Variante.'],
   ['pseudopu','Pseudo-Planche-Liegestütze','brust','c','w','schulter,handgelenk','Hände auf Bauchhöhe, Finger zu den Füßen. Die Schultern über die Hände schieben.'],
   ['archerpu','Archer-Liegestütze','brust','c','w','schulter,handgelenk','Ein Arm beugt, der andere bleibt zur Seite gestreckt. Das Gewicht liegt auf dem beugenden Arm.'],
   ['onearmneg','Einarmige Liegestütze negativ','brust','c','w','schulter,handgelenk','Eine Hand hinter dem Rücken, Füße weit auseinander. Nur langsam ablassen, mit beiden Händen hoch.'],
+  ['declpu','Liegestütze Füße erhöht','brust','c','w','schulter,handgelenk','Füße auf Stuhl oder Bett. Je höher die Füße, desto mehr liegt auf Brust und Schultern.'],
   // Rücken, vertikal
   ['pullup','Klimmzüge','ruecken','c','gw','','Brust zur Stange, Schulterblätter zuerst.'],
   ['latpull','Latzug','ruecken','c','g','','Ellbogen nach unten-hinten ziehen.'],
@@ -45,9 +49,14 @@ const RAW = [
   ['towelsit','Handtuch-Rudern im Sitzen','ruecken','c','w','','Langsitz, Handtuch um die Fußsohlen. Ziehen und mit den Beinen dagegenhalten — der Widerstand kommt von dir selbst.'],
   ['pronelat','Latzug in Bauchlage','ruecken','c','w','ruecken','Bauchlage, Arme lang nach vorn. Ellbogen kraftvoll zu den Rippen ziehen, Brust bleibt oben.'],
   ['revsnow','Umgekehrte Schneeengel','ruecken','i','w','','Bauchlage, Handrücken am Boden. Arme flach vom Kopf zur Hüfte streichen und zurück, langsam.'],
+  ['rowmach','Rudern Maschine','ruecken','c','g','','Brust ans Polster, Schulterblätter zuerst, dann die Ellbogen.'],
+  ['shrug','Nackenheben','ruecken','i','gd','','Gerade nach oben zucken und oben halten. Kein Kreisen.'],
+  ['deadhang','Hängen an der Stange','ruecken','i','gw','schulter','Locker hängen, Schultern aktiv nach unten ziehen. Vorbei, wenn der Griff aufgibt.','sek'],
   ['facep','Face Pull','rdelt','i','gb','','Auf Augenhöhe ziehen, Daumen nach hinten.'],
   ['revfly','Reverse Fly','rdelt','i','gd','','Leicht vorgebeugt, Arme fast gestreckt.'],
   ['ytw','Y-T-W am Boden','rdelt','i','w','','Bauchlage, Arme nacheinander in Y-, T- und W-Form anheben. Daumen zeigen nach oben.'],
+  ['bpullapart','Band-Auseinanderziehen','rdelt','i','b','','Arme lang auf Brusthöhe, Band auseinanderziehen bis die Schulterblätter zusammenkommen.'],
+  ['bwrear','Umgekehrter Flieger in Bauchlage','rdelt','i','w','','Bauchlage, Arme seitlich lang. Langsam anheben, Daumen nach oben, oben eine Sekunde.'],
   // Beine, Vorderseite
   ['squat','Kniebeuge Langhantel','quad','c','g','knie,ruecken','Knie folgen den Fußspitzen, Tiefe nach Beweglichkeit.'],
   ['goblet','Goblet Squat','quad','c','gd','knie','Gewicht vor der Brust, Oberkörper aufrecht.'],
@@ -60,6 +69,10 @@ const RAW = [
   ['skater','Skater Squat','quad','c','w','knie','Auf einem Bein absenken, das hintere Bein pendelt frei nach hinten. Die Arme balancieren vorn aus.'],
   ['pistol1','Einbeinige Kniebeuge','quad','c','w','knie','Ein Bein gestreckt nach vorn, ganz absenken und aus der Tiefe hoch. Die Ferse bleibt am Boden.'],
   ['hack','Hack Squat','quad','c','g','knie','Füße mittig, ganze Fußsohle belastet.'],
+  ['frontsq','Frontkniebeuge','quad','c','g','knie,ruecken','Ellbogen hoch, Oberkörper aufrecht. Verzeiht weniger als die Nackenkniebeuge.'],
+  ['cossack','Cossack Squat','quad','c','w','knie','Breiter Stand, auf eine Seite absenken, das andere Bein bleibt gestreckt. Beide Fersen bleiben am Boden.'],
+  ['jumpsq','Sprungkniebeuge','quad','c','w','knie','Aus der Kniebeuge explosiv abspringen und leise landen. Qualität vor Menge.'],
+  ['wallsit','Wandsitz','quad','i','w','knie','Rücken flach an der Wand, Oberschenkel waagerecht, Hände frei.','sek'],
   // Beine, Rückseite und Hüfte
   ['dl','Kreuzheben','ham','c','g','ruecken','Stange am Körper, Hüfte und Brust steigen gleichzeitig.'],
   ['rdl','Rumänisches Kreuzheben','ham','c','gd','ruecken','Hüfte nach hinten, Rücken flach, Dehnung hinten spüren.'],
@@ -69,8 +82,15 @@ const RAW = [
   ['gbridge1','Einbeinige Glute Bridge','glute','c','dw','','Ein Bein angewinkelt anheben, das Becken bleibt waagerecht — nicht zur Seite kippen.'],
   ['gm','Good Mornings','ham','c','g','ruecken','Leichtes Gewicht, Bewegung aus der Hüfte.'],
   ['nordic','Nordic Curls','ham','i','w','','So weit wie kontrollierbar, dann abfangen.'],
+  ['bwgm','Good Morning ohne Gewicht','ham','c','w','ruecken','Hände am Hinterkopf, Hüfte nach hinten schieben, Rücken flach. Die Dehnung gehört hinter den Oberschenkel.'],
+  ['bridgecurl','Beckenbrücke mit erhöhten Fersen','ham','c','w','','Fersen auf einem Stuhl, Becken hoch und oben halten. Es zieht hinten, nicht im Rücken.'],
+  ['slidecurl','Beinbeuger mit Handtuch','ham','i','w','','Rückenlage, Fersen auf einem Handtuch. Becken oben halten und die Fersen langsam wegschieben.'],
+  ['slrdl','Einbeiniges Kreuzheben','ham','c','gdw','ruecken','Standbein leicht gebeugt, das andere pendelt nach hinten. Die Hüfte bleibt waagerecht, nicht aufklappen.'],
   ['kick','Kabel-Kickback','glute','i','g','','Standbein leicht gebeugt, kein Hohlkreuz.'],
   ['bhipth','Band Hip Thrust','glute','c','b','','Band über die Hüfte, oben halten.'],
+  ['frogpump','Froschpumpe','glute','i','w','','Rückenlage, Fußsohlen aneinander, Knie nach außen. Kurze kräftige Stöße aus dem Gesäß.'],
+  ['bandabd','Band-Abduktion im Stand','glute','i','b','','Band um die Knöchel, Bein seitlich abspreizen. Der Oberkörper bleibt senkrecht.'],
+  ['abduct','Abduktionsmaschine','glute','i','g','','Aufrecht sitzen, langsam zurücklassen statt fallen lassen.'],
   // Schultern
   ['ohp','Schulterdrücken Langhantel','schulter','c','g','schulter','Po und Bauch fest, Stange über die Mitte des Kopfes.'],
   ['dbohp','Schulterdrücken Kurzhantel','schulter','c','gd','schulter','Handflächen leicht zueinander drehen.'],
@@ -78,10 +98,14 @@ const RAW = [
   ['pikepu','Pike Push-Ups','schulter','c','w','schulter','Hüfte hoch, Kopf Richtung Boden.'],
   ['hspuneg','Negative Handstand-Liegestütze','schulter','c','w','schulter,handgelenk','Im Handstand an der Wand langsam ablassen, dann mit den Füßen abstoßen und neu ansetzen.'],
   ['hspu','Handstand-Liegestütze an der Wand','schulter','c','w','schulter,handgelenk','Bauch zur Wand, Ellbogen eng. Kopf setzt kurz auf, dann drücken.'],
+  ['pikeele','Pike Push-Ups Füße erhöht','schulter','c','w','schulter,handgelenk','Füße auf einen Stuhl, Hüfte hoch. Der Kopf geht vor die Hände, nicht dazwischen.'],
+  ['bohp','Band-Schulterdrücken','schulter','c','b','schulter','Band unter die Füße, aus der Schulter nach oben drücken.'],
+  ['wallhs','Handstand an der Wand halten','schulter','i','w','schulter,handgelenk','Bauch zur Wand, Körper lang, Rippen unten. Vorbei, sobald der Rücken durchhängt.','sek'],
   ['latraise','Seitheben Kurzhantel','sdelt','i','gd','','Kleiner Finger führt, nur bis Schulterhöhe.'],
   ['clat','Seitheben Kabel','sdelt','i','g','','Konstante Spannung, langsam ablassen.'],
   ['blat2','Band-Seitheben','sdelt','i','b','','Oben eine Sekunde halten.'],
   ['frontr','Frontheben','sdelt','i','gd','','Kein Schwung aus der Hüfte.'],
+  ['bwlat','Seitheben mit Eigenwiderstand','sdelt','i','w','','Die freie Hand drückt von oben auf den hebenden Arm. Langsam heben, noch langsamer senken.'],
   // Bizeps
   ['bbcurl','Langhantel-Curls','bizeps','i','g','handgelenk','Ellbogen bleiben am Körper.'],
   ['dbcurl','Kurzhantel-Curls','bizeps','i','gd','','Ganz strecken, dann sauber beugen.'],
@@ -91,6 +115,7 @@ const RAW = [
   ['chinup','Chin-Ups','bizeps','c','gw','','Untergriff, Brust zur Stange.'],
   ['towelcurl','Handtuch-Curl','bizeps','i','w','','Handtuch unter einen Fuß, beide Enden greifen und beugen. Das Bein hält dagegen — so schwer, wie du es machst.'],
   ['selfcurl','Curl mit Eigenwiderstand','bizeps','i','w','','Die freie Hand drückt von oben gegen das beugende Handgelenk. Langsam beugen, noch langsamer zurück.'],
+  ['invcurl','Rudern im Untergriff unter dem Tisch','bizeps','c','w','','Untergriff an der Tischkante, Ellbogen eng am Körper. Je flacher der Körper, desto schwerer.'],
   // Trizeps
   ['pushdown','Trizepsdrücken Kabel','trizeps','i','g','','Oberarme fixiert, unten kurz halten.'],
   ['cgbp','Enges Bankdrücken','trizeps','c','g','handgelenk,schulter','Griff schulterbreit, Ellbogen eng.'],
@@ -99,29 +124,82 @@ const RAW = [
   ['bpush','Band-Pushdown','trizeps','i','b','','Am Endpunkt den Trizeps fest anspannen.'],
   ['diapu','Diamant-Liegestütze','trizeps','c','w','handgelenk','Hände unter der Brust, Ellbogen eng.'],
   ['bwskull','Strecker am Boden','trizeps','i','w','ellbogen','Im Kniestütz auf die Unterarme absenken, nur aus dem Trizeps zurückdrücken. Der Rumpf bleibt eine Linie.'],
+  ['bohext','Band-Überkopf-Trizeps','trizeps','i','b','ellbogen','Band hinter dem Rücken, Oberarme senkrecht. Nur der Ellbogen bewegt sich.'],
   // Waden
   ['calf','Wadenheben stehend','waden','i','gd','','Volle Dehnung unten, oben eine Sekunde.'],
   ['calfm','Wadenheben Maschine','waden','i','g','','Langsames Tempo, keine Wippbewegung.'],
   ['calf1','Wadenheben einbeinig','waden','i','dw','','Auf einer Stufe für mehr Bewegungsumfang.'],
+  ['calfbw','Wadenheben beidbeinig','waden','i','w','','Auf einer Stufe, unten voll dehnen, oben eine Sekunde halten.'],
+  ['tibia','Zehenheben','waden','i','w','','Rücken an der Wand, Fersen am Boden, Fußspitzen anheben. Der Gegenspieler der Wade, der fast immer fehlt.'],
   // Rumpf
-  ['plank','Unterarmstütz','core','i','w','','Po anspannen, Rippen runter. Wiederholungen sind hier Sekunden.'],
+  ['plank','Unterarmstütz','core','i','w','','Po anspannen, Rippen runter. Eine Linie von der Ferse bis zum Kopf.','sek'],
   ['hlr','Hängendes Beinheben','core','i','gw','','Becken einrollen, kein Schwingen.'],
   ['ccrunch','Kabel-Crunch','core','i','g','','Mit den Rippen einrollen, nicht mit der Hüfte.'],
   ['abwheel','Ab Wheel','core','i','gd','ruecken,handgelenk','Nur so weit, wie der Rücken flach bleibt.'],
-  ['sideplank','Seitstütz','core','i','w','','Hüfte hoch, Schulter über dem Ellbogen.'],
+  ['sideplank','Seitstütz','core','i','w','','Hüfte hoch, Schulter über dem Ellbogen.','sek'],
   ['deadbug','Dead Bug','core','i','w','','Unterer Rücken bleibt am Boden.'],
   ['rtwist','Russian Twist','core','i','dw','ruecken','Die Brustwirbelsäule rotiert, nicht die Lende.'],
+  ['hollow','Hohlkörperhalte','core','i','w','','Unterer Rücken bleibt am Boden. Arme und Beine nur so weit ablegen, wie das gelingt.','sek'],
+  ['birddog','Bird Dog','core','i','w','','Gegengleich Arm und Bein strecken, das Becken bleibt waagerecht. Oben zwei Sekunden.'],
+  ['revcrunch','Umgekehrte Crunches','core','i','w','','Das Becken rollt ein, die Beine machen nur mit. Langsam zurück.'],
+  ['mountain','Bergsteiger','core','i','w','handgelenk','Im Stütz die Knie zügig zur Brust ziehen, die Hüfte bleibt tief.'],
+  ['palloff','Pallof-Press','core','i','gb','','Seitlich zum Zug stehen, Hände vor der Brust nach vorn drücken. Der Rumpf hält gegen die Drehung.'],
 ];
 
 export const EXERCISES = RAW.map((r) => ({
   id: r[0], name: r[1], group: r[2], type: r[3], env: r[4],
   avoid: r[5] ? r[5].split(',') : [], cue: r[6],
+  // Gehaltene Übungen zählen Sekunden. Vorher stand beim Unterarmstütz ein
+  // Wiederholungsfeld und im Hinweis der Satz „Wiederholungen sind hier
+  // Sekunden" — das hat die Zahl gerettet, aber nicht die Bedienung: keine
+  // Uhr, kein „s" an der Zahl, und in jeder Auswertung tauchte eine Plank
+  // mit „45 Wdh." auf.
+  einheit: r[7] === 'sek' ? 'sek' : 'wdh',
 }));
 
 const BY_ID = new Map(EXERCISES.map((e) => [e.id, e]));
 
 export function exerciseById(id) {
   return BY_ID.get(id) || null;
+}
+
+/** Wird diese Übung in Sekunden gemessen statt in Wiederholungen? */
+export function isTimed(id) {
+  const e = typeof id === 'string' ? BY_ID.get(id) : id;
+  return Boolean(e && e.einheit === 'sek');
+}
+
+/**
+ * Zielbereich einer Halteübung in Sekunden.
+ *
+ * Je Übung eigen, weil ein Wandsitz eine andere Größenordnung hat als eine
+ * Handstandhaltung. Die Zahlen sind Trainingsbereiche, keine Bestwerte: Wer
+ * über dem oberen Rand landet, soll nicht länger halten, sondern die schwerere
+ * Variante nehmen — eine Plank über zwei Minuten misst Geduld, nicht Kraft.
+ */
+export const ZEIT_VORGABE = {
+  plank:     [30, 60],
+  sideplank: [20, 45],
+  hollow:    [15, 40],
+  wallsit:   [30, 60],
+  deadhang:  [20, 60],
+  wallhs:    [20, 60],
+};
+
+const ZEIT_STANDARD = [20, 45];
+
+/**
+ * Der Zielbereich einer Vorgabe — Wiederholungen oder Sekunden.
+ *
+ * Bei Halteübungen bewusst aus der Tabelle und nicht aus dem gespeicherten
+ * Plan: Pläne, die vor der Umstellung gebaut wurden, tragen dort noch den
+ * Wiederholungsbereich von damals. Ihn zu lesen hieße, eine 10-Sekunden-Plank
+ * vorzugeben, weil früher „10 Wiederholungen" dastand.
+ */
+export function repRange(prescription) {
+  if (!prescription) return [0, 0];
+  if (isTimed(prescription.id)) return ZEIT_VORGABE[prescription.id] || ZEIT_STANDARD;
+  return prescription.reps;
 }
 
 export const GROUP_LABEL = {
@@ -172,6 +250,7 @@ export function withoutBundles(day, buendel) {
  */
 export const GEAR = {
   pullup: 'stange', negpull: 'stange', chinup: 'stange', hlr: 'stange', invrow: 'stange',
+  deadhang: 'stange',
   dips: 'barren',
 };
 
@@ -197,6 +276,14 @@ export const NEEDS_OBJECT = new Set([
   'benchdip',   // eine Kante hinter dem Rücken
   'bulg',       // eine Erhöhung für den hinteren Fuß
   'stepup',     // eine Stufe in Kniehöhe
+  'declpu',     // eine Erhöhung für die Füße
+  'pikeele',    // dieselbe Erhöhung, nur höher belastet
+  'bridgecurl', // ein Stuhl, auf den die Fersen kommen
+  'slidecurl',  // ein Handtuch und ein Boden, auf dem es rutscht
+  'invcurl',    // wieder der tragfähige Tisch
+  'calfbw',     // eine Stufe, über deren Kante die Ferse sinkt
+  // Wandsitz und Handstand an der Wand stehen hier bewusst nicht: Eine Wand
+  // hat auch das leerste Hotelzimmer.
 ]);
 
 /**
@@ -335,7 +422,8 @@ function prescribe(exercise, profile, isFirst) {
   const loadless = isLoadless(exercise, profile);
 
   let reps;
-  if (exercise.group === 'core') reps = [10, 20];
+  if (exercise.einheit === 'sek') reps = ZEIT_VORGABE[exercise.id] || ZEIT_STANDARD;
+  else if (exercise.group === 'core') reps = [10, 20];
   else if (loadless) reps = exercise.type === 'c' ? [10, 20] : [12, 20];
   else if (exercise.type === 'c') reps = profile.goal === 'aufbau' ? [5, 8] : [6, 10];
   else reps = [10, 15];
@@ -344,6 +432,10 @@ function prescribe(exercise, profile, isFirst) {
     id: exercise.id,
     sets,
     reps,
+    // Mitgeschrieben, damit ein Bericht die Einheit kennt, ohne die
+    // Übungstabelle zu befragen. Gelesen wird sie trotzdem dort — alte Pläne
+    // haben das Feld nicht.
+    einheit: exercise.einheit,
     rir: level.rir,
     loadless,
     rest: baseRest(exercise, loadless),
@@ -366,6 +458,9 @@ function prescribe(exercise, profile, isFirst) {
  * eine halbe Stunde bloßes Dastehen.
  */
 export function baseRest(exercise, loadless) {
+  // Eine Halteübung geht bis nah ans Zittern — danach sind 45 Sekunden zu
+  // wenig, um den nächsten Satz sauber zu halten.
+  if (exercise.einheit === 'sek') return 60;
   if (exercise.group === 'core') return 45;
   if (loadless) return exercise.type === 'c' ? 90 : 60;
   return exercise.type === 'c' ? 150 : 75;
@@ -399,13 +494,15 @@ export function restSeconds(prescription, tempo = 'normal') {
  * Geschätzte Dauer einer Einheit in Minuten: Arbeitszeit plus Pausen.
  *
  * Ein Satz dauert grob so lange, wie er Wiederholungen hat, mal drei Sekunden,
- * plus etwas Aufbau. Nach dem letzten Satz einer Übung läuft keine Pause.
+ * plus etwas Aufbau. Ein gehaltener Satz dauert genau seine Sekunden — dort
+ * wäre das Dreifache glatt falsch.
  */
 export function sessionMinutes(exercises, tempo = 'normal') {
   let sekunden = 0;
   for (const p of exercises || []) {
-    const wdh = (p.reps[0] + p.reps[1]) / 2;
-    const satz = Math.round(wdh * 3) + 15;
+    const [unten, oben] = repRange(p);
+    const mitte = (unten + oben) / 2;
+    const satz = (isTimed(p.id) ? Math.round(mitte) : Math.round(mitte * 3)) + 15;
     sekunden += p.sets * satz + Math.max(0, p.sets - 1) * restSeconds(p, tempo);
   }
   return Math.round(sekunden / 60);
@@ -422,6 +519,7 @@ export function sessionMinutes(exercises, tempo = 'normal') {
 export const UNILATERAL = new Set([
   'bulg', 'lunge', 'stepup', 'skater', 'pistol1', 'gbridge1',
   'calf1', 'dbrow', 'kick', 'towelcurl', 'selfcurl', 'archerpu', 'onearmneg',
+  'slrdl', 'cossack', 'bwlat', 'bandabd', 'sideplank',
 ]);
 
 export const isUnilateral = (id) => UNILATERAL.has(id);
@@ -930,12 +1028,32 @@ export function dayForWeekday(plan, weekday) {
  */
 export function nextStep(prescription, lastSets, rir = prescription.rir) {
   const exercise = exerciseById(prescription.id);
-  const [low, high] = prescription.reps;
+  const [low, high] = repRange(prescription);
+  const zeit = isTimed(prescription.id);
 
   if (!lastSets || !lastSets.length) {
+    if (zeit) {
+      return `Halten, bis die Form nachgibt — nicht länger. ${low} Sekunden sind ein guter `
+        + 'erster Satz; wo du landest, ist dein Startwert.';
+    }
     return prescription.loadless
       ? `Sauber ausführen und bis ${rir} Wiederholungen vor dem Versagen gehen. Das ist dein Startwert.`
       : `Startgewicht finden: der letzte Satz endet mit ${rir} Wiederholungen im Tank.`;
+  }
+
+  // Bei gehaltenen Übungen gibt es kein Gewicht und keine zweite Seite. Der
+  // Fortschritt sind Sekunden — bis der obere Rand erreicht ist. Danach wäre
+  // „noch länger" der falsche Weg: eine sehr lange Plank misst Geduld.
+  if (zeit) {
+    const gehalten = (lastSets || []).map((x) => Number(x && x.reps) || 0).filter(Boolean);
+    if (!gehalten.length) return `Ziel sind ${low} bis ${high} Sekunden je Satz.`;
+    const bestes = Math.min(...gehalten);
+    if (bestes >= high) {
+      return `Alle Sätze über ${high} Sekunden — jetzt nicht länger halten, sondern schwerer `
+        + 'machen: einbeinig, einarmig, längerer Hebel oder etwas Zusatzgewicht.';
+    }
+    return `Zuletzt ${bestes} Sekunden im schwächsten Satz. Heute fünf Sekunden mehr, bis `
+      + `${high} stehen.`;
   }
 
   const done = lastSets.filter((s) => s && s.reps);

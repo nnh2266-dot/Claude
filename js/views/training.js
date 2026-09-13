@@ -17,7 +17,7 @@ import {
   exerciseById, GROUP_LABEL, blockWeek, forWeek, dayForWeekday, nextStep, BLOCK_WEEKS,
   travelDay, restSeconds, sessionMinutes, REST_TEMPO,
   replaceExercise, setExercise, removeExercise, missedDays, SKIP_REASONS, deloadHinweis,
-  isUnilateral, GRUPPEN_BUENDEL, withoutBundles, spareDay, LIMIT_LABEL,
+  isUnilateral, isTimed, repRange, GRUPPEN_BUENDEL, withoutBundles, spareDay, LIMIT_LABEL,
 } from '../training.js';
 import { schonungsKarte, activeLimits } from './schonung.js';
 import {
@@ -541,15 +541,15 @@ function lastPerformance(sessions, exerciseId, beforeDate) {
   return null;
 }
 
-function formatSets(sets, einseitig = false) {
+function formatSets(sets, einseitig = false, zeit = false) {
   return sets
     .filter((s) => s && s.reps)
     .map((s) => {
       // Einseitig steht beides da — die Zahl allein verschweigt den Unterschied.
       const wdh = einseitig && typeof s.reps2 === 'number' ? `${s.reps}/${s.reps2}` : String(s.reps);
       return Number(s.weight) > 0
-        ? `${String(s.weight).replace('.', ',')} kg × ${wdh}`
-        : `${wdh} Wdh.`;
+        ? `${String(s.weight).replace('.', ',')} kg × ${wdh}${zeit ? ' s' : ''}`
+        : `${wdh} ${zeit ? 's' : 'Wdh.'}`;
     })
     .join('  ·  ');
 }
@@ -957,12 +957,18 @@ function exerciseBlock(prescription, week, session, sessions, dateKey, onChange,
 
   const adjusted = forWeek(prescription, week);
   const einseitig = isUnilateral(prescription.id);
+  const zeit = isTimed(prescription.id);
+  const [unten, oben] = repRange(prescription);
+  const einheit = zeit ? 's' : 'Wdh.';
   const stand = ladderFor(prescription.id);
   const pause = restSeconds(prescription, tempo);
   const last = lastPerformance(sessions, prescription.id, dateKey);
   const entries = session.entries[prescription.id] || (session.entries[prescription.id] = []);
 
   const rows = [];
+  // Bei Halteübungen schreibt die Uhr in die Felder. Je Satz ein Schreiber,
+  // damit sie nicht wissen muss, wie eine Zeile aufgebaut ist.
+  const zeitSchreiber = [];
   for (let i = 0; i < adjusted.sets; i++) {
     const stored = entries[i] || {};
 
@@ -999,6 +1005,9 @@ function exerciseBlock(prescription, week, session, sessions, dateKey, onChange,
       if (istVoll && !warVoll && i < adjusted.sets - 1) {
         pauseStarten(pause, exercise.name, ausGeste);
       }
+      // Die Uhr zeigt an, welcher Satz als Nächstes dran ist. Wer von Hand
+      // einträgt, soll sie nicht auf einem alten Stand stehen lassen.
+      uhr?.refresh?.();
       onChange();
     };
 
@@ -1037,10 +1046,11 @@ function exerciseBlock(prescription, week, session, sessions, dateKey, onChange,
       onChange: update,
     });
 
+    const wasGemessen = zeit ? 'Sekunden' : 'Wiederholungen';
     const repsInput = el('input', {
       class: 'input setinput', type: 'text', inputmode: 'numeric',
-      'aria-label': einseitig ? `Satz ${i + 1}, Wiederholungen links` : `Satz ${i + 1}, Wiederholungen`,
-      placeholder: String(prescription.reps[0]),
+      'aria-label': einseitig ? `Satz ${i + 1}, ${wasGemessen} links` : `Satz ${i + 1}, ${wasGemessen}`,
+      placeholder: String(unten),
       value: stored.reps != null ? String(stored.reps) : '',
       onChange: update,
     });
@@ -1048,30 +1058,59 @@ function exerciseBlock(prescription, week, session, sessions, dateKey, onChange,
     const reps2Input = einseitig
       ? el('input', {
           class: 'input setinput', type: 'text', inputmode: 'numeric',
-          'aria-label': `Satz ${i + 1}, Wiederholungen rechts`,
-          placeholder: String(prescription.reps[0]),
+          'aria-label': `Satz ${i + 1}, ${wasGemessen} rechts`,
+          placeholder: String(unten),
           value: stored.reps2 != null ? String(stored.reps2) : '',
           onChange: update,
         })
       : null;
+
+    zeitSchreiber.push((sekunden) => {
+      repsInput.value = String(sekunden);
+      if (einseitig && !reps2Input.value.trim()) reps2Input.focus();
+      update(true);
+    });
 
     rows.push(el('div', { class: einseitig ? 'setrow setrow-zwei' : 'setrow' },
       el('span', { class: 'setnum tabular', text: String(i + 1) }),
       weightInput, repsInput, reps2Input, tick));
   }
 
+  // Gehalten wird mit der Uhr, nicht im Kopf gezählt. Dieselbe Uhr wie bei den
+  // Fähigkeiten: Start, halten, beim Runterkommen wieder tippen — die Sekunden
+  // stehen dann im Satz.
+  const uhr = zeit
+    ? holdTimer({
+        target: unten,
+        sets: adjusted.sets,
+        nextEmpty: () => {
+          for (let i = 0; i < adjusted.sets; i += 1) {
+            if (!entries[i] || entries[i].reps == null) return i;
+          }
+          return null;
+        },
+        write: (i, sekunden) => zeitSchreiber[i] && zeitSchreiber[i](sekunden),
+      })
+    : null;
+
+  // RIR heißt „so viele Wiederholungen noch im Tank". Bei einer Halteübung
+  // gibt es die nicht — dort ist der Abbruch die Form, nicht die Zahl.
+  const rxText = zeit
+    ? `${adjusted.sets} Sätze · ${unten}–${oben} s halten · ${pause} s Pause`
+    : `${adjusted.sets} Sätze · ${unten}–${oben} Wdh. · RIR ${adjusted.rir} · ${pause} s Pause`;
+
   return el('div', { class: 'exblock' },
     el('div', { class: 'exblock-head' },
       el('span', { class: 'exblock-name', text: exercise.name }),
       el('span', { class: 'exblock-group', text: GROUP_LABEL[exercise.group] || exercise.group })),
-    el('p', { class: 'exblock-rx tabular',
-      text: `${adjusted.sets} Sätze · ${prescription.reps[0]}–${prescription.reps[1]} Wdh. · RIR ${adjusted.rir} · ${pause} s Pause` }),
+    el('p', { class: 'exblock-rx tabular', text: rxText }),
     el('p', { class: 'exblock-last',
-      text: last ? `Zuletzt ${formatDateKey(last.date)}: ${formatSets(last.sets, einseitig)}` : 'Noch keine Werte aufgezeichnet.' }),
+      text: last ? `Zuletzt ${formatDateKey(last.date)}: ${formatSets(last.sets, einseitig, zeit)}` : 'Noch keine Werte aufgezeichnet.' }),
+    uhr ? uhr.node : null,
     el('div', { class: einseitig ? 'setlabels setlabels-zwei' : 'setlabels' },
       el('span'), el('span', { text: prescription.loadless ? 'Zusatz-kg' : 'kg' }),
-      el('span', { text: einseitig ? 'Wdh. li' : 'Wdh.' }),
-      einseitig ? el('span', { text: 'Wdh. re' }) : null,
+      el('span', { text: einseitig ? `${einheit} li` : einheit }),
+      einseitig ? el('span', { text: `${einheit} re` }) : null,
       el('span')),
     ...rows,
     el('p', { class: 'exblock-cue' },

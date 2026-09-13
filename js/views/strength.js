@@ -20,8 +20,9 @@ const AKTUELL_TAGE = 28;
 const einsNach = (n) => String(Math.round(n * 10) / 10).replace('.', ',');
 const zweiNach = (n) => String(Math.round(n * 100) / 100).replace('.', ',');
 
-/** Die Leistung in Worten: „22 Wdh." oder „1,25 × Körpergewicht (100 kg)". */
+/** Die Leistung in Worten: „22 Wdh.", „45 s" oder „1,25 × Körpergewicht (100 kg)". */
 function leistungText(b) {
+  if (b.art === 'zeit') return `${Math.round(b.wert)} s`;
   if (b.art === 'wdh') return `${Math.round(b.wert)} Wdh.`;
   const kg = b.koerper ? ` (${Math.round(b.wert * b.koerper)} kg)` : '';
   return `${zweiNach(b.wert)} × Körpergewicht${kg}`;
@@ -30,6 +31,10 @@ function leistungText(b) {
 /** Was bis zum nächsten Niveau fehlt. */
 function zielText(b) {
   if (!b.ziel || !b.zielNiveau) return 'Oberes Ende der Tabelle erreicht.';
+  if (b.art === 'zeit') {
+    const fehlt = Math.ceil(b.ziel - b.wert);
+    return `Noch ${fehlt} ${fehlt === 1 ? 'Sekunde' : 'Sekunden'} bis „${b.zielNiveau.name}".`;
+  }
   if (b.art === 'wdh') {
     const fehlt = Math.ceil(b.ziel - b.wert);
     return `Noch ${fehlt} ${fehlt === 1 ? 'Wiederholung' : 'Wiederholungen'} bis „${b.zielNiveau.name}".`;

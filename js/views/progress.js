@@ -6,7 +6,7 @@
 import { el, svg, mount, viewHead, iconButton, emptyState, toast } from '../ui.js';
 import { localDateKey, formatDateKey, shiftDateKey } from '../nutrition.js';
 import { setKcalAdjust } from '../store.js';
-import { personalBests, weeklyVolume, GOAL_LABEL } from '../training.js';
+import { personalBests, weeklyVolume, GOAL_LABEL, isTimed } from '../training.js';
 import { calorieAdvice, targetForecast } from '../energy.js';
 import { skillById, currentLevel, levelIndex, skillHistory } from '../skills.js';
 import { mobilitySection } from './mobility.js';
@@ -255,14 +255,17 @@ export async function render(container, ctx) {
     body.push(el('div', { class: 'card card-flush' },
       ...bests.map((best) => {
         const gain = best.bodyweight ? best.reps - best.firstReps : best.weight - best.firstWeight;
+        // Bei gehaltenen Übungen steht in `reps` die Sekundenzahl. „45 Wdh."
+        // wäre hier nicht nur hässlich, sondern falsch.
+        const e = isTimed(best.id) ? 's' : 'Wdh.';
         return el('div', { class: 'calcrow' },
           el('div', { class: 'grow' },
             el('div', { text: best.name }),
             el('div', { class: 'muted small',
-              text: `bester Satz ${formatDateKey(best.date)} · Start ${best.bodyweight ? `${best.firstReps} Wdh.` : `${oneDecimal(best.firstWeight)} kg`}` })),
-          gain > 0 ? el('span', { class: 'pill pill-ok tabular', text: `${signed(gain)}${best.bodyweight ? ' Wdh.' : ' kg'}` }) : null,
+              text: `bester Satz ${formatDateKey(best.date)} · Start ${best.bodyweight ? `${best.firstReps} ${e}` : `${oneDecimal(best.firstWeight)} kg`}` })),
+          gain > 0 ? el('span', { class: 'pill pill-ok tabular', text: `${signed(gain)}${best.bodyweight ? ` ${e}` : ' kg'}` }) : null,
           el('div', { class: 'tabular',
-            text: best.bodyweight ? `${best.reps} Wdh.` : `${oneDecimal(best.weight)} kg × ${best.reps}` }));
+            text: best.bodyweight ? `${best.reps} ${e}` : `${oneDecimal(best.weight)} kg × ${best.reps}` }));
       })));
   }
 

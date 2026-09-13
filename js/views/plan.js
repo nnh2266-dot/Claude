@@ -9,6 +9,7 @@ import { setPlan, clearTraining, setTrainingProfile } from '../store.js';
 import {
   exerciseById, GROUP_LABEL, EQUIPMENT_LABEL, GOAL_LABEL, LEVEL_LABEL,
   blockWeek, forWeek, buildPlan, BLOCK_WEEKS, restSeconds, sessionMinutes,
+  isTimed, repRange,
 } from '../training.js';
 import { ladderFor } from '../ladders.js';
 import { energyPlan, energyBreakdown, ACTIVITY_LABEL } from '../energy.js';
@@ -21,6 +22,8 @@ function dayCard(day, week, equipment, tempo) {
     const exercise = exerciseById(prescription.id);
     if (!exercise) return null;
     const adjusted = forWeek(prescription, week);
+    const zeit = isTimed(prescription.id);
+    const bereich = repRange(prescription);
 
     return el('div', { class: 'exrow' },
       el('div', { class: 'grow' },
@@ -31,8 +34,10 @@ function dayCard(day, week, equipment, tempo) {
                 ? ` · Stufe ${ladderFor(prescription.id).index + 1}/${ladderFor(prescription.id).leiter.stufen.length}`
                 : '') })),
       el('div', { class: 'exrow-rx tabular' },
-        el('strong', { text: `${adjusted.sets} × ${prescription.reps[0]}–${prescription.reps[1]}` }),
-        el('span', { text: `RIR ${adjusted.rir}` })));
+        el('strong', { text: `${adjusted.sets} × ${bereich[0]}–${bereich[1]}${zeit ? ' s' : ''}` }),
+        // Bei einer Halteübung gibt es keine Wiederholungen im Tank, also
+        // auch kein RIR. Dort steht, was sonst der Zähler wäre: Sekunden.
+        el('span', { text: zeit ? 'halten' : `RIR ${adjusted.rir}` })));
   }).filter(Boolean);
 
   const totalSets = day.exercises.reduce((sum, p) => sum + forWeek(p, week).sets, 0);

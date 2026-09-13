@@ -37,6 +37,7 @@ export function niveauFor(punkte) {
  *   art 'last' — geschätztes Einwiederholungsmaximum geteilt durch das
  *                Körpergewicht. Bei Kurzhanteln gilt die Zahl je Hantel.
  *   art 'wdh'  — Wiederholungen eines sauberen Satzes ohne Zusatzgewicht.
+ *   art 'zeit' — gehaltene Sekunden eines sauberen Satzes.
  *
  * Übungen ohne Eintrag bekommen keine Einordnung. Das ist Absicht: für
  * Handtuch-Rudern im Sitzen gibt es keinen Richtwert, weil der Widerstand aus
@@ -101,6 +102,20 @@ export const STANDARDS = {
   /* Rumpf */
   hlr:      { art: 'wdh',  werte: [3, 8, 15, 22, 30] },
   abwheel:  { art: 'wdh',  werte: [3, 8, 15, 22, 30] },
+
+  /* Halten, in Sekunden.
+     Nur der Seitstütz steht hier, und zwar als einziger mit einer echten
+     Quelle: Er entspricht dem „side bridge" aus McGills Rumpfausdauer-Batterie,
+     für die es veröffentlichte Normwerte gibt — grob anderthalb Minuten bei
+     Männern, etwas weniger bei Frauen, und rechts und links sollen sich um
+     höchstens fünf Prozent unterscheiden. Genau dieser Seitenvergleich ist der
+     Grund, warum der Seitstütz hier je Seite gezählt wird.
+
+     Für den Unterarmstütz, die Hohlkörperhalte, den Wandsitz, das Hängen und
+     den Handstand steht bewusst nichts. Umlaufende Zahlen dafür gibt es reichlich,
+     belastbare Normwerte nicht — und eine erfundene Einordnung ist schlechter
+     als keine. */
+  sideplank: { art: 'zeit', werte: [20, 45, 70, 95, 130] },
 };
 
 /**
@@ -204,6 +219,7 @@ export function rateExercise(id, leistung, profile) {
   } else {
     // Wer eine Körpergewichtsübung mit Zusatzgewicht macht, ist über den
     // Wiederholungsrichtwert hinaus — das rechnet die Tabelle nicht ab.
+    // Für gehaltene Übungen gilt dasselbe; dort stehen in `reps` Sekunden.
     if (leistung.weight > 0) return null;
     wert = leistung.reps;
   }
