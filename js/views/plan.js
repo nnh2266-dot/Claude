@@ -9,7 +9,7 @@ import { setPlan, clearTraining, setTrainingProfile } from '../store.js';
 import {
   exerciseById, GROUP_LABEL, EQUIPMENT_LABEL, GOAL_LABEL, LEVEL_LABEL,
   blockWeek, forWeek, buildPlan, BLOCK_WEEKS, restSeconds, sessionMinutes,
-  isTimed, repRange,
+  isTimed, repRange, ZYKLUS_WAHL, weeklyPlannedSets, VOLUMEN_UNTEN, VOLUMEN_OBEN,
 } from '../training.js';
 import { ladderFor } from '../ladders.js';
 import { energyPlan, energyBreakdown, ACTIVITY_LABEL } from '../energy.js';
@@ -83,11 +83,71 @@ export async function render(container, ctx) {
     `${profile.days}× pro Woche · ${profile.sessionLength} Minuten · ${BLOCK_WEEKS[week].label}`,
     iconButton('back', 'Zurück zum Training', () => ctx.go('training')));
 
+  const zyklus = plan.zyklus === 0 ? 0 : (Number(plan.zyklus) || 4);
+
+  /** Den Rhythmus umstellen, ohne die Übungsauswahl anzufassen. */
+  const setzeZyklus = async (wert) => {
+    if (wert === zyklus) return;
+    await setPlan({ ...plan, zyklus: wert });
+    await ctx.refreshTraining();
+    ctx.reload();
+    toast(wert ? `Entlastungswoche alle ${wert} Wochen.` : 'Keine feste Entlastungswoche mehr.');
+  };
+
+  const zyklusWahl = el('div', { class: 'stack-tight' },
+    el('div', { class: 'suppzeit', text: 'Entlastungswoche' }),
+    el('div', { class: 'row' },
+      ...ZYKLUS_WAHL.map((z) => el('button', {
+        class: 'chip', type: 'button',
+        'aria-pressed': z.wert === zyklus ? 'true' : 'false',
+        onClick: () => setzeZyklus(z.wert),
+      }, z.label))),
+    el('p', { class: 'muted small',
+      text: (ZYKLUS_WAHL.find((z) => z.wert === zyklus) || ZYKLUS_WAHL[0]).hint }));
+
+  /**
+   * Bei drei Tagen gibt es zwei sinnvolle Aufteilungen, und sie
+   * unterscheiden sich in dem, was zählt: Ganzkörper verteilt das Volumen
+   * einer Gruppe auf drei Einheiten, Push/Pull/Beine packt alles in eine.
+   */
+  const aufteilung = profile.days === 3
+    ? el('div', { class: 'stack-tight' },
+        el('div', { class: 'suppzeit', text: 'Aufteilung' }),
+        el('div', { class: 'row' },
+          ...[['3', 'Ganzkörper 3×'], ['3ppl', 'Push / Pull / Beine']].map(([k, label]) => el('button', {
+            class: 'chip', type: 'button',
+            'aria-pressed': String(plan.splitKey) === k ? 'true' : 'false',
+            onClick: async () => {
+              if (String(plan.splitKey) === k) return;
+              const neuesProfil = { ...profile, splitKey: k };
+              const next = buildPlan(neuesProfil, plan.seed || 0);
+              next.createdAt = plan.createdAt;
+              next.zyklus = plan.zyklus;
+              await setTrainingProfile(neuesProfil);
+              await setPlan(next);
+              await ctx.refreshTraining();
+              ctx.reload();
+              toast(`Aufteilung: ${label}.`);
+            },
+          }, label))),
+        el('p', { class: 'muted small',
+          text: String(plan.splitKey) === '3ppl'
+            ? 'Jede Gruppe einmal die Woche, dafür geballt: Auf dem Zugtag stehen 13 bis 16 Sätze '
+              + 'für den Rücken. Ab etwa elf Sätzen in einer Einheit trägt ein weiterer kaum noch etwas bei.'
+            : 'Jede Gruppe dreimal die Woche, jeweils in kleineren Portionen. Bei gleichem '
+              + 'Wochenvolumen ist das die verlässlichere Variante.' }))
+    : null;
+
   const summary = el('div', { class: 'card stack' },
     el('p', { class: 'small' },
-      el('strong', { text: 'Vier-Wochen-Block. ' }),
-      'Woche 1 sammelt Werte mit mehr Reserve, Woche 2 und 3 werden schwerer, Woche 4 ist Deload mit weniger Sätzen. ' +
-      'RIR heißt: so viele Wiederholungen hättest du am Satzende noch geschafft — je kleiner, desto härter.'),
+      el('strong', { text: zyklus ? `${zyklus}-Wochen-Block. ` : 'Ohne festen Block. ' }),
+      zyklus
+        ? 'Woche 1 sammelt Werte mit mehr Reserve, die mittleren Wochen bauen auf, die vorletzte ist die schwere, '
+          + 'die letzte ist Deload mit weniger Sätzen. '
+        : 'Es läuft dauerhaft die Aufbauwoche. Eine Entlastung schlägt die App vor, wenn Schlaf und Einheiten dafür sprechen. '
+      , 'RIR heißt: so viele Wiederholungen hättest du am Satzende noch geschafft — je kleiner, desto härter.'),
+    aufteilung,
+    zyklusWahl,
     el('p', { class: 'muted small',
       text: `${GOAL_LABEL[profile.goal]} · ${LEVEL_LABEL[profile.level]} · ${EQUIPMENT_LABEL[profile.equipment]} · Alltag ${ACTIVITY_LABEL[profile.activity].toLowerCase()}` }),
     el('div', { class: 'row' },
@@ -107,6 +167,44 @@ export async function render(container, ctx) {
         class: 'btn grow', type: 'button',
         onClick: () => ctx.startSetup(profile),
       }, 'Angaben ändern')));
+
+  /**
+   * Wie viele Sätze je Muskelgruppe in einer normalen Woche zusammenkommen.
+   *
+   * Die Zahl, die in Trainingsplänen am meisten entscheidet und die man am
+   * seltensten sieht — weil man sie über sieben Tage und mehrere Übungen
+   * zusammenzählen müsste. Hier steht sie einfach da.
+   */
+  const volumen = weeklyPlannedSets(plan);
+  const volumenKarte = el('div', { class: 'card stack mt-16' },
+    el('div', { class: 'row-between' },
+      el('h3', { class: 'card-title', text: 'Sätze je Woche' }),
+      el('span', { class: 'muted small',
+        text: `${plan.days.reduce((sum, d) => sum + (d.exercises || [])
+          .reduce((n, p2) => n + forWeek(p2, week).sets, 0), 0)} Sätze gesamt` })),
+
+    el('div', { class: 'card-flush' },
+      ...volumen.map((v) => el('div', { class: 'calcrow' },
+        el('div', { class: 'grow' },
+          el('div', { text: GROUP_LABEL[v.gruppe] || v.gruppe }),
+          el('div', { class: 'muted small',
+            text: v.mit
+              ? `${v.direkt} direkt + ${v.mit} als Helfer · an ${v.tage} ${v.tage === 1 ? 'Tag' : 'Tagen'}`
+              : `an ${v.tage} ${v.tage === 1 ? 'Tag' : 'Tagen'}` })),
+        el('span', { class: `pill supppill supp-${v.stufe === 'gut' ? 'gut' : v.stufe === 'viel' ? 'mittel' : 'duenn'}`,
+          text: v.stufe === 'gut' ? 'im Bereich' : v.stufe === 'viel' ? 'darüber' : 'darunter' }),
+        el('div', { class: 'tabular', text: String(v.gesamt) })))),
+
+    el('p', { class: 'hint',
+      text: `Als Bereich gelten ${VOLUMEN_UNTEN} bis ${VOLUMEN_OBEN} Sätze je Muskelgruppe und Woche. `
+        + 'Darunter verschenkt man etwas, darüber wird der Zugewinn je zusätzlichem Satz so klein, '
+        + 'dass er die Erholung selten wert ist — beides sind Mittelwerte, die Streuung zwischen '
+        + 'Menschen ist groß.' }),
+    el('p', { class: 'hint',
+      text: 'Gezählt wird wie in den Übersichtsarbeiten: Sätze, bei denen ein Muskel mitarbeitet, '
+        + 'ohne das Ziel zu sein, gehen halb ein. Der Trizeps bekommt beim Bankdrücken etwas ab, '
+        + 'auch wenn „Brust" darübersteht. „Rücken" ist dabei keine Muskelgruppe, sondern mehrere — '
+        + 'die Zahl dort liest sich höher, als sie für den einzelnen Muskel ist.' }));
 
   const tempo = ctx.settings.pausen || 'normal';
   const days = plan.days.map((day) => dayCard(day, week, profile.equipment, tempo));
@@ -228,5 +326,5 @@ export async function render(container, ctx) {
       },
     }, 'Training zurücksetzen'));
 
-  mount(container, head, summary, skillSection, ...days, leiterliste, sperrliste, nutrition, breakdown, reset);
+  mount(container, head, summary, volumenKarte, skillSection, ...days, leiterliste, sperrliste, nutrition, breakdown, reset);
 }

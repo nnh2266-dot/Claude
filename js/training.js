@@ -354,13 +354,22 @@ const FALLBACK_GROUP = {
 /* ---------------- Splits ---------------- */
 
 const SLOTS = {
-  fbA:   ['brust:c','ruecken:c','quad:c','ham:c','sdelt:i','trizeps:i','bizeps:i','core:i'],
-  fbB:   ['schulter:c','ruecken:c','ham:c','quad:c','brust:i','bizeps:i','trizeps:i','core:i'],
-  fbC:   ['brust:c','ruecken:c','quad:c','glute:c','sdelt:i','rdelt:i','bizeps:i','core:i'],
+  // Waden stehen am Ende der Ganzkörpertage, nicht mittendrin: Sie fallen als
+  // Erstes weg, wenn die Zeit knapp ist, und das ist richtig so. Ohne sie
+  // bekam ein Dreitageplan aber gar keinen einzigen Wadensatz — über den
+  // Überhang kommen sie jetzt reihum dran.
+  fbA:   ['brust:c','ruecken:c','quad:c','ham:c','sdelt:i','trizeps:i','bizeps:i','core:i','waden:i'],
+  fbB:   ['schulter:c','ruecken:c','ham:c','quad:c','brust:i','bizeps:i','trizeps:i','core:i','waden:i'],
+  fbC:   ['brust:c','ruecken:c','quad:c','glute:c','sdelt:i','rdelt:i','bizeps:i','core:i','waden:i'],
   push:  ['brust:c','schulter:c','brust:c','sdelt:i','trizeps:i','trizeps:i','core:i'],
   pull:  ['ruecken:c','ruecken:c','ruecken:c','rdelt:i','bizeps:i','bizeps:i','core:i'],
   legs:  ['quad:c','ham:c','quad:c','ham:i','glute:c','waden:i','core:i'],
-  upper: ['brust:c','ruecken:c','schulter:c','ruecken:c','sdelt:i','bizeps:i','trizeps:i'],
+  // Die hintere Schulter stand hier lange nicht drin — und weil der
+  // Vier-Tage-Plan aus Oberkörper und Unterkörper besteht, bekam sie damit in
+  // der ganzen Woche keinen einzigen Satz. Rudern trifft sie mit, aber wer viel
+  // drückt, braucht sie direkt: Die Empfehlung lautet, das Zugvolumen mindestens
+  // so hoch zu halten wie das Drückvolumen.
+  upper: ['brust:c','ruecken:c','schulter:c','ruecken:c','rdelt:i','sdelt:i','bizeps:i','trizeps:i'],
   lower: ['quad:c','ham:c','quad:c','ham:i','glute:c','waden:i','core:i'],
 };
 
@@ -581,7 +590,18 @@ export function buildPlan(profile, seed = 0) {
   const usable = EXERCISES.filter((e) => isAvailable(e, profile));
 
   let key = profile.days;
-  if (profile.days === 3 && profile.level !== 'anfaenger') key = '3ppl';
+  // Drei Tage waren für alle außer Anfänger Push/Pull/Beine. Das heißt: Jede
+  // Muskelgruppe kommt genau einmal die Woche dran, und ihr gesamtes Volumen
+  // liegt in einer einzigen Einheit — auf dem Zugtag sind das 13 bis 16 Sätze
+  // für den Rücken. Die Meta-Analysen sagen dazu zweierlei: Die Häufigkeit
+  // selbst ist bei gleichem Volumen nebensächlich, aber innerhalb einer Einheit
+  // ist bei etwa elf Sätzen je Gruppe der Punkt erreicht, ab dem ein weiterer
+  // Satz nichts Messbares mehr beiträgt. Beides zusammen macht Push/Pull/Beine
+  // an drei Tagen zur schlechteren Wahl — das gleiche Volumen auf drei
+  // Ganzkörpertage verteilt wirkt mehr.
+  //
+  // Wer es trotzdem will, stellt es im Plan um; dafür steht splitKey im Profil.
+  if (profile.splitKey && SPLITS[profile.splitKey]) key = profile.splitKey;
   const split = SPLITS[key] || SPLITS[3];
 
   // Die Übungszahl folgt der Zeit pro Einheit. Wie lange eine Übung dauert,
@@ -602,6 +622,8 @@ export function buildPlan(profile, seed = 0) {
   ));
 
   const rotation = {};
+  const vorlagenZaehler = {};
+  const erstesVorkommen = {};
   const pick = (spec, usedToday) => {
     const [group, type] = spec.split(':');
     let pool = usable.filter((e) => e.group === group && e.type === type);
@@ -630,7 +652,24 @@ export function buildPlan(profile, seed = 0) {
     if (specs.length > perSession) {
       const fest = specs.slice(0, perSession - 1);
       const ueberhang = specs.slice(perSession - 1);
-      specs = [...fest, ueberhang[(index + seed) % ueberhang.length]];
+      // Zwei Zähler, weil zwei Fälle danebengehen können.
+      //
+      // Nur der Tagesindex: Bei Oberkörper/Unterkörper liegen beide
+      // Oberkörpertage auf geraden Indizes, 0 und 2. Bei zwei Überhangposten
+      // ergibt das zweimal denselben Rest — eine Position der Vorlage kam nie
+      // vor.
+      //
+      // Nur ein Zähler je Vorlage: Bei drei Ganzkörpertagen kommt jede Vorlage
+      // genau einmal vor, alle drei stünden bei null, und alle drei ließen
+      // dieselbe Position weg. Genau so verschwand der Rumpf aus dem
+      // Dreitageplan.
+      //
+      // Beides zusammen trennt beide Fälle: die Nummer des Vorkommens plus die
+      // Stelle, an der die Vorlage zum ersten Mal auftaucht.
+      vorlagenZaehler[template] = (vorlagenZaehler[template] || 0) + 1;
+      if (erstesVorkommen[template] === undefined) erstesVorkommen[template] = index;
+      const n = (vorlagenZaehler[template] - 1) + erstesVorkommen[template] + seed;
+      specs = [...fest, ueberhang[n % ueberhang.length]];
     }
 
     const usedToday = new Set();
@@ -891,21 +930,150 @@ export const BLOCK_WEEKS = {
   4: { label: 'Woche 4 · Deload',    setDelta: -1, rirDelta: 2 },
 };
 
+/**
+ * Wie lang ein Block ist, bevor die Entlastungswoche kommt.
+ *
+ * Vier Wochen waren fest verdrahtet. Das ist die übliche Empfehlung — Deloads
+ * werden meist alle vier bis sechs Wochen angesetzt —, aber die Studienlage
+ * dazu ist dünn: In einer Untersuchung pausierte die Hälfte der Teilnehmer in
+ * der Mitte eines neunwöchigen Programms eine Woche, und hinterher war beim
+ * Muskelzuwachs kein Unterschied zu sehen. Belegt ist der Nutzen also nicht,
+ * widerlegt auch nicht.
+ *
+ * Bei einem festen Viererrhythmus geht ein Viertel aller Trainingswochen für
+ * etwas drauf, das vielleicht nichts bringt. Deshalb steht es jetzt zur Wahl,
+ * mit vier Wochen als Voreinstellung.
+ */
+export const ZYKLUS_WAHL = [
+  { wert: 4, label: 'Alle 4 Wochen', hint: 'Die übliche Empfehlung. Viel Erholung, dafür ist jede vierte Woche leichter.' },
+  { wert: 6, label: 'Alle 6 Wochen', hint: 'Längere Blöcke, seltener entlastet. Liegt ebenfalls im empfohlenen Bereich.' },
+  { wert: 0, label: 'Nur bei Bedarf', hint: 'Keine feste Entlastungswoche. Die App meldet sich trotzdem, wenn Schlaf und Einheiten dagegen sprechen.' },
+];
+
 export function blockWeek(plan, todayKey) {
   if (!plan) return 1;
   const start = new Date(`${plan.createdAt}T12:00:00`);
   const now = new Date(`${todayKey}T12:00:00`);
   const days = Math.floor((now - start) / 86400000);
-  return (Math.floor(Math.max(0, days) / 7) % 4) + 1;
+  const wochen = Math.floor(Math.max(0, days) / 7);
+
+  const zyklus = plan.zyklus === 0 ? 0 : (Number(plan.zyklus) || 4);
+  // Ohne festen Rhythmus laeuft dauerhaft die Aufbauwoche. Die Entlastung
+  // kommt dann ueber den Hinweis, der Schlaf und Einheiten auswertet.
+  if (!zyklus) return 2;
+
+  const stelle = (wochen % zyklus) + 1;
+  if (stelle === zyklus) return 4;      // Deload
+  if (stelle === 1) return 1;           // Einfinden
+  if (stelle === zyklus - 1) return 3;  // Schwer
+  return 2;                             // Aufbauen
 }
 
-/** Sätze und RIR einer Übung für die laufende Blockwoche. */
+/**
+ * Sätze und RIR einer Übung für die laufende Blockwoche.
+ *
+ * Der RIR wird nach unten bei 1 abgefangen, nicht bei 0. Vorher landete die
+ * Stufe „erfahren" in der schweren Woche bei 0 — also jeder Satz bis zum
+ * Muskelversagen, eine Woche lang. Die Meta-Analysen zeigen zwar, dass näher am
+ * Versagen etwas mehr Wachstum bringt, aber der Zugewinn unterhalb von zwei
+ * Wiederholungen Reserve ist klein, während Ermüdung und Technikverlust
+ * deutlich zunehmen. Ein einzelner Satz bis zum Versagen ist in Ordnung; eine
+ * ganze Woche davon kostet mehr, als sie bringt.
+ *
+ * Nach oben bleibt es bei 4. Ab etwa fünf Wiederholungen Reserve fällt der
+ * Wachstumsreiz messbar ab — mehr Reserve wäre kein sanfter Einstieg mehr,
+ * sondern eine verschenkte Woche.
+ */
+/**
+ * Geplante Sätze je Muskelgruppe in einer Woche, gerechnet für die
+ * Aufbauwoche — die Woche, die den Normalfall darstellt.
+ *
+ * Eingeordnet wird gegen den Bereich, den die Meta-Analysen hergeben. Die
+ * Zusammenfassung der Datenlage: Mehr Sätze bringen mehr, aber mit immer
+ * kleinerem Zugewinn je Satz; unterhalb von etwa zehn Sätzen die Woche
+ * verschenkt man etwas, oberhalb von zwanzig ist der Zuwachs je zusätzlichem
+ * Satz so klein, dass er die Erholung selten wert ist. Beides sind Mittelwerte
+ * über viele Menschen — die Streuung zwischen einzelnen ist groß, und deshalb
+ * steht hier eine Einordnung und keine Note.
+ *
+ * Wichtig für die Deutung: „Rücken" ist keine Muskelgruppe, sondern mehrere.
+ * Zwanzig Rückensätze verteilen sich auf Latissimus, Rhomboiden und Kapuze und
+ * sind deshalb weniger, als die Zahl aussieht.
+ */
+export const VOLUMEN_UNTEN = 10;
+export const VOLUMEN_OBEN = 20;
+
+/**
+ * Wer bei einer Übung mitarbeitet, ohne die Zielgruppe zu sein.
+ *
+ * Ohne diese Tabelle zählt ein Plan den Trizeps nur dort, wo „Trizeps"
+ * draufsteht — und meldet drei Sätze, während in Wirklichkeit noch achtzehn
+ * Sätze Drücken darauf gehen. Die Meta-Analyse, aus der der Zielbereich stammt,
+ * macht es genauso: Sätze, bei denen ein Muskel mitarbeitet, ohne das Ziel zu
+ * sein, gehen mit dem halben Gewicht in die Rechnung ein.
+ *
+ * Die Anteile sind grob und sollen es sein. Ob der Trizeps beim Bankdrücken
+ * 0,4 oder 0,6 Sätze abbekommt, weiß niemand; dass er deutlich mehr als null
+ * abbekommt, weiß jeder.
+ */
+const MITARBEIT = {
+  'brust:c':    { trizeps: 0.5, sdelt: 0.5 },
+  'schulter:c': { trizeps: 0.5, sdelt: 0.5 },
+  'trizeps:c':  { brust: 0.5, sdelt: 0.25 },
+  'ruecken:c':  { bizeps: 0.5, rdelt: 0.5 },
+  'bizeps:c':   { ruecken: 0.5 },
+  'quad:c':     { glute: 0.5, ham: 0.25 },
+  'ham:c':      { glute: 0.5, ruecken: 0.25 },
+  'glute:c':    { ham: 0.5 },
+};
+
+/**
+ * Geplante Sätze je Muskelgruppe in einer Woche, gerechnet für die
+ * Aufbauwoche — die Woche, die den Normalfall darstellt.
+ *
+ * `direkt` sind die Sätze, bei denen die Gruppe das Ziel ist. `gesamt` zählt
+ * die Mitarbeit halb dazu, und danach richtet sich die Einordnung.
+ */
+export function weeklyPlannedSets(plan, week = 2) {
+  const je = new Map();
+  const hol = (g) => {
+    if (!je.has(g)) je.set(g, { gruppe: g, direkt: 0, mit: 0, tage: 0 });
+    return je.get(g);
+  };
+
+  for (const day of plan?.days || []) {
+    const drin = new Set();
+    for (const p of day.exercises || []) {
+      const e = exerciseById(p.id);
+      if (!e) continue;
+      const saetze = forWeek(p, week).sets;
+      hol(e.group).direkt += saetze;
+      drin.add(e.group);
+      const mit = MITARBEIT[`${e.group}:${e.type}`];
+      if (mit) for (const [g, anteil] of Object.entries(mit)) hol(g).mit += saetze * anteil;
+    }
+    for (const g of drin) hol(g).tage += 1;
+  }
+
+  return [...je.values()]
+    .map((x) => {
+      const gesamt = Math.round(x.direkt + x.mit);
+      return {
+        ...x,
+        mit: Math.round(x.mit),
+        gesamt,
+        stufe: gesamt < VOLUMEN_UNTEN ? 'wenig' : gesamt > VOLUMEN_OBEN ? 'viel' : 'gut',
+      };
+    })
+    .sort((a, b) => b.gesamt - a.gesamt);
+}
+
 export function forWeek(prescription, week) {
   const mod = BLOCK_WEEKS[week] || BLOCK_WEEKS[1];
   const sets = mod.setDelta === -1
     ? Math.max(2, prescription.sets - Math.ceil(prescription.sets * 0.4))
     : Math.max(2, prescription.sets + mod.setDelta);
-  return { sets, rir: Math.min(4, Math.max(0, prescription.rir + mod.rirDelta)) };
+  return { sets, rir: Math.min(4, Math.max(1, prescription.rir + mod.rirDelta)) };
 }
 
 /** Gründe, aus denen eine Einheit ausfallen darf. */
