@@ -539,9 +539,21 @@ eingeschränkt, unter 1,0 wird das Konto gesperrt.
 > unterschreibt. Kostet eine Nachricht, erhält den guten Preis. Danach Zweitlieferant,
 > Papiere vor Preis.
 >
-> **Selbst Hersteller werden ist bei 60 Stück ausgeschlossen** — EMV und RoHS kosten
-> 1.100 bis 2.600 €, das Dreifache des Warenwerts. **Der günstige Ausstieg bei
-> 69,76 € ist weiterhin offen.** Wortlaut der Nachricht in
+> **Korrektur:** Selbst Hersteller zu werden kostet **fast nichts an Geld** — Modul A
+> verlangt keine Fremdprüfung, die vorhandenen ZOL-Berichte dürfen die Grundlage sein.
+> Siehe [`konformitaetserklaerung-vorlage.md`](konformitaetserklaerung-vorlage.md).
+> Und die Produkthaftung trägt der Inhaber als Direktimporteur nach § 4 Abs. 2
+> ProdHaftG **ohnehin** — auch ohne eigenes Logo.
+>
+> **Es fehlt aber ein zweites Dokument, das bisher niemand erwähnt hat:** Seit dem
+> 18.08.2024 braucht die **Batterie ihre eigene CE-Kennzeichnung und ihre eigene
+> EU-Konformitätserklärung** nach der Batterieverordnung (EU) 2023/1542. Auch die
+> liegt nicht vor.
+>
+> **Vor jeder weiteren Ausgabe:**
+> [`produktentscheidung.md`](produktentscheidung.md) lesen. Dort steht, warum die
+> Kategorie keinen haltbaren Vorteil hergibt und woran ein besseres Produkt zu
+> erkennen wäre. **Der günstige Ausstieg bei 69,76 € ist weiterhin offen.** Wortlaut der Nachricht in
 [`anfrage-scpanda-ce.md`](anfrage-scpanda-ce.md), die ausfüllfertige Vorlage liegt
 bei und ist gegen 38 Punkte geprüft.
 
