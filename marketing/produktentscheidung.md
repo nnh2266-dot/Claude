@@ -178,3 +178,88 @@ Nichts davon ist verloren:
 - [Massagepistolen-Vergleich 2026, frinton.de](https://www.frinton.de/artikel/massagepistolen-im-vergleich-2026-welche-sich-wirklich-lohnt-und-wo-du-dir-das-geld-sparen-kannst.html)
 - [Massagepistolen-Vergleich 2026, herlifestyle.de](https://www.herlifestyle.de/artikel/massagepistolen-im-vergleich-2026-warum-600-euro-nicht-automatisch-besser-massieren.html)
 - [flexorex.de](https://flexorex.de/p/massage-gun-with-extended-handle/)
+
+---
+
+# Entscheidung: abgebrochen am 16. September 2026
+
+**Das Vorhaben wird nicht weiterverfolgt.** Nicht wegen der fehlenden
+Konformitätserklärung — die wäre über den Eigenmarkenweg wahrscheinlich lösbar
+gewesen. Sondern weil die Rechnung **auch mit Dokument** nicht aufgeht:
+
+| | |
+|---|---|
+| Break-even-CPA bei 79 € | **47 €** |
+| Realistisch geschätzter CPA | **33–50 €** |
+| Direkter Wettbewerber, gleiche Bauform | **54,99 € inkl. Versand** |
+| Haltbarer Vorteil | **keiner** |
+
+**Ausgegeben: 69,76 €.** Das war der Preis dafür, eine teure Entscheidung billig zu
+treffen.
+
+## Abschlussnachricht an ScPanda
+
+Der Lieferant hat sich korrekt verhalten und ist als Kontakt etwas wert. Die Nachricht
+schließt ohne Vorwurf und hält die Tür offen.
+
+```
+Hello,
+
+Thank you for your honesty throughout. I want to close this properly.
+
+I have decided not to go ahead with this product. The reason is not your
+price, your service or the samples, which were all good. It is two things
+together. Without the EU Declaration of Conformity I cannot sell legally
+in Germany, and the German market price for this type of massage gun has
+come down to around 55 euro, which does not leave enough room for me.
+
+I especially appreciate that you told me the factory would not sign,
+instead of sending me a signature that was not authorised. A false
+declaration would have cost me far more than a lost order. Not many
+suppliers would have done that.
+
+If I start another product in the future, I will come back to you. And if
+you ever work with a factory that does provide signed EU Declarations of
+Conformity, I would be glad to hear about it.
+
+Thank you for your time, and good luck with your business.
+
+Best regards
+Nik Hoffmann
+```
+
+## Die beiden Muster verkaufen
+
+**Zahlen:** Bezahlt wurden **69,76 €** für zwei Geräte. Vergleichbare No-Name-Geräte
+kosten neu 46–75 €. Realistisch für ein kaum benutztes Gerät ohne Markennamen:
+**30–45 €**.
+
+> **Bei 35 € je Gerät sind die 69,76 € vollständig zurück.** Das Vorhaben endet dann
+> bei plus/minus null.
+
+**Kanal:** Kleinanzeigen, mit Abholung vor Ort. Gebrauchte Massagepistolen gehen dort
+regelmäßig weg. Einzeln einstellen, nicht als Paar — zwei identische Geräte
+nebeneinander sehen gewerblich aus.
+
+**Rechtlich sauber, weil es zwei Geräte sind:**
+
+1. **Erst aus dem Betriebsvermögen entnehmen.** Beim Steuerberater ansprechen, der ist
+   ohnehin eingeplant. Werden sie als Betriebsvermögen verkauft, ist der Erlös
+   Betriebseinnahme — und der Verkauf ein **gewerblicher** mit Widerrufsrecht,
+   Gewährleistung und Informationspflichten. Für zwei Geräte unverhältnismäßig
+2. **Danach privat verkaufen.** Im Privatverkauf lässt sich die Gewährleistung
+   ausschließen — aber **individuell formuliert**, nicht als Textbaustein
+3. **Abholung vor Ort** statt Versand. Damit gilt kein Fernabsatzrecht
+4. **Nicht unter dem Gewerbenamen inserieren**, keine zwei identischen Anzeigen
+   gleichzeitig. Wer neu wirkende, gleichartige Ware in Menge anbietet, gilt schnell
+   als gewerblich — das ist der häufigste Abmahngrund auf der Plattform
+5. **Ehrlich beschreiben:** Muster, kaum benutzt, vier Aufsätze, originalverpackt, kein
+   Markengerät. Der ehrliche Zustandstext bringt auf der Plattform erfahrungsgemäß den
+   besseren Preis
+
+## Quellen
+
+- [Massagepistolen bei Kleinanzeigen](https://www.kleinanzeigen.de/s-massagepistole/k0)
+- [Privat verkaufen: wann eine Gewerbeanmeldung nötig wird, Händlerbund](https://ohn.haendlerbund.de/recht/rechtsfragen/privat-verkaufen-gewerbeanmeldung-noetig)
+- [Abmahnung gewerblich oder privat, Händlerbund](https://www.haendlerbund.de/de/leistungen/rechtssicherheit/hilfe-bei-abmahnung/abmahnung-ebay-kleinanzeigen-gewerblich)
+- [Rechte und Pflichten für gewerbliche Verkäufer, Kleinanzeigen](https://themen.kleinanzeigen.de/pro-infopoint/ratgeber/rechte-und-pflichten-fur-gewerbliche-verkaufer/)

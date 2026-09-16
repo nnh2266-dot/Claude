@@ -3,7 +3,24 @@
 Einstiegspunkt für alles, was zu diesem Vorhaben entschieden, recherchiert und gebaut
 wurde. Die Einzelheiten stehen in den verlinkten Dateien; hier steht, was gilt.
 
-**Stand: 10. September 2026.**
+**Stand: 16. September 2026.**
+
+> # ⛔ Abgebrochen
+>
+> **Das Vorhaben wird nicht weiterverfolgt.** Entscheidung vom 16. September 2026.
+> Nicht wegen der fehlenden Konformitätserklärung — die wäre über den Eigenmarkenweg
+> wahrscheinlich lösbar gewesen. Sondern weil die Rechnung **auch mit Dokument** nicht
+> aufgeht: Break-even-CPA 47 €, realistisch geschätzter CPA 33–50 €, ein direkter
+> Wettbewerber bei 54,99 €, kein haltbarer Vorteil.
+>
+> **Ausgegeben: 69,76 €.** Beim Verkauf der beiden Muster zu je 35 € endet das
+> Vorhaben bei plus/minus null.
+>
+> **Begründung, Abschlussnachricht und Prüfliste für ein nächstes Produkt:**
+> [`produktentscheidung.md`](produktentscheidung.md).
+>
+> Alles Übrige in diesem Dokument beschreibt den Stand bei Abbruch und bleibt als
+> Arbeitsgrundlage stehen.
 
 ---
 
