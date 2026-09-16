@@ -527,10 +527,21 @@ eingeschränkt, unter 1,0 wird das Konto gesperrt.
 > schließen den günstigen Ausstieg, der derzeit bei 69,76 € liegt. Erst ausgeben, wenn
 > die unterschriebene Konformitätserklärung da ist.
 
-**Wartet auf ScPanda — nur noch eines:** die **unterschriebene
-Konformitätserklärung**. **Nachricht mit Anhang am 10. September 2026 abgeschickt.**
-Bleibt eine Antwort bis etwa zum 17. September aus, genau einmal nachfassen — nur mit
-dieser einen Bitte. Wortlaut der Nachricht in
+> ## ⛔ Die Fabrik unterschreibt nicht (16. September 2026)
+>
+> ScPanda hat geantwortet: Die Fabrik ist **nicht bereit**, die Konformitätserklärung
+> zu unterschreiben. Wortlaut in [`anfrage-scpanda-ce.md`](anfrage-scpanda-ce.md).
+> Die Antwort ist anständig — sie wollten keine nicht autorisierte Unterschrift
+> liefern, und eine gefälschte Erklärung wäre schlimmer als keine.
+>
+> **Damit ist das Vorhaben auf diesem Weg blockiert.** Nächster Schritt: ScPanda
+> fragen, ob sie ein Modell aus einer **anderen Fabrik** liefern können, die
+> unterschreibt. Kostet eine Nachricht, erhält den guten Preis. Danach Zweitlieferant,
+> Papiere vor Preis.
+>
+> **Selbst Hersteller werden ist bei 60 Stück ausgeschlossen** — EMV und RoHS kosten
+> 1.100 bis 2.600 €, das Dreifache des Warenwerts. **Der günstige Ausstieg bei
+> 69,76 € ist weiterhin offen.** Wortlaut der Nachricht in
 [`anfrage-scpanda-ce.md`](anfrage-scpanda-ce.md), die ausfüllfertige Vorlage liegt
 bei und ist gegen 38 Punkte geprüft.
 

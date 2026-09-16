@@ -725,3 +725,47 @@ Unterschrift.
 
 **Diese Frage wird ab jetzt jedem Lieferanten als erste gestellt, bevor über Preise
 geredet wird.**
+
+---
+
+## Antwort von ScPanda: Die Fabrik unterschreibt nicht (16. September 2026)
+
+**Im Wortlaut, wie vom Inhaber weitergeleitet:**
+
+> Hello Nik,
+>
+> I hope you're doing well.
+>
+> I want to be transparent regarding the EU Declaration of Conformity. We asked the
+> factory to sign the document, but they have confirmed that they are not willing to
+> do so. Since this is an official compliance document, we do not want to provide a
+> signature that is not properly authorized.
+
+> **Nicht zu verwechseln mit dem Fehlalarm vom 9. September.** Damals wurde eine
+> Lieferantenablehnung in die Unterlagen geschrieben, die es nie gegeben hatte, und
+> noch am selben Tag zurückgenommen. **Diese hier ist echt** und vom Inhaber im
+> Wortlaut übermittelt.
+
+### Die Antwort ist anständig
+
+ScPanda hätte unterschreiben lassen können, was auch immer. Sie tun es ausdrücklich
+nicht, weil die Unterschrift nicht autorisiert wäre. **Eine gefälschte Erklärung wäre
+für den Importeur schlimmer als gar keine** — sie wäre eine Falschkennzeichnung mit
+Haftung in Deutschland. Der Lieferant hat hier richtig gehandelt, und das spricht für
+ihn als Geschäftspartner.
+
+### Was es bedeutet
+
+Ohne Erklärung des Herstellers kann der Importeur sich nicht auf sie stützen. Es
+bleiben drei Wege:
+
+| Weg | Kosten | Bewertung |
+|---|---|---|
+| **ScPanda liefert ein anderes Modell**, dessen Fabrik unterschreibt | 0 € | **Zuerst versuchen.** Preis und Beziehung bleiben, die Frage wandert zur Fabrik |
+| **Anderer Lieferant**, Papiere vor Preis | 0 € bis zur Musterbestellung | Die Bauform ist nicht knapp — siehe `wettbewerb.md` |
+| **Selbst Hersteller werden** | EMV 800–2.000 € plus RoHS 300–600 € | **Bei 60 Stück ausgeschlossen.** Das Dreifache des Warenwerts |
+| **Abbruch** | bisher ausgegeben **69,76 €** | Der in `rechnung.md` beschriebene günstige Ausstieg, noch offen |
+
+**Die Reihenfolge ist wichtig:** Erst ScPanda fragen, ob sie ein Modell aus einer
+anderen Fabrik liefern können. Das kostet eine Nachricht und erhält den guten Preis.
+Erst wenn das scheitert, zum Zweitlieferanten.
