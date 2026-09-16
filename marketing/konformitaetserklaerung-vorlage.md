@@ -300,3 +300,98 @@ ist.
 
 > **Das ersetzt keine Rechtsberatung.** Es korrigiert nur die falsche Aussage, der Weg
 > koste vierstellig. Er kostet fast nichts an Geld und einiges an Verantwortung.
+
+---
+
+# Ist es sinnvoll, selbst in die Verantwortung zu gehen? — Recherche vom 16. September 2026
+
+## Der entscheidende Befund: Die Haftung ist längst da
+
+**§ 4 Abs. 2 ProdHaftG:** Als Hersteller gilt, wer ein Produkt zum Zweck des Verkaufs
+**in den EWR einführt**. Und ausdrücklich:
+
+> *„Importiert die Handelsvertretung Produkte aus einem Drittstaat selbst, haftet sie
+> wie ein Hersteller, **selbst wenn sie den ausländischen Hersteller benennen kann**."*
+
+**Das heißt: Als Direktimporteur aus China haftet der Inhaber bereits jetzt wie ein
+Hersteller.** Ohne eigenes Logo, ohne eigene Erklärung, ohne CE-Zeichen.
+
+Die Befreiung für den **Quasihersteller** — den echten Hersteller mitnennen und dadurch
+aus der Haftung kommen — **greift bei Drittlandimporten nicht.** Sie funktioniert nur
+innerhalb der EU.
+
+### Was das für die Entscheidung bedeutet
+
+Die Frage war: *Soll ich die Verantwortung übernehmen?* **Die richtige Frage ist eine
+andere**, denn die zivilrechtliche Produkthaftung trägt er ohnehin.
+
+Selbst Hersteller zu werden fügt hinzu:
+
+| | |
+|---|---|
+| **Technische Dokumentation** führen und zehn Jahre aufbewahren | neu |
+| **Konformitätserklärung** ausstellen und unterschreiben | neu |
+| CE-Zeichen anbringen, Name und Anschrift auf der Verpackung | neu, über die Banderole ohnehin geplant |
+| **Zivilrechtliche Produkthaftung** für Personen- und Sachschäden | **besteht bereits** |
+
+**Der Zuwachs an Haftung ist gering. Der Zuwachs an Pflichten ist real, aber
+beherrschbar.** Was wirklich hinzukommt, ist das Risiko einer **unrichtigen Erklärung**:
+Er erklärt Konformität für eine Fertigung, die er nicht überwachen kann.
+
+## Versicherbar — und bisher nicht eingeplant
+
+Produkthaftpflicht ist üblicherweise Teil der Betriebshaftpflicht.
+
+| | |
+|---|---|
+| Bei überschaubaren Risiken | **200–300 € im Jahr** |
+| Im Schnitt | **ab 500 € im Jahr** |
+
+> ⚠️ **Unbedingt prüfen: Sind Einfuhren aus Nicht-EU-Ländern mitversichert?** Genau
+> dieser Punkt wird in Standardpolicen oft ausgeschlossen — und er ist der einzige, auf
+> den es hier ankommt.
+
+**In [`rechnung.md`](rechnung.md) fehlt dieser Posten.** Die Fixkosten der Testphase
+sind mit 788 € angesetzt, ohne Versicherung. **Realistisch sind 1.100–1.300 €.**
+
+## Zeitdruck aus einer anderen Richtung
+
+Die neue **EU-Produkthaftungsrichtlinie (EU) 2024/2853** ist bis zum **9. Dezember 2026**
+in nationales Recht umzusetzen.
+
+- Produkte, die **bis einschließlich 8. Dezember 2026** in Verkehr gebracht werden,
+  bleiben im **alten** Haftungsregime
+- Danach gilt das neue, das Geschädigte deutlich besserstellt
+
+**Das ist kein Grund zur Eile, aber ein Datum, das man kennen sollte.**
+
+## Das eigentliche Risiko ist der Akku
+
+Von allem, was schiefgehen kann, ist ein **Lithium-Zwischenfall** der einzige
+realistische Weg zu einem Personenschaden. Und genau dort hat die Dokumentation ihre
+einzige echte Lücke:
+
+**Der UN38.3-Bericht deckt nur die Einzelzelle, nicht den zusammengebauten
+7,4-V-Akku.** Das steht seit dem 9. September in `dokumente/README.md` und ist bis
+heute offen.
+
+**Wer selbst erklärt, sollte diese Lücke vorher schließen** — nicht wegen der
+Marktüberwachung, sondern weil es der einzige Punkt ist, an dem jemand zu Schaden
+kommen könnte.
+
+## Was nicht belegt werden konnte
+
+**Die Wahrscheinlichkeit einer Marktüberwachungsprüfung.** Die Bundesnetzagentur prüft
+elektrische Produkte stichprobenartig und spricht von einem „Sanktionsumfang in
+Millionenhöhe"; konkrete Zahlen für 2025 stehen nur in der PDF-Statistik, die aus dieser
+Sitzung nicht auslesbar war. **Wer eine Zahl nennt, rät.**
+
+## Quellen
+
+- [§ 4 ProdHaftG, gesetze-im-internet.de](https://www.gesetze-im-internet.de/prodhaftg/__4.html)
+- [Produkthaftung im internationalen Warenverkehr, CDH](https://cdh.de/themenfeld/produkthaftung-im-internationalen-warenverkehr-was-handelsvertretungen-wissen-muessen/)
+- [Quasi-Hersteller, Haufe](https://www.haufe.de/id/beitrag/produkthaftung-212-quasi-hersteller-HI6421551.html)
+- [Produkthaftpflicht: Kosten, Bernhard Assekuranz](https://bernhard-assekuranz.com/produkthaftpflichtversicherung/)
+- [Produkthaftungsrecht 2026, IT-Recht Kanzlei](https://www.it-recht-kanzlei.de/produkthaftung-2026-faq.html)
+- [Richtlinie (EU) 2024/2853, Wikipedia](https://de.wikipedia.org/wiki/Richtlinie_(EU)_2024/2853_(EU-Produkthaftungsrichtlinie))
+- [Marktüberwachung, Bundesnetzagentur](https://www.bundesnetzagentur.de/DE/Fachthemen/Telekommunikation/Technik/Marktueberwachung/artikel.html)

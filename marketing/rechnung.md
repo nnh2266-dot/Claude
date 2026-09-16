@@ -108,7 +108,18 @@ Einnahme (ohne USt., § 19)                    79,00 €
 | Domain | 15 € | 15 € |
 | Muster (tatsächlich abgerechnet) | 70 € | 70 € |
 | Steuerberater (anteilig) | 100 € | 400 € |
-| **Summe** | **≈ 788 €** | **≈ 1.465 €** |
+| **Produkthaftpflicht** *(fehlte bisher)* | **300 €** | **300–500 €** |
+| **Summe** | **≈ 1.088 €** | **≈ 1.865 €** |
+
+> **Nachtrag 16. September 2026: Die Produkthaftpflicht fehlte in dieser Aufstellung.**
+> Als Direktimporteur aus einem Drittland haftet der Inhaber nach § 4 Abs. 2 ProdHaftG
+> **wie ein Hersteller** — auch ohne eigenes Logo und auch dann, wenn er die chinesische
+> Fabrik benennen kann. Diese Haftung besteht also unabhängig davon, ob er selbst
+> erklärt oder nicht, und gehört in die Rechnung.
+>
+> Übliche Prämien: 200–300 € im Jahr bei überschaubaren Risiken, im Schnitt ab 500 €.
+> **Beim Abschluss ausdrücklich prüfen, ob Einfuhren aus Nicht-EU-Ländern mitversichert
+> sind** — genau das wird in Standardpolicen häufig ausgeschlossen.
 
 Die EPR-Registrierungen gelten für **jedes** Elektrogerät, das du künftig importierst.
 Sie sind nicht an dieses Produkt gebunden.
