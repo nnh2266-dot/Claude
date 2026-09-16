@@ -221,3 +221,82 @@ dasselbe Gerät wie GB-868**. Der Beweis steht im EMV-Prüfbericht selbst: Das F
 „General Appearance of the EUT" zeigt das Gerät mit **fest gebogenem Griff, montiertem
 Kugelkopf sowie U-Kopf, Spitzkopf, Flachkopf und USB-Kabel** — also genau das gelieferte
 Produkt. Die Prüfung hat am richtigen Gerät stattgefunden.
+
+---
+
+# Selbst Hersteller werden — Korrektur vom 16. September 2026
+
+**Bisher stand in den Unterlagen, das koste 1.100 bis 2.600 € und sei bei 60 Stück
+ausgeschlossen. Das war zu grob und hat den falschen Schluss nahegelegt.**
+
+Diese Summe ist der Preis für **neu beauftragte** EMV- und RoHS-Prüfungen. Die sind
+aber **nicht vorgeschrieben**.
+
+## Was das Gesetz tatsächlich verlangt
+
+Für EMV 2014/30/EU und RoHS 2011/65/EU gilt **Modul A, interne Fertigungskontrolle**.
+Es gibt **keine benannte Stelle** und **keine Pflicht zur Fremdprüfung**. Der Hersteller
+muss:
+
+1. Eine **technische Dokumentation** erstellen, die die Bewertung der Konformität
+   erlaubt — Prüfberichte gehören dazu, müssen aber nicht selbst beauftragt sein
+2. Die Konformität erklären und **selbst unterschreiben**
+3. Das CE-Zeichen anbringen
+4. Beides **zehn Jahre** aufbewahren
+
+**Die vorhandenen ZOL-Berichte dürfen die Grundlage sein.** Es gibt keine Vorschrift,
+dass der Erklärende die Prüfungen selbst bezahlt haben muss. Genau so arbeiten
+Eigenmarken im Handel.
+
+## Was daraus folgt: die Logo-Entscheidung kehrt sich um
+
+`README.md` Abschnitt 8 rät vom eigenen Logo ab, **weil** man damit zum Hersteller wird.
+Diese Logik galt, solange die Fabrik unterschreiben würde.
+
+**Jetzt ist es umgekehrt.** Ohne eigenes Logo bleibt Wenzhou Yi Xiang der genannte
+Hersteller — und der erklärt nicht. Es stünde also Ware im Markt, deren benannter
+Hersteller keine Erklärung abgegeben hat. **Mit eigenem Logo wird der Inhaber zum
+Hersteller und darf selbst erklären.** Das Logo ist nicht mehr das Problem, es ist der
+Schlüssel.
+
+## Was es real kostet
+
+| Posten | Kosten |
+|---|---|
+| EMV-Prüfbericht von ScPanda anfordern | **0 €** — eine Datei, keine Unterschrift, keine Haftung. Deshalb viel leichter zu bekommen als die Erklärung |
+| Erklärung erstellen und unterschreiben | 0 € — die Vorlage liegt vor |
+| Name und Anschrift auf der Verpackung | **bereits eingeplant** — die Banderole, 1,50 € je Stück |
+| Rechtliche Prüfung | **50 €**, stehen bereits in `rechnung.md` |
+| Stiftung EAR | **ändert sich nicht** — die Pflicht besteht als Importeur ohnehin |
+
+**Der zusätzliche Geldbetrag ist praktisch null.** Die Kalkulation bleibt bei 14,46 €
+Einstand und rund 56 € Deckungsbeitrag.
+
+## Was es wirklich kostet: Haftung
+
+**Das ist der Preis, nicht das Geld.**
+
+- Fällt das Gerät bei einer Marktüberwachungsprüfung durch, haftet der Inhaber
+- Ändert die Fabrik ein Bauteil, wird die Erklärung unrichtig — **ohne dass er es
+  erfährt**
+- Modul A verlangt, dass der Hersteller Maßnahmen trifft, damit die Fertigung die
+  Konformität sichert. **Eine Fabrik in China, die man nicht kontrolliert, lässt sich
+  nicht überwachen.** Das ist die ehrliche Schwachstelle dieses Wegs
+- Produkthaftung für Personenschäden liegt beim Hersteller
+
+**Praktisch machen das Tausende kleiner EU-Importeure genau so.** Rechtlich sauber ist
+es nur, solange das Produkt wirklich konform ist — und die Berichte sagen, dass es das
+ist.
+
+## Was zu tun wäre
+
+1. **EMV-Prüfbericht bei ScPanda anfordern.** Ohne ihn ist die technische Dokumentation
+   unvollständig. Als reine Datei ohne Unterschrift ist das ein leichter Ask
+2. Schriftliche Bestätigung, dass **GB-868 und KK-26 dasselbe Gerät** sind
+3. Erklärung auf den **eigenen Namen** ausstellen, Modell und Anschrift eintragen
+4. **Vom Rechtstexte-Anbieter gegenlesen lassen — vor dem ersten Verkauf.** Die 50 €
+   stehen in der Kalkulation
+5. Banderole mit Name, Anschrift, CE, Mülltonne und Batteriesymbol drucken
+
+> **Das ersetzt keine Rechtsberatung.** Es korrigiert nur die falsche Aussage, der Weg
+> koste vierstellig. Er kostet fast nichts an Geld und einiges an Verantwortung.
