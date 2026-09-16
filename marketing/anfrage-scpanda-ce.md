@@ -769,3 +769,57 @@ bleiben drei Wege:
 **Die Reihenfolge ist wichtig:** Erst ScPanda fragen, ob sie ein Modell aus einer
 anderen Fabrik liefern können. Das kostet eine Nachricht und erhält den guten Preis.
 Erst wenn das scheitert, zum Zweitlieferanten.
+
+### Antwortnachricht: nach einem Modell aus einer anderen Fabrik fragen
+
+**Warum diese Nachricht und nicht gleich der Zweitlieferant:** ScPanda hat sich gerade
+als ehrlich erwiesen, der Preis ist gut, und die Musterlieferung lief sauber. Das ist
+mehr wert als ein unbekannter Anbieter mit unbekannter Lieferqualität. Die Frage kostet
+eine Nachricht.
+
+**Eine Frage, eine Bedingung, keine Sternchen.**
+
+```
+Hello,
+
+Thank you for telling me this openly. You made the right decision. A
+signature that is not authorised would have been worse for me than no
+document at all, so I am glad you did not do it.
+
+I would still like to work with you, so one question.
+
+Can you supply a similar massage gun with a fixed curved handle from a
+factory that does provide a signed EU Declaration of Conformity? It does
+not have to be GB-868. The curved handle is what matters to me, the model
+number does not.
+
+For any model you propose, I need to see three files before we talk about
+quantity:
+
+1. The signed EU Declaration of Conformity from the manufacturer
+2. The EMC test report
+3. The RoHS test report
+
+If you can send those, I will place the order for 60 pieces.
+
+I have to ask for the papers first from now on, because without them I
+cannot sell in Germany at all. This is not about trust in you, it is the
+law for the importer.
+
+One note so you can choose the right factory: the price level we already
+agreed for GB-868 is what makes this work for me. A model that costs
+noticeably more per piece would not.
+
+Best regards
+Nik Hoffmann
+```
+
+**Preis bewusst nicht offengelegt.** Der Verkaufspreis in Deutschland geht den
+Lieferanten nichts an — er würde daraus die Marge ableiten. Die Formulierung nennt nur
+das bereits verhandelte Niveau als Bezugspunkt.
+
+### Wenn auch das scheitert
+
+Dann ist die Bauform über ScPanda nicht beschaffbar, und es bleibt der Zweitlieferant
+oder der Abbruch. **Vorher aber `wettbewerb.md` neu lesen** — die Recherche vom
+16. September hat den Markt anders gezeigt als bisher angenommen.
