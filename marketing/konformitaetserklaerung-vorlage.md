@@ -395,3 +395,89 @@ Sitzung nicht auslesbar war. **Wer eine Zahl nennt, rät.**
 - [Produkthaftungsrecht 2026, IT-Recht Kanzlei](https://www.it-recht-kanzlei.de/produkthaftung-2026-faq.html)
 - [Richtlinie (EU) 2024/2853, Wikipedia](https://de.wikipedia.org/wiki/Richtlinie_(EU)_2024/2853_(EU-Produkthaftungsrichtlinie))
 - [Marktüberwachung, Bundesnetzagentur](https://www.bundesnetzagentur.de/DE/Fachthemen/Telekommunikation/Technik/Marktueberwachung/artikel.html)
+
+---
+
+# Einschränkung zum Selbst-Erklären — Recherche vom 16. September 2026, zweiter Durchgang
+
+**Anlass:** Der Lieferant hat erklärt, er liefere nach Europa und stelle dabei nur
+EMV, RoHS, MSDS und UN38.3 bereit.
+
+## Seine Aussage stimmt — beschreibt aber nicht, was verlangt ist
+
+Die vier Dokumente zerfallen in zwei Gruppen:
+
+| Dokument | Wofür es da ist |
+|---|---|
+| **MSDS** | **Transport.** Für Fluglinie und Spediteur |
+| **UN38.3** | **Transport.** Gefahrgutprüfung der Lithiumzelle |
+| **EMV-Prüfbericht** | **Zuarbeit** zur technischen Dokumentation |
+| **RoHS-Prüfbericht** | **Zuarbeit** zur technischen Dokumentation |
+
+**Keines davon ist eine Konformitätserklärung.** Zwei sind Frachtpapiere, zwei sind
+Prüfergebnisse. Die Erklärung ist eine eigenständige Willenserklärung und fehlt
+vollständig.
+
+**„Wir liefern seit Jahren nach Europa" ist kein Konformitätsnachweis**, sondern die
+Feststellung, dass Sendungen den Zoll passiert haben. Zollabfertigung ist keine
+Konformitätsbewertung.
+
+## Die wahrscheinliche Erklärung: seine EU-Kunden erklären selbst
+
+Wenn er seit Jahren liefert und nie nach einer Erklärung gefragt wurde, machen seine
+europäischen Kunden mit hoher Wahrscheinlichkeit genau das, was hier erwogen wird:
+**Ware unter eigener Marke in Verkehr bringen und selbst erklären.** Das ist der
+übliche Eigenmarkenweg, und der Lieferant bekommt davon nichts mit.
+
+**Das stützt den Weg — es ist kein exotischer Sonderfall.**
+
+## Aber: eine Einschränkung, die den Weg teuer machen kann
+
+> ### ⚠️ Dritte Korrektur an derselben Stelle
+>
+> Erst hieß es, selbst Hersteller werden koste 1.100–2.600 €. Dann, es koste fast
+> nichts, weil Modul A keine Fremdprüfung verlangt. **Beides war zu apodiktisch.**
+
+In der Praxisliteratur zum China-Import findet sich die Position:
+
+> *„Prüfberichte sind grundsätzlich nur gültig, wenn sie **auf den Namen des
+> Importeurs** ausgestellt sind und für das jeweilige Produkt gültig sind."*
+
+**Die ZOL-Berichte lauten auf Wenzhou Yi Xiang, nicht auf den Inhaber.**
+
+Trifft diese strengere Lesart zu, reicht es nicht, fremde Berichte in die eigene
+technische Dokumentation zu legen — dann sind **eigene Prüfungen** nötig, und man ist
+wieder bei 1.100–2.600 €.
+
+**Was sich sagen lässt:**
+
+| | |
+|---|---|
+| Der Richtlinientext verlangt technische Unterlagen, die die Bewertung der Konformität erlauben. **Eine ausdrückliche Vorschrift, dass Prüfberichte auf den Erklärenden lauten müssen, steht dort nicht** | ✅ belegt aus Modul A |
+| Praktiker im China-Import halten fremde Berichte für unzureichend | ✅ belegt, aber **Beratermeinung, keine Norm** |
+| Welche Auffassung eine deutsche Marktüberwachungsbehörde im Streitfall vertritt | ❌ **nicht belegbar** |
+
+**Genau dafür sind die 50 € Rechtstexte-Mitgliedschaft da.** Diese eine Frage
+entscheidet, ob der Weg fast nichts oder über tausend Euro kostet. **Ohne diese Antwort
+sollte niemand bestellen.**
+
+## Ein konkretes Nahrisiko, das bisher fehlte
+
+Der Zoll kontrolliert Drittlandwaren auf das **CE-Zeichen** und fängt sie bei
+pflichtwidrigem Fehlen ab. Bei Verdacht wird die **Überlassung zum freien Verkehr
+ausgesetzt** und die Marktüberwachungsbehörde eingeschaltet.
+
+**Block G hat festgestellt: Auf Gerät und Karton ist kein CE-Zeichen.** Eine Bestellung
+über 60 Stück in diesem Zustand kann am Zoll hängenbleiben — vor jeder Frage nach
+Erklärungen.
+
+**Das ist kein theoretisches Risiko. Es betrifft die nächste Sendung.**
+
+## Quellen
+
+- [CE-Kennzeichnung beim China-Import, Szewczyk Sourcing](https://szewczyk-sourcing.com/blog/ce-kennzeichnung-china-import)
+- [CE-Kennzeichnung für Startups: Import und Eigenmarke](https://gruenderfreunde.de/ce-kennzeichnung-startups-importeure-eigenmarken/)
+- [CE-Kennzeichnung für Importeure, WKO](https://www.wko.at/service/innovation-technologie-digitalisierung/CE-Kennzeichnung-fuer-Importeure---FAQ.html)
+- [Kontrolle CE-pflichtiger Waren aus Nicht-EU-Ländern, IT-Recht Kanzlei](https://www.it-recht-kanzlei.de/ce-kennzeichnung-zoll-eu-konformit%C3%A4tserkl%C3%A4rung-eg-baumusterpr%C3%BCfbescheinigung.html)
+- [Zoll und Marktüberwachung, O&W Rechtsanwälte](https://www.owlaw.de/zoll-wissen/einfuhr-verweigert-zoll-marktueberwachung/)
+- [Produktsicherheit und -konformität, Zoll online](https://www.zoll.de/DE/Fachthemen/Verbote-Beschraenkungen/Schutz-der-menschlichen-Gesundheit/Produktsicherheit-und-konformitaet/produktsicherheit-und-konformitaet_node.html)
