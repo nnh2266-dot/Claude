@@ -903,3 +903,25 @@ Dokument selbst enthält. Punkt 3 gibt ihr die Kontrolle zurück.
 **Wenn auch das nicht reicht**, liegt es nicht an der Formulierung, und der nächste
 Schritt ist der EU-Großhandel aus `wettbewerb.md` Abschnitt 7 — dort liegt die
 Erklärung bereits in der Lieferkette.
+
+### ScPandas Antwort auf die Frage nach einer anderen Fabrik
+
+**Er hat geantwortet:** *„Factories are unwilling to sign the EU declaration because
+they fear it might backfire if there are any inconsistencies."*
+
+**Das ist eine Aussage über Fabriken allgemein, nicht über diese eine.** Damit ist die
+Frage nach einer anderen Fabrik in seinem Netz beantwortet — negativ.
+
+**Und es ist branchentypisch, keine Ausrede.** Fabriken, die über Handelsfirmen
+exportieren, unterschreiben praktisch nie. Mit der Unterschrift werden sie Hersteller
+im Sinne des EU-Rechts, mit Haftung in einem Rechtsraum, den sie nicht kennen — für
+eine Bestellung über 336 $ Warenwert.
+
+> **Die wichtigste Schlussfolgerung für die weitere Suche:** Dieselbe Wand steht bei
+> **jedem** Lieferanten desselben Typs. Lieferant Nummer zwei, drei und vier auf
+> Alibaba zu fragen, kostet Wochen und führt mit hoher Wahrscheinlichkeit zum selben
+> Ergebnis. **Es ist kein Lieferantenproblem, es ist ein Strukturproblem des
+> Beschaffungswegs.**
+>
+> Wer die Erklärung hat, ist ein Hersteller, der **bereits EU-Marken beliefert** — und
+> der hat Mindestabnahmen deutlich über 60 Stück.

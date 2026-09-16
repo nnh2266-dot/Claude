@@ -246,11 +246,37 @@ Kategorie mit einem Nachteil.
 | Einstandspreis | 12,96 € | deutlich höher, geschätzt 25–35 € |
 | Kapitalbindung | 778 € für 60 Stück | kleinere Mengen möglich |
 
-**Der Deckungsbeitrag sinkt, aber die Fixkosten brechen weg** — und mit ihnen der
-gesamte Konformitätsengpass, an dem das Vorhaben gerade steht. Bei 59 € Verkaufspreis
-und 30 € Einstand bleiben rund 20 € je Stück, ohne 500 € EAR und ohne Importrisiko.
+> ### ⚠️ Korrektur, noch am selben Tag
+>
+> Der Absatz unten hat den Deckungsbeitrag gerechnet und den **CPA vergessen**. Das
+> war der entscheidende Fehler — der Deckungsbeitrag ist nicht das Kriterium, der
+> Break-even-CPA ist es.
 
-**Das ist zu prüfen, bevor abgebrochen wird.**
+**Der Deckungsbeitrag sinkt, die Fixkosten brechen weg** — und mit ihnen der gesamte
+Konformitätsengpass. Bei 59 € Verkaufspreis und 30 € Einstand bleiben rund 21 € je
+Stück, ohne 500 € EAR und ohne Importrisiko.
+
+**Aber genau daran scheitert es bei bezahlter Werbung:**
+
+| Szenario | VK | Einstand | Deckungsbeitrag | **Break-even-CPA** |
+|---|---|---|---|---|
+| China direkt, wie geplant | 79 € | 14,46 € | 55,75 € | **46,85 €** |
+| China direkt, Preis gesenkt | 59 € | 14,46 € | 36,21 € | **30,43 €** |
+| **EU-Großhandel** | 59 € | 30 € | 20,67 € | **17,37 €** |
+| EU-Großhandel, Preis gehalten | 79 € | 30 € | 40,21 € | **33,79 €** |
+| EU-Großhandel, Mittelweg | 69 € | 25 € | 35,44 € | **29,78 €** |
+
+Der realistisch geschätzte CPA liegt bei **33 € (3 % Kaufrate)** bis **50 € (2 %)**.
+
+**Ein Break-even-CPA von 17 € ist über Meta-Kaltverkehr nicht erreichbar.** Der
+EU-Großhandel löst die Konformitätsfrage, zerstört dabei aber das Werbemodell — es sei
+denn, der Preis bleibt bei 79 € und der Einstand unter 30 €. Dann liegt der
+Break-even-CPA bei 34 €, also am äußersten optimistischen Rand des Geschätzten.
+
+**Fazit:** Der EU-Großhandel ist **kein Ausweg für das Meta-Modell**. Er wäre ein Weg
+für Marktplätze — Amazon oder eBay —, wo statt eines CPA eine Verkaufsgebühr von rund
+15 % anfällt. Das ist ein anderes Geschäft als das geplante und müsste neu gerechnet
+werden.
 
 ---
 
