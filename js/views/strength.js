@@ -11,8 +11,9 @@ import { el, mount, viewHead, iconButton, emptyState } from '../ui.js';
 import { localDateKey, shiftDateKey } from '../nutrition.js';
 import {
   groupStrength, balance, setsByGroup, neglected, niveauFor, sideImbalance,
-  RATED_COUNT, EXERCISE_COUNT,
+  rateableFor, RATED_COUNT, EXERCISE_COUNT,
 } from '../strength.js';
+import { isTimed } from '../training.js';
 
 /** Zeitraum für die zweite Zahl: „was du gerade bringst". */
 const AKTUELL_TAGE = 28;
@@ -43,16 +44,25 @@ function zielText(b) {
   return `Noch rund ${fehlt} kg bis „${b.zielNiveau.name}".`;
 }
 
-function gruppenZeile(g, jetzt) {
+function gruppenZeile(g, jetzt, profile) {
   const b = g.bewertet;
 
   if (!b) {
+    // Statt nur „kein Richtwert": sagen, womit es einen gäbe. Sonst steht die
+    // Gruppe monatelang grau da, ohne dass klar ist, woran es liegt.
+    const moeglich = profile ? rateableFor(g.group, profile) : [];
     return el('div', { class: 'scorerow' },
       el('div', { class: 'row-between' },
         el('div', { class: 'grow' },
           el('div', { class: 'scorerow-name', text: g.label }),
           el('div', { class: 'muted small',
-            text: `Aufgezeichnet, aber ohne Richtwert: ${g.uebungen.map((u) => u.name).join(', ')}` }))));
+            text: `Aufgezeichnet, aber ohne Richtwert: ${g.uebungen.map((u) => u.name).join(', ')}` }),
+          moeglich.length
+            ? el('div', { class: 'muted small',
+                text: `Eine Einordnung gäbe es mit: ${moeglich.slice(0, 3).join(', ')}.` })
+            : el('div', { class: 'muted small',
+                text: 'Für diese Gruppe gibt es mit deiner Ausrüstung überhaupt keinen '
+                  + 'Richtwert — dafür fehlen belastbare Normwerte.' }))));
   }
 
   return el('div', { class: 'scorerow' },
@@ -156,7 +166,7 @@ export async function render(container, ctx) {
   /* Je Gruppe */
   body.push(el('h2', { class: 'section-title', text: 'Muskelgruppen' }));
   body.push(el('div', { class: 'card stack' },
-    ...gruppen.map((g) => gruppenZeile(g, aktuell.get(g.group)))));
+    ...gruppen.map((g) => gruppenZeile(g, aktuell.get(g.group), profile))));
   body.push(el('p', { class: 'hint mt-16',
     text: `Die große Zahl ist dein bester Satz überhaupt. Steht daneben eine zweite, `
       + `ist das derselbe Wert aus den letzten ${AKTUELL_TAGE} Tagen — nach einer Pause `
@@ -193,7 +203,10 @@ export async function render(container, ctx) {
           el('div', { class: 'grow' },
             el('div', { text: e.name }),
             el('div', { class: 'muted small',
-              text: `links ${einsNach(e.links)} · rechts ${einsNach(e.rechts)} Wdh. im Schnitt` })),
+              // Der Seitstütz ist einseitig und wird in Sekunden gemessen —
+              // „40 Wdh. im Schnitt" wäre dort die falsche Einheit.
+              text: `links ${einsNach(e.links)} · rechts ${einsNach(e.rechts)} `
+                + `${isTimed(e.id) ? 's' : 'Wdh.'} im Schnitt` })),
           el('span', { class: 'pill pill-kcal', text: `${e.unterschied} %` })))),
       el('p', { class: 'hint',
         text: 'Die schwächere Seite zuerst trainieren und die stärkere nur so viele '

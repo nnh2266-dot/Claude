@@ -17,7 +17,9 @@
  * Wie training.js ohne DOM-Zugriff.
  */
 
-import { exerciseById, EXERCISES, GROUP_LABEL, isUnilateral, setSides } from './training.js';
+import {
+  exerciseById, EXERCISES, GROUP_LABEL, isUnilateral, setSides, isAvailable,
+} from './training.js';
 
 export const NIVEAUS = [
   { ab: 90, name: 'Sehr stark' },
@@ -428,5 +430,25 @@ export function sideImbalance(sessions, seit = null) {
 }
 
 /** Wie viele Übungen der App überhaupt einen Richtwert haben — für die Ehrlichkeit. */
+/**
+ * Übungen einer Gruppe, die mit dieser Ausrüstung gehen **und** einen
+ * Richtwert haben.
+ *
+ * Gebraucht für den Fall, dass eine Gruppe aufgezeichnet ist, aber keine
+ * Einordnung bekommt. Vorher stand dort nur, dass es keinen Richtwert gibt.
+ * Das ist ehrlich, hilft aber nicht weiter — mit dieser Liste lässt sich
+ * sagen, welche Übung stattdessen eine Zahl ergäbe.
+ *
+ * Die Lücke ist seit der Erweiterung der Übungsliste größer geworden: Es kamen
+ * 32 Übungen dazu und kein einziger Richtwert, weil für die meisten davon
+ * keine belastbaren Normwerte zu finden waren. Eine erfundene Zahl wäre
+ * schlechter als keine — aber der Hinweis, wo es eine gibt, fehlte.
+ */
+export function rateableFor(group, profile) {
+  return EXERCISES
+    .filter((e) => e.group === group && STANDARDS[e.id] && isAvailable(e, profile, { ignoriereSperren: true }))
+    .map((e) => e.name);
+}
+
 export const RATED_COUNT = Object.keys(STANDARDS).length;
 export const EXERCISE_COUNT = EXERCISES.length;

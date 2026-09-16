@@ -225,6 +225,9 @@ function sessionVolume(session, bodyweight) {
   const angenommen = (bodyweight || 70) * 0.5;
   let volumen = 0;
   for (const [id, sets] of Object.entries(session?.entries || {})) {
+    // Wie in weeklyVolume: Bei Halteübungen stehen in `reps` Sekunden, und die
+    // gehören nicht in eine Rechnung aus Gewicht mal Wiederholungen.
+    if (isTimed(id)) continue;
     for (const set of sets || []) {
       if (!set || !set.reps) continue;
       // Einseitige Übungen mit beiden Seiten — die Arbeit wurde zweimal gemacht.

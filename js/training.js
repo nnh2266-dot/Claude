@@ -1334,7 +1334,12 @@ export function personalBests(sessions) {
 
   return [...best.values()]
     .map((e) => ({ ...e, name: exerciseById(e.id)?.name || e.id }))
-    .sort((a, b) => (b.weight || 0) - (a.weight || 0) || b.score - a.score);
+    // Haltearbeit steht am Ende und unter sich. Sonst stehen Sekunden und
+    // Wiederholungen in einer Rangfolge, und ein Wandsitz über 55 Sekunden
+    // landet über 22 Liegestützen — als wäre er die bessere Leistung.
+    .sort((a, b) => Number(isTimed(a.id)) - Number(isTimed(b.id))
+      || (b.weight || 0) - (a.weight || 0)
+      || b.score - a.score);
 }
 
 /**
@@ -1349,6 +1354,12 @@ export function weeklyVolume(sessions, bodyweight) {
   for (const session of sessions) {
     let volume = 0;
     for (const [id, sets] of Object.entries(session.entries || {})) {
+      // Gehaltene Übungen bleiben draußen. Volumen ist Gewicht mal
+      // Wiederholungen; eine Plank hat weder das eine noch das andere. In
+      // `reps` stehen dort Sekunden, und die Rechnung hat sie wie
+      // Wiederholungen genommen: Zwei Planks und ein Wandsitz kamen damit auf
+      // das Fünffache einer richtigen Liegestützeinheit.
+      if (isTimed(id)) continue;
       for (const set of sets || []) {
         if (!set || !set.reps) continue;
         // Fürs Volumen zählen beide Seiten zusammen — die Arbeit wurde ja
