@@ -2,8 +2,13 @@
 
 Stand: 12. August 2026.
 
-**Einschränkung:** Der Netzwerk-Proxy dieser Sitzung blockiert Shop-Seiten. Alle Angaben
-stammen aus Suchergebnissen, nicht aus den Produktseiten selbst. Preise schwanken bei
+> **Nachtrag 16. September 2026 am Ende des Dokuments.** Der Netzzugang erlaubt jetzt
+> Shop-Seiten. Die Kernaussagen unten sind bestätigt, zwei Punkte haben sich
+> **verschärft**: ein direkter Direktvertriebs-Wettbewerber bei 54,99 € und die
+> Amplitude.
+
+**Einschränkung (galt am 12. August):** Der Netzwerk-Proxy blockierte Shop-Seiten. Alle
+Angaben stammen aus Suchergebnissen, nicht aus den Produktseiten selbst. Preise schwanken bei
 Amazon täglich — die Zahlen unten sind Größenordnungen, keine Tagespreise. Vor der
 Preisentscheidung selbst nachsehen.
 
@@ -122,3 +127,139 @@ verkauft, verkauft eine Geschichte, keine Technik.
 - [Beurer MG 180 Preisvergleich bei Geizhals](https://geizhals.de/beurer-mg-180-massagegeraet-644-23-a2463042.html) · [Testbericht 1,7](https://www.testberichte.de/p/beurer-tests/mg-180-testbericht.html)
 - [Massagepistole Pro Alpha ab 73 € bei Kaufland](https://www.kaufland.de/product/501645640/)
 - No-Name-Listings: [B0CNRKKCFS](https://www.amazon.de/Massagepistole-Verl%C3%A4ngerungs-Tiefengewebe-Percussion-Schmerzlinderung-Geschwindigkeitsstufen/dp/B0CNRKKCFS) · [B0D9GVXRRT](https://www.amazon.de/Tiefengewebe-Massagepistole-Verl%C3%A4ngerungsgriff-Geschwindigkeitsstufen-LED-Bildschirm-Ganzk%C3%B6rper-Muskelentlastung/dp/B0D9GVXRRT) · [B0FSL89TTL](https://www.amazon.de/-/en/dp/B0FSL89TTL)
+
+---
+
+# Nachtrag 16. September 2026 — erstmals mit Zugriff auf die Shop-Seiten
+
+Die Einschätzung vom August war richtig. Zwei Dinge sind schlechter als angenommen.
+
+## 1. Es gibt einen direkten Direktvertriebs-Wettbewerber bei 54,99 €
+
+[flexorex.de](https://flexorex.de/p/massage-gun-with-extended-handle/), vormals
+ortorex.de, verkauft dieselbe Bauform per Direktvertrieb an deutsche Endkunden.
+
+| | Flexorex | NackenFrei geplant |
+|---|---|---|
+| Preis | **54,99 € inkl. Versand** | 79 € |
+| Angaben | 20 W · 1200 mAh · 850 g · 5V/1A · 9 Stufen | 500 g · 800 mAh · keine Wattzahl |
+
+**Das Datenblatt ist identisch mit unserem Karton** — 20 W, 1200 mAh, 9 Stufen. Mit
+hoher Wahrscheinlichkeit dieselbe Bauform aus derselben Ecke. Bemerkenswert: **Die drei
+Angaben, die wir am Muster widerlegt haben, stehen bei Flexorex unwidersprochen auf der
+Seite.** Gewogen sind 500 g, nicht 850 g. Belegt sind 800 mAh, nicht 1200 mAh.
+
+**Der Preisabstand beträgt 24 € oder 44 %.**
+
+## 2. Unsere Amplitude ist das Schlusslicht
+
+Die Amazon-Listings aus Segment 1 werben mit konkreten Zahlen:
+
+| Listing | Amplitude |
+|---|---|
+| `B0CNRKKCFS` | **16 mm** |
+| `B0FSDMX7XZ` | 10 mm |
+| `B0FSL89TTL` | 8 mm |
+| **NackenFrei (GB-868)** | **7,5 mm** |
+
+Am Muster ist bestätigt, dass 7,5 mm auf Stufe 9 **deutlich spürbar** sind — Block E.
+Die Tiefenwirkung ist also nicht das Problem. **Aber im Datenblattvergleich verlieren
+wir**, und Amplitude ist die Zahl, nach der in dieser Kategorie verglichen wird.
+
+**Konsequenz für die Seite:** Die Amplitude nicht als Kennzahl ausstellen. Sie steht
+derzeit nicht prominent auf der Seite — das bleibt so. Wer 16 mm gegen 7,5 mm stellt,
+verliert einen Vergleich, den er nicht führen muss.
+
+## 3. Der Bogengriff ist endgültig Standard, nicht Differenzierung
+
+Neu hinzugekommen seit August, alle mit wörtlich demselben Versprechen:
+
+- **Fronnor** — „Revolutionäre U-förmige Massagepistole", 120°-Bogen, auf Amazon.de
+- **Westinghouse** — „Long Handle Curved Massage Gun for Neck & Shoulder Pain"
+- **RENPHO Reach** — „verlängerter, ergonomischer Griff", 45,89 € bei Kaufland
+- **Flexorex** — Direktvertrieb Deutschland
+
+Die Formulierung „schwer erreichbare Bereiche wie den Rücken mühelos selbst massieren"
+findet sich fast wörtlich bei mehreren Anbietern. **Das Argument der Landingpage ist
+nicht mehr neu — nur besser ausgeführt.**
+
+**Was bleibt:** der **fest gebaute** Bogen gegen **ansteckbare** Verlängerungen. RENPHO
+Reach hat einen *abnehmbaren* Griff, `B0D9GVXRRT` ebenfalls. Das ist ein echter
+Unterschied, und Block D hat bestätigt, dass unser Bogen unter Kraft nicht nachgibt.
+Es ist aber ein **feiner** Unterschied, den man erklären muss — und Erklärung kostet
+im Meta-Feed die Aufmerksamkeit, die man nicht hat.
+
+## 4. Die gute Nachricht: unsere Seite ist besser als deren Seite
+
+Direkter Vergleich mit Flexorex:
+
+| | Flexorex | NackenFrei |
+|---|---|---|
+| Betreiber | **Sellaro Limited, Zypern** | deutsches Einzelunternehmen, Anschrift auf der Seite |
+| Verfügbarkeit | **„Out of Stock"** | Lagerware geplant |
+| Bewertungen | **„0 reviews"** — dazu „95 % of surveyed customers would recommend" | Abschnitt auskommentiert, bis echte vorliegen |
+| Verknappung | **Countdown „Your discount expires in"** | keine |
+| Angaben | drei davon nachweislich falsch | jede Zahl am Muster oder Dokument belegt |
+
+Das ist ein Dropshipper mit leerem Lager, erfundener Dringlichkeit und
+Zypern-Impressum. **Inhaltlich und rechtlich sind wir in einer anderen Liga.**
+
+## 5. Der unangenehme Schluss daraus
+
+Ein besseres Impressum rechtfertigt keine 24 € Aufpreis. **Im Meta-Feed liest niemand
+das Impressum.** Der Kunde sieht zwei ähnliche Geräte, eines für 55 €, eines für 79 €.
+
+Und die Rechnung bei einer Preissenkung ist bekannt:
+
+| | 79 € | 59 € |
+|---|---|---|
+| Deckungsbeitrag | 56 € | **36 €** |
+| Break-even-CPA | 47 € | **30 €** |
+| nötige Kaufrate | über 2,3 % | **über 3 %** |
+
+Der realistisch geschätzte CPA bei 2 % Kaufrate liegt bei rund 50 €. **Bei 59 € trägt
+das nicht.**
+
+## 6. Die Asymmetrie, die niemand gern ausspricht
+
+**Flexorex verkauft dieselbe Bauform ohne erkennbare Konformitätsunterlagen.** Zypern,
+kein CE-Hinweis auf der Seite, Datenblatt vom Lieferanten übernommen. Dass unsere
+Fabrik nicht unterschreibt, hält *uns* auf — die Wettbewerber offenbar nicht.
+
+**Das ist keine Empfehlung, es genauso zu machen.** Die Haftung liegt beim Importeur in
+Deutschland, und ein deutsches Einzelunternehmen mit ladungsfähiger Anschrift ist ein
+ganz anderes Ziel als eine zypriotische Limited.
+
+Aber es gehört zur ehrlichen Lagebeurteilung: **Wir tragen Kosten und Verzögerung, die
+ein Teil des Wettbewerbs schlicht nicht trägt.** Wer korrekt arbeitet, startet in dieser
+Kategorie mit einem Nachteil.
+
+## 7. Der Weg, der beide Probleme auf einmal löst
+
+**Bezug von einem Großhändler innerhalb der EU** statt Direktimport aus China.
+
+| | Direktimport China | EU-Großhandel |
+|---|---|---|
+| Konformitätserklärung | **muss man selbst beschaffen — hier gescheitert** | liegt in der Kette vor |
+| Stiftung EAR | **rund 500 €**, man ist Hersteller im Sinne des ElektroG | entfällt, wenn der Vorlieferant registriert ist |
+| UN38.3, Gefahrgut, Zoll | eigene Sache | erledigt |
+| Einstandspreis | 12,96 € | deutlich höher, geschätzt 25–35 € |
+| Kapitalbindung | 778 € für 60 Stück | kleinere Mengen möglich |
+
+**Der Deckungsbeitrag sinkt, aber die Fixkosten brechen weg** — und mit ihnen der
+gesamte Konformitätsengpass, an dem das Vorhaben gerade steht. Bei 59 € Verkaufspreis
+und 30 € Einstand bleiben rund 20 € je Stück, ohne 500 € EAR und ohne Importrisiko.
+
+**Das ist zu prüfen, bevor abgebrochen wird.**
+
+---
+
+## Quellen des Nachtrags
+
+- [flexorex.de — Produktseite](https://flexorex.de/p/massage-gun-with-extended-handle/)
+- [RENPHO Reach Mini bei Kaufland](https://www.kaufland.de/product/511907194/)
+- [RENPHO Active bei Geizhals](https://geizhals.de/renpho-active-massage-gun-vibrationsmassagegeraet-a3649886.html)
+- [RENPHO Reach bei eBay.de](https://www.ebay.de/p/22066287385)
+- [Fronnor bei Amazon.de](https://www.amazon.de/Fronnor-Revolution%C3%A4re-Massagepistole-R%C3%BCckenmassageger%C3%A4t-Schmerzlinderung/dp/B0CJLR48P2)
+- [Westinghouse Long Handle Curved](https://westinghouse.com/products/long-handle-curved-massage-gun-for-neck-shoulder-pain)
+- [Massagepistole Pro Alpha bei Kaufland](https://www.kaufland.de/product/501645640/)
