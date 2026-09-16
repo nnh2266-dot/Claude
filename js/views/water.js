@@ -10,7 +10,7 @@
 import { el, toast } from '../ui.js';
 import { addWater, setWater } from '../store.js';
 import { localDateKey, shiftDateKey } from '../nutrition.js';
-import { dayTotals } from '../activities.js';
+import { dayTotals, KRAFT_SCHWITZ } from '../activities.js';
 import {
   PORTIONEN, dailyGoal, formatMl, rate, streak, ML_PRO_KG, ML_PRO_SPORTMINUTE,
 } from '../water.js';
@@ -42,7 +42,10 @@ export function waterSection(ctx, dateKey, eintraege) {
   const trainingsMinuten = ctx.state.plan && ctx.goalsFor(dateKey).kind === 'training'
     ? (profile?.sessionLength || 0)
     : 0;
-  const minuten = sport.minuten + trainingsMinuten;
+  // Gewichtet nach Anstrengung: Vier Stunden Golf lassen einen anders
+  // schwitzen als vier Stunden Laufen, und der Aufschlag richtet sich nach dem
+  // Schwitzen.
+  const minuten = sport.schwitzen + trainingsMinuten * KRAFT_SCHWITZ;
 
   const ziel = dailyGoal(kg, minuten);
   const eintrag = (eintraege || []).find((e) => e.date === dateKey);
@@ -75,8 +78,12 @@ export function waterSection(ctx, dateKey, eintraege) {
 
   const fuss = el('div', { class: 'row-between' },
     el('span', { class: 'muted small',
+      // „Sportminute" wäre hier gelogen: Gezählt wird nach Anstrengung
+      // gewichtet, sonst stünde nach einer Golfrunde mehr Aufschlag da als
+      // Grundwert.
       text: minuten > 0 && ziel
-        ? `${ML_PRO_KG} ml je kg, plus ${ML_PRO_SPORTMINUTE} ml je Sportminute (${minuten} min heute)`
+        ? `${ML_PRO_KG} ml je kg, plus ${ML_PRO_SPORTMINUTE} ml je Minute Anstrengung `
+          + `(heute ${Math.round(minuten)}, nach Intensität gewichtet)`
         : ziel ? `Richtwert: ${ML_PRO_KG} ml je kg — nur Getränke, Essen kommt obendrauf`
           : 'Ohne Profil kein Richtwert' }),
     ml > 0

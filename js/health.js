@@ -41,7 +41,9 @@ export const WORKOUT_MAP = {
   Tennis: 'tennis',
   Soccer: 'ballsport', Basketball: 'ballsport',
   Volleyball: 'ballsport', Handball: 'ballsport', TableTennis: 'ballsport',
-  Badminton: 'ballsport', Golf: 'ballsport',
+  Badminton: 'ballsport',
+  // Golf lief hier als Ballsport mit und wurde damit wie Fußball gerechnet.
+  Golf: 'golf',
   MartialArts: 'kampf', Boxing: 'kampf', Kickboxing: 'kampf', Wrestling: 'kampf',
   DanceInspiredTraining: 'tanzen', SocialDance: 'tanzen', Cardio_Dance: 'tanzen',
   Elliptical: 'sonstiges', StairClimbing: 'sonstiges', Stairs: 'sonstiges',

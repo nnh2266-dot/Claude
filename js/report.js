@@ -21,7 +21,7 @@ import {
   isTimed,
 } from './training.js';
 import { skillById, levelIndex } from './skills.js';
-import { dayTotals, weekSummary } from './activities.js';
+import { dayTotals, weekSummary, KRAFT_SCHWITZ } from './activities.js';
 import { dailyGoal as wasserZiel, formatMl, average as wasserSchnitt } from './water.js';
 import { resolve as suppsAufloesen, dayStatus as suppStand } from './supplements.js';
 import { dayPicture } from './mealscore.js';
@@ -141,7 +141,8 @@ export function dailyReport(data) {
   }
 
   /* Trinken */
-  const wZiel = wasserZiel(profile?.weight, aktiv.minuten + (tag ? (profile?.sessionLength || 0) : 0));
+  const wZiel = wasserZiel(profile?.weight,
+    aktiv.schwitzen + (tag ? (profile?.sessionLength || 0) * KRAFT_SCHWITZ : 0));
   const getrunken = (data.water || []).find((w) => w.date === dateKey)?.ml || 0;
   if (wZiel) {
     if (getrunken >= wZiel * 0.9) {

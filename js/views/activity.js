@@ -100,8 +100,11 @@ export async function render(container, ctx) {
     el('div', { class: art && art.distanz ? 'grid-2' : '' },
       field('Dauer in Minuten', zahlFeld('minutes', '45')),
       art && art.distanz ? field('Strecke in km', zahlFeld('km', '8', true)) : null),
+    // Der Hinweis der Sportart steht vor dem allgemeinen: Bei Golf sagt
+    // „Atmung ruhig" nichts, „locker heißt mit dem Cart" schon.
     field('Intensität', intensitaet,
-      (INTENSITIES[entwurf.intensity] || INTENSITIES.mittel).hint),
+      [art && art.hinweis, (INTENSITIES[entwurf.intensity] || INTENSITIES.mittel).hint]
+        .filter(Boolean).join(' ')),
     schaetzung,
     el('details', { class: 'bridge-details' },
       el('summary', { text: 'Eigenen Kalorienwert eintragen' }),

@@ -18,7 +18,7 @@
 
 import { el } from '../ui.js';
 import { localDateKey } from '../nutrition.js';
-import { dayTotals } from '../activities.js';
+import { dayTotals, KRAFT_SCHWITZ } from '../activities.js';
 import { duration as schlafDauer, isComplete as nachtVoll, formatDauer, SOLL_MIN } from '../sleep.js';
 import { dailyGoal as wasserZiel, formatMl } from '../water.js';
 import { resolve as suppsAufloesen, dayStatus as suppStand } from '../supplements.js';
@@ -80,7 +80,9 @@ function kacheln(ctx, dateKey) {
   const trainingsMinuten = ctx.state.plan && ctx.goalsFor(dateKey).kind === 'training'
     ? (ctx.state.profile?.sessionLength || 0)
     : 0;
-  const ziel = wasserZiel(kg, sport.minuten + trainingsMinuten);
+  // Fürs Trinkziel zählen gewichtete Minuten: vier Stunden Golf sind nicht
+  // vier Stunden Laufen.
+  const ziel = wasserZiel(kg, sport.schwitzen + trainingsMinuten * KRAFT_SCHWITZ);
   const ml = (ctx.state.water || []).find((w) => w.date === dateKey)?.ml || 0;
   liste.push({
     id: 'trinken',

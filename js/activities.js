@@ -15,8 +15,12 @@
  */
 
 /**
- * `met` ist der Wert für mittlere Intensität; `stufen` verschiebt ihn nach
- * locker und hart. Wer eine Distanz eintragen kann, bekommt ein Feld dafür.
+ * `met` ist der Wert für mittlere Intensität; die Intensitätsstufe verschiebt
+ * ihn nach locker und hart. Wer eine Distanz eintragen kann, bekommt ein Feld
+ * dafür.
+ *
+ * `hinweis` steht dort, wo „locker / mittel / hart" bei einer Sportart etwas
+ * Bestimmtes heißt und man es sonst raten müsste.
  */
 export const ACTIVITIES = [
   { id: 'laufen',    name: 'Laufen',        met: 9.8,  distanz: true,  icon: '🏃' },
@@ -30,7 +34,21 @@ export const ACTIVITIES = [
   // Tennis getrennt vom übrigen Ballsport: Einzel und Doppel liegen weit
   // auseinander, und der Unterschied lässt sich über die Intensität abbilden —
   // locker trifft das Doppel, hart ein zügiges Einzel.
-  { id: 'tennis',    name: 'Tennis',        met: 7.3,  distanz: false, icon: '🎾' },
+  { id: 'tennis',    name: 'Tennis',        met: 7.3,  distanz: false, icon: '🎾',
+    hinweis: 'Locker trifft das Doppel, hart ein zügiges Einzel.' },
+  // Golf gehörte bisher zum Ballsport und wurde damit mit MET 7 gerechnet —
+  // also wie Fußball. Das ist deutlich zu hoch. Die Tabellenwerte liegen bei
+  // 3,5 für eine Runde mit dem Cart, 4,8 für „Golf allgemein" und 5,3 für eine
+  // Runde zu Fuß mit dem Bag. Mit 4,5 als Mittelwert treffen die drei
+  // Intensitätsstufen genau diese drei Fälle: 3,4 — 4,5 — 5,6.
+  //
+  // Keine Strecke, obwohl eine gelaufene Runde acht bis elf Kilometer hat: Die
+  // App würde daraus ein Tempo in Minuten je Kilometer rechnen, und das ist bei
+  // einer Sportart, die zur Hälfte aus Stehen besteht, keine sinnvolle Zahl.
+  { id: 'golf',      name: 'Golf',          met: 4.5,  distanz: false, icon: '⛳',
+    hinweis: 'Locker heißt mit dem Cart, mittel zu Fuß in normalem Tempo, hart zu Fuß '
+      + 'mit dem Bag. Gezählt wird die ganze Runde, Warten eingeschlossen — der '
+      + 'Abschlag auf die Anrechnung fängt das auf.' },
   { id: 'ballsport', name: 'Ballsport',     met: 7.0,  distanz: false, icon: '⚽' },
   { id: 'kampf',     name: 'Kampfsport',    met: 9.0,  distanz: false, icon: '🥋' },
   { id: 'tanzen',    name: 'Tanzen',        met: 5.5,  distanz: false, icon: '💃' },
@@ -79,13 +97,49 @@ export function kcalOf(eintrag, kg) {
   return estimateKcal(eintrag, kg);
 }
 
+/**
+ * Wie stark eine Sportart fürs Trinken zählt.
+ *
+ * Der Trinkrichtwert rechnet zehn Milliliter je Sportminute dazu. Diese Zahl
+ * kommt vom unteren Rand dessen, was beim Schwitzen verlorengeht — und sie
+ * unterstellt, dass tatsächlich geschwitzt wird. Solange nur Laufen, Radfahren
+ * und Ballsport in der Liste standen, ging das durch.
+ *
+ * Mit Golf geht es nicht mehr: Eine Runde dauert vier Stunden und hätte
+ * 2,4 Liter obendrauf gelegt — mehr als der ganze Grundwert. Umgekehrt zählte
+ * eine Stunde Yoga wie eine Stunde Laufen.
+ *
+ * Deshalb werden die Minuten nach Anstrengung gewichtet, mit sieben MET als
+ * Bezugspunkt: Das ist der Bereich, für den die Schwitzmengen erhoben sind.
+ * Nach unten bei 0,3 abgefangen — auch beim Yoga verliert man Wasser —, nach
+ * oben bei 1,5, weil härter tatsächlich mehr schwitzt.
+ */
+export const SCHWITZ_BEZUG = 7;
+
+export function schwitzFaktor(eintrag) {
+  const art = activityById(eintrag?.type);
+  if (!art) return 1;
+  const met = art.met * (INTENSITIES[eintrag.intensity] || INTENSITIES.mittel).faktor;
+  return Math.min(1.5, Math.max(0.3, met / SCHWITZ_BEZUG));
+}
+
+/**
+ * Krafttraining zählt fürs Trinken etwas schwächer als eine Ausdauereinheit:
+ * Ein großer Teil der Zeit ist Pause. Entspricht rund 5,5 MET.
+ */
+export const KRAFT_SCHWITZ = 0.8;
+
 /** Summe eines Tages, und wie viel davon aufs Ziel kommt. */
 export function dayTotals(eintraege, kg) {
   const gesamt = (eintraege || []).reduce((s, e) => s + kcalOf(e, kg), 0);
   const minuten = (eintraege || []).reduce((s, e) => s + (e.minutes || 0), 0);
+  const schwitzen = (eintraege || [])
+    .reduce((s, e) => s + (e.minutes || 0) * schwitzFaktor(e), 0);
   return {
     kcal: gesamt,
     minuten,
+    // Nach Anstrengung gewichtete Minuten — nur fürs Trinkziel gedacht.
+    schwitzen: Math.round(schwitzen),
     anrechnung: Math.round(gesamt * ANRECHNUNG),
     anzahl: (eintraege || []).length,
   };

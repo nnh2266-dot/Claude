@@ -26,7 +26,7 @@
  */
 
 import { duration as schlafDauer, isComplete as nachtVoll, SOLL_MIN } from './sleep.js';
-import { dayTotals } from './activities.js';
+import { dayTotals, KRAFT_SCHWITZ } from './activities.js';
 import { dailyGoal as wasserZiel, formatMl } from './water.js';
 import { resolve as suppsAufloesen, dayStatus as suppStand, daysOn } from './supplements.js';
 import { dayPicture } from './mealscore.js';
@@ -182,7 +182,7 @@ export function dailyCoach(d) {
 
   const sportHeute = dayTotals(d.activities || [], kg);
   const trainingMinuten = d.trainingHeute ? (d.profile?.sessionLength || 0) : 0;
-  const wZiel = wasserZiel(kg, sportHeute.minuten + trainingMinuten);
+  const wZiel = wasserZiel(kg, sportHeute.schwitzen + trainingMinuten * KRAFT_SCHWITZ);
   const heuteWasser = (d.water || []).find((w) => w.date === d.dateKey);
   const getrunken = heuteWasser?.ml || 0;
 
