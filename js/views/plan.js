@@ -9,7 +9,8 @@ import { setPlan, clearTraining, setTrainingProfile } from '../store.js';
 import {
   exerciseById, GROUP_LABEL, EQUIPMENT_LABEL, GOAL_LABEL, LEVEL_LABEL,
   blockWeek, forWeek, buildPlan, BLOCK_WEEKS, restSeconds, sessionMinutes,
-  isTimed, repRange, ZYKLUS_WAHL, weeklyPlannedSets, VOLUMEN_UNTEN, VOLUMEN_OBEN,
+  isTimed, repRange, isUnilateral, ZYKLUS_WAHL, weeklyPlannedSets, VOLUMEN_UNTEN, VOLUMEN_OBEN,
+  EXERCISES,
 } from '../training.js';
 import { ladderFor } from '../ladders.js';
 import { energyPlan, energyBreakdown, ACTIVITY_LABEL } from '../energy.js';
@@ -29,7 +30,11 @@ function dayCard(day, week, equipment, tempo) {
       el('div', { class: 'grow' },
         el('div', { class: 'exrow-name', text: exercise.name }),
         el('div', { class: 'exrow-tag',
-          text: `${GROUP_LABEL[exercise.group] || exercise.group} · ${exercise.type === 'c' ? 'Grundübung' : 'Isolation'} · ${restSeconds(prescription, tempo)} s Pause`
+          // „je Seite" gehört sichtbar dazu: Drei Sätze einbeinige Glute
+          // Bridge sind sechs Durchgänge, und so lange dauern sie auch.
+          text: `${GROUP_LABEL[exercise.group] || exercise.group} · ${exercise.type === 'c' ? 'Grundübung' : 'Isolation'}`
+            + (isUnilateral(prescription.id) ? ' · je Seite' : '')
+            + ` · ${restSeconds(prescription, tempo)} s Pause`
             + (ladderFor(prescription.id)
                 ? ` · Stufe ${ladderFor(prescription.id).index + 1}/${ladderFor(prescription.id).leiter.stufen.length}`
                 : '') })),
@@ -136,6 +141,45 @@ export async function render(container, ctx) {
               + 'für den Rücken. Ab etwa elf Sätzen in einer Einheit trägt ein weiterer kaum noch etwas bei.'
             : 'Jede Gruppe dreimal die Woche, jeweils in kleineren Portionen. Bei gleichem '
               + 'Wochenvolumen ist das die verlässlichere Variante.' }))
+    : null;
+
+  /**
+   * Der Plan liegt gespeichert. Kommen Übungen dazu, merkt er davon nichts —
+   * man macht weiter dieselben sieben, obwohl die App inzwischen mehr kennt.
+   * Von allein umzubauen wäre falsch: Ein Plan, der sich unter der Hand
+   * ändert, ist kein Plan. Also ein Hinweis mit einem Knopf.
+   */
+  const stand = Number(plan.uebungsstand) || null;
+  const neueUebungen = EXERCISES.length - (stand || 0);
+  const neuBauen = async () => {
+    const next = buildPlan(profile, (plan.seed || 0) + 1);
+    next.createdAt = plan.createdAt;
+    next.zyklus = plan.zyklus;
+    await setPlan(next);
+    await ctx.refreshTraining();
+    ctx.reload();
+    toast('Plan mit den neuen Übungen gebaut.');
+  };
+
+  const nachschub = (stand === null || neueUebungen > 0)
+    ? el('div', { class: 'card stack mt-16' },
+        el('div', { class: 'row-between' },
+          el('h3', { class: 'card-title', text: 'Neue Übungen verfügbar' }),
+          el('span', { class: 'pill pill-kcal tabular',
+            text: stand === null ? `${EXERCISES.length} Übungen` : `+${neueUebungen}` })),
+        el('p', { class: 'small',
+          text: stand === null
+            ? `Dein Plan stammt aus einer früheren Fassung. Die App kennt inzwischen `
+              + `${EXERCISES.length} Übungen — ob davon welche neu sind, kann der Plan nicht sagen.`
+            : `Seit dem Bau deines Plans sind ${neueUebungen} ${neueUebungen === 1 ? 'Übung' : 'Übungen'} `
+              + 'dazugekommen. Ein gespeicherter Plan holt sie sich nicht von allein.' }),
+        el('button', {
+          class: 'btn btn-block', type: 'button', onClick: neuBauen,
+        }, 'Plan mit den neuen Übungen bauen'),
+        el('p', { class: 'hint',
+          text: 'Aufteilung, Blockwoche und dein Startdatum bleiben. Aussortierte und '
+            + 'ausgewachsene Übungen bleiben es auch. Was du von Hand einzeln ausgetauscht '
+            + 'hast, wird dabei neu gewürfelt.' }))
     : null;
 
   const summary = el('div', { class: 'card stack' },
@@ -326,5 +370,5 @@ export async function render(container, ctx) {
       },
     }, 'Training zurücksetzen'));
 
-  mount(container, head, summary, volumenKarte, skillSection, ...days, leiterliste, sperrliste, nutrition, breakdown, reset);
+  mount(container, head, summary, nachschub, volumenKarte, skillSection, ...days, leiterliste, sperrliste, nutrition, breakdown, reset);
 }

@@ -505,6 +505,16 @@ export function restSeconds(prescription, tempo = 'normal') {
  * Ein Satz dauert grob so lange, wie er Wiederholungen hat, mal drei Sekunden,
  * plus etwas Aufbau. Ein gehaltener Satz dauert genau seine Sekunden — dort
  * wäre das Dreifache glatt falsch.
+ *
+ * **Einseitige Übungen zählen doppelt.** „3 Sätze Bulgarian Split Squat" heißt
+ * dreimal links und dreimal rechts, also sechs Sätze Arbeit — und genau so
+ * fühlt es sich auch an. Bisher zählte die Schätzung nur die Zahl aus dem Plan
+ * mit. Ein Unterkörpertag ohne Geräte hat davon drei bis vier Übungen; aus
+ * 19 geplanten Sätzen werden dort 27 tatsächliche, und die Schätzung lag um
+ * ein Drittel zu niedrig.
+ *
+ * Zwischen den Seiten steht eine halbe Pause: Man setzt um, atmet einmal
+ * durch, macht weiter — aber nicht die volle Pause wie zwischen zwei Sätzen.
  */
 export function sessionMinutes(exercises, tempo = 'normal') {
   let sekunden = 0;
@@ -512,9 +522,27 @@ export function sessionMinutes(exercises, tempo = 'normal') {
     const [unten, oben] = repRange(p);
     const mitte = (unten + oben) / 2;
     const satz = (isTimed(p.id) ? Math.round(mitte) : Math.round(mitte * 3)) + 15;
-    sekunden += p.sets * satz + Math.max(0, p.sets - 1) * restSeconds(p, tempo);
+    const pause = restSeconds(p, tempo);
+    const seiten = isUnilateral(p.id) ? 2 : 1;
+    sekunden += p.sets * satz * seiten
+      + Math.max(0, p.sets - 1) * pause
+      + (seiten === 2 ? p.sets * pause * 0.5 : 0);
   }
   return Math.round(sekunden / 60);
+}
+
+/**
+ * Wie viele Sätze tatsächlich zu machen sind — einseitige doppelt gezählt.
+ *
+ * Bewusst getrennt von der Volumenrechnung: Fürs Wachstum eines Muskels sind
+ * fünf Sätze einbeinige Glute Bridge fünf Sätze, nicht zehn — die andere Seite
+ * ist ein anderes Bein. Für die Frage „wie lange stehe ich hier und wie oft
+ * muss ich anfangen" sind es aber zehn, und das ist die Zahl, die man beim
+ * Üben spürt.
+ */
+export function tatsaechlicheSaetze(exercises, week = 2) {
+  return (exercises || []).reduce(
+    (s, p) => s + forWeek(p, week).sets * (isUnilateral(p.id) ? 2 : 1), 0);
 }
 
 /**
@@ -713,6 +741,21 @@ export function buildPlan(profile, seed = 0) {
     topUp([...groups].filter((g) => g !== 'core'), ziel);
     topUp(['core'], 2);
 
+    // Zum Schluss gegen die Uhr rechnen statt gegen eine Faustzahl.
+    //
+    // Die Übungszahl oben kommt aus „Minuten je Übung" — ein Mittelwert, der
+    // nicht weiß, wie viele Sätze eine Übung hat und ob sie je Seite gemacht
+    // wird. Bei einem Unterkörpertag ohne Geräte, wo die Hälfte der Übungen
+    // einseitig ist, lag eine Einheit mit 45-Minuten-Ziel bei 65 Minuten.
+    //
+    // Deshalb hier die echte Schätzung, und wenn sie über dem Zeitbudget
+    // liegt, fällt hinten eine Übung weg. Die erste bleibt immer stehen: Sie
+    // hat einen Satz mehr und ist die Übung, für die man gekommen ist.
+    while (exercises.length > fewest
+        && sessionMinutes(exercises, profile.pausen || 'normal') > strengthMinutes) {
+      exercises.pop();
+    }
+
     return {
       name,
       template,
@@ -727,6 +770,11 @@ export function buildPlan(profile, seed = 0) {
     seed,
     splitKey: String(key),
     splitName: split.name,
+    // Wie viele Übungen die App kannte, als dieser Plan gebaut wurde. Ein Plan
+    // liegt fest gespeichert — kommen später Übungen dazu, merkt er davon
+    // nichts. Mit dieser Zahl kann die Planansicht darauf hinweisen, statt den
+    // Nutzer monatelang dieselben sieben Übungen machen zu lassen.
+    uebungsstand: EXERCISES.length,
     perSession,
     skillMinutes,
     days,

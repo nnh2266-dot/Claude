@@ -1095,9 +1095,13 @@ function exerciseBlock(prescription, week, session, sessions, dateKey, onChange,
 
   // RIR heißt „so viele Wiederholungen noch im Tank". Bei einer Halteübung
   // gibt es die nicht — dort ist der Abbruch die Form, nicht die Zahl.
+  // „3 Sätze" bei einer einseitigen Übung heißt dreimal links und dreimal
+  // rechts. Ohne den Zusatz wundert man sich beim sechsten Durchgang, warum
+  // das Ende nicht kommt.
+  const satzText = einseitig ? `${adjusted.sets} Sätze je Seite` : `${adjusted.sets} Sätze`;
   const rxText = zeit
-    ? `${adjusted.sets} Sätze · ${unten}–${oben} s halten · ${pause} s Pause`
-    : `${adjusted.sets} Sätze · ${unten}–${oben} Wdh. · RIR ${adjusted.rir} · ${pause} s Pause`;
+    ? `${satzText} · ${unten}–${oben} s halten · ${pause} s Pause`
+    : `${satzText} · ${unten}–${oben} Wdh. · RIR ${adjusted.rir} · ${pause} s Pause`;
 
   return el('div', { class: 'exblock' },
     el('div', { class: 'exblock-head' },
