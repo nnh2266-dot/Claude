@@ -151,7 +151,28 @@ export async function render(container, ctx) {
    */
   const stand = Number(plan.uebungsstand) || null;
   const neueUebungen = EXERCISES.length - (stand || 0);
+
+  /**
+   * Läuft gerade eine Einheit, die noch nicht abgeschlossen ist?
+   *
+   * Der Neubau löscht nichts — eingetragene Sätze liegen in der Einheit, nicht
+   * im Plan, und zählen weiter im Bericht. Aber die Übungsliste des Tages
+   * wechselt komplett, und was man heute schon gemacht hat, steht dann nicht
+   * mehr in der Ansicht. Mitten im Training ist das genau das Falsche, deshalb
+   * wird hier gefragt statt gemacht.
+   */
+  const heutigeEinheit = (ctx.state.sessions || []).find((x) => x.date === localDateKey());
+  const offeneSaetze = heutigeEinheit && !heutigeEinheit.done
+    ? Object.values(heutigeEinheit.entries || {}).reduce((n, v) => n + (v || []).length, 0)
+    : 0;
+
   const neuBauen = async () => {
+    if (offeneSaetze && !confirmAction(
+      `Du bist mitten im Training: ${offeneSaetze} Sätze sind heute schon eingetragen.\n\n`
+      + 'Die bleiben gespeichert und zählen im Bericht — aber die Übungsliste von heute '
+      + 'wechselt, und die erledigten Übungen stehen dann nicht mehr in der Ansicht.\n\n'
+      + 'Besser nach dem Training. Trotzdem jetzt umbauen?')) return;
+
     const next = buildPlan(profile, (plan.seed || 0) + 1);
     next.createdAt = plan.createdAt;
     next.zyklus = plan.zyklus;
@@ -173,13 +194,20 @@ export async function render(container, ctx) {
               + `${EXERCISES.length} Übungen — ob davon welche neu sind, kann der Plan nicht sagen.`
             : `Seit dem Bau deines Plans sind ${neueUebungen} ${neueUebungen === 1 ? 'Übung' : 'Übungen'} `
               + 'dazugekommen. Ein gespeicherter Plan holt sie sich nicht von allein.' }),
+        offeneSaetze
+          ? el('p', { class: 'note' },
+              el('strong', { text: 'Du trainierst gerade. ' }),
+              `${offeneSaetze} Sätze stehen heute schon. Der Umbau wechselt die Übungsliste `
+              + 'von heute — mach die Einheit lieber zu Ende und bau danach um.')
+          : null,
         el('button', {
           class: 'btn btn-block', type: 'button', onClick: neuBauen,
-        }, 'Plan mit den neuen Übungen bauen'),
+        }, offeneSaetze ? 'Trotzdem jetzt umbauen' : 'Plan mit den neuen Übungen bauen'),
         el('p', { class: 'hint',
           text: 'Aufteilung, Blockwoche und dein Startdatum bleiben. Aussortierte und '
             + 'ausgewachsene Übungen bleiben es auch. Was du von Hand einzeln ausgetauscht '
-            + 'hast, wird dabei neu gewürfelt.' }))
+            + 'hast, wird dabei neu gewürfelt. Eingetragene Sätze bleiben in jedem Fall '
+            + 'gespeichert — die liegen in der Einheit, nicht im Plan.' }))
     : null;
 
   const summary = el('div', { class: 'card stack' },

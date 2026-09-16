@@ -1530,6 +1530,36 @@ export async function render(container, ctx) {
 
     body.push(el('div', { class: 'card card-flush mt-16' }, ...blocks));
 
+    /**
+     * Sätze von Übungen, die heute nicht mehr im Plan stehen.
+     *
+     * Passiert, wenn der Plan umgebaut wird, während eine Einheit läuft — oder
+     * wenn eine Übung getauscht wurde, nachdem schon Sätze standen. Die Daten
+     * bleiben gespeichert und zählen im Bericht, waren hier aber unsichtbar.
+     * Unsichtbar und gelöscht sieht für den Nutzer gleich aus, und das ist der
+     * schlechtere der beiden Eindrücke.
+     */
+    const imPlan = new Set(day.exercises.map((p2) => p2.id));
+    const verwaist = Object.entries(session.entries || {})
+      .map(([id, saetze]) => ({ id, saetze: (saetze || []).filter((x) => x && x.reps) }))
+      .filter((x) => !imPlan.has(x.id) && x.saetze.length);
+
+    if (verwaist.length) {
+      const gesamt = verwaist.reduce((n, x) => n + x.saetze.length, 0);
+      body.push(el('div', { class: 'card stack mt-16' },
+        el('div', { class: 'row-between' },
+          el('h3', { class: 'card-title', text: 'Nicht mehr im Plan' }),
+          el('span', { class: 'pill pill-kcal tabular', text: `${gesamt} Sätze` })),
+        el('p', { class: 'muted small',
+          text: 'Diese Übungen stehen heute nicht mehr im Plan, du hast sie aber gemacht. '
+            + 'Die Sätze bleiben gespeichert und zählen im Bericht mit.' }),
+        el('div', { class: 'card-flush' },
+          ...verwaist.map((x) => el('div', { class: 'calcrow' },
+            el('div', { class: 'grow', text: exerciseById(x.id)?.name || x.id }),
+            el('div', { class: 'tabular small',
+              text: formatSets(x.saetze, isUnilateral(x.id), isTimed(x.id)) }))))));
+    }
+
     // Der Block läuft nach Kalender. Sprechen die letzten sieben Tage gegen
     // eine schwere Woche, sagt die App das — und bietet an, die
     // Entlastungswoche vorzuziehen. Umgestellt wird nur auf Knopfdruck.
