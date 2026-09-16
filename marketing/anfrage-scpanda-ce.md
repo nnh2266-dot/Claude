@@ -823,3 +823,83 @@ das bereits verhandelte Niveau als Bezugspunkt.
 Dann ist die Bauform über ScPanda nicht beschaffbar, und es bleibt der Zweitlieferant
 oder der Abbruch. **Vorher aber `wettbewerb.md` neu lesen** — die Recherche vom
 16. September hat den Markt anders gezeigt als bisher angenommen.
+
+---
+
+## Der Grund der Ablehnung — und wie er sich entschärfen lässt (16. September 2026)
+
+**Die Begründung des Lieferanten:** Fabriken unterschreiben nicht, weil sie fürchten,
+dass es auf sie zurückfällt, falls es **Unstimmigkeiten** gibt.
+
+### Die Sorge ist berechtigt, und wir kennen die Unstimmigkeiten
+
+| Unstimmigkeit | Woher |
+|---|---|
+| **Vorlage deklariert KK-26 *und* GB-868** | Beide Zertifikate nennen **nur KK-26** |
+| Karton sagt 1200 mAh | MSDS und UN38.3 sagen 800 mAh |
+| Karton sagt 17 W, Listing 20 W | Lieferant sagt 8,4 W |
+| EMV-Prüfbericht liegt nicht vor | nur das Zertifikat |
+
+Eine vorsichtige Fabrik, die auf dieses Blatt schaut, sieht genau das, wovor sie warnt.
+**Die Ablehnung ist damit kein Unwille, sondern eine nachvollziehbare Reaktion auf ein
+Dokument, das mehr deklariert, als ihre eigenen Papiere abdecken.**
+
+### Der Ausweg: den Umfang auf das verkleinern, was die Papiere hergeben
+
+**Die Fabrik unterschreibt nur für KK-26** — genau die Bezeichnung auf ihren eigenen
+Zertifikaten. Kein GB-868, keine zweite Modellnummer, keine Angabe, die über die
+Berichte hinausgeht.
+
+**Die Brücke zu GB-868 stellt ScPanda her**, in einer normalen Nachricht: GB-868 ist
+dasselbe Gerät unter anderem Verkaufsnamen. Das ist eine **kaufmännische** Bestätigung,
+keine Konformitätserklärung — für den Händler ungefährlich und deshalb leicht zu
+bekommen. Für die technische Dokumentation ergibt das zusammen eine geschlossene Kette:
+Erklärung für KK-26, Bestätigung der Identität, Prüfberichte für KK-26.
+
+> ⚠️ **Vom Rechtstexte-Anbieter gegenlesen lassen.** Eine Erklärung, die einen anderen
+> Modellnamen trägt als die verkaufte Ware, plus separate Identitätsbestätigung ist ein
+> **Behelf**, kein Lehrbuchfall. Die 50 € Mitgliedschaft stehen ohnehin in
+> `rechnung.md`. Vor dem ersten Verkauf klären.
+
+### Nachricht dazu
+
+```
+Hello,
+
+Thank you for explaining the reason. That concern is fair, and I think I
+can take most of it away.
+
+Three things about this document:
+
+1. It creates no new obligation. The factory only declares that the
+product conforms on the basis of the test reports that already exist and
+that they already paid for. It adds nothing beyond what those reports
+already say.
+
+2. To remove the inconsistency they are worried about: please ask them to
+sign it for model KK-26 only, exactly as it appears on their own EMC and
+RoHS certificates. Nothing else. I will then ask you separately to
+confirm in a normal message that GB-868 is the same device under a
+different sales name. That confirmation is commercial, it is not a
+compliance document, and it stays with me.
+
+3. If the factory wants to add a note or a limitation to the document,
+that is fine with me. For example, that the declaration is based on the
+two test reports and on the sample tested. A signed document with a
+limitation is worth far more to me than no document.
+
+Without this one page I cannot sell the product in Germany at all, no
+matter how good the test reports are. That is the only reason I keep
+asking.
+
+Best regards
+Nik Hoffmann
+```
+
+**Warum das die Chancen hebt:** Es nimmt der Fabrik genau die Angst, die sie benannt
+hat, statt sie zu überreden. Punkt 2 beseitigt die einzige Unstimmigkeit, die das
+Dokument selbst enthält. Punkt 3 gibt ihr die Kontrolle zurück.
+
+**Wenn auch das nicht reicht**, liegt es nicht an der Formulierung, und der nächste
+Schritt ist der EU-Großhandel aus `wettbewerb.md` Abschnitt 7 — dort liegt die
+Erklärung bereits in der Lieferkette.
