@@ -1,0 +1,1154 @@
+# Nährwerte
+
+Essen abfotografieren, Trainingsplan bekommen, beides zusammen im Blick behalten.
+
+Eine Web-App fürs Handy (PWA) ohne Server, ohne Account, ohne Build-Schritt.
+Alle Mahlzeiten, Fotos und Trainingsdaten bleiben auf deinem Gerät.
+
+**Die beiden Hälften hängen zusammen:** Aus dem Fragebogen entsteht der Trainingsplan
+*und* das Kalorienziel. An Trainingstagen darf mehr gegessen werden als an Ruhetagen,
+über die Woche kommt genau die Summe raus, die dein Ziel braucht. Und weil jede Formel
+nur eine Schätzung ist, korrigiert die App das Ziel nach dem, was die Waage tatsächlich
+anzeigt.
+
+## Was die App kann
+
+### Ernährung
+
+- **Foto → Nährwerte**: Mahlzeit fotografieren, Claude zerlegt sie in Komponenten und
+  schätzt Menge, Kalorien, Eiweiß, Kohlenhydrate und Fett
+- **Hinweis zum Foto**: unter dem Bild lässt sich dazuschreiben, was man ihm nicht
+  ansieht — „in Olivenöl gebraten", „große Portion", „Nudeln sind Vollkorn". Ein Tipp
+  auf *Mit Hinweis neu schätzen*, und die Schätzung läuft mit dieser Zusatzinfo
+- **Text → Nährwerte**: statt zu fotografieren einfach beschreiben — „zwei Scheiben
+  Vollkornbrot mit Butter und Gouda, dazu ein Apfel". Genannte Mengen werden
+  übernommen, fehlende als übliche Portion angenommen und im Hinweis genannt.
+  Braucht keine Kamera und kostet weniger als ein Bild
+- **Zwei Wege dorthin**: automatisch über einen eigenen API-Key, oder kostenlos über
+  die Claude-App (siehe *Ohne API-Key ausprobieren*)
+- **Alles korrigierbar**: jede Zahl ist editierbar, ein Portionsregler skaliert die
+  ganze Mahlzeit auf einmal (25–250 %)
+- **Tagesübersicht**: Kalorienring gegen dein Tagesziel, Makrobalken, Mahlzeiten nach
+  Frühstück / Mittag / Abend / Snack gruppiert
+- **Verlauf**: Balkendiagramm der letzten 7 oder 30 Tage, Durchschnittswerte, Tage im Ziel
+- **Favoriten**: häufige Mahlzeiten mit einem Tipp erneut eintragen — ohne Foto, ohne Kosten
+- **Einordnung je Mahlzeit**: unter jeder Zeile steht, was sie für deinen Tag tut —
+  Eiweiß je 100 kcal, Kalorien je 100 g und ob sie in den Rest passt
+- **Essensvorschläge**: wenn noch etwas übrig ist, schlägt die App drei Sachen vor, die
+  in den Rest passen — aus deinen Favoriten und einer kleinen eingebauten Liste. Ein
+  Tippen öffnet den Editor mit den Nährwerten drin. Auf Wunsch auch Ideen von Claude
+- **Trinken**: Richtwert aus Körpergewicht und Sportminuten, Eintragen über vier Knöpfe
+- **Ohne Internet nutzbar**: alles außer der Foto-Analyse funktioniert offline
+- **Von Hand eintragen**: die App ist auch ganz ohne API-Key voll benutzbar
+
+### Training
+
+- **Acht Fragen, ein Plan**: Basisdaten, Ziel, Erfahrung, Zeit, Ausrüstung, Alltag
+  und Beschwerden, Schwerpunkte, Fähigkeiten — daraus entstehen Split, Übungen und
+  Kalorienziele
+- **Fähigkeiten lernen**: Handstand, L-Sit, erster Klimmzug, erster Dip, Pistol Squat,
+  Muscle-Up, Front Lever — jeweils als Leiter aus Vorstufen, die sich freischalten,
+  sobald eine Stufe sauber gehalten wird
+- **Einheit mitschreiben**: Gewicht und Wiederholungen je Satz, mit den Werten vom
+  letzten Mal als Vorgabe und einem konkreten nächsten Schritt je Übung
+- **Vier-Wochen-Block**: Woche 1 mit mehr Reserve, Woche 3 schwer, Woche 4 Deload
+- **Aufwärmen**: eine kurze Liste, die sich aus dem Tag ergibt — Kreislauf, dann
+  Mobilisation für genau die Gelenke, die gleich arbeiten, dazu ein Aufwärmsatz an
+  der ersten Übung. Etwa vier bis fünf Minuten
+- **Unterwegs**: ein Schalter rechnet den Tag auf ein leeres Hotelzimmer um — nur
+  Übungen, die mit Boden und Wand auskommen, ohne Tisch, Türrahmen oder Erhöhung.
+  Der gespeicherte Plan bleibt unverändert
+- **Pausenuhr**: läuft von selbst los, sobald ein Satz abgehakt ist. Die Länge richtet
+  sich nach Last und Übung, und ein Regler stellt sie kurz, normal oder lang — mit der
+  Dauer der ganzen Einheit als sichtbarer Folge
+- **Tagesbericht und Wochenbericht**: jeden Tag die dringendsten Befunde, sonntags die
+  ganze Woche — Training, Ernährung, Gewicht, Fähigkeiten. Konkret und ohne Schönreden
+- **Fortschrittsfotos**: alle paar Wochen eine Aufnahme, zwei davon nebeneinander im
+  Vergleich. Bleiben auf dem Gerät und gehen an keine API
+- **Beweglichkeitstest**: fünf Prüfungen ohne Hilfsmittel, Schritt für Schritt
+  angeleitet, alle paar Wochen zu wiederholen. Gemessen wird in Stufen, nicht in
+  Zentimetern. Am Ende steht eine Auswertung von 0 bis 100 gegen gängige Richtwerte,
+  mit der schwächsten Prüfung und ungleichen Seiten als Befund
+- **Fortschritt**: Gewichtsverlauf mit Sieben-Tage-Schnitt, dann Kraftentwicklung je
+  Übung und bewegte Last pro Woche — die Kraftwerte stehen oben, weil sie sich nach
+  jeder Einheit ändern, Fotos und Beweglichkeit nur alle paar Wochen
+- **Krafteinordnung**: je Muskelgruppe ein Wert von 0 bis 100, gemessen an Richtwerten,
+  die auf das eigene Körpergewicht bezogen sind, dazu die Verhältnisse Drücken/Ziehen
+  und Oberkörper/Beine — und links gegen rechts, wo einseitig trainiert wird
+- **Variantenleitern**: wird eine Übung ohne Gewicht zu leicht, führt die App zur
+  nächsten Stufe — von allein nach zwei Einheiten am oberen Ende, oder auf Knopfdruck
+- **Schlaf und Morgenlicht**: abends das Zubettgehen, morgens das Aufwachen und die
+  Zeit draußen — die innere Uhr stellt sich am Tageslicht der ersten Stunde
+- **Sport außer dem Training**: Laufen, Rad, Yoga und anderes eintragen; der
+  geschätzte Verbrauch hebt das Tagesziel
+- **Apple Health**: keine laufende Verbindung möglich, aber die Export-Datei lässt sich
+  einlesen — Workouts und Körpergewicht
+- **Fotos ohne Verbindung**: ein Foto lässt sich aufheben und später auswerten. Bis
+  dahin zählt es nirgends mit
+- **Ausfallen lassen und nachholen**: eine Einheit mit Grund auslassen, an einem
+  Ruhetag nachholen — der Bericht unterscheidet beides von „einfach nicht gemacht"
+- **Kalorien nachsteuern**: weicht die gemessene Gewichtsveränderung vom Ziel ab,
+  schlägt die App eine Korrektur vor — auf Knopfdruck übernommen
+
+## Ohne API-Key ausprobieren
+
+Du musst nichts aufladen, um die App zu testen.
+
+**Alles außer der Foto-Analyse läuft sofort**: Mahlzeiten von Hand eintragen,
+Kalorienring, Makrobalken, Verlauf, Favoriten. Dafür reicht Schritt 2 und 3 der
+Einrichtung unten.
+
+**Die Foto-Analyse kannst du über dein bestehendes Claude-Abo testen.** Nach dem
+Fotografieren erscheint im Editor der Abschnitt *Über die Claude-App analysieren*
+mit drei Schritten:
+
+1. **Anweisung kopieren** — die App legt den fertigen Prompt in die Zwischenablage
+2. **Foto teilen oder speichern** — auf dem Handy öffnet sich der Teilen-Dialog, am
+   Rechner wird das Foto heruntergeladen
+3. In der Claude-App beides einfügen, abschicken, die Antwort **komplett kopieren**
+   und zurück ins Feld einfügen → *Werte übernehmen*
+
+Die Werte landen im selben Editor wie beim API-Weg und lassen sich genauso
+korrigieren. Kostet kein Guthaben, dafür pro Mahlzeit etwas Kopierarbeit — gut
+geeignet, um die Schätzqualität zu beurteilen, bevor du dich entscheidest. Der Weg
+bleibt auch später verfügbar, etwa wenn das Guthaben mal leer ist.
+
+**Der Wechsel zwischen den Apps ist abgesichert.** Handys werfen Web-Apps beim
+Wegwechseln gern aus dem Speicher, besonders iPhones. Die angefangene Mahlzeit wird
+deshalb samt Foto gesichert und beim Zurückkommen wiederhergestellt — du landest
+wieder genau im Editor, auch wenn die App zwischendurch komplett neu gestartet ist.
+Nach dem Speichern oder Verwerfen ist der Entwurf weg, und liegengebliebene
+Entwürfe werden nach zwölf Stunden verworfen.
+
+## Einrichten
+
+### 1. API-Key holen (optional)
+
+Die Foto-Analyse läuft über die Anthropic-API mit **deinem eigenen Schlüssel**.
+
+1. Konto anlegen auf [console.anthropic.com](https://console.anthropic.com)
+2. Unter **Settings → API keys** einen neuen Key erstellen (beginnt mit `sk-ant-`)
+3. Unter **Billing** Guthaben aufladen — **Minimum 5 $**
+
+**Was das kostet:** Der Key selbst ist kostenlos, es gibt kein Abo und keine
+Grundgebühr. Du zahlst nur, was du verbrauchst:
+
+| Modell | pro Foto | 5 $ Guthaben reichen für |
+|---|---|---|
+| **Haiku 4.5** (Voreinstellung) | ca. 0,4 Cent | ~1.250 Fotos |
+| Sonnet 5 | ca. 1,2 Cent | ~420 Fotos |
+| Opus 5 | ca. 2 Cent | ~250 Fotos |
+
+Bei drei Mahlzeiten am Tag reichen 5 $ mit Haiku gut über ein Jahr. Ist das Guthaben
+leer, hört die Analyse einfach auf — es wird nichts automatisch abgebucht.
+
+> Dein Claude-Abo auf claude.ai und der API-Key sind zwei getrennte Dinge.
+> Das Abo gibt keinen API-Zugang.
+
+### 2. App veröffentlichen (GitHub Pages)
+
+Die App braucht HTTPS — sonst erlaubt der Browser keinen Kamerazugriff.
+GitHub Pages liefert das kostenlos:
+
+1. Im Repository `Claude` auf **Settings → Pages**
+2. Unter *Source* **Deploy from a branch** wählen
+3. Als Branch `claude/training-app-workout-plan-0e8m1p` wählen, Ordner `/ (root)`
+4. Speichern und ein paar Minuten warten
+
+Danach ist die App erreichbar unter
+**https://nnh2266-dot.github.io/Claude/**
+
+> **Nur ein Branch pro Repository.** GitHub Pages bedient pro Repository genau einen
+> Branch. Solange oben dieser Branch eingestellt ist, liegt hier die Nährwerte-App.
+> Soll später eine andere App unter derselben Adresse laufen, muss der Branch
+> umgestellt oder alles in einen gemeinsamen Branch zusammengeführt werden.
+
+Die App funktioniert in einem Unterordner genauso wie auf einer Domain-Wurzel: alle
+Pfade sind relativ, und der Service Worker beansprucht nur seinen eigenen Unterordner.
+
+### 3. Beim ersten Start: Fragebogen
+
+Ohne Trainingsplan ist die App ein reiner Kalorienzähler mit von Hand gesetzten
+Zielen. Unter *Training → Fragebogen starten* entstehen aus acht Fragen der Plan
+und die Kalorienziele dazu — ab dann rechnet der Ring auf der Startseite gegen das
+Ziel des jeweiligen Tages statt gegen einen festen Wert.
+
+### 4. Aufs Handy legen
+
+Die URL im Handy-Browser öffnen, dann:
+
+- **iPhone (Safari)**: Teilen-Symbol → *Zum Home-Bildschirm*
+- **Android (Chrome)**: Menü ⋮ → *App installieren* bzw. *Zum Startbildschirm zufügen*
+
+Sie verhält sich danach wie eine normale App: eigenes Icon, kein Browser-Rahmen,
+startet auch ohne Netz.
+
+### 5. Key eintragen (falls du einen hast)
+
+In der App unten rechts auf **Mehr** → API-Key einfügen → **Key speichern** →
+**Verbindung testen**. Der Test kostet Bruchteile eines Cents und sagt dir sofort,
+ob Key und Guthaben funktionieren.
+
+Ohne Key nutzt du stattdessen den Weg über die Claude-App, siehe oben.
+
+## Datenschutz und Sicherheit
+
+- **Mahlzeiten, Fotos, Trainingsdaten und Gewichte bleiben auf dem Gerät**
+  (IndexedDB). Es gibt keinen Server und keine Übertragung an Dritte.
+- **Nur das jeweils analysierte Foto** wird an `api.anthropic.com` geschickt.
+- **Der API-Key liegt unverschlüsselt** in der Browser-Datenbank dieses Geräts. Das
+  ist bei diesem Muster ("bring your own key") normal, heißt aber: wer Zugriff auf
+  dein entsperrtes Handy hat, kann ihn auslesen.
+  **Empfehlung:** einen eigenen Key nur für diese App anlegen — dann lässt er sich im
+  Anthropic-Konto einzeln widerrufen, ohne andere Dinge zu stören.
+- Beim Löschen der Browserdaten für diese Seite ist auch alles andere weg.
+  Unter *Mehr → Daten exportieren* gibt es eine Sicherungsdatei mit Mahlzeiten,
+  Favoriten, Trainingsplan, Einheiten und Gewichten (ohne Fotos, ohne Key).
+
+## Lokal ausprobieren
+
+```bash
+python3 -m http.server 8000
+```
+
+Dann `http://localhost:8000` öffnen. `localhost` gilt als sicherer Kontext, deshalb
+funktionieren dort Kamera und Service Worker auch ohne HTTPS.
+
+## Aufbau
+
+```
+index.html               App-Shell
+css/app.css              Design-Tokens, Light/Dark, Komponenten
+js/app.js                Routing, gemeinsamer Zustand, Bootstrap
+js/store.js              IndexedDB: Mahlzeiten, Favoriten, Einheiten, Gewichte, Einstellungen
+js/nutrition.js          Summen, Datumslogik, Portionsskalierung
+js/training.js           Übungsdatenbank, Plangenerator, Satzvorgaben, Progression
+js/skills.js             Fähigkeiten: Stufenleitern, Ziele, Freischaltregeln
+js/warmup.js             Aufwärmen, zusammengestellt aus den Gruppen des Tages
+js/mobility.js           Beweglichkeitstest: Prüfungen, Stufen, Punkte, Vergleich
+js/report.js             Tages- und Wochenbericht: Befunde aus den eigenen Daten
+js/strength.js           Krafteinordnung: Richtwerte je Übung, Gruppen, Verhältnisse
+js/ladders.js            Variantenleitern für Übungen ohne Zusatzgewicht
+js/activities.js         Sport außer dem Training: MET-Werte, Schätzung, Anrechnung
+js/sleep.js              Schlafdauer, Morgenlicht, Nachtzuordnung
+js/water.js              Trinkrichtwert, Portionen, Serie
+js/kegel.js              Beckenboden: Stufen, Ablauf, Anleitung, Belege
+js/supplements.js        Nahrungsergänzung: Katalog, Belegstufen, Wechselwirkungen
+js/mealscore.js          Einordnung einzelner Mahlzeiten aus vier Zahlen
+js/suggest.js            Essensvorschläge aus Favoriten und Bausteinen
+js/coach.js              Tagesüberblick: die Regeln, die alle Bereiche verbinden
+js/health.js             Apple-Health-Export einlesen (Workouts, Körpergewicht)
+js/version.js            Fassungsnummer, muss zur CACHE_VERSION in sw.js passen
+js/energy.js             Grundumsatz, Tagesziele, Gewichtstrend, Kalorienkorrektur
+js/claude.js             Anthropic-API + Chat-Brücke: Prompts (Foto und Text), Schema
+js/image.js              Kamera-Foto verkleinern, Thumbnail, Base64
+js/ui.js                 DOM-Helfer
+js/views/                today · capture · history · favorites · settings
+                         training · plan · progress · setup · mobility
+                         report · photos · strength · activity · sleep
+                         water · supplements · suggest · coach · tagesleiste
+                         schonung · kegel
+sw.js                    Service Worker (Offline-Betrieb)
+manifest.webmanifest     PWA-Manifest
+```
+
+Reine ES-Module, keine Abhängigkeiten, kein Build. Änderungen an den App-Dateien
+brauchen eine neue `CACHE_VERSION` in `sw.js` **und** eine neue `APP_VERSION` in
+`js/version.js` — beide gehören zusammen, die eine wirft den Offline-Speicher weg,
+die andere macht in der App sichtbar, welcher Stand läuft.
+
+**Zur Aktualisierung:** Der Service Worker holt statische Dateien erst aus dem Netz
+und nutzt den Cache nur als Rückfalllösung — und zwar mit `cache: 'no-cache'`, was der
+entscheidende Teil ist. Ohne das ist „erst das Netz" eine Behauptung und keine Tatsache:
+`fetch(request)` benutzt den normalen HTTP-Cache des Browsers, und GitHub Pages liefert
+die Dateien mit zehn Minuten Gültigkeit aus. Solange die läuft, gibt der Browser die alte
+Datei zurück, ohne den Server überhaupt zu fragen. Nach außen sah das so aus, als bliebe
+die App auf einer alten Fassung stehen — gemessen: Server auf Fassung 36, Seite neu
+geladen, ausgeliefert wurde 35, Anfragen an den Server: null. `no-cache` heißt nicht
+„nicht speichern", sondern „vor dem Ausliefern nachfragen"; bei unveränderter Datei
+antwortet der Server mit 304 und es fließen keine Daten. Beim Vorabspeichern gilt
+dasselbe über `new Request(url, { cache: 'reload' })`.
+
+Unter *Mehr → Fassung* steht deshalb jetzt auch, welche Fassung **auf dem Server** liegt.
+Damit lässt sich „die App bleibt bei 33" überhaupt erst auseinanderhalten: Ist die neue
+Fassung nicht veröffentlicht, oder hält das Gerät eine alte Kopie fest? Andersherum wäre es schneller, hätte aber
+zur Folge, dass eine neue Fassung erst beim übernächsten Start erscheint — auf einem
+Handy, das die App tagelang im Hintergrund hält, kann das ewig dauern. Zusätzlich
+prüft die App beim Start und bei jeder Rückkehr in den Vordergrund auf eine neue
+Fassung und lädt einmal neu, sobald ein neuer Service Worker übernimmt. Bleibt ein
+Gerät trotzdem hängen, gibt es unter *Mehr → Fassung* den Knopf
+*Offline-Speicher leeren und neu laden*.
+
+`training.js`, `skills.js`, `energy.js`, `water.js`, `supplements.js`, `mealscore.js`,
+`suggest.js` und `coach.js` fassen kein DOM an — die Rechnerei ist damit einzeln
+prüfbar, so wie `nutrition.js` es schon vorher war.
+
+## Wie die Zahlen entstehen
+
+**Grundumsatz** nach Mifflin-St Jeor, oder nach Katch-McArdle sobald ein Körperfett­
+anteil eingetragen ist. Mal Aktivitätsfaktor (1,20 bis 1,65) ergibt den Verbrauch ohne
+Training; je Einheit kommen rund 0,075 kcal pro Kilo und Trainingsminute dazu.
+
+**Zielkalorien** je nach Ziel: −18 % beim Fettabbau, −5 % beim Formverbessern, +12 %
+beim Aufbau — nach unten begrenzt auf das 1,1-fache des Grundumsatzes.
+
+**Kalorienzyklus** verschiebt Kalorien von Ruhe- auf Trainingstage, ohne die
+Wochensumme zu ändern. Gedeckelt bei 15 % des Tagesziels, sonst müssten bei sechs
+Trainingstagen die wenigen Ruhetage die ganze Umverteilung tragen.
+
+**Makros**: Eiweiß 1,8 bis 2,2 g/kg je nach Ziel (über 25 % Körperfett auf eine
+fettärmere Bezugsmasse gerechnet), Fett mindestens 0,8 g/kg oder 20 % der Kalorien,
+der Rest Kohlenhydrate — an Trainingstagen entsprechend mehr.
+
+**Nachsteuerung**: Aus dem Sieben-Tage-Schnitt des Gewichts gegen die Vorwoche ergibt
+sich die tatsächliche Veränderung in Prozent Körpergewicht pro Woche. Weicht sie um
+mehr als 0,22 Prozentpunkte vom Ziel ab, schlägt die App eine Korrektur vor
+(1 kg ≈ 7700 kcal, gedeckelt auf ±300 kcal pro Tag).
+
+## Der Beweglichkeitstest
+
+Zu finden ist er an zwei Stellen: unter *Fortschritt → Beweglichkeit*, und im Training
+direkt unter dem Aufwärmen — dort allerdings nur, wenn er etwas zu sagen hat, also wenn
+noch nie gemessen wurde oder die letzte Messung älter als vier Wochen ist. Ein Knopf,
+der immer da ist und meistens nichts bedeutet, wird nach zwei Wochen nicht mehr gesehen.
+
+Fünf Prüfungen: Vorbeugen im Sitzen, Knie zur Wand, Hand über die Schulter,
+Schmetterling, tiefe Hocke halten. Gebraucht wird nichts außer einer Wand und etwas
+Boden.
+
+**Gemessen wird in Stufen, nicht in Zentimetern.** Ein Maßband hat man selten dabei,
+und an sich selbst angelegt verrutscht es ohnehin. Stattdessen hat jede Prüfung sechs
+Stufen, beschrieben mit Anhaltspunkten, die immer da sind: die eigenen Finger quer als
+Lineal, die Knöchel, die Zehen, die tastbare Spitze des Schulterblatts. Man schaut
+nach, wie weit man kommt, und tippt die Beschreibung an, die passt. Für den Fall
+dazwischen gibt es *Hat gerade so gereicht* — das zählt als halbe Stufe, damit auch
+langsamer Fortschritt sichtbar wird.
+
+Die Stufen sind aufsteigend sortiert, von unbeweglich zu beweglich. Damit ist überall
+mehr besser und der Vergleich braucht keine Sonderfälle. Die tiefe Hocke zählt in
+Sekunden und bringt ihre eigene Stoppuhr mit; der Bildschirm bleibt dabei an.
+
+Der Test läuft **Schritt für Schritt, eine Prüfung pro Bildschirm**. Zu jeder steht
+offen sichtbar, wie sie aufgebaut wird — nummeriert, in der Reihenfolge, in der man es
+tut — und was nicht zählt, also die üblichen Selbstbetrügereien: Wippen, gebeugte
+Knie, mit der zweiten Hand nachhelfen. Ohne das misst man beim zweiten Mal anders als
+beim ersten, und der Vergleich wäre wertlos.
+
+Drei Prüfungen laufen je Seite. Der Chip darüber schaltet um und zeigt den Stand
+beider Seiten; nach der ersten Wahl springt er von allein auf die andere Seite.
+
+Im Fortschritt steht danach je Prüfung die Stufe samt Beschreibung und die Veränderung
+zur Messung davor. Sind die Seiten ungleich, entfällt die Beschreibung: der Mittelwert
+von Stufe 4 und Stufe 2 ist Stufe 3, und auf der steht keine der beiden Seiten.
+
+### Die Auswertung
+
+Nach dem Speichern kommt zuerst eine Auswertung, nicht der Fortschritt: zehn Minuten
+Messen sollen mit einer Zahl enden, die man nicht suchen muss.
+
+Jede Stufe hat einen Punktwert von 0 bis 100 (`norm` je Prüfung, `zeitNorm` für die
+Hocke, dazwischen linear interpoliert, damit auch halbe Stufen zählen). Die
+Stützpunkte sind an gängigen Richtwerten ausgerichtet, nicht an einer Rangliste: die
+Zehen erreichen, das Knie eine Handbreit vor der Wand, die Fingerspitzen an der
+unteren Schulterblattspitze — das gilt jeweils als unauffällig bis gut, und dort liegt
+die Grenze zu „gut" (70 Punkte).
+
+Der Gesamtwert ist der Mittelwert der Prüfungen, **die auch gemessen wurden**. Wer
+zwei überspringt, bekommt keine schlechtere Zahl, sondern eine aus drei Prüfungen —
+deshalb steht immer dabei, aus wie vielen sie gerechnet ist.
+
+| Punkte | Einordnung |
+| --- | --- |
+| 85–100 | Sehr gut |
+| 70–84 | Gut |
+| 55–69 | Brauchbar |
+| 35–54 | Eingeschränkt |
+| 0–34 | Deutlich eingeschränkt |
+
+Dazu kommen zwei Dinge, die ein Mittelwert verschluckt: die **schwächste Prüfung** als
+größter Hebel, und **ungleiche Seiten** ab einer Stufe Unterschied — zwei Seiten, die
+weit auseinanderliegen, ergeben im Mittel einen unauffälligen Wert. Liegt eine frühere
+Messung vor, steht neben jeder Zahl die Veränderung in Punkten.
+
+Im Fortschritt steht die Punktzahl als Karte; ein Tipp darauf öffnet die ganze
+Auswertung erneut.
+
+Empfohlener Abstand: 28 Tage. Öfter zu messen zeigt vor allem Tagesform.
+
+Messungen aus der ersten Fassung des Tests lagen in Zentimetern vor und sind mit den
+Stufen nicht vergleichbar. Sie bleiben gespeichert, tauchen aber nicht mehr auf —
+`hasResults()` erkennt sie an den alten Kennungen und lässt sie liegen.
+
+## Krafteinordnung je Muskelgruppe
+
+Zwei Fragen: Wie stark ist eine Gruppe gemessen am eigenen Körpergewicht, und wie
+stehen die Gruppen zueinander?
+
+**Der Bezug aufs Körpergewicht ist der Kern.** 80 kg Bankdrücken heißt bei 60 kg
+Körpergewicht etwas anderes als bei 100 kg. `STANDARDS` in `strength.js` hält deshalb
+je Übung fünf Stützpunkte für 0, 25, 50, 75 und 100 Punkte, in zwei Bauarten:
+
+- `art: 'last'` — geschätztes Einwiederholungsmaximum geteilt durchs Körpergewicht.
+  Bankdrücken etwa 0,5 / 0,75 / 1,0 / 1,25 / 1,5. Bei Kurzhanteln gilt die Zahl je Hantel.
+- `art: 'wdh'` — Wiederholungen eines sauberen Satzes ohne Zusatzgewicht. Liegestütze
+  5 / 15 / 25 / 40 / 60. Hier steckt der Körpergewichtsbezug schon in der Übung.
+
+Dazwischen wird linear interpoliert. Die Niveaus heißen Anfang, Geübt,
+Fortgeschritten, Stark und Sehr stark. Für Frauen werden die `last`-Richtwerte
+skaliert (Oberkörper 0,65, Beine 0,80) — ohne das stünde bei gleicher Leistung eine
+schlechtere Einordnung, und die wäre schlicht falsch.
+
+Maßgeblich für eine Gruppe ist die **bestbewertete Übung**, nicht der Durchschnitt: wer
+schwer Bankdrücken kann, hat eine starke Brust, auch wenn daneben ein halbherziger Satz
+Fliegende steht.
+
+**Verhältnisse** vergleichen Drücken (Brust, Schultern) mit Ziehen (Rücken, hintere
+Schulter) und Oberkörper mit Beinen; ab zwölf Punkten Unterschied gilt das als schief.
+Die Arme bleiben bewusst draußen — ein starker Curl würde sonst die ganze Seite
+„Ziehen" hochziehen, obwohl der Rücken schwach ist. Fehlt eine Seite ganz, kommt kein
+Befund: ein Ungleichgewicht zwischen einer gemessenen und einer nie trainierten Seite
+wäre keine Erkenntnis, sondern eine Datenlücke.
+
+Dazu kommt die **Satzverteilung der letzten vier Wochen** und, welche Gruppen im Plan
+stehen, aber keinen einzigen Satz gesehen haben.
+
+Am Ende steht, was die Zahlen wert sind, und das gehört dazu: die Richtwerte sind grobe
+Erfahrungswerte und schwanken mit Hebeln, Alter und Trainingsjahren um zehn bis zwanzig
+Punkte; nur ein Teil der Übungen hat überhaupt einen; die Epley-Schätzung wird bei zwölf
+Wiederholungen gedeckelt, weil sie darüber deutlich überschätzt; und gerechnet wird mit
+dem besten Satz überhaupt, nicht dem der laufenden Woche. Wo kein Richtwert existiert —
+etwa beim Handtuch-Rudern im Sitzen, wo der Widerstand aus den eigenen Beinen kommt —
+steht ausdrücklich keine Zahl statt einer erfundenen.
+
+## Die Tagesansicht
+
+Sie ist die Seite, die man am häufigsten sieht, und war nach den letzten Erweiterungen
+auf neun Karten und knapp drei Bildschirmhöhen angewachsen. Jetzt sind es drei Karten
+und anderthalb Bildschirme. Der Aufbau von oben nach unten:
+
+1. **Der Überblick** — was heute zählt, höchstens drei Zeilen (siehe unten).
+2. **Der Kalorienring** mit Makros und dem Wasserrichtwert.
+3. **Die Tagesleiste** — Schlaf, Sport, Trinken und Ergänzung als vier Kacheln mit je
+   einer Zahl. Antippen klappt genau eine auf; die volle Karte ist dieselbe wie vorher,
+   sie liegt nur nicht mehr dauernd offen. Ein farbiger Streifen oben sagt den Zustand:
+   grün erledigt, orange offen, grau nichts eingetragen.
+4. **Was noch reinpasst** — Essensvorschläge, wenn noch etwas übrig ist.
+5. **Die Mahlzeiten** des Tages mit ihrer Einordnung.
+6. Eintragen-Knöpfe und eine Zeile zum ganzen Bericht.
+
+Die aufgeklappte Kachel überlebt das Neuzeichnen: Wer ein Glas einträgt, findet die
+Karte danach noch offen — sonst würde sie bei jedem Eintrag zuklappen, und genau dann
+will man noch eins eintragen. Aufgeklappt bleibt immer nur eine; zwei gleichzeitig wären
+wieder der alte Zustand mit mehr Klickerei davor.
+
+Der Tagesbericht ist von der Startseite verschwunden, weil er in weiten Teilen dasselbe
+sagte wie der Überblick darüber. Er steht als Zeile ganz unten.
+
+## Der Tagesüberblick
+
+Ganz oben auf der Tagesansicht steht eine Karte, die als einzige Stelle der App alle
+Bereiche gleichzeitig sieht: Schlaf, Training, Sport, Kalorien, Trinken, Ergänzung,
+Gewicht, wartende Fotos. Sie zieht die Verbindungen, die man sonst selbst ziehen müsste
+— und genau die rechtfertigen eine App wie diese; sonst wären es fünf Notizzettel in
+einer Hülle.
+
+Drei Regeln halten sie brauchbar:
+
+1. **Höchstens drei Hinweise.** Eine Liste, die alles sagt, sagt nichts.
+2. **Jeder Hinweis nennt etwas Konkretes.** Nicht „achte auf dein Eiweiß", sondern
+   „noch 48 g — das sind zwei Becher Magerquark".
+3. **Es gibt einen guten Zustand.** Liegt alles im Rahmen, steht das da. Ein Ratgeber,
+   der nur mahnt, wird weggeklickt.
+
+Die Reihenfolge ist bewusst gesetzt: **Zuerst, was die Zahlen der App selbst
+verfälscht.** Eine falsche Zahl richtet mehr Schaden an als ein vergessener Hinweis.
+Beispiele:
+
+- **Kreatin verschiebt das Gewicht.** In den ersten Wochen lagert der Muskel ein bis
+  zwei Kilo Wasser ein. Die Kalorienkorrektur würde das als Zunahme lesen und
+  gegensteuern — steht Kreatin auf deiner Liste und läuft seit weniger als vier Wochen,
+  sagt die App das ausdrücklich dazu.
+- **Ohne Wiegetage steuert die App blind.** Fehlen drei Tage in Folge, steht es oben.
+- **Koffein kostet Tiefschlaf.** Steht es auf deiner Liste und war die Nacht kurz, kommt
+  der Hinweis auf die Halbwertszeit von fünf bis sechs Stunden.
+- **Kurze Nacht vor einem Trainingstag**, harter Sport gestern vor den Beinen,
+  Entlastungswoche: dieselbe Karte, dieselbe Reihenfolge.
+
+## Trinken
+
+Der Richtwert lag schon lange im Energieplan, aber nur zum Anschauen. Jetzt lässt er
+sich eintragen — mit vier Knöpfen für Glas, kleine Flasche, Flasche und große Flasche.
+Kein Zahlenfeld: Wer trinkt, hat ein Glas in der Hand und höchstens einen Daumen frei.
+
+Gerechnet wird mit **25 ml je Kilogramm Körpergewicht**, plus **10 ml je Sportminute** —
+das ist der untere Rand dessen, was beim Schwitzen verloren geht. An einem Tag mit einer
+Stunde Training steigt der Richtwert damit von 2,0 auf 2,6 Liter.
+
+Hier stand lange 35, und das war zu hoch. Die überall zitierten „30 bis 40 ml je
+Kilogramm" und die 2,5 Liter der EFSA meinen **Gesamtwasser**: Getränke plus das Wasser
+im Essen, aus dem 20 bis 30 Prozent kommen. Diese App zählt aber nur Gläser und Flaschen.
+Ein Ziel von 2,8 l Getränken hätte rund 40 Prozent über der eigentlichen Empfehlung
+gelegen — mit einem Balken, der sich trotz normalen Trinkens nie füllt.
+
+Über die Menge wird nicht dramatisiert. Der Körper reguliert Flüssigkeit gut, und Durst
+ist ein brauchbarer Melder. Der Richtwert hilft an Tagen, an denen man das Trinken
+schlicht vergisst — deshalb gibt es hier keine roten Balken, sondern eine Skala mit
+Vierteln und einen Satz zur Einordnung.
+
+## Ernährungsform
+
+Unter *Mehr → Ernährungsform* stehen drei Möglichkeiten: **Alles**, **Vegetarisch**,
+**Vegan**. Sie steuert zwei Dinge und sonst nichts:
+
+- **die eingebauten Bausteine der Essensvorschläge** — bei vegetarisch fallen Fleisch
+  und Fisch weg, bei vegan zusätzlich Milchprodukte und Ei
+- **die Hinweise bei der Nahrungsergänzung** (siehe unten)
+
+Was sie ausdrücklich **nicht** tut: deine eigenen Favoriten filtern. Was du selbst
+gespeichert hast, ist per Definition das, was du isst — eine App, die einem das eigene
+Essen wegfiltert, ist kaputt. Und eine Regel ist sie auch nicht: Wer vegetarisch isst
+und zweimal im Monat Fisch, trägt den Fisch einfach ein.
+
+Die Einstellung steht im Trainingsprofil, geht also mit in den Export.
+
+## Nahrungsergänzung
+
+Zwei Dinge macht dieser Teil, und ein drittes ausdrücklich nicht.
+
+**Er macht:** eine tägliche Liste zum Abhaken, gruppiert nach Tageszeit. Und er kennt
+die Wechselwirkungen mit dem Rest der App — Kreatin verschiebt das Gewicht, Koffein den
+Schlaf, Eiweißpulver das Eiweißziel. Genau daran hängt der Nutzen; eine Häkchenliste
+allein wäre eine Notiz-App.
+
+**Er macht nicht: dosieren.** Zu jedem Mittel steht, wofür es belegt ist und wie gut —
+mehr nicht. Was du brauchst, hängt an Blutwerten, Ernährung und Vorerkrankungen, und das
+weiß diese App nicht.
+
+Die Belegstufen sind grob und ehrlich:
+
+| Stufe | Bedeutung | Mittel |
+| --- | --- | --- |
+| **gut belegt** | mehrfach in kontrollierten Studien bestätigt | Kreatin, Koffein, Eiweißpulver, B12 (bei veganer Kost) |
+| **mittelmäßig** | Wirkung plausibel, aber kleiner oder von der Ausgangslage abhängig | Vitamin D3, Omega-3, Beta-Alanin |
+| **dünn belegt** | wird viel verkauft, hält der Prüfung kaum stand | Magnesium, Zink, Multivitamin |
+
+Dass Magnesium neben Kreatin steht und dabei „dünn belegt" liest, ist der Punkt. Eine
+App, die alles gleich aussehen lässt, verkauft mit.
+
+Was nicht im Katalog steht, lässt sich als eigenes Mittel eintragen — zur Wirkung sagt
+die App dann nichts, sie kennt es ja nicht.
+
+### Was die App dir empfiehlt
+
+Ganz oben in der Ergänzungsansicht steht **Für dich** — eine Auswahl, keine Bibliothek.
+Gerechnet aus dem, was in der App steht: Ernährungsform, Trainingstage, dein
+Eiweißschnitt der letzten Woche, die Jahreszeit und dein Schlaf. Drei Töpfe:
+
+| Topf | Bedeutung |
+| --- | --- |
+| **Lohnt sich für dich** | mit Begründung aus deinen eigenen Daten |
+| **Kommt darauf an** | kann sinnvoll sein, hängt aber an etwas, das die App nicht weiß — meist ein Blutwert |
+| **Spar dir das** | dafür gibt es bei dir keinen Grund |
+
+Der dritte Topf ist der wichtigste. **Ein Empfehlungssystem, das nie „nein" sagt, ist ein
+Verkaufskatalog.** Aus „Spar dir das" führt deshalb auch kein Knopf zur Liste — wer es
+trotzdem will, findet es im Katalog darunter, aber nicht mit einem Tippen aus der Absage
+heraus.
+
+Zwei Beispiele, wie die Begründung aus den Daten kommt:
+
+- **Eiweißpulver** landet unter „Lohnt sich", wenn dein gemessener Schnitt unter 85 % vom
+  Ziel liegt — und ausdrücklich unter „Spar dir das", wenn du das Ziel schon über das
+  Essen erreichst. Dann ist Pulver nur eine teure Form von Essen.
+- **Vitamin D** steht von Oktober bis März unter „Kommt darauf an", im Sommerhalbjahr
+  unter „Spar dir das".
+
+Der volle Katalog mit allen Absätzen liegt darunter zugeklappt. Er ist Nachschlagewerk,
+nicht Hauptinhalt.
+
+### Was sich vegetarisch und vegan ändert
+
+Bei sechs Einträgen ist die Ernährungsform kein Detail, sondern der Kern der Sache. Sie
+rutschen im Katalog nach oben und bekommen einen eigenen, hervorgehobenen Absatz:
+
+- **Kreatin** wird für Vegetarier **wichtiger, nicht unwichtiger.** Es steckt fast nur in
+  Fleisch und Fisch — ohne die ist der Muskelspeicher von vornherein niedriger, und die
+  Wirkung fällt in Studien entsprechend deutlicher aus als bei Mischköstlern.
+- **Vitamin B12** ist vegan Pflicht, vegetarisch eine Frage der Menge: Milch und Eier
+  enthalten es, aber wenig. Ein Blutwert klärt das.
+- **Omega-3** kommt ohne Fisch kaum zusammen. Lein- und Walnussöl liefern ALA, davon
+  rechnet der Körper nur wenige Prozent in EPA und DHA um. Algenöl ist die Quelle, aus
+  der auch der Fisch sein EPA hat.
+- **Eisen** aus Pflanzen wird schlechter aufgenommen. Vitamin C zur selben Mahlzeit hilft
+  deutlich, Kaffee und Tee direkt danach bremsen.
+- **Zink** bremst Phytat aus Hülsenfrüchten und Vollkorn. Einweichen, Keimen und
+  Sauerteig bauen es ab — das bringt meist mehr als eine Tablette.
+- **Eiweißpulver**: Molke ist vegetarisch; pflanzlich kommt Soja dem Aminosäureprofil am
+  nächsten, Erbse und Reis gleichen sich gemischt aus.
+
+Zusätzlich wird der Tagesüberblick konkreter: Eine Eiweißlücke wird nicht mehr in
+Magerquark gerechnet, wenn du vegan isst, und wenn das Eiweiß an zwei von drei Tagen
+unter 80 % vom Ziel liegt, sagt die App das einmal deutlich — pflanzlich ist das die
+eigentliche Arbeit, und sie liegt nicht am heutigen Abendessen.
+
+## Was eine Mahlzeit für den Tag tut
+
+Diese App bewertet **kein Essen als gut oder schlecht**. Sie kennt vier Zahlen —
+Kalorien, Eiweiß, Kohlenhydrate, Fett — und daraus lässt sich nicht ableiten, ob etwas
+gesund ist. Ballaststoffe, Zucker, Salz, Vitamine, Verarbeitungsgrad: nichts davon steht
+in den Daten. Ein Riegel und eine Linsensuppe können dieselben vier Zahlen haben.
+
+Was sich ableiten lässt, ist etwas anderes und Nützlicheres: **was diese Mahlzeit für
+deinen Tag tut.** Drei Fragen, alle drei ehrlich zu beantworten:
+
+- **Eiweiß je 100 kcal.** Magerquark liegt bei etwa 17, Hähnchenbrust bei 22, Brot bei
+  3, Öl bei 0. Ab 7,5 trägt eine Mahlzeit dein Eiweißziel mit.
+- **Kalorien je 100 g.** Der beste Sättigungsschätzer, den vier Zahlen hergeben: Wasser
+  und Ballaststoffe machen Volumen ohne Kalorien, Fett macht Kalorien ohne Volumen.
+  Unter 150 sättigt lange, über 350 ist viel Energie auf wenig Menge.
+- **Passt es in den Rest des Tages?**
+
+Deshalb heißt hier nichts „ungesund". Ein Stück Kuchen bekommt keine schlechte Note,
+sondern den Hinweis, dass es wenig Eiweiß bringt und viele Kalorien auf wenig Volumen —
+was stimmt und was man auch gerne isst.
+
+Im Wochenbericht kommt die Verteilung dazu: Drei bis vier Portionen mit je mindestens
+20 g Eiweiß nutzt der Muskel besser als eine große.
+
+## Essensvorschläge
+
+Die Frage, die abends um sieben tatsächlich im Raum steht, ist nicht „was ist gesund",
+sondern: *mir fehlen noch 700 Kalorien und 60 Gramm Eiweiß, und ich habe keine Idee.*
+
+Zwei Quellen, in dieser Reihenfolge:
+
+1. **Deine Favoriten.** Was du schon einmal gegessen und gespeichert hast, passt zu
+   deinem Geschmack und deinem Einkauf, und ein Tippen trägt es ein.
+2. **Eine kleine eingebaute Liste** einfacher Bausteine — bewusst kurz und bewusst
+   langweilig. Das sind Zutaten, keine Rezepte.
+
+Beides läuft ohne Verbindung und ohne API-Key. Sortiert wird nach drei Dingen: nicht
+über den Rest hinausschießen, das fehlende Eiweiß mitbringen, zur Tageszeit passen.
+
+Wer Lust auf etwas Neues hat, kann zusätzlich Claude fragen — das ist ein eigener Knopf
+und ausdrücklich nicht der Normalfall. Ohne API-Key gibt es stattdessen die fertige
+Frage zum Kopieren, derselbe Weg wie bei den Essensfotos.
+
+## Beckenboden
+
+Passt in keinen der bestehenden Teile, und das hat Gründe. Es ist keine Kraftübung im
+Sinne des Plans — kein Gewicht, keine Wiederholung, die jemand von außen sähe, und es
+läuft täglich statt dreimal die Woche. Es ist eine Gewohnheit mit Uhr, näher am
+Morgenlicht als an der Kniebeuge. Deshalb sitzt es als fünfte Kachel in der Tagesleiste.
+
+**Geführt, nicht gestoppt.** Beim Krafttraining misst man eine Leistung und trägt sie
+danach ein; hier folgt man einer Ansage. Der Kreis wächst beim Anspannen und schrumpft
+beim Loslassen, ein Ring zeigt die verbleibende Zeit des Abschnitts, und jeder Wechsel
+kommt zusätzlich als Ton und Vibration — höher beim Anspannen, tiefer beim Loslassen.
+Wer während der Übung auf einen Zähler starren muss, macht sie nicht richtig.
+
+**Zwei Reize.** Der Beckenboden hat zwei Aufgaben: dauerhaft halten und schnell zumachen,
+wenn man niest. Ein Programm mit nur langen Halten trainiert die Hälfte — deshalb hat
+jeder Durchgang beides.
+
+**Fünf Stufen**, je zwölf Durchgänge, von *5 × 3 s* bis *10 × 10 s*. Ab Stufe 5 wird
+gehalten und nicht weiter gesteigert.
+
+### Was die meisten Anleitungen weglassen
+
+Zwei Dinge sind hier fest eingebaut, weil sie sonst fehlen:
+
+- **Mehr ist nicht besser.** Ein dauerhaft verspannter Beckenboden macht eigene Probleme —
+  Schmerzen, Harndrang, schlechteres Entleeren. Das Loslassen ist die halbe Übung, deshalb
+  ist die Pause genauso lang wie die Anspannung und wird genauso angesagt. Ab drei
+  Durchgängen am Tag sagt die App, dass es reicht, statt stillschweigend weiterzuzählen.
+- **Nicht am Harnstrahl üben.** Den Strahl anzuhalten ist der übliche Trick, um den Muskel
+  überhaupt zu finden — *einmal*. Als Übung wiederholt gemacht stört es die
+  Blasenentleerung und begünstigt Infekte.
+
+Dazu die Anleitung gegen den häufigsten Fehler: Es ist ein Anheben nach innen und oben,
+kein Pressen. Po, Oberschenkel und Bauchdecke bleiben locker, und die Luft wird nicht
+angehalten.
+
+### Wofür es belegt ist
+
+| | Beleg |
+| --- | --- |
+| Belastungsinkontinenz — Tröpfeln beim Niesen, Husten, Heben | gut |
+| Rückkehr der Kontinenz nach einer Prostataoperation | gut |
+| Erektionsfunktion und vorzeitiger Samenerguss | mittel |
+| Stabilität des Rumpfes mit der tiefen Bauchmuskulatur | mittel |
+
+Für *stärkerer Orgasmus* oder *mehr Leistung im Sport* gibt es keinen belastbaren Beleg.
+Das steht in der App ausdrücklich dabei, weil das die Versprechen sind, mit denen solche
+Übungen sonst verkauft werden.
+
+Und: Bei Schmerzen im Beckenbereich, ständigem Harndrang oder wenn sich nach sechs bis
+acht Wochen nichts tut, gehört das abgeklärt — dann kann ein zu **fester** Beckenboden
+dahinterstecken, und der braucht das Gegenteil von diesem Training.
+
+## Schlaf und Morgenlicht
+
+Ein Eintrag steht für eine Nacht und trägt das Datum des **Aufwachens** — die Nacht vom
+30. auf den 31. liegt unter dem 31. Das ist die Sicht, in der man morgens denkt, und sie
+macht den Vergleich mit dem Trainingstag einfach: derselbe Schlüssel.
+
+### Welche Nacht ist gemeint?
+
+Das ist die Frage, an der die Karte lange gescheitert ist, und sie beantwortet sie jetzt
+überall ausdrücklich.
+
+Die Karte richtet sich nach der Uhrzeit, aber sie schreibt die Nacht dazu:
+
+| Uhrzeit | Was angeboten wird |
+| --- | --- |
+| vor 12 Uhr | *Gerade aufgewacht*, *Bin draußen* — beides für die **vergangene** Nacht |
+| 12 bis 19 Uhr | *Letzte Nacht nachtragen* — kein Knopf für die kommende, weil um vierzehn Uhr niemand ins Bett geht |
+| ab 19 Uhr | *Schlafen gehen* für die **kommende** Nacht, daneben weiter *Letzte Nacht nachtragen* |
+
+Die Zeile mit den Zahlen nennt die Nacht beim Namen: „Letzte Nacht 23:10 → 06:40" oder
+„Kommende Nacht ab 22:45". Vorher stand dort nur die Zeit, und ab zwölf Uhr wechselte
+die Karte stillschweigend von der vergangenen auf die kommende Nacht — wer nachmittags
+nachtragen wollte, was er letzte Nacht gemacht hat, trug es für die Nacht danach ein und
+sah dem Knopf nicht an, dass er etwas anderes tat als gemeint.
+
+In der Detailansicht steht oben ein Umschalter mit beiden Nächten, jede mit ihrer Spanne
+(*Do → Fr* und *Fr → Sa*). Damit ist die Zuordnung nie mehr eine Folge der Uhrzeit, zu
+der man die Ansicht geöffnet hat, sondern eine Entscheidung, die man sieht und ändern
+kann. Für ältere Nächte gibt es darunter weiterhin *Nacht davor*.
+
+Eine abends über *Schlafen gehen* eingetragene Zeit wandert automatisch auf die kommende
+Nacht; die Grenze liegt bei fünf Uhr früh, weil danach niemand mehr schlafen geht,
+sondern aufsteht.
+
+*Bin draußen* hängt nicht mehr an der Mittagsgrenze, sondern daran, dass das Aufwachen
+steht und das Licht fehlt — wer um halb eins aufsteht, geht auch um halb eins raus.
+
+Gerechnet wird die Zeit **im Bett**, nicht der tatsächliche Schlaf. Das steht auch so in
+der App: wer lange wach liegt, sieht hier eine bessere Zahl, als die Nacht war. Eine
+Web-App kann das nicht besser wissen, und eine Zahl, die mehr verspricht, als sie hält,
+ist schlechter als eine ehrliche.
+
+**Das Licht am Morgen ist kein Beiwerk.** Die innere Uhr stellt sich am Tageslicht der
+ersten Stunde nach dem Aufwachen. Draußen sind es selbst bei Wolken einige tausend Lux,
+am Fenster drinnen ein Bruchteil davon — deshalb fragt die App ausdrücklich nach
+*draußen* und nicht nach *hell gehabt*. Bewertet wird beides: ob es im Fenster von
+60 Minuten lag und ob es mindestens 10 Minuten waren.
+
+Steht eine kurze Nacht im Log, sagt die Trainingsansicht das vor der Einheit — unter
+fünf Stunden mit dem Hinweis, dass Auslassen die bessere Entscheidung sein kann, darüber
+nur als Vorwarnung für die letzten Wiederholungen. Kein Verbot: die Entscheidung soll
+man treffen können, bevor man im dritten Satz merkt, dass nichts geht.
+
+## Sport außer dem Training
+
+Laufen, Rad, Schwimmen, Yoga — was nicht im Trainingsplan steht, kommt in den Store
+`activities`; mehrere je Tag sind möglich, wer morgens läuft und abends zum Yoga geht
+trägt beides ein.
+
+Der Verbrauch wird über **MET-Werte** geschätzt: `MET × 3,5 × kg / 200` Kalorien pro
+Minute, wobei die Intensität den MET-Wert mit 0,75 / 1,0 / 1,25 verschiebt. Wer eine Uhr
+trägt, die den Puls kennt, trägt deren Wert ein — der schlägt jede Formel und hat
+Vorrang.
+
+**Aufs Tagesziel kommen nur 70 Prozent davon** (`ANRECHNUNG`). Zwei Gründe: MET-Tabellen
+schätzen großzügig, weil sie von gleichmäßigem Tempo im Labor ausgehen, und im
+Aktivitätsfaktor des Profils steckt bereits Alltagsbewegung — ein Teil des Spaziergangs
+ist dort schon eingerechnet. Wer den vollen Wert dazuisst, wundert sich am Monatsende
+über die Waage. Die Zusatzkalorien tragen die Kohlenhydrate: Eiweiß und Fett folgen dem
+Körpergewicht, nicht dem Tagesverbrauch, und würden durch einen Lauf nicht wichtiger.
+
+## Apple Health
+
+**Eine laufende Verbindung gibt es nicht, und zwar grundsätzlich.** HealthKit hat keine
+Web-Schnittstelle; nur native iOS-Apps mit eigener Berechtigung kommen an die Daten.
+Diese App läuft im Browser und kann Health weder lesen noch schreiben — daran ändert
+kein Umweg etwas. Das steht so auch in den Einstellungen, gleich als erster Satz: wer
+„Apple Health" liest, erwartet einen Schalter, und das früh zu sagen ist ehrlicher, als
+es hinter einer Anleitung zu verstecken.
+
+Was geht, ist der **Export**. Health legt auf Wunsch eine Datei mit allem an; `health.js`
+liest daraus Workouts und Körpergewicht. Die Datei ist oft mehrere hundert Megabyte
+groß, weil jeder Schrittzähler-Eintrag seit Jahren darin steht — deshalb wird sie in
+Stücken von 4 MB gelesen und mit einem Ausdruck durchsucht, statt als XML-Baum geladen
+zu werden; Letzteres bringt jeden Browser um. Ein Überlappungsrest von 64 KB fängt
+Datensätze ab, die an einer Stückgrenze zerrissen werden.
+
+Beide Formate werden erkannt: ältere Exporte schreiben Strecke und Kalorien als
+Attribute des `<Workout>`, neuere als verschachtelte `<WorkoutStatistics>`.
+
+**Krafteinheiten aus Health werden übersprungen** — die führt diese App selbst, mit
+Sätzen und Gewichten, und ein zweiter Eintrag daneben würde die Kalorien doppelt zählen.
+Die Kennung eines importierten Workouts leitet sich aus Startzeit und Art ab, ein
+zweiter Import überschreibt deshalb, statt zu verdoppeln.
+
+## Wenn etwas dazwischenkommt
+
+### Fotos ohne Verbindung
+
+Ohne Netz fragt die App gar nicht erst an — der Fehlschlag dauerte sonst bis zum
+Zeitablauf, und die Meldung danach erklärt nichts. Stattdessen steht im Editor
+**Für später aufheben**: das Bild wandert in den Store `pending` und wartet dort.
+
+Bewusst **kein Platzhalter in den Mahlzeiten**. Ein Eintrag mit null Kalorien würde in
+Tagessumme, Zielen und Bericht mitzählen und die Zahlen still verfälschen. Bis zur
+Auswertung ist die Mahlzeit schlicht noch nicht erfasst — das ist die Wahrheit, und der
+Bericht darf sie ruhig sagen.
+
+Auf der Tagesansicht steht dann eine Karte mit den wartenden Bildern. Ausgewertet wird
+eines nach dem anderen über den normalen Editor, damit dieselben Korrekturen gelten wie
+bei einem frischen Foto — Portionsregler, Zutaten, Hinweis nachtragen — statt dass ein
+Stapel ungeprüft in den Tag rutscht. Kommt die Verbindung zurück, sagt die App einmal
+Bescheid; auswerten soll, wer gerade Zeit dafür hat.
+
+### Wenn etwas wehtut
+
+Im Fragebogen gibt es Einschränkungen schon als Dauerzustand — wer chronisch Probleme mit
+dem Knie hat, bekommt gar nicht erst Kniebeugen eingeplant. Was fehlte, war der viel
+häufigere Fall: **etwas tut gerade weh und in zwei Wochen wieder nicht.**
+
+Dafür steht auf jedem Trainingstag *Tut etwas weh?* mit fünf Gelenken: Knie, Schulter,
+Unterer Rücken, Handgelenk, Ellbogen. Eine Schonung unterscheidet sich bewusst von einer
+Änderung im Fragebogen:
+
+- Sie **baut den Plan nicht neu.** Ein neuer Plan würde die laufende Blockwoche und alle
+  Variantenleitern mitreißen — für etwas Vorübergehendes ein zu hoher Preis. Getauscht
+  wird beim Anzeigen, genau wie bei der Zimmer-Variante, und zwar **nach** dem Umrechnen:
+  sonst käme über den Umweg eine Übung herein, die aufs kranke Gelenk geht.
+- Sie **zeigt, was sie getan hat.** „Heute getauscht: Bankdips → Strecker am Boden" und
+  „Ohne Ersatz weggefallen: Liegestütze, Pike Push-Ups". Ein Plan, der ohne Erklärung
+  anders aussieht, ist ein kaputter Plan.
+- Sie **pausiert die Technik mit.** Ein Handstand mit gereiztem Handgelenk ist genau das,
+  was man gerade nicht üben will. Der Fortschritt bleibt gespeichert.
+- Sie **fragt nach.** Nach vierzehn Tagen will die App wissen, ob es noch gilt — eine
+  Einschränkung, die man einmal setzt und dann vergisst, macht den Plan still schlechter.
+- Sie **nennt den Ausweg.** Das ist der eigentliche Punkt: Beim Handgelenk fällt ohne
+  Geräte sonst *jedes* Drücken weg, weil die flache Hand am Boden das Gelenk streckt. Auf
+  Fäusten oder auf Liegestützgriffen bleibt es gerade. Zu jedem Gelenk steht so ein Satz.
+
+Und zu jeder Schonung steht der Satz, den keine App ersetzen kann: Schmerzen, die länger
+als ein bis zwei Wochen bleiben, nachts wehtun oder mit Taubheit einhergehen, gehören
+ärztlich abgeklärt.
+
+Bei der Gelegenheit sind die Übungsdaten nachgezogen worden. Für *Handgelenk* waren nur
+fünf Übungen gekennzeichnet — ausgerechnet Liegestütze fehlten, der Klassiker. Jetzt sind
+es zwölf: alle Liegestützvarianten am Boden, Bankdips und das Ab Wheel. Auch
+Fähigkeiten haben jetzt eine solche Kennzeichnung.
+
+### Heute passt das nicht
+
+Der Plan legt Wochentage fest, das Leben hält sich nicht daran. Der häufigste Fall ist
+dabei nicht „ich kann heute gar nicht", sondern „heute passt eine andere Einheit besser".
+Auf jedem Trainingstag steht deshalb die Karte *Heute passt das nicht* mit zwei Wegen —
+beide gelten **nur für heute**, der Plan selbst bleibt stehen.
+
+**Andere Einheit machen.** Jeder andere Tag des Plans steht zur Auswahl, jeweils mit
+seinen Hauptmuskelgruppen daneben — ohne die wäre die Wahl zwischen „Ganzkörper B" und
+„Ganzkörper C" ein Ratespiel. Die verdrängte Einheit verschwindet nicht, sondern steht ab
+dem nächsten Tag unter den offenen Einheiten und lässt sich an einem Ruhetag nachholen.
+
+**Eine Gruppe weglassen.** Bei einem Ganzkörperplan hilft Tauschen allein nicht: Beine
+stehen in jedem der drei Tage. Deshalb lassen sich Bündel einzeln streichen — *Ohne
+Beine*, *Ohne Drücken*, *Ohne Ziehen*. Angeboten wird nur, was im heutigen Tag überhaupt
+vorkommt.
+
+Der Anlass für *Ohne Beine* ist der praktische Normalfall: **morgen ein Spiel oder
+Wettkampf.** Schwere Kniebeugen und Ausfallschritte am Vortag kosten messbar Sprungkraft
+und Antritt; der Rest der Einheit ist unproblematisch. Was weggelassen wurde, steht in
+der Karte und schlägt sich im Wochenvolumen nieder — es wird nicht so getan, als hätte
+die Einheit vollständig stattgefunden.
+
+Technisch merkt sich die Einheit dafür zwei Felder: `swapWeekday` (heute gilt der Plan
+eines anderen Wochentags) und `ohneGruppen`. Beide wirken auch auf die Liste der offenen
+Einheiten: Wer getauscht hat, hat seinen eigenen Plantag **nicht** gemacht, und der bleibt
+entsprechend offen.
+
+### Ausfallen lassen
+
+Besser eine Einheit bewusst auslassen als eine halbe absolvieren. Nach zu wenig Schlaf
+ist die Kraft ohnehin weg und das Risiko steigt. Im Training steht deshalb
+*Heute geht nichts?* mit fünf Gründen: gereist, zu wenig Schlaf, krank, Schmerzen,
+keine Zeit.
+
+Der Grund ist kein Schmuck. Ohne ihn steht im Wochenbericht nur „ausgefallen", und das
+liest sich gleich, ob man verreist war oder es vergessen hat. Mit ihm trennt der Bericht
+**„Bewusst ausgelassen: Mittwoch (übermüdet)"** als Tatsache von **„Ausgefallen ohne
+Eintrag: Freitag"** als Befund, und das Fazit rechnet bewusst ausgelassene Einheiten
+nicht als Fehlbetrag.
+
+### Nachholen
+
+An einem Ruhetag listet die App offene Einheiten der letzten zehn Tage — höchstens drei
+zur Auswahl, denn nachgeholt wird eine, und eine lange Liste liest sich wie eine
+Mahnung. Tage vor der Planerstellung zählen nicht mit: da gab es keinen Plan, gegen den
+sie hätten ausfallen können.
+
+Dieselbe Liste steht auch an Trainingstagen, dort ohne den Nachholknopf: **der Grund
+lässt sich für jeden vergangenen Tag nachtragen.** Wer erst am nächsten Morgen dazu
+kommt, den Ausfall einzutragen, käme sonst gar nicht an den richtigen Tag heran und
+bucht ihn auf den heutigen.
+
+*Heute nachholen* setzt `session.holtNach` auf den ausgefallenen Tag; die Trainingsansicht
+zeigt dann dessen Plan statt des heutigen, und in der Kopfzeile steht, woher er kommt.
+Der ausgefallene Tag bekommt umgekehrt ein `movedTo` und verschwindet aus der Liste.
+Nur an Ruhetagen — zwei Einheiten an einem Tag sind keine Rettung, sondern der nächste
+Ausfall.
+
+## Links und rechts
+
+Dreizehn Übungen laufen je Seite einzeln — Bulgarian Split Squat, Ausfallschritte,
+Skater, einbeinige Kniebeuge und Glute Bridge, einarmiges Rudern, die beiden Curls,
+Archer- und einarmige Liegestütze. Für sie hat die Satzeingabe **zwei
+Wiederholungsfelder**, und der Haken geht erst an, wenn beide stehen.
+
+Eine Zahl für beide Seiten verschenkt genau die Information, die zählt: wer links zehn
+und rechts sieben schafft, hat kein Zehner-Ergebnis, sondern ein Ungleichgewicht.
+Deshalb rechnet die App die beiden Seiten unterschiedlich ein:
+
+- **Bestleistung, Krafteinordnung und Variantenleiter** nehmen die **schwächere** Seite.
+  Sie begrenzt, was man kann, und erst wenn beide oben sind, ist die Übung zu leicht.
+- **Volumen** nimmt die **Summe** — die Arbeit wurde ja zweimal gemacht.
+- **Der nächste Schritt** unter der Übung nimmt ebenfalls die schwächere Seite. Solange
+  eine Seite zwei Wiederholungen oder mehr zurückliegt, schlägt die App kein schwereres
+  Gewicht vor, sondern das Gegenteil: mit der schwachen Seite anfangen und die starke
+  auf deren Zahl deckeln, bis der Rückstand weg ist.
+- **Im Wochenbericht** stehen beide Seiten (`12/9`), und verglichen wird über die
+  schwächere. Vorher meldete der Bericht „besser als letzte Woche", wenn nur die linke
+  Seite zugelegt hatte, während die rechte abgebaut hatte.
+
+In der Krafteinordnung steht ein eigener Abschnitt, sobald der Unterschied über zehn
+Prozent liegt; darunter ist es Tagesform. Alte Sätze ohne zweite Seite bleiben gültig:
+dort steht `reps` für beides.
+
+## Die Berichte
+
+Ehrlich heißt konkret. „Bleib dran!" ist keine Rückmeldung, „drei von vier Einheiten,
+die vom Donnerstag fehlt" ist eine. `report.js` erzeugt deshalb keinen Fließtext aus
+Bausteinen, sondern eine Liste von Befunden mit je einer Bewertung: **gut**,
+**schlecht** oder schlicht eine **Tatsache**. Alles wird lokal gerechnet — der Bericht
+läuft offline, kostet nichts und sagt zu denselben Zahlen jeden Tag dasselbe.
+
+Der **Tagesbericht** steht als Karte oben auf der Tagesansicht, mit den zwei
+dringendsten Zeilen zuerst; Schlechtes steht vor Gutem, dafür ist er da. Er prüft die
+Einheit des Tages, die Kalorien, das Eiweiß und ob gewogen wurde.
+
+Der **Wochenbericht** läuft von Montag bis Sonntag und deckt Training (Einheiten,
+Ausfälle, bewegte Last gegen die Vorwoche), einzelne Übungen (bester Satz gegen den
+besten Satz der Vorwoche), Ernährung, Gewicht samt Korrekturvorschlag sowie
+Fähigkeiten und Beweglichkeit ab. Am Ende steht ein Fazit-Satz.
+
+Er erinnert außerdem an die **Sicherung**, sobald sie länger als vier Wochen her ist
+oder nie stattfand. Alles liegt in der Datenbank dieses einen Geräts, und der Export
+existiert zwar, aber niemand denkt von selbst daran.
+
+Und er verbindet **Schlaf mit Leistung**: liegen auf beiden Seiten mindestens zwei
+Einheiten, steht dort, um wie viel das Volumen an den Tagen nach kurzen Nächten
+abweicht. Das ist keine Studie — wenige Datenpunkte, und wer schlecht schläft, hat oft
+auch sonst eine harte Woche. Deshalb heißt der Satz „an den Tagen nach", nicht „wegen".
+
+**Mitten in der Woche urteilt er anteilig.** Am Dienstag ist eine Einheit vom Freitag
+nicht versäumt, der laufende Tag ist keine Erfassungslücke, und die Vier-Werte-Regel
+fürs Wiegen gilt anteilig zu den vergangenen Tagen. Ohne das stünde am Dienstagmorgen
+eine Liste von Vorwürfen, die keine sind.
+
+Was die App **nicht** weiß, sagt sie auch: eine Woche ohne eingetragene Gewichte ist
+ein Befund, kein Loch zum Überspielen. Und wo ein Durchschnitt nur die erfassten Tage
+abdeckt, steht das dabei — sonst sieht die Woche besser aus, als sie war. Genauso beim
+Volumenvergleich: hat die Woche mehr oder weniger Einheiten als die Vorwoche, sagt der
+Bericht das dazu, weil der Prozentwert sonst wie Fortschritt aussieht.
+
+## Fortschrittsfotos
+
+Die Waage misst eine Zahl, das Foto misst, was die Zahl nicht zeigt — bei
+gleichbleibendem Gewicht kann sich die Form deutlich ändern. Ein Bild je Tag, ein
+zweites am selben Tag ersetzt das erste; sonst sammeln sich zehn Aufnahmen einer Pose
+und der Vergleich wird zur Suche.
+
+Die Ansicht zeigt zuerst zwei Aufnahmen nebeneinander — ältestes gegen neuestes, per
+Tipp auf eine Kachel änderbar, wobei die ältere immer links landet. Beim ersten Öffnen
+steht dort stattdessen, worauf es ankommt: gleiche Stelle, gleiches Licht, gleicher
+Abstand, gleiche Haltung, morgens vor dem Frühstück. Ohne das vergleicht man Posen.
+
+Die Bilder liegen im Store `photos`, getrennt von den Mahlzeiten, und **verlassen das
+Gerät nicht** — anders als die Essensfotos werden sie ausdrücklich nicht an die API
+geschickt. Im Export sind sie deshalb auch nicht enthalten.
+
+## Wie Fähigkeiten funktionieren
+
+Handstand, L-Sit, erster Klimmzug, erster Dip, Pistol Squat, Muscle-Up und Front
+Lever stehen zur Wahl — bis zu zwei gleichzeitig. Jede ist eine Leiter aus fünf bis
+sieben Vorstufen mit einem Ziel je Stufe, etwa „Hollow Hold, 40 Sekunden, drei Sätze".
+Beim Anlegen wird gefragt, auf welcher Stufe man schon steht — wer den Wandhandstand
+zwanzig Sekunden hält, fängt nicht bei „Hollow Hold" an. Im Training verschieben
+*Zu leicht* und *Zu schwer* die Stufe jederzeit.
+
+Treffen zwei der drei Sätze das Ziel, geht die nächste Stufe auf; freigeschaltet wird
+per Knopfdruck, nicht automatisch — die Entscheidung, ob eine Haltung wirklich sauber
+war, trifft niemand außer dir.
+
+**Haltezeiten misst die App selbst.** Bei jeder Stufe, die in Sekunden zählt, steht
+über den Satzfeldern eine Stoppuhr: einmal tippen zum Starten, beim Runterkommen
+wieder — der Wert landet direkt im nächsten leeren Satz. Ist die Zielzeit erreicht,
+vibriert das Gerät und gibt zwei Töne aus; kopfüber sieht man den Bildschirm nicht.
+Solange gemessen wird, bleibt der Bildschirm an. Bei Stufen, die Wiederholungen
+zählen, erscheint keine Uhr.
+
+Geübt wird **vor** dem Krafttraining: Technik braucht einen frischen Kopf und frische
+Schultern, danach wäre beides weg. Jede gewählte Fähigkeit kostet rund sechs Minuten,
+und diese Zeit wird von der Kraftplanung abgezogen — sonst würde die Einheit still und
+heimlich länger, als im Fragebogen angesagt.
+
+## Wie der Plan entsteht
+
+Split nach verfügbaren Tagen: ein bis drei Tage Ganzkörper (ab „fortgeschritten" bei
+drei Tagen Push/Pull/Beine), vier Tage Oberkörper/Unterkörper, fünf gemischt, sechs
+Push/Pull/Beine doppelt. Die Übungszahl folgt der Zeit pro Einheit, Sätze und RIR der
+Erfahrungsstufe.
+
+Aus 90 Übungen wird nach Ausrüstung, vorhandenem Gerät und Beschwerden gefiltert;
+gesperrte Übungen werden gar nicht erst eingeplant.
+
+**Gerät ist dabei etwas anderes als Gewicht.** Ein Klimmzug braucht keine Hantel, aber
+sehr wohl eine Stange — deshalb fragt der Fragebogen getrennt nach Klimmzugstange und
+Dip-Barren. Ohne Kreuz dort erscheinen Klimmzüge, Dips und hängendes Beinheben gar
+nicht im Plan, und für den Rücken stehen stattdessen Rudern unter dem Tisch und
+Handtuch-Rudern am Türrahmen bereit. Fähigkeiten, die eine Stange verlangen, werden
+bei der Auswahl gar nicht erst angeboten. Bleibt eine Muskelgruppe ohne Option, greift eine
+Ersatzgruppe. Bleibt ein Tag trotzdem kurz — etwa nur Körpergewicht plus
+Schulterbeschwerden —, sagt der Plan das offen, statt die Liste aufzufüllen.
+
+Übungen ohne Zusatzgewicht bekommen höhere Wiederholungszahlen (10–20 statt 5–8),
+weil der Fortschritt dort über Wiederholungen und schwerere Varianten läuft.
+
+**Wie viele Übungen ein Tag hat, hängt an der Pausenlänge.** Mit der Langhantel dauert
+eine Übung rund acht Minuten, ohne Zusatzgewicht knapp fünfeinhalb — die Pause macht den
+Unterschied. Eine Zeit lang galten acht Minuten für alle; das stammte aus der Zeit vor
+den kürzeren Pausen und ließ eine Einheit ohne Gewichte kürzer ausfallen, als sie sein
+dürfte. Genau eine Position der Vorlage fiel dadurch immer weg, und weil es auf jedem
+Tag dieselbe war, sah eine Muskelgruppe nie eine Übung.
+
+Passt die Vorlage trotzdem nicht in die Zeit — bei 45 Minuten etwa —, **rotiert der
+Überhang mit dem Tag**: mal steht die vorletzte Position im Plan, mal die letzte. So
+kommt über die Woche jede Gruppe wenigstens einmal vor. Aufgefüllt wird nur bis zur
+Länge der Vorlage, nicht bis zum Zeitbudget; sonst hängt an einem vollständigen Tag noch
+eine Wiederholung derselben Muskelgruppe hinten dran.
+
+### Die Pausen
+
+Die Pause richtet sich danach, was sie erholen muss. Eine schwere Kniebeuge mit der
+Langhantel braucht das Kreislaufsystem zurück — zweieinhalb Minuten. Zwanzig
+Liegestütze bei vier Wiederholungen Reserve brauchen das nicht; dort ist nach
+anderthalb Minuten zurück, was zurückkommt, und der Rest ist Wartezeit.
+
+| | Grundübung | Isolation |
+| --- | --- | --- |
+| mit Gewicht | 150 s | 75 s |
+| ohne Zusatzgewicht | 90 s | 60 s |
+| Rumpf | 45 s | 45 s |
+
+Darüber liegt ein Regler mit den Faktoren 0,7 / 1,0 / 1,3, mindestens aber 30 Sekunden.
+Daneben steht die **geschätzte Dauer der ganzen Einheit** — eine Pause von zweieinhalb
+Minuten klingt nach nichts, aber vierzehn davon sind eine halbe Stunde Dastehen, und
+erst die Gesamtzahl macht die Entscheidung entscheidbar.
+
+`restSeconds()` rechnet das bei der Anzeige, nicht beim Bauen des Plans. Sonst müsste
+der Plan neu gebaut werden, nur weil jemand am Regler dreht, und bestehende Pläne
+behielten ihre alten Werte.
+
+### Unterwegs
+
+Ein Plan, der einen stabilen Tisch voraussetzt, ist im Hotelzimmer kein Plan. Oben im
+Training steht deshalb ein Schalter, der den Tag auf das umrechnet, was in einem leeren
+Zimmer geht: **nur Übungen, die mit Boden und Wand auskommen.**
+
+Dafür gibt es neben `GEAR` eine zweite Liste, `NEEDS_OBJECT`. Die beiden beantworten
+verschiedene Fragen — `GEAR` fragt „hast du das angeschafft?", `NEEDS_OBJECT` fragt
+„steht das gerade im Raum?". Darunter fällt, was man zuhause gar nicht als Ausrüstung
+wahrnimmt: ein Tisch, unter den man sich legt, ein Türgriff, eine Kante hinter dem
+Rücken, eine Erhöhung für den hinteren Fuß. `floorOnly()` verlangt alle drei
+Bedingungen — mit Körpergewicht machbar, kein Gerät, kein Gegenstand.
+
+`travelDay()` ersetzt jede übrige Übung durch eine aus derselben Gruppe und Art, sonst
+aus der Gruppe, sonst aus der Ersatzgruppe. Findet sich nichts, fällt die Übung weg,
+statt falsch ersetzt zu werden. Damit dafür genug da ist, kennt die App vier
+Rückenübungen, die wirklich nichts brauchen: Handtuch-Rudern im Sitzen (der Widerstand
+kommt aus den eigenen Beinen), Latzug in Bauchlage, Umgekehrte Schneeengel und
+Superman.
+
+Der **gespeicherte Plan bleibt dabei unangetastet**, und nichts wandert in `blocked`:
+die Übung ist nicht ungeeignet, sie passt nur nicht in den Raum. Ein Ausschalter steht
+sichtbar in derselben Karte, zusammen mit der Liste dessen, was getauscht wurde — ein
+Modus, der den Plan still umschreibt, wird sonst vergessen. Fähigkeiten, die eine
+Stange oder einen Barren verlangen, blendet der Schalter ebenfalls aus.
+
+*Zu schwer* wirkt unterwegs auf die Sperrliste statt auf den Plan, weil die gezeigte
+Übung im gespeicherten Plan gar nicht vorkommt. Gibt der Vorrat nichts mehr her, sagt
+die App das, statt die Übung ersatzlos zu streichen.
+
+**Passt eine Übung nicht, fliegt sie raus.** Unter jeder Übung steht im Training
+*Zu schwer — andere Übung*: die App tauscht sofort gegen eine andere aus derselben
+Muskelgruppe und merkt sich die abgelehnte, damit sie auch bei einem neuen Plan nicht
+zurückkommt. Im Plan stehen die aussortierten Übungen mit einem Knopf zum
+Wiederzulassen.
+
+### Variantenleitern
+
+Mit Hanteln ist die nächste Stufe einfach mehr Gewicht — das erledigt die doppelte
+Progression. Ohne Gewicht gibt es diesen Weg nicht: irgendwann sind sechzig
+Liegestütze kein Krafttraining mehr, sondern Ausdauer. Dann muss die Übung schwerer
+werden, nicht länger.
+
+`ladders.js` beschreibt dafür sieben Bewegungen von leicht nach schwer:
+
+| Leiter | Sprossen |
+| --- | --- |
+| Drücken waagerecht | erhöht → Liegestütze → Pseudo-Planche → Archer → einarmig negativ |
+| Drücken über Kopf | Pike Push-Ups → negative Handstand-Liegestütze → Handstand-Liegestütze |
+| Ziehen waagerecht | Latzug in Bauchlage → Handtuch im Sitzen → am Türrahmen → unter dem Tisch → Schrägrudern |
+| Ziehen über Kopf | negative Klimmzüge → Chin-Ups → Klimmzüge |
+| Kniebeuge | Körpergewicht → Ausfallschritt → Step-Up → bulgarisch → Skater → einbeinig |
+| Hüftstreckung | Glute Bridge → einbeinig |
+| Trizeps strecken | Bankdips → Diamant-Liegestütze |
+
+Unter jeder Übung steht, auf welcher Sprosse sie liegt und welche als nächste kommt.
+Daneben dem vorhandenen *Zu schwer* gibt es **Zu leicht — härtere Stufe**; der Knopf
+erscheint nur, wenn es mit der vorhandenen Ausrüstung überhaupt eine höhere Sprosse
+gibt. Nicht machbare Sprossen werden beim Auf- und Absteigen übersprungen statt
+vorgeschlagen und dann abgelehnt.
+
+**Von allein meldet sich die App nach zwei Einheiten in Folge am oberen Ende des
+Wiederholungsbereichs** (`topOutStreak`, Schwelle `STREAK_FOR_NEXT`). Nach einer
+einzelnen guten Einheit umzustellen wäre verfrüht — ein guter Tag ist noch keine neue
+Stufe. Gezählt wird über die Einheiten, in denen die Übung vorkam, eine Woche Pause
+unterbricht also nicht; und verlangt wird nicht die heutige Satzzahl, sondern dass alle
+aufgezeichneten Sätze oben lagen und es mindestens zwei waren. Sonst risse die Serie
+bei jedem Wechsel der Blockwoche, weil die Deload-Woche weniger Sätze hat.
+
+Die verlassene Übung landet in `profile.outgrown`, **nicht** in `blocked`. Der
+Unterschied zählt: die Sperrliste heißt im Plan „aussortiert", und „zu leicht geworden"
+ist das Gegenteil davon. Beide Listen halten Übungen aus neuen Plänen heraus, beide
+stehen im Plan mit einem Knopf zum Zurückholen — aber unter eigener Überschrift.
+
+Im Unterwegs-Betrieb nutzt auch der Ersatz die Leitern: fehlt der Tisch, kommt die
+nächstgelegene Sprosse derselben Bewegung statt irgendetwas aus derselben Gruppe, bei
+gleichem Abstand die leichtere.
+
+Fortschritt je Übung nach doppelter Progression: sitzen alle Sätze am oberen Ende des
+Wiederholungsbereichs, steigt das Gewicht um 2,5 kg (Grundübung) oder 1,25 kg
+(Isolation) und die Wiederholungen gehen zurück ans untere Ende.
+
+## Technische Anmerkungen
+
+- Die App ruft die Anthropic-API direkt aus dem Browser auf. Das erlaubt Anthropic
+  mit dem Header `anthropic-dangerous-direct-browser-access: true` ausdrücklich für
+  genau diesen Fall — deshalb braucht es keinen Proxy-Server.
+- Die Antwort wird über **Structured Outputs** (`output_config.format`) erzwungen,
+  ist also garantiert gültiges JSON nach festem Schema. Kein Parsen aus Fließtext.
+- Im Chat gibt es diese Garantie nicht, deshalb verlangt der Prompt dort reines JSON
+  und das Einlesen toleriert Code-Blöcke sowie erklärenden Text drumherum.
+- Fotos werden vor dem Senden auf 1024 px lange Kante verkleinert. Das halbiert
+  ungefähr die Bildkosten, ohne die Erkennung von Essen spürbar zu verschlechtern.
+- Der Tag richtet sich nach dem **lokalen** Kalendertag, nicht nach UTC — sonst
+  würden späte Mahlzeiten auf dem falschen Tag landen.
+- Schlägt die Analyse fehl (kein Netz, Guthaben leer, Key ungültig), bleibt das Foto
+  erhalten und die Mahlzeit lässt sich von Hand eintragen. Es geht nie etwas verloren.
