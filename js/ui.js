@@ -127,11 +127,29 @@ export function emptyState(title, description) {
 }
 
 /** Beschriftetes Eingabefeld. */
+/**
+ * Ein beschriftetes Eingabefeld.
+ *
+ * Das `for` am Label zeigte auf `input.id` — und die Felder hatten nie eine.
+ * Also stand das Label daneben, ohne mit dem Feld verbunden zu sein: Tippen
+ * aufs Wort „Gewicht" setzte den Cursor nicht ins Feld, und eine Vorlesehilfe
+ * kündigte ein namenloses Eingabefeld an. Deshalb bekommt jedes Feld hier eine
+ * id, wenn es noch keine hat.
+ */
+let feldZaehler = 0;
+
 export function field(label, input, hint) {
+  // Nur echte Eingabeelemente bekommen eine id. Manche Aufrufe übergeben eine
+  // Gruppe aus Knöpfen — die beschriftet man nicht mit `for`.
+  const istEingabe = input && /^(INPUT|SELECT|TEXTAREA)$/.test(input.tagName || '');
+  if (istEingabe && !input.id) {
+    feldZaehler += 1;
+    input.id = `feld-${feldZaehler}`;
+  }
   return el(
     'div',
     { class: 'field' },
-    el('label', { text: label, for: input.id || null }),
+    el('label', { text: label, for: istEingabe ? input.id : null }),
     input,
     hint ? el('p', { class: 'hint', text: hint }) : null
   );

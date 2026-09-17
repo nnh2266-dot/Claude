@@ -6,6 +6,7 @@
 
 import { roundKcal, shiftDateKey, localDateKey } from './nutrition.js';
 import { dayForWeekday } from './training.js';
+import { dailyGoal as wasserZiel } from './water.js';
 
 export const ACTIVITY_FACTOR = { sitzend: 1.20, leicht: 1.35, mittel: 1.50, hoch: 1.65 };
 
@@ -84,7 +85,13 @@ export function energyPlan(profile, kcalAdjust = 0) {
     tdee: Math.round(tdee),
     target: Math.round(target),
     proteinPerKg: goal.proteinPerKg,
-    water: Math.round(weight * 0.035 * 10) / 10,
+    // Aus water.js, nicht selbst gerechnet. Hier standen 35 ml je Kilogramm —
+    // der Wert, der bei der Gesundheitsprüfung auf 25 korrigiert wurde, weil
+    // die 35 das Gesamtwasser inklusive Essen meinen. Die Korrektur lief nur
+    // durch water.js, und dadurch standen auf „Heute" zwei verschiedene
+    // Trinkziele übereinander: „rund 2,8 l" im Ring und „von 2 l" auf der
+    // Kachel. Zwei Zahlen für dieselbe Sache sind schlimmer als eine falsche.
+    water: Math.round((wasserZiel(weight, 0) / 1000) * 10) / 10,
     training: macrosFor(trainingKcal),
     rest: macrosFor(restKcal),
     average: macrosFor(target),

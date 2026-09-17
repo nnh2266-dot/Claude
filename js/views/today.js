@@ -32,9 +32,6 @@ const RING_CIRCUMFERENCE = 2 * Math.PI * RING_RADIUS;
 /** Kalorienring plus Makrobalken. */
 function progressCard(totals, goals, ctx) {
   const goalKcal = Math.max(1, goals.kcal);
-  const wasser = ctx.state.profile
-    ? String(energyPlan(ctx.state.profile, ctx.state.kcalAdjust).water).replace('.', ',')
-    : null;
   const ratio = totals.kcal / goalKcal;
   const over = totals.kcal > goals.kcal;
   const remaining = goals.kcal - totals.kcal;
@@ -111,12 +108,11 @@ function progressCard(totals, goals, ctx) {
       macroBar('macro-protein', 'Eiweiß', totals.protein, goals.protein),
       macroBar('macro-carbs', 'Kohlenhydrate', totals.carbs, goals.carbs),
       macroBar('macro-fat', 'Fett', totals.fat, goals.fat),
-      // Der Wasserrichtwert wurde längst gerechnet und stand nur im Rechenweg
-      // des Plans, wo niemand hinsieht.
-      wasser
-        ? el('p', { class: 'ring-wasser',
-            text: `Wasser: rund ${wasser} l${goals.kind === 'training' ? ', an Trainingstagen eher mehr' : ''}` })
-        : null
+      // Hier stand einmal der Trinkrichtwert. Er ist wieder weg: Die Kachel
+      // „Trinken" eine Handbreit darunter sagt dasselbe, nur besser — sie
+      // kennt den Sport des Tages und zeigt, was schon getrunken ist. Zwei
+      // Zahlen für dieselbe Sache lasen sich wie ein Fehler, und eine davon
+      // war auch einer.
     )
   );
 }
@@ -247,6 +243,29 @@ export async function render(container, ctx, param) {
       (vortage[m.date] = vortage[m.date] || []).push(m);
     }
   }
+  /**
+   * Der erste Start.
+   *
+   * Ohne Profil zeigte „Heute" 2000 kcal und 125 g Eiweiß an — Platzhalter für
+   * einen Durchschnittsmenschen — und nirgends stand, dass da noch ein
+   * Fragebogen wartet. Wer den Reiter „Training" nicht von allein aufmacht,
+   * trägt seine Mahlzeiten wochenlang gegen eine erfundene Zahl.
+   */
+  if (!ctx.state.profile) {
+    body.push(el('div', { class: 'card stack' },
+      el('h3', { class: 'card-title', text: 'Erst ein paar Fragen' }),
+      el('p', { class: 'small',
+        text: 'Die Zahlen oben sind Platzhalter für einen Durchschnittsmenschen. Aus acht '
+          + 'Fragen — Größe, Gewicht, Ziel, wie viel Zeit du hast — rechnet die App deine '
+          + 'eigenen Kalorien und baut den Trainingsplan dazu. Dauert zwei Minuten.' }),
+      el('button', {
+        class: 'btn btn-primary btn-block', type: 'button',
+        onClick: () => ctx.startSetup(),
+      }, 'Fragebogen starten'),
+      el('p', { class: 'hint',
+        text: 'Geht auch später — dann bleiben die Platzhalter, bis du es machst.' })));
+  }
+
   const ueberblick = coachCard(ctx, dateKey, meals, goals, vortage);
   if (ueberblick) body.push(ueberblick);
 

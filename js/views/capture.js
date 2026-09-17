@@ -848,6 +848,17 @@ async function handleSave(ctx) {
     return;
   }
 
+  // Eine Komponente zu haben genügte — auch eine mit lauter Nullen. Dann stand
+  // auf „Heute" ein Eintrag, der nichts beitrug: Der Zähler sprang auf eins,
+  // die Kalorien blieben bei null, und im Wochenbericht galt der Tag als
+  // erfasst. Eine Mahlzeit ohne eine einzige Zahl ist keine Mahlzeit.
+  const hatWerte = session.items.some((i) => (Number(i.kcal) || 0) > 0
+    || (Number(i.protein) || 0) > 0 || (Number(i.carbs) || 0) > 0 || (Number(i.fat) || 0) > 0);
+  if (!hatWerte) {
+    toast('Trag mindestens die Kalorien einer Komponente ein — sonst zählt die Mahlzeit nichts.', 'err');
+    return;
+  }
+
   const meal = {
     id: session.id || newId(),
     date: session.dateKey,

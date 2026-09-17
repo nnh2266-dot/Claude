@@ -11,6 +11,7 @@ import {
   buildPlan, EQUIPMENT_LABEL, LIMIT_LABEL, FOCUS_LABEL, LEVEL_LABEL, GEAR_LABEL,
 } from '../training.js';
 import { SKILLS, MINUTES_PER_SKILL, skillById } from '../skills.js';
+import { KOSTFORMEN } from '../suggest.js';
 
 /** Zwischenstand des Fragebogens. Überlebt den Wechsel zwischen den Schritten. */
 let draft = null;
@@ -148,8 +149,20 @@ const STEPS = [
         ['aufbau', 'Muskeln aufbauen', 'Leichter Überschuss, schwerere Grundübungen mit weniger Wiederholungen.'],
       ]),
       numberField('Wunschgewicht', 'targetWeight', 'kg — nur zur Orientierung im Verlauf. Optional.'),
+      // Die Kostform stand nur in den Einstellungen, wo sie niemand sucht.
+      // Gefragt wurde nie — und weil ohne Antwort „Alles" gilt, bekamen
+      // Vegetarier Hähnchenbrust vorgeschlagen und keinen Hinweis darauf, dass
+      // Kreatinspeicher ohne Fleisch niedriger sind. Das ist die Frage mit dem
+      // meisten Folgeeffekt für eine einzige Antwort.
+      field('Wie ernährst du dich?',
+        chipGroup('ernaehrung', Object.entries(KOSTFORMEN).map(([id, k]) => [id, k.label])),
+        'Steuert die Essensvorschläge, die Eiweißtipps und die Empfehlungen bei den Ergänzungen.'),
     ],
-    check: () => (draft.goal ? null : 'Bitte ein Ziel wählen.'),
+    check: () => {
+      if (!draft.goal) return 'Bitte ein Ziel wählen.';
+      if (!draft.ernaehrung) return 'Bitte die Kostform wählen.';
+      return null;
+    },
   },
   {
     title: 'Erfahrung',
@@ -385,6 +398,7 @@ async function finish(ctx) {
     weekdays: [...(draft.weekdays || [])].map(Number).sort((a, b) => (a === 0 ? 7 : a) - (b === 0 ? 7 : b)),
     days: (draft.weekdays || []).length,
     sessionLength: Number(draft.sessionLength) || 60,
+    ernaehrung: draft.ernaehrung || 'misch',
     equipment: draft.equipment,
     activity: draft.activity,
     limits: draft.limits || [],
