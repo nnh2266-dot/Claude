@@ -12,7 +12,7 @@ import {
   isTimed, repRange, isUnilateral, ZYKLUS_WAHL, weeklyPlannedSets, VOLUMEN_UNTEN, VOLUMEN_OBEN,
   EXERCISES,
 } from '../training.js';
-import { ladderFor } from '../ladders.js';
+import { ladderFor, rungsInPlan, profileForPlan, leiterRang } from '../ladders.js';
 import { energyPlan, energyBreakdown, ACTIVITY_LABEL } from '../energy.js';
 import { skillById, currentLevel, levelIndex, MINUTES_PER_SKILL } from '../skills.js';
 
@@ -125,7 +125,7 @@ export async function render(container, ctx) {
             onClick: async () => {
               if (String(plan.splitKey) === k) return;
               const neuesProfil = { ...profile, splitKey: k };
-              const next = buildPlan(neuesProfil, plan.seed || 0);
+              const next = buildPlan(profileForPlan(neuesProfil), plan.seed || 0, { stufen: rungsInPlan(plan), rang: leiterRang });
               next.createdAt = plan.createdAt;
               next.zyklus = plan.zyklus;
               await setTrainingProfile(neuesProfil);
@@ -173,7 +173,9 @@ export async function render(container, ctx) {
       + 'wechselt, und die erledigten Übungen stehen dann nicht mehr in der Ansicht.\n\n'
       + 'Besser nach dem Training. Trotzdem jetzt umbauen?')) return;
 
-    const next = buildPlan(profile, (plan.seed || 0) + 1);
+    // Derselbe Seed wie bisher und die erreichten Leitersprossen mitgegeben:
+    // Hier sollen neue Übungen dazukommen, nicht alles neu gewürfelt werden.
+    const next = buildPlan(profileForPlan(profile), plan.seed || 0, { stufen: rungsInPlan(plan), rang: leiterRang });
     next.createdAt = plan.createdAt;
     next.zyklus = plan.zyklus;
     await setPlan(next);
@@ -226,8 +228,10 @@ export async function render(container, ctx) {
       el('button', {
         class: 'btn grow', type: 'button',
         onClick: async () => {
-          // Gleicher Split, gleiche Blockwoche — nur andere Übungen.
-          const next = buildPlan(profile, (plan.seed || 0) + 1);
+          // Gleicher Split, gleiche Blockwoche — nur andere Übungen. Die
+          // Leitersprossen bleiben trotzdem stehen: „andere Übungen" heißt
+          // Abwechslung, nicht Rückstufung.
+          const next = buildPlan(profileForPlan(profile), (plan.seed || 0) + 1, { stufen: rungsInPlan(plan), rang: leiterRang });
           next.createdAt = plan.createdAt;
           await setPlan(next);
           await ctx.refreshTraining();

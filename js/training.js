@@ -432,6 +432,12 @@ export const FOCUS_LABEL = {
 
 /* ---------------- Satzvorgaben ---------------- */
 
+/**
+ * Auf welcher Sprosse eine Leiter beginnt, wenn nichts anderes bekannt ist.
+ * Nur der Einstieg — hoch und runter geht es danach über die Leiterknöpfe.
+ */
+export const EINSTIEGSSPROSSE = { anfaenger: 0, fortgeschritten: 1, erfahren: 2 };
+
 const LEVELS = {
   anfaenger:       { compound: 3, isolation: 2, rir: 3 },
   fortgeschritten: { compound: 4, isolation: 3, rir: 2 },
@@ -637,11 +643,21 @@ export function isAvailable(exercise, profile, { ignoriereSperren = false } = {}
 /* ---------------- Plangenerator ---------------- */
 
 /**
- * Baut den Wochenplan aus dem Profil.
  * `seed` verschiebt die Übungsauswahl, ohne Split und Struktur zu ändern —
  * dafür gibt es in der Ansicht den Knopf „Andere Übungen wählen".
+ *
+ * Baut den Wochenplan aus dem Profil.
+ *
+ * `stufen` ist eine Menge von Übungs-IDs, die bevorzugt wieder genommen werden
+ * sollen — die Sprossen, auf denen man gerade steht. Ohne das würfelt jeder
+ * Neubau die Sprosse neu, und mühsam erarbeiteter Fortschritt löst sich auf.
+ *
+ * `rang(id)` liefert die Sprossennummer einer Übung oder null. Damit nimmt der
+ * Generator ohne Vorgeschichte die unterste offene Sprosse statt einer
+ * beliebigen. Beide Auskünfte kommen von außen, weil das Leiterwissen in
+ * ladders.js liegt und diese Datei es nicht importieren darf.
  */
-export function buildPlan(profile, seed = 0) {
+export function buildPlan(profile, seed = 0, { stufen = null, rang = null } = {}) {
   // Ausrüstung, Gerät, Beschwerden, Sperrliste und ausgewachsene Übungen
   // stecken alle in isAvailable.
   const usable = EXERCISES.filter((e) => isAvailable(e, profile));
@@ -695,6 +711,38 @@ export function buildPlan(profile, seed = 0) {
 
     const free = pool.filter((e) => !usedToday.has(e.id));
     if (!free.length) return null; // keine Übung zweimal am selben Tag
+
+    // Steht für eine Leiter eine erreichte Sprosse fest, wird genau die
+    // genommen — sofern sie überhaupt zur Wahl steht. Sonst würde der Neubau
+    // den Fortschritt auf dieser Leiter zurücksetzen.
+    if (stufen) {
+      // `stufen` ist eine Menge von Übungs-IDs: die Sprossen, auf denen man
+      // gerade steht. Welche Sprosse zu welcher Leiter gehört, weiß ladders.js
+      // — und das darf training.js nicht importieren, sonst drehen sich die
+      // beiden Dateien im Kreis. Deshalb kommen beide Auskünfte von außen.
+      const gehalten = free.find((e) => stufen.has(e.id));
+      if (gehalten) return gehalten;
+    }
+
+    // Ohne Vorgeschichte: die unterste noch offene Sprosse ab dem Einstieg.
+    // Eine Leiter geht man Stufe für Stufe hoch — wer die ersten drei Sprossen
+    // hinter sich hat, steht als Nächstes auf der vierten und nicht zufällig
+    // auf der fünften. Für alles ohne Leiter bleibt es beim Reihum.
+    //
+    // Der Einstieg richtet sich nach der Erfahrung: Ein Anfänger fängt unten
+    // an, wer sich als fortgeschritten einträgt, eine Sprosse höher. Sonst
+    // stünden erhöhte Liegestütze im Plan von jemandem, der seit Jahren
+    // trainiert — und der tippt sich dann dreimal hoch, bevor es losgeht.
+    if (rang) {
+      const aufLeiter = free.filter((e) => rang(e.id) !== null);
+      if (aufLeiter.length) {
+        const einstieg = EINSTIEGSSPROSSE[profile.level] ?? 0;
+        const abEinstieg = aufLeiter.filter((e) => rang(e.id) >= einstieg);
+        const auswahl = abEinstieg.length ? abEinstieg : aufLeiter;
+        return auswahl.reduce((a, e) => (rang(e.id) < rang(a.id) ? e : a));
+      }
+    }
+
     const n = (rotation[spec] = rotation[spec] || 0) + seed;
     rotation[spec]++;
     return free[n % free.length];

@@ -17,7 +17,7 @@ import {
   exerciseById, GROUP_LABEL, blockWeek, forWeek, dayForWeekday, nextStep, BLOCK_WEEKS,
   travelDay, restSeconds, sessionMinutes, REST_TEMPO,
   replaceExercise, setExercise, removeExercise, missedDays, SKIP_REASONS, deloadHinweis,
-  isUnilateral, isTimed, repRange, GRUPPEN_BUENDEL, withoutBundles, spareDay, LIMIT_LABEL,
+  isUnilateral, isTimed, repRange, setSides, GRUPPEN_BUENDEL, withoutBundles, spareDay, LIMIT_LABEL,
 } from '../training.js';
 import { schonungsKarte, activeLimits } from './schonung.js';
 import {
@@ -541,6 +541,78 @@ function lastPerformance(sessions, exerciseId, beforeDate) {
   return null;
 }
 
+/**
+ * Alle aufgezeichneten Leistungen einer Übung, neueste zuerst.
+ * Für den Vergleich „besser als letztes Mal" braucht es zwei, nicht eine.
+ */
+function performanceHistory(sessions, exerciseId, beforeDate, wieViele = 2) {
+  const raus = [];
+  for (const session of [...sessions].sort((a, b) => (a.date < b.date ? 1 : -1))) {
+    if (session.date >= beforeDate) continue;
+    const sets = (session.entries || {})[exerciseId];
+    if (sets && sets.some((s) => s && s.reps)) raus.push({ date: session.date, sets });
+    if (raus.length >= wieViele) break;
+  }
+  return raus;
+}
+
+/**
+ * Eine Zeile, die sagt, ob es vorangeht.
+ *
+ * Der Grund, warum es sie gibt: Im Block stand bisher nur „Zuletzt: 14 Wdh."
+ * und daneben, auf welcher Leitersprosse man steht. Ob sich zwischen der
+ * vorletzten und der letzten Einheit etwas getan hat, musste man selbst im
+ * Kopf ausrechnen — und wenn man das nicht tut, fühlt sich jede Woche gleich
+ * an. Die App hat die Zahlen, sie hat sie nur nicht verglichen.
+ *
+ * Verglichen wird das beste Satzergebnis: bei Lastübungen das Gewicht, sonst
+ * die Wiederholungen beziehungsweise Sekunden. Einseitig zählt die schwächere
+ * Seite, wie überall.
+ */
+function fortschrittsZeile(verlauf, prescription, oben, einseitig, zeit) {
+  if (!verlauf.length) return null;
+
+  const bestes = (eintrag) => {
+    const werte = (eintrag.sets || []).filter((x) => x && x.reps).map((x) => ({
+      last: Number(x.weight) || 0,
+      wdh: einseitig ? (setSides(x).schwaechste ?? Number(x.reps)) : Number(x.reps),
+    }));
+    if (!werte.length) return null;
+    // Schwerster Satz, bei gleichem Gewicht der mit den meisten Wiederholungen.
+    return werte.sort((a, b) => b.last - a.last || b.wdh - a.wdh)[0];
+  };
+
+  const jetzt = bestes(verlauf[0]);
+  if (!jetzt) return null;
+  const einheit = zeit ? 's' : 'Wdh.';
+
+  const teile = [];
+  const davor = verlauf[1] ? bestes(verlauf[1]) : null;
+  if (davor) {
+    if (jetzt.last !== davor.last && jetzt.last > 0 && davor.last > 0) {
+      const d = Math.round((jetzt.last - davor.last) * 10) / 10;
+      teile.push(`${d > 0 ? '+' : ''}${String(d).replace('.', ',')} kg gegenüber der Einheit davor`);
+    } else if (jetzt.wdh !== davor.wdh) {
+      const d = jetzt.wdh - davor.wdh;
+      teile.push(`${d > 0 ? '+' : ''}${d} ${einheit} gegenüber der Einheit davor`);
+    } else {
+      teile.push('gleich wie die Einheit davor');
+    }
+  }
+
+  // Wie weit bis zum oberen Rand des Bereichs — das ist der Punkt, an dem es
+  // weitergeht: mehr Gewicht oder die nächste Sprosse.
+  if (!prescription.loadless || !jetzt.last) {
+    const fehlt = oben - jetzt.wdh;
+    if (fehlt > 0) teile.push(`noch ${fehlt} ${einheit} bis zum oberen Rand`);
+    else teile.push('oberer Rand erreicht');
+  }
+
+  if (!teile.length) return null;
+  return el('p', { class: 'exblock-fortschritt small' },
+    el('strong', { text: 'Fortschritt: ' }), teile.join(' · '));
+}
+
 function formatSets(sets, einseitig = false, zeit = false) {
   return sets
     .filter((s) => s && s.reps)
@@ -962,7 +1034,8 @@ function exerciseBlock(prescription, week, session, sessions, dateKey, onChange,
   const einheit = zeit ? 's' : 'Wdh.';
   const stand = ladderFor(prescription.id);
   const pause = restSeconds(prescription, tempo);
-  const last = lastPerformance(sessions, prescription.id, dateKey);
+  const verlauf = performanceHistory(sessions, prescription.id, dateKey);
+  const last = verlauf[0] || null;
   const entries = session.entries[prescription.id] || (session.entries[prescription.id] = []);
 
   const rows = [];
@@ -1110,6 +1183,7 @@ function exerciseBlock(prescription, week, session, sessions, dateKey, onChange,
     el('p', { class: 'exblock-rx tabular', text: rxText }),
     el('p', { class: 'exblock-last',
       text: last ? `Zuletzt ${formatDateKey(last.date)}: ${formatSets(last.sets, einseitig, zeit)}` : 'Noch keine Werte aufgezeichnet.' }),
+    fortschrittsZeile(verlauf, prescription, oben, einseitig, zeit),
     uhr ? uhr.node : null,
     el('div', { class: einseitig ? 'setlabels setlabels-zwei' : 'setlabels' },
       el('span'), el('span', { text: prescription.loadless ? 'Zusatz-kg' : 'kg' }),

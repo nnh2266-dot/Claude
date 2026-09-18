@@ -135,6 +135,74 @@ export function wiederholtBewegung(kandidat, idsImTag) {
 }
 
 /**
+ * Ergänzt die Liste der ausgewachsenen Übungen um alles, was darunter liegt.
+ *
+ * `outgrown` merkte sich nur die Sprosse, die man gerade verlassen hat. Wer von
+ * den Liegestützen über die Pseudo-Planche zu den Archer-Liegestützen gestiegen
+ * war, hatte dort `pushup` und `pseudopu` stehen — aber nicht `pushele`, die
+ * unterste Sprosse, weil er die nie gemacht hatte. Beim nächsten Planbau war
+ * `pushele` damit ein gültiger Kandidat, und der Plan stellte jemanden mit
+ * Archer-Liegestützen an die erhöhten Liegestütze.
+ *
+ * Wer eine Sprosse hinter sich gelassen hat, hat alles darunter auch hinter
+ * sich. Das steht hier, weil es Leiterwissen ist und in training.js nicht
+ * hingehört.
+ */
+export function outgrownMitUnterbau(outgrown) {
+  const raus = new Set(outgrown || []);
+  for (const leiter of LADDERS) {
+    let hoechste = -1;
+    leiter.stufen.forEach((id, i) => { if (raus.has(id)) hoechste = i; });
+    if (hoechste < 0) continue;
+    for (let i = 0; i < hoechste; i += 1) raus.add(leiter.stufen[i]);
+  }
+  return [...raus];
+}
+
+/**
+ * Sprossennummer einer Übung, oder null. Für buildPlan gedacht: Das
+ * Leiterwissen liegt hier, training.js soll es nicht importieren müssen.
+ */
+export function leiterRang(id) {
+  const s = LEITER_VON.get(id);
+  return s ? s.index : null;
+}
+
+/** Profil mit aufgefüllter Sperrliste — so gehört es in buildPlan. */
+export function profileForPlan(profile) {
+  if (!profile) return profile;
+  return { ...profile, outgrown: outgrownMitUnterbau(profile.outgrown) };
+}
+
+/**
+ * Welche Sprosse je Leiter in einem Plan steht.
+ *
+ * Gebraucht beim Neubauen. Ein Plan wird neu gewürfelt, wenn Übungen
+ * dazukommen oder man „Andere Übungen" drückt — und dabei ging die
+ * Leiterposition verloren: Wer sich von den Liegestützen über die
+ * Pseudo-Planche zu den Archer-Liegestützen hochgearbeitet hatte, konnte
+ * hinterher wieder bei „Liegestütze erhöht" stehen, der untersten Sprosse.
+ * Oder zwei Stufen höher, ohne sie verdient zu haben. Genau das fühlt sich
+ * an wie „vor und zurück und keine Verbesserung" — und es ist auch keine.
+ *
+ * @returns {Set<string>} Übungs-IDs der erreichten Sprossen, eine je Leiter
+ */
+export function rungsInPlan(plan) {
+  const hoechste = new Map();
+  for (const day of plan?.days || []) {
+    for (const p of day.exercises || []) {
+      const s = ladderFor(p.id);
+      if (!s) continue;
+      // Steht dieselbe Leiter mehrfach im Plan, zählt die höchste Sprosse:
+      // Die hat man erreicht, die niedrigere ist Beiwerk.
+      const bisher = hoechste.get(s.leiter.id);
+      if (!bisher || s.index > bisher.index) hoechste.set(s.leiter.id, { id: p.id, index: s.index });
+    }
+  }
+  return new Set([...hoechste.values()].map((x) => x.id));
+}
+
+/**
  * Nächste machbare Sprosse in eine Richtung.
  *
  * @param {string} exerciseId
