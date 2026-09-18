@@ -337,8 +337,9 @@ export async function render(container, ctx) {
         el('h2', { class: 'section-title', text: 'Aussortierte Übungen' }),
         el('div', { class: 'card stack' },
           el('p', { class: 'small muted',
-            text: 'Im Training als zu schwer gemeldet. Sie kommen auch bei einem neuen '
-              + 'Plan nicht zurück.' }),
+            text: 'Im Training aussortiert — zu schwer, unangenehm oder schlicht ungeliebt. '
+              + 'Sie kommen auch bei einem neuen Plan nicht zurück. Zurückholen geht hier '
+              + 'jederzeit.' }),
           ...gesperrt.map((id) => {
             const e = exerciseById(id);
             return el('div', { class: 'row-between' },

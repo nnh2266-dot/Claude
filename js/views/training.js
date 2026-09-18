@@ -172,7 +172,7 @@ function tauschKarte(ctx, plan, sessions, session, day, dateKey) {
       el('div', { class: 'muted small', text: gruppenVon(d).join(' · ') })),
     el('span', { class: 'muted small', text: WOCHENTAG[d.weekday].slice(0, 2) }));
 
-  return el('details', { class: 'card klappkarte tauschwahl' },
+  return el('details', { class: 'card klappkarte' },
     el('summary', null,
       el('span', { class: 'grow', text: 'Heute passt das nicht?' }),
       el('span', { class: 'muted small', text: 'anpassen' })),
@@ -231,7 +231,7 @@ function ausfallenKarte(ctx, session, day, dateKey) {
       },
     }, r.label)));
 
-  return el('details', { class: 'card klappkarte ausfallwahl' },
+  return el('details', { class: 'card klappkarte' },
     el('summary', null,
       el('span', { class: 'grow', text: 'Heute geht nichts?' }),
       el('span', { class: 'muted small', text: 'ausfallen lassen' })),
@@ -471,7 +471,7 @@ function pausenKarte(ctx, tempo, exercises) {
       onClick: () => waehlen(wert),
     }, `${t.label} · ${sessionMinutes(exercises, wert)} Min`)));
 
-  return el('details', { class: 'card klappkarte pausenwahl' },
+  return el('details', { class: 'card klappkarte' },
     el('summary', null,
       el('span', { class: 'grow', text: 'Pausen' }),
       el('span', { class: 'muted small',
@@ -1199,7 +1199,12 @@ function exerciseBlock(prescription, week, session, sessions, dateKey, onChange,
     el('div', { class: 'stufenwahl' },
       el('button', {
         class: 'btn btn-ghost btn-sm', type: 'button', onClick: aktionen.tauschen,
-      }, 'Zu schwer — andere Übung'),
+      // Hieß „Zu schwer — andere Übung". Der Knopf tut aber mehr: Er sortiert
+      // die Übung dauerhaft aus, und die Gründe dafür sind nicht nur „zu
+      // schwer" — manche Übung mag man einfach nicht, und eine Übung, die man
+      // nicht mag, macht man schlecht oder gar nicht. Der Knopf heißt jetzt,
+      // was er tut.
+      }, 'Andere Übung — diese aussortieren'),
       stand && harderRung(prescription.id, profile)
         ? el('button', {
             class: 'btn btn-ghost btn-sm', type: 'button', onClick: aktionen.hoch,

@@ -75,7 +75,7 @@ export function schonungsKarte(ctx, { getauscht = [] } = {}) {
     }, label)));
 
   if (!aktiv.length) {
-    return el('details', { class: 'card klappkarte schonwahl' },
+    return el('details', { class: 'card klappkarte' },
       el('summary', null,
         el('span', { class: 'grow', text: 'Tut etwas weh?' }),
         el('span', { class: 'muted small', text: 'schonen' })),

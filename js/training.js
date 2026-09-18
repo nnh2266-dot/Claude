@@ -215,21 +215,52 @@ export function repRange(prescription) {
  * Dreitageplan nur in vierzehn von fünfundzwanzig Fällen überhaupt zu sehen —
  * die Stange stand herum, während der Plan dreimal ruderte.
  */
-export const ZUG_VERTIKAL = new Set([
+export const MUSTER_VERTIKAL = new Set([
   'pullup', 'latpull', 'blat', 'negpull', 'pronelat', 'chinup',
 ]);
 
-export const ZUG_HORIZONTAL = new Set([
+export const MUSTER_HORIZONTAL = new Set([
   'bbrow', 'dbrow', 'cabrow', 'tbar', 'brow', 'invrow', 'tablerow', 'towelrow',
   'towelsit', 'rowmach',
 ]);
 
-/** 'v', 'h' oder null — Letzteres für alles, was keine Zugübung ist. */
-export function zugrichtung(id) {
-  if (ZUG_VERTIKAL.has(id)) return 'v';
-  if (ZUG_HORIZONTAL.has(id)) return 'h';
+/**
+ * Hüftstreckung gegen Kniebeugung an der Beinrückseite.
+ *
+ * Dieselbe Sache wie bei den Zugrichtungen, nur eine Etage tiefer: „Beine
+ * hinten" war eine Gruppe, und damit waren rumänisches Kreuzheben und
+ * Beinbeuger austauschbar. Sind sie nicht — das eine streckt die Hüfte, das
+ * andere beugt das Knie, und die Beinrückseite kann beides. Ein Plan, der nur
+ * Beinbeuger hat, lässt die Hüftstreckung ganz aus, und die ist die Bewegung,
+ * die beim Heben aus dem Alltag zählt.
+ */
+export const MUSTER_HINGE = new Set([
+  'dl', 'rdl', 'gm', 'bwgm', 'slrdl', 'hipth', 'gbridge', 'gbridge1', 'bhipth', 'frogpump',
+]);
+
+export const MUSTER_KNIE = new Set([
+  'legcurl', 'nordic', 'slidecurl', 'bridgecurl',
+]);
+
+/**
+ * Bewegungsmuster einer Übung, oder null.
+ *
+ * 'v' senkrechtes Ziehen · 'h' waagerechtes Ziehen
+ * 'hinge' Hüftstreckung  · 'knie' Kniebeugung
+ *
+ * Die Vorlagen geben das Muster als dritten Teil einer Platzangabe mit:
+ * `ruecken:c:v` heißt „Rücken, Grundübung, senkrecht".
+ */
+export function bewegungsmuster(id) {
+  if (MUSTER_VERTIKAL.has(id)) return 'v';
+  if (MUSTER_HORIZONTAL.has(id)) return 'h';
+  if (MUSTER_HINGE.has(id)) return 'hinge';
+  if (MUSTER_KNIE.has(id)) return 'knie';
   return null;
 }
+
+/** Alter Name, solange noch etwas darauf zeigt. */
+export const zugrichtung = bewegungsmuster;
 
 export const GROUP_LABEL = {
   brust: 'Brust', ruecken: 'Rücken', quad: 'Beine vorne', ham: 'Beine hinten',
@@ -387,19 +418,21 @@ const SLOTS = {
   // Erstes weg, wenn die Zeit knapp ist, und das ist richtig so. Ohne sie
   // bekam ein Dreitageplan aber gar keinen einzigen Wadensatz — über den
   // Überhang kommen sie jetzt reihum dran.
-  fbA:   ['brust:c','ruecken:c:v','quad:c','ham:c','sdelt:i','trizeps:i','bizeps:i','core:i','waden:i'],
-  fbB:   ['schulter:c','ruecken:c:h','ham:c','quad:c','brust:i','bizeps:i','trizeps:i','core:i','waden:i'],
+  fbA:   ['brust:c','ruecken:c:v','quad:c','ham:c:hinge','sdelt:i','trizeps:i','bizeps:i','core:i','waden:i'],
+  fbB:   ['schulter:c','ruecken:c:h','ham:c:hinge','quad:c','brust:i','bizeps:i','trizeps:i','core:i','waden:i'],
   fbC:   ['brust:c','ruecken:c:v','quad:c','glute:c','sdelt:i','rdelt:i','bizeps:i','core:i','waden:i'],
   push:  ['brust:c','schulter:c','brust:c','sdelt:i','trizeps:i','trizeps:i','core:i'],
   pull:  ['ruecken:c:v','ruecken:c:h','ruecken:c','rdelt:i','bizeps:i','bizeps:i','core:i'],
-  legs:  ['quad:c','ham:c','quad:c','ham:i','glute:c','waden:i','core:i'],
+  legs:  ['quad:c','ham:c:hinge','quad:c','ham:i','glute:c','waden:i','core:i'],
   // Die hintere Schulter stand hier lange nicht drin — und weil der
   // Vier-Tage-Plan aus Oberkörper und Unterkörper besteht, bekam sie damit in
   // der ganzen Woche keinen einzigen Satz. Rudern trifft sie mit, aber wer viel
   // drückt, braucht sie direkt: Die Empfehlung lautet, das Zugvolumen mindestens
   // so hoch zu halten wie das Drückvolumen.
-  upper: ['brust:c','ruecken:c:v','schulter:c','ruecken:c:h','rdelt:i','sdelt:i','bizeps:i','trizeps:i'],
-  lower: ['quad:c','ham:c','quad:c','ham:i','glute:c','waden:i','core:i'],
+  // Beide Zugrichtungen stehen vorn: Bei kurzen Einheiten fällt das Ende weg,
+  // und dabei verschwand bisher das waagerechte Ziehen ganz.
+  upper: ['brust:c','ruecken:c:v','ruecken:c:h','schulter:c','rdelt:i','sdelt:i','bizeps:i','trizeps:i'],
+  lower: ['quad:c','ham:c:hinge','quad:c','ham:i','glute:c','waden:i','core:i'],
 };
 
 const SPLITS = {
@@ -696,14 +729,31 @@ export function buildPlan(profile, seed = 0, { stufen = null, rang = null } = {}
 
   const rotation = {};
   const vorlagenZaehler = {};
+  /** Welche Bewegungsmuster diese Woche schon vorkommen. */
+  const gedeckteMuster = new Set();
+
+  /** Gemeinsame Auswahlregel für Platzangaben und Auffüller. */
+  const waehleMitSprosse = (kandidaten, n) => {
+    if (rang) {
+      const aufLeiter = kandidaten.filter((e) => rang(e.id) !== null);
+      if (aufLeiter.length) {
+        const einstieg = EINSTIEGSSPROSSE[profile.level] ?? 0;
+        const abEinstieg = aufLeiter.filter((e) => rang(e.id) >= einstieg);
+        const auswahl = abEinstieg.length ? abEinstieg : aufLeiter;
+        return auswahl.reduce((a, e) => (rang(e.id) < rang(a.id) ? e : a));
+      }
+    }
+    return kandidaten[n % kandidaten.length];
+  };
+
   const erstesVorkommen = {};
   const pick = (spec, usedToday) => {
-    const [group, type, richtung] = spec.split(':');
-    // Erst mit Richtung, dann ohne. Ohne Stange und ohne Latzug bleibt für
+    const [group, type, muster] = spec.split(':');
+    // Erst mit Muster, dann ohne. Ohne Stange und ohne Latzug bleibt für
     // senkrechtes Ziehen nur der Latzug in Bauchlage — gibt es auch den nicht,
     // ist eine Ruderübung besser als eine leere Stelle.
-    let pool = richtung
-      ? usable.filter((e) => e.group === group && e.type === type && zugrichtung(e.id) === richtung)
+    let pool = muster
+      ? usable.filter((e) => e.group === group && e.type === type && bewegungsmuster(e.id) === muster)
       : [];
     if (!pool.length) pool = usable.filter((e) => e.group === group && e.type === type);
     if (!pool.length) pool = usable.filter((e) => e.group === group);
@@ -733,19 +783,9 @@ export function buildPlan(profile, seed = 0, { stufen = null, rang = null } = {}
     // an, wer sich als fortgeschritten einträgt, eine Sprosse höher. Sonst
     // stünden erhöhte Liegestütze im Plan von jemandem, der seit Jahren
     // trainiert — und der tippt sich dann dreimal hoch, bevor es losgeht.
-    if (rang) {
-      const aufLeiter = free.filter((e) => rang(e.id) !== null);
-      if (aufLeiter.length) {
-        const einstieg = EINSTIEGSSPROSSE[profile.level] ?? 0;
-        const abEinstieg = aufLeiter.filter((e) => rang(e.id) >= einstieg);
-        const auswahl = abEinstieg.length ? abEinstieg : aufLeiter;
-        return auswahl.reduce((a, e) => (rang(e.id) < rang(a.id) ? e : a));
-      }
-    }
-
     const n = (rotation[spec] = rotation[spec] || 0) + seed;
     rotation[spec]++;
-    return free[n % free.length];
+    return waehleMitSprosse(free, n);
   };
 
   const days = split.days.map(([name, template], index) => {
@@ -780,7 +820,20 @@ export function buildPlan(profile, seed = 0, { stufen = null, rang = null } = {}
       vorlagenZaehler[template] = (vorlagenZaehler[template] || 0) + 1;
       if (erstesVorkommen[template] === undefined) erstesVorkommen[template] = index;
       const n = (vorlagenZaehler[template] - 1) + erstesVorkommen[template] + seed;
-      specs = [...fest, ueberhang[n % ueberhang.length]];
+
+      // Vor dem Reihum steht die Vollständigkeit: Ist in dieser Woche noch
+      // kein Platz mit diesem Muster besetzt, kommt er zuerst dran.
+      //
+      // Ohne das verschwand bei kurzen Einheiten die Hüftstreckung. Ein
+      // Zweitageplan über dreißig Minuten mit Technik hat drei Kraftübungen je
+      // Einheit; das Reihum nahm zweimal die Kniebeuge und nichts von der
+      // Beinrückseite. Zweimal dasselbe Muster und eines gar nicht ist keine
+      // Abwechslung, sondern eine Lücke.
+      const offen = ueberhang.filter((sp) => {
+        const m = sp.split(':')[2];
+        return m && !gedeckteMuster.has(m);
+      });
+      specs = [...fest, offen.length ? offen[n % offen.length] : ueberhang[n % ueberhang.length]];
     }
 
     const usedToday = new Set();
@@ -790,6 +843,8 @@ export function buildPlan(profile, seed = 0, { stufen = null, rang = null } = {}
       const exercise = pick(spec, usedToday);
       if (!exercise) return;
       usedToday.add(exercise.id);
+      const m = bewegungsmuster(exercise.id);
+      if (m) gedeckteMuster.add(m);
       exercises.push(prescribe(exercise, profile, i === 0));
     });
 
@@ -814,7 +869,10 @@ export function buildPlan(profile, seed = 0, { stufen = null, rang = null } = {}
         const candidates = usable.filter((e) => !usedToday.has(e.id) && allowed.includes(e.group));
         if (!candidates.length) return;
         rotation.__fill = (rotation.__fill || 0) + 1;
-        const exercise = candidates[(rotation.__fill + seed) % candidates.length];
+        // Auch der Auffüller darf nicht unter die Einstiegssprosse greifen —
+        // sonst stand im Plan eines Fortgeschrittenen plötzlich die unterste
+        // Stufe, nur weil sie über diesen Weg hineinkam.
+        const exercise = waehleMitSprosse(candidates, rotation.__fill + seed);
         usedToday.add(exercise.id);
         exercises.push(prescribe(exercise, profile, false));
         added++;

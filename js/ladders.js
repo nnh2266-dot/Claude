@@ -29,11 +29,20 @@ export const LADDERS = [
   {
     id: 'ziehen-waagerecht',
     name: 'Ziehen waagerecht',
-    stufen: ['pronelat', 'towelsit', 'towelrow', 'tablerow', 'invrow'],
+    stufen: ['towelsit', 'towelrow', 'tablerow', 'invrow'],
   },
   {
     id: 'ziehen-senkrecht',
     name: 'Ziehen über Kopf',
+    // Der Latzug in Bauchlage stand lange als unterste Sprosse beim
+    // waagerechten Ziehen. Falsch einsortiert: Die Arme kommen von über dem
+    // Kopf zu den Rippen, das ist die Bewegung des Klimmzugs, nur im Liegen.
+    //
+    // Auf die senkrechte Leiter gehört er trotzdem nicht. Sie setzt eine
+    // Stange voraus, und als unterste Sprosse hätte er jedem Anfänger mit
+    // Stange den Bodenlatzug statt der negativen Klimmzüge gegeben — die
+    // Stange hinge weiter an der Wand. Er steht deshalb ganz ohne Leiter da:
+    // die senkrechte Zugübung für alle, die keine Stange haben.
     stufen: ['negpull', 'chinup', 'pullup'],
   },
   {

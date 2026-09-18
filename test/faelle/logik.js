@@ -1,0 +1,135 @@
+/**
+ * Die rechnenden Teile, ohne Browser.
+ *
+ * Alles hier ist eine Behauptung über eine Zahl oder einen Satz, den die App
+ * ausgibt — und jede stammt aus einem Fehler, den es einmal gab, oder aus einer
+ * Quelle, die in den Dateien zitiert ist.
+ */
+import { neuerLauf } from '../pruefen.js';
+import * as T from '../../js/training.js';
+import * as L from '../../js/ladders.js';
+import * as W from '../../js/water.js';
+import * as E from '../../js/energy.js';
+import * as A from '../../js/activities.js';
+import * as S from '../../js/strength.js';
+import * as K from '../../js/kegel.js';
+import { APP_VERSION } from '../../js/version.js';
+
+const PROFIL = {
+  sex: 'm', age: 34, height: 180, weight: 80, bodyfat: null,
+  goal: 'abnehmen', targetWeight: 76, level: 'fortgeschritten',
+  days: 3, weekdays: [1, 3, 5], sessionLength: 60, ernaehrung: 'vegetarisch',
+  equipment: 'bw', activity: 'leicht',
+  limits: [], focus: [], skills: [], gear: ['stange', 'barren'], blocked: [], outgrown: [],
+};
+
+export default async function laufen() {
+  const p = neuerLauf('Logik');
+
+  /* ---------- Trinken ---------- */
+  // EFSA 2,5 l/Tag ist Gesamtwasser inkl. Essen; getrunken werden 25 ml je kg.
+  p.gleich(W.ML_PRO_KG, 25, 'Trinken: 25 ml je kg (nicht 35 — das wäre Gesamtwasser)');
+  p.gleich(W.dailyGoal(80, 0), 2000, 'Trinken: 80 kg ohne Sport ergibt 2000 ml');
+  p.ist(W.dailyGoal(80, 60) > W.dailyGoal(80, 0), 'Trinken: Sport hebt den Richtwert');
+  // Der Fehler, der zwei Zahlen auf einen Bildschirm brachte.
+  p.gleich(E.energyPlan(PROFIL, 0).water, 2,
+    'Trinken: Energieplan und Trinkkachel nennen dieselbe Zahl');
+
+  /* ---------- Sport ---------- */
+  p.gleich(A.activityById('golf').met, 4.5, 'Golf: MET 4,5 (Tabellenwert 3,5–5,3)');
+  p.ist(A.activityById('golf').met < A.activityById('ballsport').met,
+    'Golf ist lockerer als Ballsport');
+  const golfTag = A.dayTotals([{ type: 'golf', minutes: 240, intensity: 'mittel' }], 80);
+  p.gleich(golfTag.minuten, 240, 'Sport: rohe Minuten bleiben roh');
+  p.ist(golfTag.schwitzen < golfTag.minuten,
+    'Sport: fürs Trinken zählen gewichtete Minuten, nicht rohe');
+  const laufTag = A.dayTotals([{ type: 'laufen', minutes: 60, intensity: 'mittel' }], 80);
+  p.ist(laufTag.schwitzen > laufTag.minuten, 'Sport: Laufen zählt fürs Trinken stärker als eins zu eins');
+
+  /* ---------- Einheiten: Sekunden gegen Wiederholungen ---------- */
+  p.ist(T.isTimed('plank'), 'Unterarmstütz wird in Sekunden gemessen');
+  p.ist(!T.isTimed('pushup'), 'Liegestütze werden in Wiederholungen gemessen');
+  p.gleich(T.repRange({ id: 'plank' }), [30, 60], 'Plank: Zielbereich 30–60 s');
+  // Der Fehler: Sekunden gingen als Wiederholungen ins Volumen.
+  const nurHalten = T.weeklyVolume(
+    [{ date: '2026-01-05', entries: { plank: [{ weight: null, reps: 45 }] } }], 80);
+  p.leer(nurHalten, 'Volumen: reine Haltearbeit erzeugt kein Volumen');
+  const mitWdh = T.weeklyVolume(
+    [{ date: '2026-01-05', entries: { pushup: [{ weight: null, reps: 20 }] } }], 80);
+  p.ist(mitWdh.length === 1 && mitWdh[0].volume > 0, 'Volumen: Wiederholungen zählen weiter');
+  // Bestleistungen mischen die Einheiten nicht.
+  const besten = T.personalBests([{ date: '2026-01-05', entries: {
+    pushup: [{ weight: null, reps: 22 }], wallsit: [{ weight: null, reps: 60 }] } }]);
+  p.ist(besten.findIndex((b) => b.id === 'pushup') < besten.findIndex((b) => b.id === 'wallsit'),
+    'Bestleistungen: Haltearbeit steht hinter den Wiederholungen');
+
+  /* ---------- Fortschrittstext ---------- */
+  p.enthaelt(T.nextStep({ id: 'plank', sets: 3, reps: [30, 60], rir: 2, loadless: true },
+    [{ reps: 35 }, { reps: 32 }]), 'Sekunden', 'Nächster Schritt bei Halteübungen in Sekunden');
+  p.enthaelt(T.nextStep({ id: 'pushup', sets: 3, reps: [10, 20], rir: 2, loadless: true },
+    [{ reps: 12 }, { reps: 11 }]), 'Wiederholung', 'Nächster Schritt bei Wiederholungen');
+
+  /* ---------- RIR und Blockwochen ---------- */
+  for (const woche of [1, 2, 3, 4]) {
+    const f = T.forWeek({ id: 'bp', sets: 4, reps: [6, 10], rir: 1, loadless: false }, woche);
+    p.zwischen(f.rir, 1, 4, `Woche ${woche}: RIR bleibt zwischen 1 und 4`);
+    p.ist(f.sets >= 2, `Woche ${woche}: mindestens zwei Sätze`);
+  }
+  const plan4 = { createdAt: '2026-01-05', zyklus: 4 };
+  p.gleich([0, 1, 2, 3].map((w) => T.blockWeek(plan4, verschoben('2026-01-05', w * 7))),
+    [1, 2, 3, 4], 'Vierwochenblock läuft 1-2-3-4');
+  const plan6 = { createdAt: '2026-01-05', zyklus: 6 };
+  p.gleich([0, 1, 2, 3, 4, 5].map((w) => T.blockWeek(plan6, verschoben('2026-01-05', w * 7))),
+    [1, 2, 2, 2, 3, 4], 'Sechswochenblock endet auf Deload');
+  const planAus = { createdAt: '2026-01-05', zyklus: 0 };
+  p.gleich([0, 1, 2, 3].map((w) => T.blockWeek(planAus, verschoben('2026-01-05', w * 7))),
+    [2, 2, 2, 2], 'Ohne festen Block läuft die Aufbauwoche durch');
+
+  /* ---------- Einseitige Übungen ---------- */
+  p.ist(T.isUnilateral('bulg'), 'Bulgarian Split Squat ist einseitig');
+  const einseitig = [{ id: 'bulg', sets: 3, reps: [10, 20], rir: 2, loadless: true }];
+  const beidseitig = [{ id: 'bwsq', sets: 3, reps: [10, 20], rir: 2, loadless: true }];
+  p.ist(T.sessionMinutes(einseitig) > T.sessionMinutes(beidseitig),
+    'Zeit: einseitige Übungen dauern länger als beidseitige');
+  p.gleich(T.tatsaechlicheSaetze(einseitig, 2), 6, 'Drei Sätze einseitig sind sechs Durchgänge');
+
+  /* ---------- Leitern ---------- */
+  p.gleich(L.outgrownMitUnterbau(['pseudopu']).sort(), ['pushele', 'pushup', 'pseudopu'].sort(),
+    'Ausgewachsen: alles unterhalb zählt mit');
+  p.gleich(L.leiterRang('pushele'), 0, 'Leiterrang: erhöhte Liegestütze sind Sprosse 1');
+  p.ist(L.leiterRang('squat') === null, 'Leiterrang: Übungen ohne Leiter liefern null');
+  const hoch = L.harderRung('pushup', PROFIL);
+  p.ist(hoch && L.ladderFor(hoch.exercise.id).index > L.ladderFor('pushup').index,
+    'Leiter: eine Stufe höher liegt höher');
+
+  /* ---------- Beckenboden ---------- */
+  p.gleich(K.DOSIS, 2, 'Beckenboden: zwei Durchgänge am Tag');
+  p.ist(K.GENUG_AM_TAG >= K.DOSIS, 'Beckenboden: das Höchstmaß liegt nicht unter der Empfehlung');
+  const ablauf = K.ablauf(K.stufe(1));
+  p.gleich(ablauf.filter((x) => x.art === 'an').length,
+    ablauf.filter((x) => x.art === 'aus').length,
+    'Beckenboden: genauso oft loslassen wie anspannen');
+  p.ist(!K.loesenAblauf().some((x) => x.art === 'an'),
+    'Beckenboden: im Lösen-Durchgang wird nicht angespannt');
+
+  /* ---------- Krafteinordnung ---------- */
+  p.ist(S.RATED_COUNT > 0 && S.EXERCISE_COUNT === T.EXERCISES.length,
+    'Kraft: der Ehrlichkeitskasten zählt alle Übungen');
+  const sp = S.rateExercise('sideplank', { weight: 0, reps: 40 }, PROFIL);
+  p.ist(sp && sp.art === 'zeit', 'Kraft: Seitstütz wird in Sekunden eingeordnet');
+  p.ist(S.rateableFor('ham', PROFIL).length > 0,
+    'Kraft: für Beine hinten gibt es ohne Geräte eine bewertbare Übung');
+
+  /* ---------- Fassung ---------- */
+  const { readFileSync } = await import('node:fs');
+  const sw = readFileSync(new URL('../../sw.js', import.meta.url), 'utf8');
+  p.enthaelt(sw, `naehrwerte-v${APP_VERSION}`, `Fassung ${APP_VERSION} steht auch im Offline-Speicher`);
+
+  return p;
+}
+
+function verschoben(datum, tage) {
+  const d = new Date(`${datum}T12:00:00`);
+  d.setDate(d.getDate() + tage);
+  return d.toISOString().slice(0, 10);
+}
