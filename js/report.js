@@ -18,7 +18,7 @@ import { localDateKey, shiftDateKey } from './nutrition.js';
 import { targetsForDate, weightTrend, calorieAdvice, weeklyRateFor } from './energy.js';
 import {
   exerciseById, dayForWeekday, blockWeek, BLOCK_WEEKS, SKIP_REASONS, isUnilateral, setSides,
-  isTimed,
+  isTimed, weeklyVolume,
 } from './training.js';
 import { skillById, levelIndex } from './skills.js';
 import { dayTotals, weekSummary, KRAFT_SCHWITZ } from './activities.js';
@@ -28,8 +28,10 @@ import { dayPicture } from './mealscore.js';
 import {
   duration as schlafDauer, formatDauer, rateDuration, lightTiming, isComplete as nachtVoll,
   summarise as schlafSchnitt, SOLL_MIN, LICHT_MINUTEN,
+  regelmaessigkeit as schlafRegel, regelText as schlafRegelText, REGEL_FENSTER,
 } from './sleep.js';
 import { hasResults, dueAgain, overallScore, RETEST_DAYS } from './mobility.js';
+import { alleVerlaeufe, belastungsverlauf, belastungText } from './verlauf.js';
 
 /** Ein Befund. `art` steuert nur die Darstellung, nicht den Inhalt. */
 const gut = (text) => ({ art: 'gut', text });
@@ -348,10 +350,29 @@ export function weeklyReport(data) {
     training.push(fakt(`Bewegte Last ${Math.round(volWoche).toLocaleString('de-DE')} kg. Ab der zweiten Woche gibt es einen Vergleich.`));
   }
 
+  // Belastungsverlauf über die letzten Wochen. Kein Foster-Wert — die Rechnung
+  // dazu bräuchte nach jeder Einheit eine Zahl für die Anstrengung, und die
+  // fragt die App bewusst nicht ab. Übernommen ist nur der Kern: Abwechslung
+  // schützt. Deshalb steht hier das Muster, nicht ein Belastungsindex.
+  const belastung = belastungsverlauf(weeklyVolume(sessions, profile?.weight), montag);
+  const belastungsSatz = belastungText(belastung);
+  if (belastungsSatz) training.push(schlecht(belastungsSatz));
+
   abschnitte.push({ titel: 'Training', befunde: training });
 
   /* --- Übungen, die sich bewegt haben --- */
   const bewegung = uebungsFortschritt(sessions, bisHeute, vorTage);
+
+  // Wer seit mehreren Einheiten unter seinem Bestwert **und** unter dem Anfang
+  // der Reihe liegt, geht wirklich zurück. Eine schlechte Einheit steht hier
+  // nicht — die ist Tagesform, keine Information.
+  const zurueck = alleVerlaeufe(sessions, { bis: dateKey })
+    .filter((x) => x.rueckgang.ja && x.rueckgang.lage === 'rueckgang');
+  for (const x of zurueck.slice(0, 3)) {
+    bewegung.push(schlecht(`${x.verlauf.name}: seit ${x.rueckgang.seit} Einheiten unter dem besten `
+      + `Wert, zuletzt ${x.rueckgang.prozent} Prozent darunter — und damit auch unter dem Anfang der Reihe.`));
+  }
+
   if (bewegung.length) abschnitte.push({ titel: 'Einzelne Übungen', befunde: bewegung });
 
   /* --- Ernährung --- */
@@ -422,6 +443,17 @@ export function weeklyReport(data) {
     }
     if (wochenNaechte.length < bisHeute.length) {
       schlaf.push(fakt(`An ${bisHeute.length - wochenNaechte.length} Tagen nichts eingetragen.`));
+    }
+
+    // Regelmäßigkeit über vierzehn Tage, nicht über sieben: eine einzelne Woche
+    // mit einer späten Nacht sähe sonst aus wie ein Muster.
+    const reg = schlafRegel(data.sleep, bisHeute[bisHeute.length - 1], shiftDateKey, REGEL_FENSTER);
+    if (reg.genug) {
+      const satz = `Schlafmitte über ${reg.naechte} Nächte der letzten ${REGEL_FENSTER} Tage: `
+        + `± ${reg.mitteStreuung} Minuten.`;
+      schlaf.push(reg.stufe === 'fest' || reg.stufe === 'ordentlich'
+        ? gut(`${satz} ${schlafRegelText(reg.stufe)}`)
+        : schlecht(`${satz} ${schlafRegelText(reg.stufe)}`));
     }
 
     schlaf.push(z.lichtPuenktlich >= Math.ceil(bisHeute.length * 0.7)

@@ -18,6 +18,7 @@ import {
   travelDay, restSeconds, sessionMinutes, REST_TEMPO,
   replaceExercise, setExercise, removeExercise, missedDays, SKIP_REASONS, deloadHinweis,
   isUnilateral, isTimed, repRange, setSides, GRUPPEN_BUENDEL, withoutBundles, spareDay, LIMIT_LABEL,
+  weeklyVolume,
 } from '../training.js';
 import { schonungsKarte, activeLimits } from './schonung.js';
 import {
@@ -35,6 +36,8 @@ import {
   skillById, currentLevel, levelIndex, setsNeeded, levelCleared, hasNextLevel, MEASURE,
   skillBlocked,
 } from '../skills.js';
+import { belastungsverlauf, uebungsVerlauf, rueckgang, rueckgangText } from '../verlauf.js';
+import { weekStart } from '../report.js';
 
 const WOCHENTAG = ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'];
 
@@ -1036,6 +1039,12 @@ function exerciseBlock(prescription, week, session, sessions, dateKey, onChange,
   const pause = restSeconds(prescription, tempo);
   const verlauf = performanceHistory(sessions, prescription.id, dateKey);
   const last = verlauf[0] || null;
+
+  // Geht es bei dieser Übung seit mehreren Einheiten zurück? Das steht hier und
+  // nicht nur im Fortschritt, weil die Entscheidung — heute weniger, dafür
+  // sauber — genau jetzt ansteht. Gerechnet aus den Sätzen, die schon da sind.
+  const rueck = rueckgang(uebungsVerlauf(sessions, prescription.id, { bis: dateKey }));
+  const echterRueckgang = rueck.ja && rueck.lage === 'rueckgang';
   const entries = session.entries[prescription.id] || (session.entries[prescription.id] = []);
 
   const rows = [];
@@ -1184,6 +1193,9 @@ function exerciseBlock(prescription, week, session, sessions, dateKey, onChange,
     el('p', { class: 'exblock-last',
       text: last ? `Zuletzt ${formatDateKey(last.date)}: ${formatSets(last.sets, einseitig, zeit)}` : 'Noch keine Werte aufgezeichnet.' }),
     fortschrittsZeile(verlauf, prescription, oben, einseitig, zeit),
+    echterRueckgang
+      ? el('p', { class: 'exblock-rueckgang small', text: rueckgangText(rueck) })
+      : null,
     uhr ? uhr.node : null,
     el('div', { class: einseitig ? 'setlabels setlabels-zwei' : 'setlabels' },
       el('span'), el('span', { text: prescription.loadless ? 'Zusatz-kg' : 'kg' }),
@@ -1646,6 +1658,21 @@ export async function render(container, ctx) {
     const deload = deloadHinweis({
       plan, sessions, sleep: ctx.state.sleep, dateKey, kurzeNacht,
     });
+
+    // Vierter Grund, der nichts Neues zum Eintragen braucht: Die bewegte Last
+    // steigt seit Wochen, ohne dass je eine leichtere dazwischen lag. Das kommt
+    // aus den Sätzen, die ohnehin schon gespeichert sind.
+    const belastung = belastungsverlauf(
+      weeklyVolume(sessions, ctx.state.profile?.weight), weekStart(dateKey),
+    );
+    if (deload.schwer && belastung.warnung === 'anstieg') {
+      deload.gruende.push(`die bewegte Last ist ${belastung.anstiege} Wochen in Folge gestiegen, `
+        + 'ohne eine leichtere dazwischen');
+    }
+    if (deload.schwer && belastung.warnung === 'sprung') {
+      deload.gruende.push(`die bewegte Last ist zur Vorwoche um ${belastung.sprungProzent} Prozent gesprungen`);
+    }
+
     if (deload.schwer && deload.gruende.length) {
       body.push(el('div', { class: 'card stack mt-16' },
         el('div', { class: 'row-between' },

@@ -21,6 +21,8 @@ NODE_PATH=$(npm root -g) node test/run.js ansichten wege daten
 | `ansichten` | ja | Jede Ansicht erscheint, zeigt Inhalt und wirft keine Ausnahme |
 | `wege` | ja | Erster Start, Fragebogen, Mahlzeit eintragen, Satz eintragen, Übung aussortieren, Einheit abschließen |
 | `daten` | ja | Jede Art von Eintrag speichern, Neustart überstehen, Export und Import, Leitersprossen beim Neubau |
+| `auswertung` | ja | Überblick, Wochenbericht, Schlafregelmäßigkeit, Richtung je Übung, Belastungsverlauf, Betrieb ohne Netz |
+| `verlauf` | nein | Die vier Rechnungen ohne neue Eingabe: Streuung der Schlafzeiten über Mitternacht, geschätztes Maximum, Rückgang gegen Tagesform, Belastungsmuster nach einer Entlastungswoche |
 
 ## Warum es das gibt
 

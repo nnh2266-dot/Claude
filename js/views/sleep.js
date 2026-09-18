@@ -16,6 +16,7 @@ import {
   formatDauer, duration, rateDuration, lightTiming, lightStreak,
   nightKeyForBedtime, isComplete, nightLabel, ABEND_AB,
   LICHT_FENSTER, LICHT_MINUTEN, SOLL_MIN,
+  regelmaessigkeit, regelText, toClock, REGEL_MIN_NAECHTE, REGEL_FENSTER,
 } from '../sleep.js';
 
 /** Welche Nacht gerade bearbeitet wird. */
@@ -147,6 +148,38 @@ export async function render(container, ctx) {
       : el('p', { class: 'hint',
           text: `Faustregel: ${LICHT_MINUTEN} Minuten bei Sonne, bei trübem Wetter eher zwanzig bis dreißig.` }));
 
+
+  /**
+   * Regelmäßigkeit — die einzige Karte hier, für die nichts einzutragen ist.
+   * Sie rechnet aus den Zeiten, die ohnehin schon dastehen.
+   */
+  const regel = regelmaessigkeit(ctx.state.sleep, localDateKey(), shiftDateKey);
+  const regelKarte = el('div', { class: 'card stack mt-16' },
+    el('h3', { class: 'card-title', text: 'Regelmäßigkeit' }),
+    regel.genug
+      ? el('div', { class: 'stack' },
+          el('div', { class: 'row-between' },
+            el('span', { class: 'small', text: 'Schlafmitte im Schnitt' }),
+            el('span', { class: 'pill pill-ok tabular', text: toClock(regel.mittelMitte) })),
+          el('div', { class: 'row-between' },
+            el('span', { class: 'small', text: 'Schwankung der Schlafmitte' }),
+            el('span', {
+              class: `pill ${regel.stufe === 'fest' || regel.stufe === 'ordentlich' ? 'pill-ok' : 'pill-kcal'} tabular`,
+              text: `± ${regel.mitteStreuung} min`,
+            })),
+          el('p', { class: 'hint', text: `${regelText(regel.stufe)} Gerechnet über ${regel.naechte} `
+            + `vollständige Nächte der letzten ${REGEL_FENSTER} Tage: ins Bett ± ${regel.bettStreuung} min, `
+            + `auf ± ${regel.aufStreuung} min.` }),
+          el('p', { class: 'muted small', text: 'Warum das hier steht: In der bisher größten Auswertung '
+            + 'dazu (UK Biobank, knapp 61.000 Menschen, sieben Tage Aktigraphie) sagte die Regelmäßigkeit '
+            + 'des Schlafs die Sterblichkeit besser voraus als seine Dauer — auch dann noch, wenn man die '
+            + 'Dauer herausrechnete. Ehrlich dazu: Dort wurde Minute für Minute aus Bewegungsdaten '
+            + 'gerechnet, hier aus deinen eingetragenen Zeiten. Das ist ein Abbild davon, nicht dieselbe '
+            + 'Größe, und die Grenzen bei 30, 60 und 90 Minuten sind unsere, nicht die der Studie.' }))
+      : el('p', { class: 'hint', text: `Ab ${REGEL_MIN_NAECHTE} vollständigen Nächten in den letzten `
+          + `${REGEL_FENSTER} Tagen steht hier, wie stark deine Schlafzeiten schwanken. `
+          + `Bisher sind es ${regel.naechte}.` }));
+
   const notiz = el('input', {
     class: 'input', type: 'text', placeholder: 'Wach gelegen, Kaffee spät, laut …',
     value: eintrag.note || '',
@@ -189,6 +222,7 @@ export async function render(container, ctx) {
       : null,
     schlafKarte,
     lichtKarte,
+    regelKarte,
     el('div', { class: 'card stack mt-16' }, field('Notiz', notiz)),
     blaettern,
     loeschen));

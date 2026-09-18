@@ -8,10 +8,15 @@ import { localDateKey, formatDateKey, shiftDateKey } from '../nutrition.js';
 import { setKcalAdjust } from '../store.js';
 import { personalBests, weeklyVolume, GOAL_LABEL, isTimed } from '../training.js';
 import { calorieAdvice, targetForecast } from '../energy.js';
+import { weekStart } from '../report.js';
 import { skillById, currentLevel, levelIndex, skillHistory } from '../skills.js';
 import { mobilitySection } from './mobility.js';
 import { photoSection } from './photos.js';
 import { strengthSection } from './strength.js';
+import {
+  alleVerlaeufe, belastungsverlauf, belastungText, verlaufText, rueckgangText,
+  VERLAUF_MIN,
+} from '../verlauf.js';
 
 const CHART_W = 320;
 const CHART_H = 150;
@@ -269,6 +274,48 @@ export async function render(container, ctx) {
       })));
   }
 
+  /* Verlauf je Übung — Richtung statt Bestwert */
+  const verlaeufe = alleVerlaeufe(sessions).slice(0, 12);
+  if (verlaeufe.length) {
+    body.push(el('h2', { class: 'section-title', text: 'Richtung je Übung' }));
+    body.push(el('div', { class: 'card card-flush' },
+      ...verlaeufe.map(({ verlauf, entwicklung: ent, rueckgang: rueck }) => {
+        const zeichen = rueck.ja && rueck.lage === 'rueckgang' ? 'pill-kcal'
+          : ent.richtung === 'hoch' ? 'pill-ok' : '';
+        const wert = `${verlaufText(ent.art, ent.ende)}`;
+        return el('div', { class: 'calcrow' },
+          el('div', { class: 'grow' },
+            el('div', { text: verlauf.name }),
+            el('div', { class: 'muted small',
+              text: rueck.ja
+                ? (rueck.lage === 'rueckgang'
+                    ? `seit ${rueck.seit} Einheiten unter dem Besten (${verlaufText(rueck.art, rueck.hoch.wert)})`
+                    : `Bestwert ${verlaufText(rueck.art, rueck.hoch.wert)} liegt ${rueck.seit} Einheiten zurück`)
+                : `${ent.einheiten} Einheiten · ${ent.art === 'e1rm' ? 'geschätztes Maximum' : ent.art === 'zeit' ? 'Haltezeit' : 'Wiederholungen'}` })),
+          el('span', { class: `pill ${zeichen} tabular`,
+            text: `${ent.prozent > 0 ? '+' : ''}${oneDecimal(ent.prozent)} %` }),
+          el('div', { class: 'tabular', text: wert }));
+      })));
+
+    const sorgen = verlaeufe.filter((x) => x.rueckgang.ja && x.rueckgang.lage === 'rueckgang');
+    if (sorgen.length) {
+      body.push(el('div', { class: 'card stack mt-16' },
+        el('h3', { class: 'card-title', text: `Zurück bei ${sorgen.length === 1 ? 'einer Übung' : `${sorgen.length} Übungen`}` }),
+        ...sorgen.slice(0, 3).map((x) => el('p', { class: 'small' },
+          el('strong', { text: `${x.verlauf.name}: ` }), rueckgangText(x.rueckgang))),
+        el('p', { class: 'muted small',
+          text: 'Woher der Gedanke kommt: In der geschwindigkeitsbasierten Steuerung gilt ein '
+            + 'wiederholter Leistungsabfall als Ermüdungszeichen — dort gemessen an der '
+            + 'Hantelgeschwindigkeit. Hier wird derselbe Gedanke auf Wiederholungen und '
+            + 'geschätzte Maxima übertragen, weil zu Hause niemand die Geschwindigkeit misst. '
+            + 'Das ist plausibel, aber nicht dasselbe und nicht überprüft. Deshalb: ein Anlass '
+            + 'zum Nachsehen, kein Befund.' })));
+    }
+  } else if (sessions.length) {
+    body.push(el('p', { class: 'hint',
+      text: `Ab ${VERLAUF_MIN} Einheiten mit derselben Übung steht hier, in welche Richtung sie geht.` }));
+  }
+
   /* Volumen */
   const volume = weeklyVolume(sessions, profile.weight);
   if (volume.length >= 2) {
@@ -277,6 +324,22 @@ export async function render(container, ctx) {
       volumeChart(volume),
       el('p', { class: 'hint mt-16',
         text: 'Bewegte Last je Woche, also Gewicht mal Wiederholungen. Körpergewichtsübungen zählen mit dem halben Körpergewicht.' })));
+
+    const belastung = belastungsverlauf(volume, weekStart(localDateKey()));
+    const belastungsSatz = belastungText(belastung);
+    if (belastungsSatz) {
+      body.push(el('div', { class: 'card stack mt-16' },
+        el('h3', { class: 'card-title', text: 'Belastungsverlauf' }),
+        el('p', { class: 'small', text: belastungsSatz }),
+        el('p', { class: 'muted small',
+          text: 'Der Gedanke dahinter stammt von Carl Foster (1998): Wochen mit viel Belastung '
+            + 'und wenig Abwechslung fielen mit mehr Krankheits- und Verletzungstagen zusammen. '
+            + 'Seine Rechnung braucht nach jeder Einheit eine Zahl für die gefühlte Anstrengung — '
+            + 'genau das fragt diese App bewusst nicht ab. Übernommen ist deshalb nur der Kern: '
+            + 'Abwechslung schützt. Gerechnet wird mit der bewegten Last oben, also mit äußerer '
+            + 'Belastung; wie anstrengend die Wochen waren, steht darin nicht, und Fosters '
+            + 'Grenzwerte gelten hier nicht.' })));
+    }
   }
 
   // Reihenfolge: was sich beim Training bewegt, steht oben. Fotos und

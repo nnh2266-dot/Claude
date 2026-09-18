@@ -64,6 +64,33 @@ export default async function laufen() {
           items: [{ name: 'Linsen', grams: 400, kcal: 560, protein: 34, carbs: 80, fat: 8 }], note: '' });
         await s.addWater(d, 1800);
       }
+
+      /* Ein Trainingsbestand mit bekannter Richtung — eine Einheit je Woche,
+         damit jede Woche für sich steht.
+
+         Bankdrücken und Kniebeuge steigen sauber an, Klimmzüge gehen seit der
+         dritten Einheit zurück, und die bewegte Last wächst dadurch Woche für
+         Woche, ohne dass je eine leichtere dazwischen liegt. Damit muss die App
+         alle drei Aussagen treffen — und keine davon verwechseln: Fortschritt
+         beim Drücken, Rückgang beim Ziehen, steigende Gesamtlast. */
+      const bank = [60, 62.5, 65, 67.5, 70, 72.5, 75, 77.5];
+      const beuge = [80, 90, 100, 110, 120, 130, 140, 150];
+      const zug = [14, 15, 16, 13, 12, 11, 10, 9];
+      for (let i = 0; i < 8; i += 1) {
+        // Von hinten nach vorn: i = 0 ist die älteste Einheit.
+        const d = n.shiftDateKey(heute, -(7 - i) * 7);
+        const dreiSaetze = (gewicht) => [
+          { reps: 8, weight: gewicht }, { reps: 8, weight: gewicht }, { reps: 8, weight: gewicht },
+        ];
+        await s.saveSession({
+          date: d, dayName: 'Ganzkörper', done: true,
+          entries: {
+            bench: dreiSaetze(bank[i]),
+            squat: dreiSaetze(beuge[i]),
+            pullup: [{ reps: zug[i] }, { reps: zug[i] - 1 }],
+          },
+        });
+      }
     });
     await seite.goto(`http://localhost:${PORT}/index.html`);
     await seite.waitForTimeout(1300);
@@ -87,6 +114,38 @@ export default async function laufen() {
     p.enthaeltNicht(bericht, 'NaN', 'Im Bericht steht kein NaN');
     p.enthaeltNicht(bericht, 'undefined', 'Im Bericht steht kein undefined');
     p.enthaeltNicht(bericht, 'Infinity', 'Im Bericht steht kein Infinity');
+
+    /* ---------- Schlafregelmäßigkeit ---------- */
+    await seite.evaluate(() => { window.location.hash = '#/sleep'; });
+    await seite.waitForTimeout(900);
+    const schlaf = await seite.evaluate(() => document.getElementById('view-sleep').innerText);
+    p.enthaelt(schlaf, 'Regelmäßigkeit', 'Die Schlafansicht zeigt die Regelmäßigkeit');
+    p.ist(/±\s*\d+\s*min/.test(schlaf), 'Die Schwankung steht als Minutenwert da',
+      schlaf.slice(0, 200));
+    // Zwanzig Nächte mit denselben Zeiten sind nicht „sprunghaft".
+    p.enthaeltNicht(schlaf, 'springt um zwei Stunden',
+      'Gleiche Zeiten Nacht für Nacht gelten nicht als sprunghaft');
+    // Und die Herkunft der Zahl wird nicht verschwiegen.
+    p.enthaelt(schlaf, 'Aktigraphie',
+      'Die Ansicht sagt, dass die Studie anders gemessen hat als die App');
+
+    /* ---------- Richtung, Rückgang, Belastung ---------- */
+    await seite.evaluate(() => { window.location.hash = '#/progress'; });
+    await seite.waitForTimeout(1100);
+    const fortschritt = await seite.evaluate(() => document.getElementById('view-progress').innerText);
+    // Abschnittsüberschriften setzt das Stylesheet in Großbuchstaben, und
+    // innerText gibt sie genau so zurück. Deshalb ohne Rücksicht auf Groß und Klein.
+    const ohneFall = fortschritt.toLowerCase();
+    p.enthaelt(ohneFall, 'richtung je übung', 'Der Fortschritt zeigt die Richtung je Übung');
+    p.ist(/Rückgang|unter dem Besten/.test(fortschritt),
+      'Die zurückgehende Übung wird als solche benannt');
+    p.enthaelt(ohneFall, 'belastungsverlauf',
+      'Acht steigende Wochen bringen den Belastungsverlauf auf den Schirm');
+    p.enthaelt(fortschritt, 'Foster',
+      'Beim Belastungsverlauf steht, woher der Gedanke kommt');
+    p.enthaelt(fortschritt, 'bewusst nicht ab',
+      'Und dass Fosters Formel eine Eingabe bräuchte, die es hier nicht gibt');
+    p.enthaeltNicht(fortschritt, 'NaN', 'Kein NaN in den neuen Abschnitten');
 
     /* ---------- Keine kaputten Zahlen irgendwo ---------- */
     const kaputt = [];

@@ -183,3 +183,121 @@ export function lightStreak(eintraege, bisDatum, shift) {
   }
   return serie;
 }
+
+/* ---------------- Regelmäßigkeit ---------------- */
+
+/** Ab wie vielen vollständigen Nächten eine Aussage über Regelmäßigkeit trägt. */
+export const REGEL_MIN_NAECHTE = 5;
+
+/** Über wie viele Tage zurück gerechnet wird. */
+export const REGEL_FENSTER = 14;
+
+/**
+ * Mittelwert und Streuung von Uhrzeiten.
+ *
+ * Uhrzeiten sind kein Zahlenstrahl, sondern ein Kreis. Wer an einem Tag um
+ * 23:50 ins Bett geht und am nächsten um 00:10, ist zwanzig Minuten
+ * auseinander — als Zahlen gerechnet wären es 23 Stunden und 40 Minuten, und
+ * die App würde aus zwei fast gleichen Nächten die größte Unregelmäßigkeit
+ * machen, die es gibt. Deshalb wird jede Uhrzeit als Winkel genommen
+ * (1440 Minuten = 360 Grad), über die Winkel gemittelt und die Streuung aus
+ * der Länge des Mittelvektors gezogen (Mardia: s = sqrt(−2·ln R)). Das ist
+ * dasselbe Verfahren, mit dem in der Chronobiologie Schlafmitten gemittelt
+ * werden.
+ */
+export function kreisStreuung(minutenListe) {
+  const werte = (minutenListe || []).filter((m) => typeof m === 'number' && Number.isFinite(m));
+  if (!werte.length) return null;
+
+  let c = 0;
+  let s = 0;
+  for (const m of werte) {
+    const w = (2 * Math.PI * m) / 1440;
+    c += Math.cos(w);
+    s += Math.sin(w);
+  }
+  c /= werte.length;
+  s /= werte.length;
+
+  const r = Math.sqrt(c * c + s * s);
+  const mittel = (((Math.atan2(s, c) * 1440) / (2 * Math.PI)) + 1440) % 1440;
+  // R = 0 hieße: völlig gleichmäßig über die Uhr verteilt. Dann ist die Formel
+  // nicht definiert, und sechs Stunden sind der größte sinnvolle Wert.
+  const streuung = r <= 1e-9
+    ? 360
+    : Math.min(360, Math.round((Math.sqrt(-2 * Math.log(Math.min(1, r))) * 1440) / (2 * Math.PI)));
+
+  return { mittel: Math.round(mittel) % 1440, streuung };
+}
+
+/**
+ * Wie stark die Schlafzeiten schwanken — ohne dass dafür etwas Neues
+ * einzutragen wäre.
+ *
+ * Warum das überhaupt eine eigene Zahl bekommt: In der bislang größten
+ * Auswertung dazu (Windred u. a., SLEEP 2024, UK Biobank, 60.977 Menschen mit
+ * sieben Tagen Aktigraphie) sagte die **Regelmäßigkeit** des Schlafs die
+ * Sterblichkeit besser voraus als die Dauer. Über die vier regelmäßigeren
+ * Fünftel lag die Gesamtsterblichkeit 20 bis 48 Prozent niedriger als im
+ * unregelmäßigsten Fünftel, und das blieb bestehen, wenn man die Schlafdauer
+ * herausrechnete.
+ *
+ * Ehrlich dazu: Der Sleep Regularity Index dieser Arbeit wird aus
+ * Aktigraphie-Daten Minute für Minute gerechnet — aus der Wahrscheinlichkeit,
+ * zur selben Uhrzeit an zwei aufeinanderfolgenden Tagen im selben Zustand zu
+ * sein. Das hier ist die Streuung der eingetragenen Zeiten, also ein Abbild
+ * davon und nicht dieselbe Größe. Die Grenzen unten (30 / 60 / 90 Minuten)
+ * stammen ebenfalls nicht aus der Studie, sondern lehnen sich an die
+ * Sozialer-Jetlag-Literatur an, in der eine Stunde Verschiebung als
+ * merklich und zwei Stunden als viel gelten (Wittmann u. a. 2006).
+ */
+export function regelmaessigkeit(eintraege, bisDatum, shift, tage = REGEL_FENSTER) {
+  const grenze = shift(bisDatum, -(tage - 1));
+  const naechte = (eintraege || [])
+    .filter((e) => e && e.date >= grenze && e.date <= bisDatum && isComplete(e));
+
+  if (naechte.length < REGEL_MIN_NAECHTE) {
+    return { naechte: naechte.length, genug: false };
+  }
+
+  const bett = [];
+  const auf = [];
+  const mitte = [];
+  for (const e of naechte) {
+    const b = toMinutes(e.zuBett);
+    const a = toMinutes(e.aufgewacht);
+    const d = duration(e);
+    if (b === null || a === null || d === null) continue;
+    bett.push(b);
+    auf.push(a);
+    mitte.push((b + d / 2) % 1440);
+  }
+
+  const kBett = kreisStreuung(bett);
+  const kAuf = kreisStreuung(auf);
+  const kMitte = kreisStreuung(mitte);
+  if (!kBett || !kAuf || !kMitte) return { naechte: naechte.length, genug: false };
+
+  const s = kMitte.streuung;
+  const stufe = s < 30 ? 'fest' : s < 60 ? 'ordentlich' : s < 90 ? 'wechselhaft' : 'sprunghaft';
+
+  return {
+    naechte: naechte.length,
+    genug: true,
+    bettStreuung: kBett.streuung,
+    aufStreuung: kAuf.streuung,
+    mitteStreuung: s,
+    mittelBett: kBett.mittel,
+    mittelAuf: kAuf.mittel,
+    mittelMitte: kMitte.mittel,
+    stufe,
+  };
+}
+
+/** Ein Satz zur Stufe — was die Zahl bedeutet, nicht nur wie groß sie ist. */
+export function regelText(stufe) {
+  if (stufe === 'fest') return 'Deine Schlafmitte liegt Nacht für Nacht fast auf derselben Uhrzeit.';
+  if (stufe === 'ordentlich') return 'Deine Schlafmitte schwankt eine halbe bis eine Stunde — das ist ein normaler Alltag.';
+  if (stufe === 'wechselhaft') return 'Deine Schlafmitte wandert um mehr als eine Stunde hin und her.';
+  return 'Deine Schlafmitte springt um zwei Stunden und mehr — das wirkt wie ein ständiger kleiner Zeitzonenwechsel.';
+}

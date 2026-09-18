@@ -7,7 +7,7 @@
  * CACHE_VERSION bei jeder Änderung an den App-Dateien erhöhen.
  */
 
-const CACHE_VERSION = 'naehrwerte-v51';   // muss zu APP_VERSION in js/version.js passen
+const CACHE_VERSION = 'naehrwerte-v52';   // muss zu APP_VERSION in js/version.js passen
 
 const APP_SHELL = [
   './',
@@ -28,6 +28,7 @@ const APP_SHELL = [
   './js/report.js',
   './js/strength.js',
   './js/ladders.js',
+  './js/verlauf.js',
   './js/activities.js',
   './js/sleep.js',
   './js/health.js',
