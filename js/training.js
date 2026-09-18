@@ -202,6 +202,35 @@ export function repRange(prescription) {
   return prescription.reps;
 }
 
+/**
+ * Zugrichtung der Rückenübungen.
+ *
+ * „Rücken" war eine Gruppe, und damit waren Klimmzug und Rudern austauschbar.
+ * Sie sind es nicht: Senkrechtes Ziehen trifft vor allem den breiten
+ * Rückenmuskel und den unteren Kapuzenmuskel, waagerechtes die Rautenmuskeln,
+ * den mittleren Kapuzenmuskel und die hintere Schulter. Zwei Übungen derselben
+ * Richtung sind ein Reiz zweimal; eine aus jeder Richtung sind zwei Reize.
+ *
+ * Praktisch fiel das so auf: Wer eine Klimmzugstange hat, bekam sie in einem
+ * Dreitageplan nur in vierzehn von fünfundzwanzig Fällen überhaupt zu sehen —
+ * die Stange stand herum, während der Plan dreimal ruderte.
+ */
+export const ZUG_VERTIKAL = new Set([
+  'pullup', 'latpull', 'blat', 'negpull', 'pronelat', 'chinup',
+]);
+
+export const ZUG_HORIZONTAL = new Set([
+  'bbrow', 'dbrow', 'cabrow', 'tbar', 'brow', 'invrow', 'tablerow', 'towelrow',
+  'towelsit', 'rowmach',
+]);
+
+/** 'v', 'h' oder null — Letzteres für alles, was keine Zugübung ist. */
+export function zugrichtung(id) {
+  if (ZUG_VERTIKAL.has(id)) return 'v';
+  if (ZUG_HORIZONTAL.has(id)) return 'h';
+  return null;
+}
+
 export const GROUP_LABEL = {
   brust: 'Brust', ruecken: 'Rücken', quad: 'Beine vorne', ham: 'Beine hinten',
   glute: 'Gesäß', schulter: 'Schultern', sdelt: 'Seitliche Schulter',
@@ -358,18 +387,18 @@ const SLOTS = {
   // Erstes weg, wenn die Zeit knapp ist, und das ist richtig so. Ohne sie
   // bekam ein Dreitageplan aber gar keinen einzigen Wadensatz — über den
   // Überhang kommen sie jetzt reihum dran.
-  fbA:   ['brust:c','ruecken:c','quad:c','ham:c','sdelt:i','trizeps:i','bizeps:i','core:i','waden:i'],
-  fbB:   ['schulter:c','ruecken:c','ham:c','quad:c','brust:i','bizeps:i','trizeps:i','core:i','waden:i'],
-  fbC:   ['brust:c','ruecken:c','quad:c','glute:c','sdelt:i','rdelt:i','bizeps:i','core:i','waden:i'],
+  fbA:   ['brust:c','ruecken:c:v','quad:c','ham:c','sdelt:i','trizeps:i','bizeps:i','core:i','waden:i'],
+  fbB:   ['schulter:c','ruecken:c:h','ham:c','quad:c','brust:i','bizeps:i','trizeps:i','core:i','waden:i'],
+  fbC:   ['brust:c','ruecken:c:v','quad:c','glute:c','sdelt:i','rdelt:i','bizeps:i','core:i','waden:i'],
   push:  ['brust:c','schulter:c','brust:c','sdelt:i','trizeps:i','trizeps:i','core:i'],
-  pull:  ['ruecken:c','ruecken:c','ruecken:c','rdelt:i','bizeps:i','bizeps:i','core:i'],
+  pull:  ['ruecken:c:v','ruecken:c:h','ruecken:c','rdelt:i','bizeps:i','bizeps:i','core:i'],
   legs:  ['quad:c','ham:c','quad:c','ham:i','glute:c','waden:i','core:i'],
   // Die hintere Schulter stand hier lange nicht drin — und weil der
   // Vier-Tage-Plan aus Oberkörper und Unterkörper besteht, bekam sie damit in
   // der ganzen Woche keinen einzigen Satz. Rudern trifft sie mit, aber wer viel
   // drückt, braucht sie direkt: Die Empfehlung lautet, das Zugvolumen mindestens
   // so hoch zu halten wie das Drückvolumen.
-  upper: ['brust:c','ruecken:c','schulter:c','ruecken:c','rdelt:i','sdelt:i','bizeps:i','trizeps:i'],
+  upper: ['brust:c','ruecken:c:v','schulter:c','ruecken:c:h','rdelt:i','sdelt:i','bizeps:i','trizeps:i'],
   lower: ['quad:c','ham:c','quad:c','ham:i','glute:c','waden:i','core:i'],
 };
 
@@ -653,8 +682,14 @@ export function buildPlan(profile, seed = 0) {
   const vorlagenZaehler = {};
   const erstesVorkommen = {};
   const pick = (spec, usedToday) => {
-    const [group, type] = spec.split(':');
-    let pool = usable.filter((e) => e.group === group && e.type === type);
+    const [group, type, richtung] = spec.split(':');
+    // Erst mit Richtung, dann ohne. Ohne Stange und ohne Latzug bleibt für
+    // senkrechtes Ziehen nur der Latzug in Bauchlage — gibt es auch den nicht,
+    // ist eine Ruderübung besser als eine leere Stelle.
+    let pool = richtung
+      ? usable.filter((e) => e.group === group && e.type === type && zugrichtung(e.id) === richtung)
+      : [];
+    if (!pool.length) pool = usable.filter((e) => e.group === group && e.type === type);
     if (!pool.length) pool = usable.filter((e) => e.group === group);
     if (!pool.length && FALLBACK_GROUP[group]) pool = usable.filter((e) => e.group === FALLBACK_GROUP[group]);
 
@@ -714,7 +749,7 @@ export function buildPlan(profile, seed = 0) {
     // Übungen aus denselben Muskelgruppen auffüllen, dann mit etwas Rumpfarbeit.
     const groups = new Set();
     for (const spec of specs) {
-      const group = spec.split(':')[0];
+      const group = spec.split(':')[0];   // Richtung interessiert beim Auffüllen nicht
       groups.add(group);
       if (FALLBACK_GROUP[group]) groups.add(FALLBACK_GROUP[group]);
     }

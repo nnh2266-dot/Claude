@@ -2,5 +2,5 @@
  * Fassung der App. Muss zur CACHE_VERSION in sw.js passen — daran erkennt man
  * im Zweifel, ob das Gerät noch eine alte Fassung aus dem Offline-Speicher zeigt.
  */
-export const APP_VERSION = '47';
-export const APP_DATE = '17. September 2026';
+export const APP_VERSION = '48';
+export const APP_DATE = '18. September 2026';
