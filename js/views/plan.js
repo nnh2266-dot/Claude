@@ -339,6 +339,53 @@ export async function render(container, ctx) {
             + 'jede Bewegung ab. Er liegt nur unter dem, was an Volumen möglich wäre.' }))
     : null;
 
+  /**
+   * Und wenn eine andere Tagezahl deutlich besser wäre, gehört das gesagt.
+   *
+   * Bisher gab es dafür nur den Extremfall oben: „zwei Tage reichen nicht".
+   * Dazwischen schwieg die App. Wer sechs Tage trainiert und mit fünf bei
+   * gleichem Zeitaufwand zwei Muskelgruppen mehr im Zielbereich hätte, sah
+   * eine Tabelle — aber keinen Hinweis, dass darin etwas Besseres steht.
+   * Tabellen liest man, wenn man eine Frage hat; Hinweise auch, wenn nicht.
+   *
+   * Dieselbe Schwelle wie bei der Zeit: ab zwei Gruppen Unterschied. Und
+   * ohne Knopf — welche Wochentage jemand kann, weiß nur er selbst.
+   */
+  const jetztTage = tage.find((x) => x.tage === profile.days) || null;
+  // Bei Gleichstand gewinnt die Tagezahl, die der jetzigen am nächsten liegt.
+  // Vier und fünf Tage kommen bei diesem Profil auf dasselbe Ergebnis; wer
+  // sechsmal die Woche trainiert, soll dann fünf vorgeschlagen bekommen und
+  // nicht vier. Die kleinere Umstellung ist die, die man auch macht.
+  const besteTage = tage.length
+    ? [...tage].sort((a, b) => a.daneben - b.daneben
+      || Math.abs(a.tage - profile.days) - Math.abs(b.tage - profile.days)
+      || a.stunden - b.stunden)[0]
+    : null;
+  const tageLohnt = Boolean(jetztTage && besteTage && !empfehlung?.reichtNicht
+    && jetztTage.daneben - besteTage.daneben >= 2);
+
+  const tageBesser = tageLohnt
+    ? el('div', { class: 'card stack mt-16' },
+        el('div', { class: 'row-between' },
+          el('h3', { class: 'card-title', text: 'Eine andere Aufteilung passt besser' }),
+          el('span', { class: 'pill pill-kcal tabular',
+            text: `${profile.days} → ${besteTage.tage} Tage` })),
+        el('p', { class: 'small',
+          text: `Mit ${profile.days} Trainingstagen liegen ${jetztTage.gut} von `
+            + `${jetztTage.gruppen} Muskelgruppen im empfohlenen Wochenvolumen. Mit `
+            + `${besteTage.tage} Tagen à ${besteTage.minuten} Minuten wären es ${besteTage.gut} `
+            + `— bei ${besteTage.stunden} statt ${jetztTage.stunden} Stunden die Woche.` }),
+        el('p', { class: 'muted small',
+          text: 'Es liegt an der Aufteilung, nicht an der Menge: Sechs Tage laufen als '
+            + 'Push/Pull/Beine zweimal und treffen Rücken und Arme doppelt, während Schultern, '
+            + 'Gesäß und Rumpf nur an ihren Tagen vorkommen. Fünf Tage mischen Push/Pull/Beine '
+            + 'mit zwei Ganzkörperhälften und verteilen breiter.' }),
+        el('p', { class: 'hint',
+          text: 'Umstellen kannst du das unter „Angaben ändern" — dort wählst du auch, welche '
+            + 'Wochentage. Das weiß die App nicht für dich. Die ganze Tabelle steht weiter unten '
+            + 'unter „Zeit und Tage im Vergleich".' }))
+    : null;
+
   const zeitEmpfehlung = empfehlung && empfehlung.lohnt
     ? el('div', { class: 'card stack mt-16' },
         el('div', { class: 'row-between' },
@@ -660,5 +707,5 @@ export async function render(container, ctx) {
       },
     }, 'Training zurücksetzen'));
 
-  mount(container, head, summary, tageEmpfehlung, zeitEmpfehlung, nachschub, pausenPassung, zeitTabelle, volumenKarte, skillSection, ...days, leiterliste, sperrliste, nutrition, breakdown, reset);
+  mount(container, head, summary, tageEmpfehlung, zeitEmpfehlung, tageBesser, nachschub, pausenPassung, zeitTabelle, volumenKarte, skillSection, ...days, leiterliste, sperrliste, nutrition, breakdown, reset);
 }

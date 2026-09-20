@@ -313,6 +313,23 @@ export default async function laufen() {
   p.ist(tage.find((x) => x.tage === 5).gut > tage.find((x) => x.tage === 2).gut,
     'Tagevergleich: mehr Tage bringen mehr Gruppen ins Ziel');
 
+  // Der Tagevergleich muss auch eine Rangfolge hergeben, nicht nur Zeilen.
+  const sechsTageVergleich = T.tageVergleich(
+    L.profileForPlan({ ...knapp, days: 6, weekdays: [1, 2, 3, 4, 5, 6] }), { rang: L.leiterRang },
+  );
+  const jetztSechs = sechsTageVergleich.find((x) => x.tage === 6);
+  const besteVonAllen = [...sechsTageVergleich].sort((a, b) => a.daneben - b.daneben)[0];
+  p.ist(besteVonAllen.daneben <= jetztSechs.daneben,
+    'Tagevergleich: die beste Zeile ist nie schlechter als die eigene');
+
+  // Und bei Gleichstand gewinnt die Tagezahl, die der jetzigen am nächsten
+  // liegt — die kleinere Umstellung ist die, die man auch macht.
+  const gleichGut = sechsTageVergleich.filter((x) => x.daneben === besteVonAllen.daneben);
+  const naechste = [...gleichGut].sort((a, b) => Math.abs(a.tage - 6) - Math.abs(b.tage - 6))[0];
+  p.ist(gleichGut.length === 1 || naechste.tage >= besteVonAllen.tage,
+    'Tagevergleich: bei Gleichstand liegt die nähere Tagezahl vorn',
+    gleichGut.map((x) => `${x.tage}d`).join(', '));
+
   /* ---------- Fassung ---------- */
   const { readFileSync } = await import('node:fs');
   const sw = readFileSync(new URL('../../sw.js', import.meta.url), 'utf8');
