@@ -21,7 +21,7 @@ export default async function laufen() {
   const p = neuerLauf('Pläne');
 
   const fehler = {
-    gebaut: [], leer: [], doppelt: [], zeit: [], leiter: [], stufe: [],
+    gebaut: [], leer: [], doppelt: [], zeit: [], saetze: [], leiter: [], stufe: [],
     zug: [], hinge: [], stange: [], volumen: [],
   };
   let gezaehlt = 0;
@@ -53,10 +53,25 @@ export default async function laufen() {
                     if (!ids.length) { fehler.leer.push(`${wer} · ${tag.name}`); continue; }
                     if (new Set(ids).size !== ids.length) fehler.doppelt.push(`${wer} · ${tag.name}`);
 
-                    // Zeitbudget: mehr als der Mindestumfang darf nicht überziehen.
+                    // Zeitbudget — und zwar für **jeden** Tag.
+                    //
+                    // Hier stand einmal `ids.length > 4 &&`: Tage am
+                    // Mindestumfang waren ausgenommen, und genau dort lag der
+                    // Fehler. Wer dreißig Minuten angab und fortgeschritten
+                    // war, bekam einen Plan von achtundvierzig bis
+                    // neunundfünfzig Minuten — die Prüfung sah weg, weil der
+                    // Tag nur vier Übungen hatte. Seit die Satzzahl mitkürzt,
+                    // muss jeder Tag hineinpassen.
                     const minuten = T.sessionMinutes(tag.exercises, 'normal');
-                    if (ids.length > 4 && minuten > sessionLength + 1) {
+                    const amBoden = tag.exercises.every((x) => x.sets <= T.SAETZE_MINDESTENS);
+                    if (!amBoden && minuten > sessionLength + 1) {
                       fehler.zeit.push(`${wer} · ${tag.name}: ${minuten} statt ${sessionLength} Min`);
+                    }
+                    // Und nie unter den Mindestreiz kürzen.
+                    for (const x of tag.exercises) {
+                      if (x.sets < T.SAETZE_MINDESTENS) {
+                        fehler.saetze.push(`${wer} · ${tag.name}: ${x.id} mit ${x.sets} Sätzen`);
+                      }
                     }
                     // Eine ganze Leiter an einem Tag ist immer ein Versehen.
                     for (const g of L.sameLadderGroups(ids)) {
@@ -116,7 +131,8 @@ export default async function laufen() {
   p.leer(fehler.gebaut, 'Jede Kombination lässt sich bauen');
   p.leer(fehler.leer, 'Kein Trainingstag ist leer');
   p.leer(fehler.doppelt, 'Keine Übung zweimal am selben Tag');
-  p.leer(fehler.zeit, 'Keine Einheit überzieht ihr Zeitbudget');
+  p.leer(fehler.zeit, 'Keine Einheit überzieht ihr Zeitbudget — auch nicht am Mindestumfang');
+  p.leer(fehler.saetze, `Keine Übung unter ${T.SAETZE_MINDESTENS} Sätzen`);
   p.leer(fehler.leiter, 'Keine ganze Leiter an einem Tag');
   p.leer(fehler.stufe, 'Keine Sprosse unter dem Einstieg der Erfahrungsstufe');
   p.leer(fehler.zug, 'Beide Zugrichtungen in jeder Woche');

@@ -74,6 +74,15 @@ function dayCard(day, week, equipment, tempo, profile, zyklus) {
           + 'Willst du wirklich kürzer, nimm einen Tag mehr in der Woche: Dann verteilt sich '
           + 'dasselbe auf kürzere Einheiten.')
       : null,
+    day.gekuerzt
+      ? el('p', { class: 'note note-inset' },
+          el('strong', { text: 'Für dein Zeitfenster gekürzt. ' }),
+          `${day.gekuerzt} ${day.gekuerzt === 1 ? 'Satz ist' : 'Sätze sind'} rausgefallen, damit `
+          + `die Einheit in deine ${profile.sessionLength} Minuten passt. Die Übungen bleiben alle `
+          + 'stehen — du trainierst also weiter jede Bewegung, nur mit weniger Volumen. Wenn die '
+          + 'Volumenkarte oben zu viele Gruppen als „wenig" meldet, bringt ein Trainingstag mehr '
+          + 'in der Woche mehr als längere Einheiten.')
+      : null,
     day.short
       ? el('p', { class: 'note note-inset' },
           `Kürzer als geplant: mit ${EQUIPMENT_LABEL[equipment]} und deinen Einschränkungen bleiben ` +

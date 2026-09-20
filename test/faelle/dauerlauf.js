@@ -331,15 +331,26 @@ export default async function laufen() {
     'Zeit: sie wächst auch über ein halbes Jahr nicht ins Uferlose',
     `${spanneA.normal} min bei ${PROFIL.sessionLength} min Vorgabe`);
 
-  // Und wenn sie nicht hineinpasst, muss die App es zugeben statt es zu
-  // verschweigen. Bei dreißig Minuten kürzt der Plan bis zum Mindestumfang und
-  // landet trotzdem bei rund achtundvierzig.
+  // Ein knappes Zeitfenster wird eingehalten, indem die Satzzahl sinkt — nicht
+  // indem Bewegungen wegfallen. Vorher kürzte der Plan nur bis zum
+  // Mindestumfang von vier Übungen und landete bei dreißig Minuten Vorgabe
+  // trotzdem bei achtundvierzig.
   const engProfil = { ...PROFIL, sessionLength: 30 };
   const engPlan = T.buildPlan(L.profileForPlan(engProfil), 1, { rang: L.leiterRang });
   const engSpanne = T.sessionSpanne(engPlan.days[0], engProfil, 'normal', 4);
-  p.ist(engSpanne.ueberzieht,
-    'Zeit: ein zu kleines Zeitfenster wird als überzogen gemeldet',
+  p.ist(!engSpanne.ueberzieht,
+    'Zeit: auch dreißig Minuten werden eingehalten, nicht überzogen',
     `${engSpanne.normal} min bei ${engSpanne.budget} min Vorgabe`);
+  p.ist(engPlan.days[0].exercises.length >= 4,
+    'Zeit: dafür fallen keine Bewegungen weg — die Übungen bleiben stehen',
+    `${engPlan.days[0].exercises.length} Übungen`);
+  p.ist(engPlan.days[0].gekuerzt > 0,
+    'Zeit: der Plan sagt, wie viele Sätze das enge Zeitfenster gekostet hat',
+    `${engPlan.days[0].gekuerzt} Sätze`);
+  p.ist(engPlan.days[0].exercises.every((x) => x.sets >= T.SAETZE_MINDESTENS),
+    `Zeit: gekürzt wird nie unter ${T.SAETZE_MINDESTENS} Sätze — darunter ist es kein Reiz mehr`);
+  p.gleich(fleissig.plan.days.every((d) => !d.gekuerzt || d.gekuerzt > 0), true,
+    'Zeit: ein großzügiges Zeitfenster kürzt nichts weg');
   p.ist(!T.sessionSpanne(frisch.days[0], PROFIL, 'normal', 4).ueberzieht,
     'Zeit: ein passendes Zeitfenster meldet nichts — sonst wäre der Hinweis Lärm');
 

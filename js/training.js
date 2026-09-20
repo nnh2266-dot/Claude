@@ -500,6 +500,12 @@ export const FOCUS_LABEL = {
  */
 export const EINSTIEGSSPROSSE = { anfaenger: 0, fortgeschritten: 1, erfahren: 2 };
 
+/**
+ * Weniger als zwei Sätze je Übung sind kein Trainingsreiz mehr.
+ * Der Boden, unter dem das Zeitfenster nicht mehr durch Kürzen zu halten ist.
+ */
+export const SAETZE_MINDESTENS = 2;
+
 const LEVELS = {
   anfaenger:       { compound: 3, isolation: 2, rir: 3 },
   fortgeschritten: { compound: 4, isolation: 3, rir: 2 },
@@ -936,11 +942,50 @@ export function buildPlan(profile, seed = 0, { stufen = null, rang = null, pause
       exercises.pop();
     }
 
+    /**
+     * Und wenn das nicht reicht, sinkt die Satzzahl.
+     *
+     * Hier endete die Rechnung bisher. Unter `fewest` — vier Übungen, drei mit
+     * Technikarbeit — wird nicht gekürzt, weil darunter die Bewegungen fehlen,
+     * die einen Trainingstag ausmachen: beide Zugrichtungen, Hüfte, Knie. Dass
+     * die vier Übungen aber je vier bis fünf Sätze haben, stand nie zur
+     * Debatte. Ergebnis: Wer dreißig Minuten angab und fortgeschritten war,
+     * bekam einen Plan von achtundvierzig bis neunundfünfzig Minuten — das
+     * Doppelte des Gewünschten, ohne ein Wort dazu.
+     *
+     * Sätze zu streichen ist der bessere Verlust. Vier Übungen mit zwei Sätzen
+     * decken dieselben Bewegungen ab wie vier mit fünf; es fehlt Volumen, und
+     * Volumen lässt sich über einen weiteren Trainingstag zurückholen. Fehlende
+     * Bewegungen lassen sich nicht zurückholen.
+     *
+     * Bei zwei Sätzen ist Schluss. Darunter ist es kein Reiz mehr, sondern
+     * Aufwärmen, und dann ist die ehrliche Antwort nicht ein kleinerer Plan,
+     * sondern der Hinweis, dass das Zeitfenster nicht reicht.
+     */
+    let abgezogen = 0;
+    for (let schutz = 0; schutz < 60; schutz += 1) {
+      if (sessionMinutes(exercises, tempo) <= strengthMinutes) break;
+      // Von hinten die Übung mit den meisten Sätzen: Die erste hat einen Satz
+      // mehr und ist die, für die man gekommen ist — sie gibt zuletzt ab.
+      let wo = -1;
+      for (let i = exercises.length - 1; i >= 0; i -= 1) {
+        if (exercises[i].sets <= SAETZE_MINDESTENS) continue;
+        if (wo === -1 || exercises[i].sets > exercises[wo].sets) wo = i;
+      }
+      if (wo === -1) break;
+      exercises[wo] = { ...exercises[wo], sets: exercises[wo].sets - 1 };
+      abgezogen += 1;
+    }
+
     return {
       name,
       template,
       weekday: profile.weekdays[index] ?? null,
       short: exercises.length < perSession,
+      // Wie viele Sätze das Zeitfenster gekostet hat. Die Planansicht sagt es
+      // dazu — eine stillschweigend kleinere Einheit wäre wieder derselbe
+      // Fehler in Grün.
+      gekuerzt: abgezogen,
       exercises,
     };
   });
