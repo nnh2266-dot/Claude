@@ -1500,6 +1500,7 @@ export function empfohleneZeit(profile, { rang = null, pausen = null } = {}) {
     const viel = vol.filter((g) => g.stufe === 'viel').length;
     return {
       minuten,
+      gruppen: vol.length,
       gut: vol.filter((g) => g.stufe === 'gut').length,
       wenig,
       viel,
@@ -1519,12 +1520,29 @@ export function empfohleneZeit(profile, { rang = null, pausen = null } = {}) {
   const beste = [...stufen].sort((a, b) => a.daneben - b.daneben || a.minuten - b.minuten)[0];
   const jetzt = bewerten(profile.sessionLength) || null;
 
+  /**
+   * Der Fall, in dem keine Zeitangabe die richtige Antwort ist.
+   *
+   * Bei zwei Trainingstagen liegt keine einzige Muskelgruppe im empfohlenen
+   * Wochenvolumen — bei keinem Zeitfenster, auch nicht bei achtzig Minuten.
+   * Die Rechnung lieferte trotzdem eine Empfehlung: dreißig Minuten, weil bei
+   * Gleichstand das kürzere gewinnt und alle gleich schlecht waren. „Trainier
+   * zweimal dreißig Minuten" als Antwort auf „was ist optimal" ist aber kein
+   * Rat, sondern eine Zahl ohne Inhalt.
+   *
+   * Erreicht das beste Fenster nicht einmal die Hälfte der Gruppen, ist die
+   * ehrliche Antwort ein Trainingstag mehr — und genau das sagt die Ansicht
+   * dann, statt eine Minutenzahl anzubieten.
+   */
+  const reichtNicht = beste.gut < Math.ceil((beste.gruppen || 10) / 2);
+
   return {
     ...beste,
     jetzt,
+    reichtNicht,
     // Lohnt der Wechsel überhaupt? Eine Gruppe mehr für zwanzig Minuten
     // zusätzlich ist keine Empfehlung wert, sondern eine Zumutung.
-    lohnt: Boolean(jetzt) && jetzt.daneben - beste.daneben >= 2,
+    lohnt: !reichtNicht && Boolean(jetzt) && jetzt.daneben - beste.daneben >= 2,
     stufen,
   };
 }

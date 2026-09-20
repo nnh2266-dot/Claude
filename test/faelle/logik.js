@@ -242,6 +242,43 @@ export default async function laufen() {
   p.ist(!T.empfohleneZeit(passend, { rang: L.leiterRang }).lohnt,
     'Zeitempfehlung: wer schon richtig liegt, wird nicht behelligt');
 
+  // Die Empfehlung folgt dem Profil, auch wenn es sich über Monate ändert:
+  // Wer Leitersprossen erklimmt, landet bei einarmigen und einbeinigen
+  // Varianten, und die dauern doppelt so lang.
+  const gestiegen = L.profileForPlan({ ...knapp, sessionLength: 60,
+    outgrown: ['pushup', 'pseudopu', 'bwsq', 'lunge', 'gbridge', 'bwgm'] });
+  const nachher = T.empfohleneZeit(gestiegen, { rang: L.leiterRang });
+  p.ist(nachher && T.ZEIT_KANDIDATEN.includes(nachher.minuten),
+    'Zeitempfehlung: auch nach Aufstiegen kommt eine gültige Empfehlung heraus',
+    nachher ? `${nachher.minuten} min` : 'keine');
+
+  // Aber sie darf nicht anfangen zu nörgeln. Ein Unterschied von einer Gruppe
+  // ist für diese Rechnung Rauschen — wer deswegen alle paar Wochen um fünf
+  // Minuten hin und her geschickt wird, schaltet die Karte im Kopf ab.
+  p.ist(!nachher.lohnt,
+    'Zeitempfehlung: eine Gruppe Unterschied löst keine neue Empfehlung aus',
+    `beste ${nachher.minuten} min mit ${nachher.gut}, jetzt 60 min mit ${nachher.jetzt.gut}`);
+
+  // Der Fall, in dem keine Zeitangabe die richtige Antwort ist.
+  //
+  // Bei zwei Trainingstagen liegt keine einzige Muskelgruppe im empfohlenen
+  // Volumen — bei keinem Fenster, auch nicht bei achtzig Minuten. Die Rechnung
+  // empfahl trotzdem dreißig Minuten: Alle waren gleich schlecht, und bei
+  // Gleichstand gewinnt das kürzeste. „Trainier zweimal dreißig Minuten" als
+  // Antwort auf „was ist optimal" ist aber eine Zahl ohne Inhalt.
+  const zweiTage = L.profileForPlan({ ...knapp, sessionLength: 45, days: 2, weekdays: [1, 4] });
+  const knappeTage = T.empfohleneZeit(zweiTage, { rang: L.leiterRang });
+  p.ist(knappeTage.reichtNicht,
+    'Zeitempfehlung: bei zwei Trainingstagen hilft keine Minutenzahl',
+    `bestes Fenster erreicht ${knappeTage.gut} von ${knappeTage.gruppen} Gruppen`);
+  p.ist(!knappeTage.lohnt,
+    'Zeitempfehlung: dann wird auch keine Umstellung des Fensters vorgeschlagen');
+
+  // Und bei genug Tagen bleibt es bei einer Zeitangabe.
+  const fuenfTage = L.profileForPlan({ ...knapp, sessionLength: 45, days: 5, weekdays: [1, 2, 3, 4, 5] });
+  p.ist(!T.empfohleneZeit(fuenfTage, { rang: L.leiterRang }).reichtNicht,
+    'Zeitempfehlung: bei fünf Tagen ist die Zeit der richtige Hebel');
+
   /* ---------- Fassung ---------- */
   const { readFileSync } = await import('node:fs');
   const sw = readFileSync(new URL('../../sw.js', import.meta.url), 'utf8');

@@ -313,7 +313,30 @@ export async function render(container, ctx) {
    * „Wie lange soll ich trainieren" ist keine Geschmacksfrage, sobald man
    * sagt, woran man sie misst. Gemessen wird am Wochenvolumen je Muskelgruppe.
    */
-  const empfehlung = empfohleneZeit(profile, { rang: leiterRang, pausen: tempo });
+  // Mit aufgefüllter Sperrliste, wie jeder andere Planbau auch. Ohne sie
+  // bewertet die Empfehlung Pläne mit Sprossen, die längst hinter einem
+  // liegen — und die sind beidseitig und damit schneller, also fiele die
+  // empfohlene Zeit zu kurz aus.
+  const empfehlung = empfohleneZeit(profileForPlan(profile), { rang: leiterRang, pausen: tempo });
+
+  const tageEmpfehlung = empfehlung && empfehlung.reichtNicht
+    ? el('div', { class: 'card stack mt-16' },
+        el('div', { class: 'row-between' },
+          el('h3', { class: 'card-title', text: 'Mehr Tage, nicht längere Einheiten' }),
+          el('span', { class: 'pill pill-kcal tabular', text: `${profile.days}× pro Woche` })),
+        el('p', { class: 'small',
+          text: `Mit ${profile.days} Trainingstagen bleiben die meisten Muskelgruppen unter dem `
+            + 'empfohlenen Wochenvolumen — und zwar bei jedem Zeitfenster. Selbst mit '
+            + `${Math.max(...empfehlung.stufen.map((x) => x.minuten))} Minuten je Einheit wären es nur `
+            + `${Math.max(...empfehlung.stufen.map((x) => x.gut))} von ${empfehlung.gruppen}. `
+            + 'Längere Einheiten lösen das nicht: Eine Muskelgruppe braucht zehn bis zwanzig Sätze '
+            + 'über die Woche verteilt, und was in einer einzelnen Einheit über etwa zehn Sätze '
+            + 'hinausgeht, trägt kaum noch etwas bei.' }),
+        el('p', { class: 'muted small',
+          text: 'Deshalb hier keine Minutenzahl. Der Hebel ist ein Trainingstag mehr — unter '
+            + '„Angaben ändern". Wenn das nicht geht, ist der Plan trotzdem sinnvoll; er deckt '
+            + 'jede Bewegung ab. Er liegt nur unter dem, was an Volumen möglich wäre.' }))
+    : null;
 
   const zeitEmpfehlung = empfehlung && empfehlung.lohnt
     ? el('div', { class: 'card stack mt-16' },
@@ -402,9 +425,16 @@ export async function render(container, ctx) {
             })),
           el('p', { class: 'hint',
             text: 'Die Zahlen gelten für deine Tage, deine Ausrüstung und deine Fähigkeiten. '
-              + 'Änderst du davon etwas, ändert sich die Tabelle mit. Und was hier nicht '
-              + 'drinsteht: wie gut du schläfst und isst — mehr Training ist nur dann mehr, '
-              + 'wenn die Erholung mitkommt.' })))
+              + 'Änderst du davon etwas, ändert sich die Tabelle mit — auch wenn du eine '
+              + 'Leitersprosse höher steigst, denn einarmige und einbeinige Varianten dauern '
+              + 'doppelt so lang.' }),
+          el('p', { class: 'muted small',
+            text: 'Wie genau das ist: auf etwa eine Gruppe. Zwei Fenster, die sich um eine '
+              + 'einzige Gruppe unterscheiden, sind praktisch gleich gut — such dir das aus, '
+              + 'das in deinen Tag passt. Deshalb schlägt die App eine Umstellung auch erst ab '
+              + 'zwei Gruppen Unterschied vor, statt dich alle paar Wochen um fünf Minuten hin '
+              + 'und her zu schicken. Und was hier nicht drinsteht: wie gut du schläfst und '
+              + 'isst — mehr Training ist nur dann mehr, wenn die Erholung mitkommt.' })))
     : null;
 
   const summary = el('div', { class: 'card stack' },
@@ -609,5 +639,5 @@ export async function render(container, ctx) {
       },
     }, 'Training zurücksetzen'));
 
-  mount(container, head, summary, zeitEmpfehlung, nachschub, pausenPassung, zeitTabelle, volumenKarte, skillSection, ...days, leiterliste, sperrliste, nutrition, breakdown, reset);
+  mount(container, head, summary, tageEmpfehlung, zeitEmpfehlung, nachschub, pausenPassung, zeitTabelle, volumenKarte, skillSection, ...days, leiterliste, sperrliste, nutrition, breakdown, reset);
 }
