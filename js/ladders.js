@@ -13,7 +13,7 @@
  * Wie training.js ohne DOM-Zugriff.
  */
 
-import { exerciseById, isAvailable, isUnilateral, setSides } from './training.js';
+import { exerciseById, isAvailable, isUnilateral, setSides, repRange } from './training.js';
 
 export const LADDERS = [
   {
@@ -282,13 +282,29 @@ const MIN_SAETZE = 2;
  * Gezählt wird über die Einheiten, in denen die Übung überhaupt vorkam — eine
  * Woche Pause unterbricht die Serie also nicht.
  *
- * Verlangt wird nicht die heutige Satzzahl, sondern dass alle aufgezeichneten
- * Sätze oben lagen und es mindestens zwei waren. Sonst risse die Serie jedes
- * Mal, wenn die Blockwoche wechselt: die Deload-Woche hat weniger Sätze als
- * die Woche davor, und die alte Einheit sähe rückwirkend unvollständig aus.
+ * Verlangt wird nicht die heutige Satzzahl, sondern dass mindestens zwei Sätze
+ * aufgezeichnet sind. Sonst risse die Serie jedes Mal, wenn die Blockwoche
+ * wechselt: die Deload-Woche hat weniger Sätze als die Woche davor, und die
+ * alte Einheit sähe rückwirkend unvollständig aus.
+ *
+ * Welcher Satz zählt, hängt davon ab, ob es eine Hantel gibt — und das war der
+ * Fehler, den diese Funktion lange hatte.
+ *
+ * Mit Zusatzgewicht gilt die klassische doppelte Progression: **alle** Sätze
+ * müssen oben ankommen, dann steigt das Gewicht. Das ist erreichbar, weil man
+ * das Gewicht so wählen kann, dass es aufgeht.
+ *
+ * Ohne Zusatzgewicht geht das nicht. Die Übung wiegt, was sie wiegt, und über
+ * vier bis fünf gerade Sätze fallen die Wiederholungen unvermeidlich ab.
+ * „Alle Sätze oben" war damit praktisch unerfüllbar: Wer dreißig Liegestütze
+ * konnte, schrieb 28/24/21/19/18 auf und bekam den Vorschlag für die nächste
+ * Stufe trotzdem nie — die Bedingung ging nur auf, wenn man sich künstlich
+ * bremste, also genau dann, wenn es zu leicht war. Deshalb zählt hier der
+ * **beste** Satz: Wenn der über dem Zielbereich liegt, ist die Variante zu
+ * leicht, ganz gleich wie müde die letzten Sätze waren.
  */
 export function topOutStreak(sessions, prescription, bisDatum) {
-  const [, obere] = prescription.reps;
+  const [, obere] = repRange(prescription);
 
   const relevante = [...(sessions || [])]
     .filter((s) => s.date <= bisDatum && (s.entries || {})[prescription.id])
@@ -302,7 +318,11 @@ export function topOutStreak(sessions, prescription, bisDatum) {
     const wert = (satz) => (isUnilateral(prescription.id)
       ? (setSides(satz).schwaechste ?? satz.reps)
       : satz.reps);
-    const obenAn = saetze.length >= MIN_SAETZE && saetze.every((s) => Number(wert(s)) >= obere);
+    const werte = saetze.map((x) => Number(wert(x)) || 0);
+    const massgeblich = prescription.loadless
+      ? Math.max(...werte, 0)
+      : Math.min(...werte, Infinity);
+    const obenAn = saetze.length >= MIN_SAETZE && massgeblich >= obere;
     if (!obenAn) break;
     serie += 1;
   }

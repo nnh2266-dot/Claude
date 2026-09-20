@@ -189,6 +189,25 @@ export const ZEIT_VORGABE = {
 const ZEIT_STANDARD = [20, 45];
 
 /**
+ * Oberer Rand für Übungen ohne Zusatzgewicht.
+ *
+ * Hier stand einmal 20, mit der Begründung „ohne Hantel läuft der Fortschritt
+ * über Wiederholungen, also höhere Zahlen". Der Schluss war falsch. Ohne
+ * Hantel läuft der Fortschritt über die **Leiter** — die nächste Sprosse ist
+ * der schwerere Reiz, nicht die einundzwanzigste Wiederholung. Bei 20 als
+ * Obergrenze kam die Leiter überhaupt nie zum Zug: Wer dreißig Liegestütze
+ * konnte, bekam den Vorschlag für die nächste Stufe nie zu sehen.
+ *
+ * Dazu kommt, dass ausgerechnet die Kombination aus leichter Last und Reserve
+ * die schwächste ist, die es gibt. Bei niedriger Last hängt der Reiz stark
+ * davon ab, wie nah der Satz ans Versagen geht: 20 % des Maximums bis zum
+ * Versagen brachten so viel Muskelwachstum wie 80 % bis zum Versagen, dieselbe
+ * leichte Last ohne Versagen aber deutlich weniger (Lasevicius u. a. 2022).
+ * Zwanzig Wiederholungen mit zwei im Tank ist genau diese schwache Ecke.
+ */
+export const LOADLESS_OBEN = 15;
+
+/**
  * Der Zielbereich einer Vorgabe — Wiederholungen oder Sekunden.
  *
  * Bei Halteübungen bewusst aus der Tabelle und nicht aus dem gespeicherten
@@ -199,6 +218,16 @@ const ZEIT_STANDARD = [20, 45];
 export function repRange(prescription) {
   if (!prescription) return [0, 0];
   if (isTimed(prescription.id)) return ZEIT_VORGABE[prescription.id] || ZEIT_STANDARD;
+  // Genauso für den oberen Rand ohne Zusatzgewicht: Pläne, die vor der
+  // Umstellung gebaut wurden, tragen dort noch die 20 von früher. Sie stehen zu
+  // lassen hieße, weiter bis in den Ausdauerbereich zu schicken, obwohl die
+  // Leiter danebensteht — und zwar so lange, bis jemand den Plan neu baut.
+  // Deshalb wird hier gedeckelt statt gewandert: kein Eingriff in gespeicherte
+  // Daten, und der nächste Trainingstag rechnet schon richtig.
+  if (prescription.loadless && prescription.reps) {
+    const [unten, oben] = prescription.reps;
+    return [Math.min(unten, LOADLESS_OBEN), Math.min(oben, LOADLESS_OBEN)];
+  }
   return prescription.reps;
 }
 
@@ -486,8 +515,9 @@ export const GOAL_LABEL = {
 };
 
 /**
- * Übungen ohne Zusatzgewicht: der Fortschritt läuft über Wiederholungen und
- * schwerere Varianten statt über die Hantel — deshalb höhere Wiederholungszahlen.
+ * Übungen ohne Zusatzgewicht: der Fortschritt läuft über schwerere Varianten
+ * statt über die Hantel. Siehe LOADLESS_OBEN — gerade deshalb bleibt der obere
+ * Rand niedrig, statt hoch zu sein.
  */
 function isLoadless(exercise, profile) {
   return profile.equipment === 'bw' || profile.equipment === 'band' || exercise.env === 'w';
@@ -501,7 +531,7 @@ function prescribe(exercise, profile, isFirst) {
   let reps;
   if (exercise.einheit === 'sek') reps = ZEIT_VORGABE[exercise.id] || ZEIT_STANDARD;
   else if (exercise.group === 'core') reps = [10, 20];
-  else if (loadless) reps = exercise.type === 'c' ? [10, 20] : [12, 20];
+  else if (loadless) reps = exercise.type === 'c' ? [10, LOADLESS_OBEN] : [12, LOADLESS_OBEN];
   else if (exercise.type === 'c') reps = profile.goal === 'aufbau' ? [5, 8] : [6, 10];
   else reps = [10, 15];
 

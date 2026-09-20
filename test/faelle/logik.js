@@ -120,6 +120,57 @@ export default async function laufen() {
   p.ist(S.rateableFor('ham', PROFIL).length > 0,
     'Kraft: für Beine hinten gibt es ohne Geräte eine bewertbare Übung');
 
+  /* ---------- Die Leiter muss auch steigen ---------- */
+  // Der Fehler, den diese Prüfungen festnageln: Der Vorschlag „Zeit für die
+  // nächste Stufe" verlangte, dass **alle** Sätze am oberen Rand liegen — bei
+  // einem oberen Rand von zwanzig. Über vier bis fünf gerade Sätze fallen die
+  // Wiederholungen aber immer ab. Wer dreißig Liegestütze konnte, schrieb
+  // 28/24/21/19/18 auf und bekam den Vorschlag nie zu sehen. Die Bedingung ging
+  // nur auf, wenn man sich künstlich bremste — also genau dann, wenn es zu
+  // leicht war.
+  const bwProfil = { ...PROFIL, equipment: 'bw' };
+  const bwPlan = T.buildPlan(L.profileForPlan(bwProfil), 0, { rang: L.leiterRang });
+  const bwVorgaben = bwPlan.days.flatMap((d) => d.exercises)
+    .filter((x) => x.loadless && !T.isTimed(x.id));
+  p.ist(bwVorgaben.length > 0, 'Leiter: der Körpergewichtsplan hat Vorgaben ohne Gewicht');
+  p.ist(bwVorgaben.every((x) => T.repRange(x)[1] <= T.LOADLESS_OBEN),
+    `Leiter: ohne Gewicht endet der Bereich bei ${T.LOADLESS_OBEN}, nicht im Ausdauerbereich`,
+    bwVorgaben.map((x) => `${x.id} ${T.repRange(x).join('-')}`).join(', ').slice(0, 160));
+
+  // Alte Pläne tragen die 20 von früher. Sie müssen ohne Neubau mitgedeckelt
+  // werden — sonst wirkt die Reparatur erst, wenn jemand den Plan neu würfelt.
+  p.gleich(T.repRange({ id: 'pushup', reps: [10, 20], loadless: true }), [10, T.LOADLESS_OBEN],
+    'Leiter: ein alter Plan mit 10–20 wird beim Lesen gedeckelt');
+  p.gleich(T.repRange({ id: 'bench', reps: [6, 10], loadless: false }), [6, 10],
+    'Leiter: mit Hantel bleibt der Bereich unangetastet');
+
+  const serieAus = (reps, vorgabe) => L.topOutStreak(
+    [0, 1, 2].map((i) => ({
+      date: verschoben('2026-09-01', i),
+      entries: { [vorgabe.id]: reps.map((r) => ({ reps: r, weight: vorgabe.loadless ? 0 : 60 })) },
+    })),
+    vorgabe, '2026-09-30',
+  );
+  const bwVorgabe = { id: 'pushup', sets: 5, reps: [10, 20], rir: 2, loadless: true };
+
+  p.ist(serieAus([28, 24, 21, 19, 18], bwVorgabe) >= L.STREAK_FOR_NEXT,
+    'Leiter: wer dreißig Liegestütze kann, bekommt die nächste Stufe vorgeschlagen');
+  p.ist(serieAus([20, 17, 15, 14, 13], bwVorgabe) >= L.STREAK_FOR_NEXT,
+    'Leiter: auch mit abfallenden Sätzen, solange der beste oben liegt');
+  p.ist(serieAus([13, 12, 11, 10, 10], bwVorgabe) === 0,
+    'Leiter: wer den Bereich noch nicht erreicht, wird nicht hochgeschickt');
+  p.ist(serieAus([16], bwVorgabe) === 0,
+    'Leiter: ein einzelner aufgezeichneter Satz reicht als Nachweis nicht');
+
+  // Mit Hantel bleibt es bei der doppelten Progression: erst wenn alle Sätze
+  // oben sind, steigt das Gewicht. Dort ist das erfüllbar, weil man das Gewicht
+  // passend wählen kann.
+  const hantelVorgabe = { id: 'bench', sets: 4, reps: [6, 10], rir: 2, loadless: false };
+  p.ist(serieAus([10, 9, 8, 8], hantelVorgabe) === 0,
+    'Leiter: mit Hantel zählt weiter der schwächste Satz, nicht der beste');
+  p.ist(serieAus([10, 10, 10, 10], hantelVorgabe) >= L.STREAK_FOR_NEXT,
+    'Leiter: mit Hantel steigt es, wenn wirklich alle Sätze oben sind');
+
   /* ---------- Fassung ---------- */
   const { readFileSync } = await import('node:fs');
   const sw = readFileSync(new URL('../../sw.js', import.meta.url), 'utf8');

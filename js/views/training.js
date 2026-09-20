@@ -1244,7 +1244,7 @@ function leiterZeile(prescription, exercise, sessions, dateKey, profile, aktione
     return el('div', { class: 'leiter leiter-reif' },
       el('p', { class: 'leiter-titel' },
         el('strong', { text: 'Zeit für die nächste Stufe. ' }),
-        `${serie}× hintereinander alle Sätze auf ${prescription.reps[1]} Wiederholungen — `
+        `${serie}× hintereinander über ${repRange(prescription)[1]} Wiederholungen — `
         + 'mehr Wiederholungen bringen jetzt weniger als eine schwerere Variante.'),
       el('button', {
         class: 'btn btn-primary btn-sm btn-block', type: 'button', onClick: aktionen.hoch,
