@@ -362,6 +362,51 @@ export async function render(container, ctx) {
             + 'nächstbeste Hebel. Beides zusammen ist selten nötig.' }))
     : null;
 
+  /**
+   * Die ganze Tabelle, nicht nur das Urteil.
+   *
+   * Die Empfehlungskarte verschwindet, sobald man ihr gefolgt ist — und damit
+   * auch die Begründung. Wer wissen will, ob fünfundvierzig auch reichen oder
+   * ob siebzig noch etwas bringen, stand dann vor einem Knopf, den es nicht
+   * mehr gibt. Diese Klappkarte bleibt immer da und zeigt jedes Fenster mit
+   * seinem Ergebnis, das eigene markiert.
+   */
+  const zeitTabelle = empfehlung
+    ? el('details', { class: 'card klappkarte mt-16' },
+        el('summary', null,
+          el('span', { class: 'grow', text: 'Zeitfenster im Vergleich' }),
+          el('span', { class: 'muted small',
+            text: `${profile.sessionLength} Min · ${empfehlung.jetzt.gut} von 10 im Ziel` })),
+        el('div', { class: 'stack mt-16' },
+          el('p', { class: 'muted small',
+            text: 'Wie viele Muskelgruppen bei diesem Zeitfenster im empfohlenen Wochenvolumen '
+              + `liegen — zehn bis zwanzig harte Sätze je Gruppe, bei deinen ${profile.days} `
+              + 'Trainingstagen. „Darüber" heißt: mehr, als sich noch lohnt.' }),
+          el('div', { class: 'card-flush' },
+            ...empfehlung.stufen.map((x) => {
+              const istJetzt = x.minuten === profile.sessionLength;
+              const istBeste = x.minuten === empfehlung.minuten;
+              return el('div', { class: 'calcrow' },
+                el('div', { class: 'grow' },
+                  el('div', { text: `${x.minuten} Minuten`
+                    + (istJetzt ? ' · deine Einstellung' : '')
+                    + (istBeste && !istJetzt ? ' · beste' : '') }),
+                  el('div', { class: 'muted small',
+                    text: `Einheit rund ${x.dauer} Min`
+                      + (x.wenig ? ` · ${x.wenig} Gruppen darunter` : '')
+                      + (x.viel ? ` · ${x.viel} darüber` : '') })),
+                el('span', {
+                  class: `pill ${x.daneben === empfehlung.daneben ? 'pill-ok' : 'pill-kcal'} tabular`,
+                  text: `${x.gut}/10`,
+                }));
+            })),
+          el('p', { class: 'hint',
+            text: 'Die Zahlen gelten für deine Tage, deine Ausrüstung und deine Fähigkeiten. '
+              + 'Änderst du davon etwas, ändert sich die Tabelle mit. Und was hier nicht '
+              + 'drinsteht: wie gut du schläfst und isst — mehr Training ist nur dann mehr, '
+              + 'wenn die Erholung mitkommt.' })))
+    : null;
+
   const summary = el('div', { class: 'card stack' },
     el('p', { class: 'small' },
       el('strong', { text: zyklus ? `${zyklus}-Wochen-Block. ` : 'Ohne festen Block. ' }),
@@ -564,5 +609,5 @@ export async function render(container, ctx) {
       },
     }, 'Training zurücksetzen'));
 
-  mount(container, head, summary, zeitEmpfehlung, nachschub, pausenPassung, volumenKarte, skillSection, ...days, leiterliste, sperrliste, nutrition, breakdown, reset);
+  mount(container, head, summary, zeitEmpfehlung, nachschub, pausenPassung, zeitTabelle, volumenKarte, skillSection, ...days, leiterliste, sperrliste, nutrition, breakdown, reset);
 }

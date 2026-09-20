@@ -132,6 +132,26 @@ export default async function laufen() {
     p.ist(/auffüllen|kürzen/.test(planText),
       'Und bietet einen Knopf an, statt es nur festzustellen');
 
+    /* ---------- Der Zeitfenster-Vergleich bleibt sichtbar ---------- */
+    // Die Empfehlungskarte verschwindet, sobald man ihr gefolgt ist — und
+    // damit auch die Begründung. Diese Tabelle bleibt und zeigt jedes Fenster
+    // mit seinem Ergebnis, das eigene markiert.
+    const tabelle = await seite.evaluate(() => {
+      const d = [...document.querySelectorAll('#view-plan details')]
+        .find((x) => x.innerText.includes('Zeitfenster im Vergleich'));
+      if (!d) return null;
+      d.open = true;
+      return d.innerText;
+    });
+    p.ist(tabelle, 'Der Plan zeigt den Zeitfenster-Vergleich');
+    p.enthaelt(tabelle || '', 'deine Einstellung',
+      'Die eigene Einstellung ist in der Tabelle markiert');
+    p.ist((tabelle || '').split('Minuten').length - 1 >= 6,
+      'Die Tabelle stellt mehrere Zeitfenster gegenüber',
+      `${(tabelle || '').split('Minuten').length - 1} Zeilen`);
+    p.ist(/\d+\/10/.test(tabelle || ''),
+      'Und nennt je Fenster, wie viele Gruppen im Zielbereich lägen');
+
     p.leer(ausnahmen, 'Keine Ausnahme und kein Konsolenfehler in allen Ansichten');
   } finally {
     await browser.close();
