@@ -138,19 +138,23 @@ export default async function laufen() {
     // mit seinem Ergebnis, das eigene markiert.
     const tabelle = await seite.evaluate(() => {
       const d = [...document.querySelectorAll('#view-plan details')]
-        .find((x) => x.innerText.includes('Zeitfenster im Vergleich'));
+        .find((x) => x.innerText.includes('Zeit und Tage im Vergleich'));
       if (!d) return null;
       d.open = true;
       return d.innerText;
     });
-    p.ist(tabelle, 'Der Plan zeigt den Zeitfenster-Vergleich');
+    p.ist(tabelle, 'Der Plan zeigt den Zeit- und Tagevergleich');
     p.enthaelt(tabelle || '', 'deine Einstellung',
       'Die eigene Einstellung ist in der Tabelle markiert');
     p.ist((tabelle || '').split('Minuten').length - 1 >= 6,
       'Die Tabelle stellt mehrere Zeitfenster gegenüber',
       `${(tabelle || '').split('Minuten').length - 1} Zeilen`);
-    p.ist(/\d+\/10/.test(tabelle || ''),
+    p.ist(/\d+\/\d+/.test(tabelle || ''),
       'Und nennt je Fenster, wie viele Gruppen im Zielbereich lägen');
+    p.enthaelt(tabelle || '', 'Und wie viele Tage?',
+      'Der Vergleich stellt auch die Trainingstage gegenüber');
+    p.ist(/\d+ Tage à \d+ Minuten/.test(tabelle || ''),
+      'Je Tagezahl steht das Zeitfenster dabei, das dort am besten abschneidet');
 
     p.leer(ausnahmen, 'Keine Ausnahme und kein Konsolenfehler in allen Ansichten');
   } finally {

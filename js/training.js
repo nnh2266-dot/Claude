@@ -1496,29 +1496,61 @@ export function empfohleneZeit(profile, { rang = null, pausen = null } = {}) {
     try { plan = buildPlan(pr, 0, { rang, pausen }); } catch { return null; }
     const vol = weeklyPlannedSets(plan, 2);
     const tag = plan.days[0];
-    const wenig = vol.filter((g) => g.stufe === 'wenig').length;
-    const viel = vol.filter((g) => g.stufe === 'viel').length;
     return {
       minuten,
-      gruppen: vol.length,
-      gut: vol.filter((g) => g.stufe === 'gut').length,
-      wenig,
-      viel,
-      // Zu wenig und zu viel sind beides Abweichungen vom Bereich, den die
-      // Datenlage hergibt — und werden deshalb gleich gewichtet. Sonst
-      // empfiehlt die Rechnung achtzig Minuten, um eine Gruppe mehr in den
-      // Bereich zu holen und dafür eine andere darüber hinauszuschieben.
-      daneben: wenig + viel,
+      gruppen: vol.map((g) => g.gruppe),
+      imZiel: vol.filter((g) => g.stufe === 'gut').map((g) => g.gruppe),
+      wenig: vol.filter((g) => g.stufe === 'wenig').length,
+      viel: vol.filter((g) => g.stufe === 'viel').length,
       dauer: tag ? (sessionSpanne(tag, pr, pausen || 'normal', profile.zyklus) || {}).normal : null,
     };
   };
 
-  const stufen = ZEIT_KANDIDATEN.map(bewerten).filter(Boolean);
-  if (!stufen.length) return null;
+  const roh = ZEIT_KANDIDATEN.map(bewerten).filter(Boolean);
+  if (!roh.length) return null;
+
+  /**
+   * Gezählt wird gegen **alle** Muskelgruppen, die überhaupt vorkommen können
+   * — nicht gegen die, die in diesem einen Plan zufällig stehen.
+   *
+   * Hier lag ein Fehler, der die Empfehlung systematisch zu kurz machte. Eine
+   * kurze Einheit lässt Gruppen ganz weg; die tauchten in ihrer Wertung dann
+   * gar nicht auf und zählten auch nicht als „daneben". Eine Gruppe, die
+   * überhaupt nicht trainiert wird, stand damit besser da als eine, die etwas
+   * zu wenig abbekommt. Bei sechs Tagen kam so heraus: vierzig Minuten mit
+   * sechs von zehn Gruppen schlug sechzig Minuten mit sieben von elf, obwohl
+   * bei sechzig eine Gruppe mehr richtig lag.
+   *
+   * Der gemeinsame Nenner ist die Vereinigung aller Gruppen über alle
+   * geprüften Fenster. Fehlt eine, zählt sie als daneben — denn das ist sie.
+   */
+  const alleGruppen = new Set(roh.flatMap((x) => x.gruppen));
+  const stufen = roh.map((x) => ({
+    minuten: x.minuten,
+    dauer: x.dauer,
+    gruppen: alleGruppen.size,
+    gut: x.imZiel.length,
+    wenig: x.wenig + (alleGruppen.size - x.gruppen.length),
+    viel: x.viel,
+    // Zu wenig und zu viel sind beides Abweichungen vom Bereich, den die
+    // Datenlage hergibt, und werden deshalb gleich gewichtet. Sonst empfiehlt
+    // die Rechnung achtzig Minuten, um eine Gruppe mehr in den Bereich zu
+    // holen und dafür eine andere darüber hinauszuschieben.
+    daneben: alleGruppen.size - x.imZiel.length,
+  }));
 
   // Möglichst wenige Gruppen daneben; bei Gleichstand das kürzere Fenster.
   const beste = [...stufen].sort((a, b) => a.daneben - b.daneben || a.minuten - b.minuten)[0];
-  const jetzt = bewerten(profile.sessionLength) || null;
+  const jetztRoh = bewerten(profile.sessionLength);
+  const jetzt = jetztRoh ? {
+    minuten: jetztRoh.minuten,
+    dauer: jetztRoh.dauer,
+    gruppen: alleGruppen.size,
+    gut: jetztRoh.imZiel.length,
+    wenig: jetztRoh.wenig + Math.max(0, alleGruppen.size - jetztRoh.gruppen.length),
+    viel: jetztRoh.viel,
+    daneben: alleGruppen.size - jetztRoh.imZiel.length,
+  } : null;
 
   /**
    * Der Fall, in dem keine Zeitangabe die richtige Antwort ist.
@@ -1545,6 +1577,49 @@ export function empfohleneZeit(profile, { rang = null, pausen = null } = {}) {
     lohnt: !reichtNicht && Boolean(jetzt) && jetzt.daneben - beste.daneben >= 2,
     stufen,
   };
+}
+
+/** Tagezahlen, die der Vergleich durchprobiert. */
+export const TAGE_KANDIDATEN = [2, 3, 4, 5, 6];
+
+/**
+ * Dasselbe für die Zahl der Trainingstage.
+ *
+ * Die Frage „wie lange" ist nur die halbe. Wie das Wochenvolumen zustande
+ * kommt, hängt mindestens genauso an der Aufteilung: Sechs Tage laufen als
+ * Push/Pull/Beine zweimal, und das trifft Rücken und Arme doppelt, während
+ * Schultern, Gesäß und Rumpf nur an ihren Tagen vorkommen. Fünf Tage mischen
+ * Push/Pull/Beine mit zwei Ganzkörperhälften und verteilen dadurch breiter.
+ *
+ * Deshalb steht hier beides nebeneinander. Gerechnet wird je Tagezahl mit dem
+ * Zeitfenster, das dort am besten abschneidet — sonst vergliche man eine gute
+ * Aufteilung bei schlechter Zeit mit einer schlechten bei guter.
+ */
+export function tageVergleich(profile, { rang = null, pausen = null } = {}) {
+  if (!profile) return [];
+
+  return TAGE_KANDIDATEN.map((tage) => {
+    const pr = {
+      ...profile,
+      days: tage,
+      // Gleichmäßig über die Woche verteilt, damit der Vergleich nicht an der
+      // Wochentagswahl hängt.
+      weekdays: [1, 2, 3, 4, 5, 6].slice(0, tage),
+    };
+    const e = empfohleneZeit(pr, { rang, pausen });
+    if (!e) return null;
+    return {
+      tage,
+      minuten: e.minuten,
+      dauer: e.dauer,
+      gut: e.gut,
+      gruppen: e.gruppen,
+      daneben: e.daneben,
+      reichtNicht: e.reichtNicht,
+      // Was es an Zeit kostet, in Stunden je Woche.
+      stunden: Math.round((e.dauer || e.minuten) * tage / 6) / 10,
+    };
+  }).filter(Boolean);
 }
 
 /** Gründe, aus denen eine Einheit ausfallen darf. */

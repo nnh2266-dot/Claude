@@ -10,7 +10,7 @@ import {
   exerciseById, GROUP_LABEL, EQUIPMENT_LABEL, GOAL_LABEL, LEVEL_LABEL,
   blockWeek, forWeek, buildPlan, BLOCK_WEEKS, restSeconds, sessionMinutes, sessionSpanne,
   isTimed, repRange, isUnilateral, ZYKLUS_WAHL, weeklyPlannedSets, VOLUMEN_UNTEN, VOLUMEN_OBEN,
-  empfohleneZeit,
+  empfohleneZeit, tageVergleich,
   EXERCISES, REST_TEMPO,
 } from '../training.js';
 import { ladderFor, rungsInPlan, profileForPlan, leiterRang } from '../ladders.js';
@@ -318,6 +318,7 @@ export async function render(container, ctx) {
   // liegen — und die sind beidseitig und damit schneller, also fiele die
   // empfohlene Zeit zu kurz aus.
   const empfehlung = empfohleneZeit(profileForPlan(profile), { rang: leiterRang, pausen: tempo });
+  const tage = tageVergleich(profileForPlan(profile), { rang: leiterRang, pausen: tempo });
 
   const tageEmpfehlung = empfehlung && empfehlung.reichtNicht
     ? el('div', { class: 'card stack mt-16' },
@@ -397,7 +398,7 @@ export async function render(container, ctx) {
   const zeitTabelle = empfehlung
     ? el('details', { class: 'card klappkarte mt-16' },
         el('summary', null,
-          el('span', { class: 'grow', text: 'Zeitfenster im Vergleich' }),
+          el('span', { class: 'grow', text: 'Zeit und Tage im Vergleich' }),
           el('span', { class: 'muted small',
             text: `${profile.sessionLength} Min · ${empfehlung.jetzt.gut} von 10 im Ziel` })),
         el('div', { class: 'stack mt-16' },
@@ -428,6 +429,26 @@ export async function render(container, ctx) {
               + 'Änderst du davon etwas, ändert sich die Tabelle mit — auch wenn du eine '
               + 'Leitersprosse höher steigst, denn einarmige und einbeinige Varianten dauern '
               + 'doppelt so lang.' }),
+          el('h4', { class: 'card-title mt-16', text: 'Und wie viele Tage?' }),
+          el('p', { class: 'muted small',
+            text: 'Je Tagezahl mit dem Zeitfenster gerechnet, das dort am besten abschneidet — '
+              + 'sonst vergliche man eine gute Aufteilung bei schlechter Zeit mit einer '
+              + 'schlechten bei guter. Die Aufteilung macht viel aus: Sechs Tage laufen als '
+              + 'Push/Pull/Beine zweimal und treffen Rücken und Arme doppelt, während Schultern, '
+              + 'Gesäß und Rumpf nur an ihren Tagen vorkommen.' }),
+          el('div', { class: 'card-flush' },
+            ...tage.map((x) => el('div', { class: 'calcrow' },
+              el('div', { class: 'grow' },
+                el('div', { text: `${x.tage} Tage à ${x.minuten} Minuten`
+                  + (x.tage === profile.days ? ' · deine Einstellung' : '') }),
+                el('div', { class: 'muted small',
+                  text: x.reichtNicht
+                    ? 'zu wenig Tage — kein Zeitfenster reicht'
+                    : `rund ${x.stunden} Stunden die Woche` })),
+              el('span', {
+                class: `pill ${x.daneben === Math.min(...tage.map((y) => y.daneben)) ? 'pill-ok' : 'pill-kcal'} tabular`,
+                text: `${x.gut}/${x.gruppen}`,
+              })))),
           el('p', { class: 'muted small',
             text: 'Wie genau das ist: auf etwa eine Gruppe. Zwei Fenster, die sich um eine '
               + 'einzige Gruppe unterscheiden, sind praktisch gleich gut — such dir das aus, '

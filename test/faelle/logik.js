@@ -279,6 +279,40 @@ export default async function laufen() {
   p.ist(!T.empfohleneZeit(fuenfTage, { rang: L.leiterRang }).reichtNicht,
     'Zeitempfehlung: bei fünf Tagen ist die Zeit der richtige Hebel');
 
+  // Gezählt wird gegen alle Muskelgruppen, die überhaupt vorkommen können —
+  // nicht gegen die, die in diesem einen Plan zufällig stehen.
+  //
+  // Hier lag ein Fehler, der die Empfehlung systematisch zu kurz machte: Eine
+  // kurze Einheit lässt Gruppen ganz weg, die tauchten in ihrer Wertung nicht
+  // auf und zählten auch nicht als „daneben". Eine Gruppe, die gar nicht
+  // trainiert wird, stand damit besser da als eine, die etwas zu wenig
+  // abbekommt. Bei sechs Tagen kam so heraus: vierzig Minuten mit sechs von
+  // zehn Gruppen schlug sechzig mit sieben von elf.
+  const sechsTage = L.profileForPlan({ ...knapp, days: 6, weekdays: [1, 2, 3, 4, 5, 6] });
+  const sechs = T.empfohleneZeit(sechsTage, { rang: L.leiterRang });
+  const nenner = new Set(sechs.stufen.map((x) => x.gruppen));
+  p.gleich(nenner.size, 1,
+    'Zeitempfehlung: alle Fenster werden gegen denselben Nenner gezählt',
+    `Nenner: ${[...nenner].join(', ')}`);
+  p.ist(sechs.stufen.every((x) => x.gut + x.daneben === x.gruppen),
+    'Zeitempfehlung: im Ziel plus daneben ergibt immer alle Gruppen');
+
+  const besteStufe = sechs.stufen.reduce((a, b) => (b.gut > a.gut ? b : a));
+  p.ist(sechs.gut >= besteStufe.gut,
+    'Zeitempfehlung: kein Fenster bringt mehr Gruppen ins Ziel als das empfohlene',
+    `empfohlen ${sechs.minuten} min mit ${sechs.gut}, bestes ${besteStufe.minuten} min mit ${besteStufe.gut}`);
+
+  /* ---------- Trainingstage im Vergleich ---------- */
+  const tage = T.tageVergleich(L.profileForPlan(knapp), { rang: L.leiterRang });
+  p.gleich(tage.length, T.TAGE_KANDIDATEN.length,
+    'Tagevergleich: jede Tagezahl bekommt ein Ergebnis');
+  p.ist(tage.every((x) => x.gruppen === tage[0].gruppen),
+    'Tagevergleich: auch hier derselbe Nenner für alle Zeilen');
+  p.ist(tage.find((x) => x.tage === 2).reichtNicht,
+    'Tagevergleich: zwei Tage reichen bei keinem Zeitfenster');
+  p.ist(tage.find((x) => x.tage === 5).gut > tage.find((x) => x.tage === 2).gut,
+    'Tagevergleich: mehr Tage bringen mehr Gruppen ins Ziel');
+
   /* ---------- Fassung ---------- */
   const { readFileSync } = await import('node:fs');
   const sw = readFileSync(new URL('../../sw.js', import.meta.url), 'utf8');
