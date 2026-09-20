@@ -330,6 +330,49 @@ export default async function laufen() {
     'Tagevergleich: bei Gleichstand liegt die nähere Tagezahl vorn',
     gleichGut.map((x) => `${x.tage}d`).join(', '));
 
+  /* ---------- Aus sechs möglichen Tagen fünf machen ---------- */
+  // „Ich kann sechs Tage" heißt nicht „ich muss sechs Tage". Die Wochentage
+  // aus dem Fragebogen sind Verfügbarkeit; welche davon genutzt werden, kann
+  // die App selbst entscheiden.
+  const laengsteFolge = (liste) => {
+    const w = [...liste].sort((a, b) => a - b);
+    if (w.length < 2) return w.length;
+    let laengste = 1;
+    let laufend = 1;
+    for (let i = 1; i < w.length; i += 1) {
+      laufend = w[i] - w[i - 1] === 1 ? laufend + 1 : 1;
+      laengste = Math.max(laengste, laufend);
+    }
+    // Über den Wochenwechsel hinweg: Samstag und Sonntag hängen zusammen.
+    if (w[0] + 7 - w[w.length - 1] === 1) laengste = Math.max(laengste, laufend + 1);
+    return laengste;
+  };
+
+  const ausSechs = T.verteileTage([1, 2, 3, 4, 5, 6], 5);
+  p.gleich(ausSechs.length, 5, 'Tagewahl: aus sechs möglichen werden fünf');
+  p.ist(ausSechs.every((d) => [1, 2, 3, 4, 5, 6].includes(d)),
+    'Tagewahl: nur Tage, die überhaupt möglich sind');
+  p.ist(laengsteFolge(ausSechs) <= 3,
+    'Tagewahl: nicht vier oder mehr Einheiten am Stück',
+    `gewählt ${ausSechs.join(',')} — längste Folge ${laengsteFolge(ausSechs)}`);
+
+  // Drei aus sechs muss jeden zweiten Tag ergeben — das ist die beste
+  // Verteilung, die es gibt, und sie darf nicht verfehlt werden.
+  p.gleich(laengsteFolge(T.verteileTage([1, 2, 3, 4, 5, 6], 3)), 1,
+    'Tagewahl: drei aus sechs liegen jeden zweiten Tag');
+
+  // Wer nicht mehr Tage hat als er braucht, behält alle.
+  p.gleich(T.verteileTage([1, 3, 5], 3), [1, 3, 5],
+    'Tagewahl: wer genau so viele Tage hat, behält sie');
+  p.gleich(T.verteileTage([1, 3, 5], 5), [1, 3, 5],
+    'Tagewahl: mehr verlangen als möglich gibt, was da ist');
+
+  // Auch bei ungleichmäßiger Verfügbarkeit muss etwas Sinnvolles herauskommen.
+  const krumm = T.verteileTage([1, 2, 4, 6], 2);
+  p.gleich(krumm.length, 2, 'Tagewahl: auch aus verstreuten Tagen wird ausgewählt');
+  p.ist(laengsteFolge(krumm) === 1,
+    'Tagewahl: und dann nicht zwei Tage nebeneinander', krumm.join(','));
+
   /* ---------- Fassung ---------- */
   const { readFileSync } = await import('node:fs');
   const sw = readFileSync(new URL('../../sw.js', import.meta.url), 'utf8');

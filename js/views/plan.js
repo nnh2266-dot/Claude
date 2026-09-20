@@ -10,7 +10,7 @@ import {
   exerciseById, GROUP_LABEL, EQUIPMENT_LABEL, GOAL_LABEL, LEVEL_LABEL,
   blockWeek, forWeek, buildPlan, BLOCK_WEEKS, restSeconds, sessionMinutes, sessionSpanne,
   isTimed, repRange, isUnilateral, ZYKLUS_WAHL, weeklyPlannedSets, VOLUMEN_UNTEN, VOLUMEN_OBEN,
-  empfohleneZeit, tageVergleich,
+  empfohleneZeit, tageVergleich, verteileTage,
   EXERCISES, REST_TEMPO,
 } from '../training.js';
 import { ladderFor, rungsInPlan, profileForPlan, leiterRang } from '../ladders.js';
@@ -364,6 +364,11 @@ export async function render(container, ctx) {
   const tageLohnt = Boolean(jetztTage && besteTage && !empfehlung?.reichtNicht
     && jetztTage.daneben - besteTage.daneben >= 2);
 
+  // „Ich kann sechs Tage" heißt nicht „ich muss sechs Tage". Die Wochentage
+  // aus dem Fragebogen sind Verfügbarkeit — daraus die passenden auszuwählen
+  // kann die App selbst, ohne noch einmal zu fragen.
+  const neueTage = besteTage ? verteileTage(profile.weekdays, besteTage.tage) : [];
+
   const tageBesser = tageLohnt
     ? el('div', { class: 'card stack mt-16' },
         el('div', { class: 'row-between' },
@@ -380,10 +385,46 @@ export async function render(container, ctx) {
             + 'Push/Pull/Beine zweimal und treffen Rücken und Arme doppelt, während Schultern, '
             + 'Gesäß und Rumpf nur an ihren Tagen vorkommen. Fünf Tage mischen Push/Pull/Beine '
             + 'mit zwei Ganzkörperhälften und verteilen breiter.' }),
+        el('p', { class: 'small' },
+          el('strong', { text: 'Deine Tage bleiben deine Tage. ' }),
+          `Aus ${profile.weekdays.map((d) => WEEKDAY_SHORT[d]).join(', ')} würden `
+          + `${neueTage.map((d) => WEEKDAY_SHORT[d]).join(', ')} — `
+          + `${profile.weekdays.filter((d) => !neueTage.includes(d)).map((d) => WEEKDAY_SHORT[d]).join(' und ')} `
+          + 'fällt weg. Ausgewählt ist so, dass die Einheiten möglichst gleichmäßig liegen und '
+          + 'nicht zu viele am Stück.'),
+        offeneSaetze
+          ? el('p', { class: 'note' },
+              el('strong', { text: 'Du trainierst gerade. ' }),
+              `${offeneSaetze} Sätze stehen heute schon — mach die Einheit lieber zu Ende.`)
+          : null,
+        el('button', {
+          class: 'btn btn-block', type: 'button',
+          onClick: async () => {
+            if (!confirmAction(`Auf ${besteTage.tage} Trainingstage à ${besteTage.minuten} Minuten `
+              + `umstellen?\n\nTage: ${neueTage.map((d) => WEEKDAY_SHORT[d]).join(', ')}\n\n`
+              + 'Deine Leitersprossen bleiben stehen, eingetragene Sätze auch.')) return;
+            const neuesProfil = {
+              ...profile,
+              days: besteTage.tage,
+              weekdays: neueTage,
+              sessionLength: besteTage.minuten,
+            };
+            const next = buildPlan(profileForPlan(neuesProfil), plan.seed || 0,
+              { stufen: rungsInPlan(plan), rang: leiterRang, pausen: tempo });
+            next.createdAt = plan.createdAt;
+            next.zyklus = plan.zyklus;
+            await setTrainingProfile(neuesProfil);
+            await setPlan(next);
+            await ctx.refreshTraining();
+            ctx.reload();
+            toast(`${besteTage.tage} Tage à ${besteTage.minuten} Minuten — Plan neu gebaut.`);
+          },
+        }, `Auf ${besteTage.tage} Tage à ${besteTage.minuten} Minuten umstellen`),
         el('p', { class: 'hint',
-          text: 'Umstellen kannst du das unter „Angaben ändern" — dort wählst du auch, welche '
-            + 'Wochentage. Das weiß die App nicht für dich. Die ganze Tabelle steht weiter unten '
-            + 'unter „Zeit und Tage im Vergleich".' }))
+          text: 'Der freie Tag ist keine ausgefallene Einheit, sondern eine geplante Pause — die '
+            + 'App zählt ihn auch nicht als Ausfall. Andere Wochentage wählst du unter '
+            + '„Angaben ändern". Die ganze Tabelle steht weiter unten unter „Zeit und Tage im '
+            + 'Vergleich".' }))
     : null;
 
   const zeitEmpfehlung = empfehlung && empfehlung.lohnt

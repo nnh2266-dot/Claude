@@ -1579,6 +1579,76 @@ export function empfohleneZeit(profile, { rang = null, pausen = null } = {}) {
   };
 }
 
+/**
+ * Aus den möglichen Wochentagen die besten auswählen.
+ *
+ * „Ich kann sechs Tage" heißt nicht „ich muss sechs Tage". Wer sechs Tage frei
+ * hat, kann davon fünf nutzen — und der freie Tag ist dann keine verlorene
+ * Einheit, sondern eine gewählte Pause. Das war der fehlende Gedanke: Die
+ * Angabe im Fragebogen ist Verfügbarkeit, der Plan macht daraus einen
+ * Rhythmus.
+ *
+ * Ausgewählt wird nach Verteilung. Zwischen zwei Einheiten soll möglichst viel
+ * Platz liegen, und die Abstände sollen sich ähneln — vier Tage am Stück und
+ * dann drei frei ist schlechter als jeder zweite Tag, auch wenn beides
+ * viermal Training ist. Gerechnet wird über die Woche im Kreis: Von Samstag
+ * auf Montag sind es zwei Tage, nicht minus fünf.
+ *
+ * Bei höchstens sieben möglichen Tagen sind das wenige Kombinationen, die
+ * alle durchgerechnet werden — kein Näherungsverfahren nötig.
+ */
+export function verteileTage(verfuegbar, anzahl) {
+  const tage = [...new Set(verfuegbar || [])].sort((a, b) => a - b);
+  if (anzahl >= tage.length) return tage;
+  if (anzahl <= 0) return [];
+
+  const abstaende = (wahl) => {
+    const s = [...wahl].sort((a, b) => a - b);
+    return s.map((t, i) => {
+      const naechster = s[(i + 1) % s.length];
+      return i === s.length - 1 ? naechster + 7 - t : naechster - t;
+    });
+  };
+
+  let beste = null;
+  const gewaehlt = [];
+  const gehen = (ab) => {
+    if (gewaehlt.length === anzahl) {
+      const ab2 = abstaende(gewaehlt);
+      const kleinster = Math.min(...ab2);
+      const mittel = 7 / anzahl;
+      const streuung = ab2.reduce((sum, x) => sum + (x - mittel) ** 2, 0);
+
+      // Die längste Folge von Tagen ohne Pause dazwischen. Der Mindestabstand
+      // allein reicht als Maßstab nicht: Wer sechs mögliche Tage hat und fünf
+      // nutzt, kommt nie über einen Tag Abstand hinaus, und dann sehen „Mo Di
+      // Mi Do Sa" und „Mo Di Do Fr Sa" gleich aus — obwohl das eine vier
+      // Einheiten am Stück sind und das andere zwei plus drei.
+      let laengste = 0;
+      let laufend = 0;
+      for (let i = 0; i < ab2.length; i += 1) {
+        laufend = ab2[i] === 1 ? laufend + 1 : 0;
+        laengste = Math.max(laengste, laufend + 1);
+      }
+
+      const besser = !beste
+        || kleinster > beste.kleinster
+        || (kleinster === beste.kleinster && laengste < beste.laengste)
+        || (kleinster === beste.kleinster && laengste === beste.laengste && streuung < beste.streuung);
+      if (besser) beste = { wahl: [...gewaehlt], kleinster, laengste, streuung };
+      return;
+    }
+    for (let i = ab; i < tage.length; i += 1) {
+      gewaehlt.push(tage[i]);
+      gehen(i + 1);
+      gewaehlt.pop();
+    }
+  };
+  gehen(0);
+
+  return beste ? beste.wahl : tage.slice(0, anzahl);
+}
+
 /** Tagezahlen, die der Vergleich durchprobiert. */
 export const TAGE_KANDIDATEN = [2, 3, 4, 5, 6];
 
