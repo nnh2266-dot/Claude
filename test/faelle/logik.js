@@ -330,6 +330,31 @@ export default async function laufen() {
     'Tagevergleich: bei Gleichstand liegt die nähere Tagezahl vorn',
     gleichGut.map((x) => `${x.tage}d`).join(', '));
 
+  // Vorgeschlagen wird nur, was nicht mehr Zeit kostet.
+  //
+  // Der Denkfehler: Die Karte suchte das beste Ergebnis über alle Tagezahlen
+  // und empfahl es, auch wenn es deutlich mehr Wochenstunden verlangte. Aus
+  // „sechsmal fünfundvierzig Minuten" wurde „fünfmal siebzig" — anderthalb
+  // Stunden mehr in der Woche, für zwei Muskelgruppen. Wer sein Zeitbudget
+  // festgelegt hat, will wissen, ob er es gut einsetzt, und nicht gefragt
+  // werden, ob er nicht mehr geben möchte.
+  const sechsTagePr = L.profileForPlan({ ...knapp, days: 6, weekdays: [1, 2, 3, 4, 5, 6] });
+  const tabelle = T.tageVergleich(sechsTagePr, { rang: L.leiterRang });
+  const meine = tabelle.find((x) => x.tage === 6);
+  const budget = meine.stunden * 1.05;
+  const drin = tabelle.filter((x) => x.stunden <= budget);
+
+  p.ist(drin.length > 0, 'Zeitbudget: die eigene Aufteilung liegt im eigenen Budget');
+  p.ist(drin.every((x) => x.stunden <= meine.stunden * 1.05),
+    'Zeitbudget: kein Vorschlag kostet mehr Wochenstunden als bisher',
+    drin.map((x) => `${x.tage}d ${x.stunden}h`).join(', '));
+
+  // Und wenn etwas Längeres besser wäre, darf es trotzdem nicht als Vorschlag
+  // durchgehen — nur als Angabe in der Tabelle.
+  const teurerBesser = tabelle.filter((x) => x.stunden > budget && x.daneben < meine.daneben);
+  p.ist(teurerBesser.every((x) => !drin.includes(x)),
+    'Zeitbudget: was mehr Zeit kostet, steht in der Tabelle und ist kein Vorschlag');
+
   /* ---------- Aus sechs möglichen Tagen fünf machen ---------- */
   // „Ich kann sechs Tage" heißt nicht „ich muss sechs Tage". Die Wochentage
   // aus dem Fragebogen sind Verfügbarkeit; welche davon genutzt werden, kann

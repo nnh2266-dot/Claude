@@ -352,16 +352,36 @@ export async function render(container, ctx) {
    * ohne Knopf — welche Wochentage jemand kann, weiß nur er selbst.
    */
   const jetztTage = tage.find((x) => x.tage === profile.days) || null;
+  /**
+   * Vorgeschlagen wird nur, was nicht mehr Zeit kostet.
+   *
+   * Hier lag ein Denkfehler. Die Karte suchte das beste Ergebnis über alle
+   * Tagezahlen und empfahl es — auch wenn es deutlich mehr Wochenstunden
+   * verlangte. Aus „sechsmal fünfundvierzig Minuten" wurde so „fünfmal
+   * siebzig", also anderthalb Stunden mehr in der Woche, und das für zwei
+   * Muskelgruppen. Wer sein Zeitbudget schon festgelegt hat, will nicht
+   * gefragt werden, ob er nicht mehr geben möchte — er will wissen, ob er
+   * das, was er gibt, gut einsetzt.
+   *
+   * Gesucht wird deshalb unter den Aufteilungen, die höchstens so viel Zeit
+   * kosten wie die jetzige. Was mehr kostet und mehr bringt, steht weiter
+   * unten in der Tabelle; dort kann man es sich ansehen, wenn man mag. Ein
+   * Vorschlag ist es nicht.
+   */
+  const zeitBudget = jetztTage ? jetztTage.stunden * 1.05 : Infinity;
+  const imBudget = tage.filter((x) => x.stunden <= zeitBudget);
+
   // Bei Gleichstand gewinnt die Tagezahl, die der jetzigen am nächsten liegt.
-  // Vier und fünf Tage kommen bei diesem Profil auf dasselbe Ergebnis; wer
-  // sechsmal die Woche trainiert, soll dann fünf vorgeschlagen bekommen und
-  // nicht vier. Die kleinere Umstellung ist die, die man auch macht.
-  const besteTage = tage.length
-    ? [...tage].sort((a, b) => a.daneben - b.daneben
+  // Vier und fünf Tage kommen oft auf dasselbe Ergebnis; wer sechsmal die
+  // Woche trainiert, soll dann fünf vorgeschlagen bekommen und nicht vier.
+  // Die kleinere Umstellung ist die, die man auch macht.
+  const besteTage = imBudget.length
+    ? [...imBudget].sort((a, b) => a.daneben - b.daneben
       || Math.abs(a.tage - profile.days) - Math.abs(b.tage - profile.days)
       || a.stunden - b.stunden)[0]
     : null;
   const tageLohnt = Boolean(jetztTage && besteTage && !empfehlung?.reichtNicht
+    && besteTage.tage !== profile.days
     && jetztTage.daneben - besteTage.daneben >= 2);
 
   // „Ich kann sechs Tage" heißt nicht „ich muss sechs Tage". Die Wochentage
@@ -379,7 +399,8 @@ export async function render(container, ctx) {
           text: `Mit ${profile.days} Trainingstagen liegen ${jetztTage.gut} von `
             + `${jetztTage.gruppen} Muskelgruppen im empfohlenen Wochenvolumen. Mit `
             + `${besteTage.tage} Tagen à ${besteTage.minuten} Minuten wären es ${besteTage.gut} `
-            + `— bei ${besteTage.stunden} statt ${jetztTage.stunden} Stunden die Woche.` }),
+            + `— bei ${besteTage.stunden} statt ${jetztTage.stunden} Stunden die Woche, also `
+            + `${besteTage.stunden < jetztTage.stunden ? 'weniger' : 'nicht mehr'} als jetzt.` }),
         el('p', { class: 'muted small',
           text: 'Es liegt an der Aufteilung, nicht an der Menge: Sechs Tage laufen als '
             + 'Push/Pull/Beine zweimal und treffen Rücken und Arme doppelt, während Schultern, '
@@ -537,6 +558,23 @@ export async function render(container, ctx) {
                 class: `pill ${x.daneben === Math.min(...tage.map((y) => y.daneben)) ? 'pill-ok' : 'pill-kcal'} tabular`,
                 text: `${x.gut}/${x.gruppen}`,
               })))),
+          (() => {
+            const mehrZeit = jetztTage
+              ? [...tage].filter((x) => x.stunden > jetztTage.stunden * 1.05)
+                .sort((a, b) => a.daneben - b.daneben)[0]
+              : null;
+            return mehrZeit && jetztTage && jetztTage.daneben - mehrZeit.daneben >= 2
+              ? el('p', { class: 'small' },
+                  el('strong', { text: 'Mehr Zeit brächte mehr: ' }),
+                  `${mehrZeit.tage} Tage à ${mehrZeit.minuten} Minuten kämen auf `
+                  + `${mehrZeit.gut} von ${mehrZeit.gruppen} Gruppen — kosten aber `
+                  + `${mehrZeit.stunden} statt ${jetztTage.stunden} Stunden die Woche. `
+                  + 'Das steht hier, weil es die Wahrheit ist, und nicht als Vorschlag: Ob dir '
+                  + 'zwei Gruppen anderthalb Stunden wert sind, weiß nur du. Wer die Zeit nicht '
+                  + 'hat, verliert damit nichts Wesentliches — Regelmäßigkeit schlägt die '
+                  + 'letzten zwei Gruppen.')
+              : null;
+          })(),
           el('p', { class: 'muted small',
             text: 'Wie genau das ist: auf etwa eine Gruppe. Zwei Fenster, die sich um eine '
               + 'einzige Gruppe unterscheiden, sind praktisch gleich gut — such dir das aus, '
