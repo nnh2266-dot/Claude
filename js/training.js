@@ -507,6 +507,12 @@ export const EINSTIEGSSPROSSE = { anfaenger: 0, fortgeschritten: 1, erfahren: 2 
 export const SAETZE_MINDESTENS = 2;
 
 /**
+ * Bis hierher werden Sätze gesenkt, bevor eine Übung weichen muss. Drei Sätze
+ * sind ein brauchbarer Reiz; darunter ist eine Übung weniger der bessere Handel.
+ */
+export const SAETZE_BEQUEM = 3;
+
+/**
  * Wie viele Minuten dem Kraftteil mindestens bleiben, auch wenn die
  * Technikarbeit das Zeitfenster fast ausfüllt. Drei Übungen zu zwei Sätzen
  * sind ungefähr das.
@@ -953,10 +959,50 @@ export function buildPlan(profile, seed = 0, { stufen = null, rang = null, pause
     // Übungen, als in sein Zeitfenster passen, und war entsprechend früher
     // fertig. Jetzt wird das Tempo übergeben.
     const tempo = pausen || profile.pausen || 'normal';
+
+    /**
+     * Sätze senken, bis es passt — höchstens bis zum übergebenen Boden.
+     * Von hinten die Übung mit den meisten Sätzen: Die erste hat einen Satz
+     * mehr und ist die, für die man gekommen ist, sie gibt zuletzt ab.
+     */
+    let abgezogen = 0;
+    const saetzeSenken = (boden) => {
+      for (let schutz = 0; schutz < 60; schutz += 1) {
+        if (sessionMinutes(exercises, tempo) <= strengthMinutes) return;
+        let wo = -1;
+        for (let i = exercises.length - 1; i >= 0; i -= 1) {
+          if (exercises[i].sets <= boden) continue;
+          if (wo === -1 || exercises[i].sets > exercises[wo].sets) wo = i;
+        }
+        if (wo === -1) return;
+        exercises[wo] = { ...exercises[wo], sets: exercises[wo].sets - 1 };
+        abgezogen += 1;
+      }
+    };
+
+    /**
+     * Die Reihenfolge, in der eine zu lange Einheit kürzer wird.
+     *
+     * Erst die Sätze bis drei, dann Übungen, dann die Sätze bis zwei.
+     *
+     * Vorher fielen zuerst die Übungen weg, und das kostete mehr, als es
+     * einbrachte: Bei fünfundvierzig Minuten mit zwei Fähigkeiten blieben drei
+     * Übungen übrig, und vier von zehn Muskelgruppen lagen im empfohlenen
+     * Wochenvolumen. Mit einer Übung mehr und dafür weniger Sätzen sind es
+     * acht. Eine Gruppe, die gar nicht vorkommt, holt kein zusätzlicher Satz
+     * bei einer anderen wieder herein — Breite schlägt Tiefe, solange jede
+     * Übung noch drei Sätze behält.
+     *
+     * Unter drei Sätzen kehrt sich das um: Dann ist der Reiz je Übung so
+     * dünn, dass eine Übung weniger der ehrlichere Handel ist. Deshalb erst
+     * danach der Weg auf zwei.
+     */
+    saetzeSenken(SAETZE_BEQUEM);
     while (exercises.length > fewest
         && sessionMinutes(exercises, tempo) > strengthMinutes) {
       exercises.pop();
     }
+    saetzeSenken(SAETZE_MINDESTENS);
 
     /**
      * Und wenn das nicht reicht, sinkt die Satzzahl.
@@ -978,21 +1024,6 @@ export function buildPlan(profile, seed = 0, { stufen = null, rang = null, pause
      * Aufwärmen, und dann ist die ehrliche Antwort nicht ein kleinerer Plan,
      * sondern der Hinweis, dass das Zeitfenster nicht reicht.
      */
-    let abgezogen = 0;
-    for (let schutz = 0; schutz < 60; schutz += 1) {
-      if (sessionMinutes(exercises, tempo) <= strengthMinutes) break;
-      // Von hinten die Übung mit den meisten Sätzen: Die erste hat einen Satz
-      // mehr und ist die, für die man gekommen ist — sie gibt zuletzt ab.
-      let wo = -1;
-      for (let i = exercises.length - 1; i >= 0; i -= 1) {
-        if (exercises[i].sets <= SAETZE_MINDESTENS) continue;
-        if (wo === -1 || exercises[i].sets > exercises[wo].sets) wo = i;
-      }
-      if (wo === -1) break;
-      exercises[wo] = { ...exercises[wo], sets: exercises[wo].sets - 1 };
-      abgezogen += 1;
-    }
-
     return {
       name,
       template,
@@ -1430,6 +1461,71 @@ export function sessionSpanne(day, profile, tempo = 'normal', zyklus = 4) {
      * vertretbar, aber es muss dastehen.
      */
     ueberzieht: budget > 0 && normal > budget,
+  };
+}
+
+/** Zeitfenster, die die Empfehlung durchprobiert. */
+export const ZEIT_KANDIDATEN = [30, 40, 45, 50, 55, 60, 70, 80];
+
+/**
+ * Welches Zeitfenster zu den eigenen Zielen passt.
+ *
+ * Die Frage „wie lange soll ich trainieren" hat eine Antwort, die man
+ * ausrechnen kann, sobald man sagt, woran man sie misst. Gemessen wird hier
+ * am Wochenvolumen je Muskelgruppe: Die Übersichtsarbeiten legen den nutzbaren
+ * Bereich auf etwa zehn bis zwanzig harte Sätze je Gruppe und Woche. Darunter
+ * verschenkt man etwas, darüber wird der Zugewinn je Satz so klein, dass er
+ * die Erholung selten wert ist.
+ *
+ * Gesucht ist deshalb das Fenster, in dem möglichst viele Gruppen in diesem
+ * Bereich liegen und keine darüber. Bei Gleichstand gewinnt das kürzere — Zeit
+ * ist der Preis, und ein Fenster, das nichts mehr hinzufügt, ist keine
+ * Empfehlung, sondern eine Zumutung.
+ *
+ * Was die Rechnung **nicht** weiß: wie gut jemand schläft, isst und sich
+ * erholt. Fünf Stunden Training in der Woche sind nur dann besser als drei,
+ * wenn der Rest mitspielt. Die Zahl ist eine Obergrenze des Sinnvollen, kein
+ * Soll.
+ */
+export function empfohleneZeit(profile, { rang = null, pausen = null } = {}) {
+  if (!profile) return null;
+
+  const bewerten = (minuten) => {
+    const pr = { ...profile, sessionLength: minuten };
+    let plan;
+    try { plan = buildPlan(pr, 0, { rang, pausen }); } catch { return null; }
+    const vol = weeklyPlannedSets(plan, 2);
+    const tag = plan.days[0];
+    const wenig = vol.filter((g) => g.stufe === 'wenig').length;
+    const viel = vol.filter((g) => g.stufe === 'viel').length;
+    return {
+      minuten,
+      gut: vol.filter((g) => g.stufe === 'gut').length,
+      wenig,
+      viel,
+      // Zu wenig und zu viel sind beides Abweichungen vom Bereich, den die
+      // Datenlage hergibt — und werden deshalb gleich gewichtet. Sonst
+      // empfiehlt die Rechnung achtzig Minuten, um eine Gruppe mehr in den
+      // Bereich zu holen und dafür eine andere darüber hinauszuschieben.
+      daneben: wenig + viel,
+      dauer: tag ? (sessionSpanne(tag, pr, pausen || 'normal', profile.zyklus) || {}).normal : null,
+    };
+  };
+
+  const stufen = ZEIT_KANDIDATEN.map(bewerten).filter(Boolean);
+  if (!stufen.length) return null;
+
+  // Möglichst wenige Gruppen daneben; bei Gleichstand das kürzere Fenster.
+  const beste = [...stufen].sort((a, b) => a.daneben - b.daneben || a.minuten - b.minuten)[0];
+  const jetzt = bewerten(profile.sessionLength) || null;
+
+  return {
+    ...beste,
+    jetzt,
+    // Lohnt der Wechsel überhaupt? Eine Gruppe mehr für zwanzig Minuten
+    // zusätzlich ist keine Empfehlung wert, sondern eine Zumutung.
+    lohnt: Boolean(jetzt) && jetzt.daneben - beste.daneben >= 2,
+    stufen,
   };
 }
 

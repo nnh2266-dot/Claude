@@ -10,6 +10,7 @@ import {
   exerciseById, GROUP_LABEL, EQUIPMENT_LABEL, GOAL_LABEL, LEVEL_LABEL,
   blockWeek, forWeek, buildPlan, BLOCK_WEEKS, restSeconds, sessionMinutes, sessionSpanne,
   isTimed, repRange, isUnilateral, ZYKLUS_WAHL, weeklyPlannedSets, VOLUMEN_UNTEN, VOLUMEN_OBEN,
+  empfohleneZeit,
   EXERCISES, REST_TEMPO,
 } from '../training.js';
 import { ladderFor, rungsInPlan, profileForPlan, leiterRang } from '../ladders.js';
@@ -253,6 +254,8 @@ export async function render(container, ctx) {
             + 'gespeichert — die liegen in der Einheit, nicht im Plan.' }))
     : null;
 
+  const spanneVon = (tag) => (tag ? sessionSpanne(tag, profile, tempo, plan.zyklus) : null);
+
   /**
    * Passt der Plan zu den Pausen, die du machst?
    *
@@ -264,25 +267,32 @@ export async function render(container, ctx) {
    */
   const passend = buildPlan(profileForPlan(profile), plan.seed || 0,
     { stufen: rungsInPlan(plan), rang: leiterRang, pausen: tempo });
-  const jetztUebungen = plan.days.reduce((n, d) => n + d.exercises.length, 0);
-  const moeglichUebungen = passend.days.reduce((n, d) => n + d.exercises.length, 0);
-  const differenz = moeglichUebungen - jetztUebungen;
+
+  // Verglichen wird die Dauer, nicht die Zahl der Übungen. Seit ein knappes
+  // Zeitfenster auch über die Satzzahl eingehalten wird, können zwei Pläne
+  // gleich viele Übungen haben und trotzdem zehn Minuten auseinanderliegen —
+  // die Übungszahl allein hätte den Unterschied verschwiegen.
+  const jetztSaetze = plan.days.reduce((n, d) => n + d.exercises.reduce((m, x) => m + x.sets, 0), 0);
+  const moeglichSaetze = passend.days.reduce((n, d) => n + d.exercises.reduce((m, x) => m + x.sets, 0), 0);
+  const differenz = moeglichSaetze - jetztSaetze;
+  const jetztDauer = spanneVon(plan.days[0]);
+  const luecke = profile.sessionLength - (jetztDauer ? jetztDauer.normal : profile.sessionLength);
 
   const pausenPassung = differenz !== 0
     ? el('div', { class: 'card stack mt-16' },
         el('div', { class: 'row-between' },
           el('h3', { class: 'card-title', text: 'Passt nicht zu deinen Pausen' }),
           el('span', { class: 'pill pill-kcal tabular',
-            text: `${differenz > 0 ? '+' : ''}${differenz} Übungen` })),
+            text: `${differenz > 0 ? '+' : ''}${differenz} Sätze` })),
         el('p', { class: 'small',
           text: differenz > 0
-            ? `Du pausierst ${REST_TEMPO[tempo].label.toLowerCase()} — damit passen `
-              + `${differenz} ${differenz === 1 ? 'Übung' : 'Übungen'} mehr in deine `
-              + `${profile.sessionLength} Minuten, als jetzt im Plan stehen. Gebaut wurde er mit `
-              + 'längeren Pausen, und deshalb bist du früher fertig, als du wolltest.'
+            ? `Du pausierst ${REST_TEMPO[tempo].label.toLowerCase()} — damit passen in der Woche `
+              + `${differenz} Sätze mehr in deine ${profile.sessionLength} Minuten, als jetzt im `
+              + 'Plan stehen. Gebaut wurde er mit längeren Pausen, und deshalb bist du früher '
+              + `fertig, als du wolltest${luecke >= 3 ? ` — rund ${Math.round(luecke)} Minuten je Einheit bleiben ungenutzt` : ''}.`
             : `Du pausierst ${REST_TEMPO[tempo].label.toLowerCase()} — damit dauert dein Plan `
               + `länger als die ${profile.sessionLength} Minuten, die du angegeben hast. `
-              + `${-differenz} ${-differenz === 1 ? 'Übung' : 'Übungen'} weniger würden passen.` }),
+              + `${-differenz} Sätze weniger in der Woche würden passen.` }),
         offeneSaetze
           ? el('p', { class: 'note' },
               el('strong', { text: 'Du trainierst gerade. ' }),
@@ -295,6 +305,61 @@ export async function render(container, ctx) {
           text: 'Deine Leitersprossen bleiben stehen, eingetragene Sätze sowieso — die liegen '
             + 'in der Einheit, nicht im Plan. Wenn du lieber die Pausen änderst statt des Plans: '
             + 'Das Tempo steht beim Training unter „Pausen".' }))
+    : null;
+
+  /**
+   * Was das Zeitfenster hergibt — und was ein anderes hergäbe.
+   *
+   * „Wie lange soll ich trainieren" ist keine Geschmacksfrage, sobald man
+   * sagt, woran man sie misst. Gemessen wird am Wochenvolumen je Muskelgruppe.
+   */
+  const empfehlung = empfohleneZeit(profile, { rang: leiterRang, pausen: tempo });
+
+  const zeitEmpfehlung = empfehlung && empfehlung.lohnt
+    ? el('div', { class: 'card stack mt-16' },
+        el('div', { class: 'row-between' },
+          el('h3', { class: 'card-title', text: 'Dein Zeitfenster ist knapp' }),
+          el('span', { class: 'pill pill-kcal tabular',
+            text: `${profile.sessionLength} → ${empfehlung.minuten} Min` })),
+        el('p', { class: 'small',
+          text: `Mit ${profile.sessionLength} Minuten je Einheit liegen `
+            + `${empfehlung.jetzt.gut} von 10 Muskelgruppen im empfohlenen Wochenvolumen. `
+            + `Mit ${empfehlung.minuten} Minuten wären es ${empfehlung.gut} — bei gleich vielen `
+            + `Trainingstagen, also ${Math.round(empfehlung.minuten * profile.days / 6) / 10} statt `
+            + `${Math.round(profile.sessionLength * profile.days / 6) / 10} Stunden die Woche.` }),
+        el('p', { class: 'muted small',
+          text: 'Der Bereich stammt aus den Übersichtsarbeiten: etwa zehn bis zwanzig harte Sätze '
+            + 'je Muskelgruppe und Woche. Darunter verschenkst du etwas, darüber wird der Zugewinn '
+            + 'je Satz so klein, dass er die Erholung selten wert ist. Deshalb endet die Empfehlung '
+            + `bei ${empfehlung.minuten} und geht nicht weiter hoch — mehr Zeit brächte hier nichts mehr. `
+            + 'Was die Rechnung nicht weiß: wie gut du schläfst und isst. Mehr Training ist nur '
+            + 'dann mehr, wenn die Erholung mitkommt.' }),
+        offeneSaetze
+          ? el('p', { class: 'note' },
+              el('strong', { text: 'Du trainierst gerade. ' }),
+              `${offeneSaetze} Sätze stehen heute schon — mach die Einheit lieber zu Ende.`)
+          : null,
+        el('button', {
+          class: 'btn btn-primary btn-block', type: 'button',
+          onClick: async () => {
+            if (!confirmAction(`Zeitfenster auf ${empfehlung.minuten} Minuten je Einheit umstellen `
+              + 'und den Plan neu bauen?\n\nDeine Leitersprossen bleiben stehen, eingetragene Sätze '
+              + 'auch. Aussortierte Übungen bleiben aussortiert.')) return;
+            const neuesProfil = { ...profile, sessionLength: empfehlung.minuten };
+            const next = buildPlan(profileForPlan(neuesProfil), plan.seed || 0,
+              { stufen: rungsInPlan(plan), rang: leiterRang, pausen: tempo });
+            next.createdAt = plan.createdAt;
+            next.zyklus = plan.zyklus;
+            await setTrainingProfile(neuesProfil);
+            await setPlan(next);
+            await ctx.refreshTraining();
+            ctx.reload();
+            toast(`Zeitfenster auf ${empfehlung.minuten} Minuten — Plan neu gebaut.`);
+          },
+        }, `Auf ${empfehlung.minuten} Minuten umstellen`),
+        el('p', { class: 'hint',
+          text: 'Willst du lieber bei deiner Zeit bleiben: Dann ist ein Trainingstag mehr der '
+            + 'nächstbeste Hebel. Beides zusammen ist selten nötig.' }))
     : null;
 
   const summary = el('div', { class: 'card stack' },
@@ -499,5 +564,5 @@ export async function render(container, ctx) {
       },
     }, 'Training zurücksetzen'));
 
-  mount(container, head, summary, nachschub, pausenPassung, volumenKarte, skillSection, ...days, leiterliste, sperrliste, nutrition, breakdown, reset);
+  mount(container, head, summary, zeitEmpfehlung, nachschub, pausenPassung, volumenKarte, skillSection, ...days, leiterliste, sperrliste, nutrition, breakdown, reset);
 }

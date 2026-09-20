@@ -211,6 +211,37 @@ export default async function laufen() {
   p.gleich(anzahlBei(60, null), anzahlBei(60, 'normal'),
     'Pausen: ohne Angabe wird wie bisher mit normalen Pausen gerechnet');
 
+  /* ---------- Die empfohlene Trainingszeit ---------- */
+  const knapp = { ...PROFIL, equipment: 'bw', sessionLength: 30, days: 5,
+    weekdays: [1, 2, 3, 4, 5], skills: ['handstand', 'pullup'] };
+  const empf = T.empfohleneZeit(knapp, { rang: L.leiterRang });
+
+  p.ist(empf && empf.minuten > knapp.sessionLength,
+    'Zeitempfehlung: dreißig Minuten bei fünf Tagen sind zu knapp',
+    empf ? `empfohlen ${empf.minuten} min` : 'keine Empfehlung');
+  p.ist(empf.gut > empf.jetzt.gut,
+    'Zeitempfehlung: das empfohlene Fenster bringt mehr Gruppen in den Zielbereich',
+    `${empf.jetzt.gut} → ${empf.gut} von 10`);
+  p.ist(empf.daneben < empf.jetzt.daneben,
+    'Zeitempfehlung: und weniger Gruppen daneben');
+
+  // Die Empfehlung darf nicht einfach das längste Fenster nehmen. Wer nur auf
+  // „Gruppen im Zielbereich" schaut, landet bei achtzig Minuten und schiebt
+  // dafür eine Gruppe über den Bereich hinaus.
+  p.ist(empf.minuten < Math.max(...T.ZEIT_KANDIDATEN),
+    'Zeitempfehlung: nicht einfach das längste Fenster',
+    `empfohlen ${empf.minuten} von bis zu ${Math.max(...T.ZEIT_KANDIDATEN)} min`);
+
+  // Bei Gleichstand gewinnt das kürzere Fenster — Zeit ist der Preis.
+  const gleichstand = empf.stufen.filter((x) => x.daneben === empf.daneben);
+  p.gleich(empf.minuten, Math.min(...gleichstand.map((x) => x.minuten)),
+    'Zeitempfehlung: bei gleichem Ergebnis das kürzere Fenster');
+
+  // Wer schon gut liegt, bekommt keine Empfehlung — sonst ist sie Lärm.
+  const passend = { ...knapp, sessionLength: empf.minuten };
+  p.ist(!T.empfohleneZeit(passend, { rang: L.leiterRang }).lohnt,
+    'Zeitempfehlung: wer schon richtig liegt, wird nicht behelligt');
+
   /* ---------- Fassung ---------- */
   const { readFileSync } = await import('node:fs');
   const sw = readFileSync(new URL('../../sw.js', import.meta.url), 'utf8');

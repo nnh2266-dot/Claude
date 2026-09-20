@@ -126,8 +126,9 @@ export default async function laufen() {
     const planText = await seite.evaluate(() => document.getElementById('view-plan').innerText);
     p.enthaelt(planText, 'Passt nicht zu deinen Pausen',
       'Der Plan meldet, dass er nicht zu den eingestellten Pausen passt');
-    p.ist(/Übungen? mehr in deine \d+ Minuten/.test(planText),
-      'Er sagt auch, wie viel Zeit brachliegt', planText.slice(0, 200));
+    p.ist(/Sätze mehr in deine \d+ Minuten/.test(planText),
+      'Er sagt auch, wie viel dadurch brachliegt',
+      (planText.match(/Du pausierst[^.]*\./) || ['nicht gefunden'])[0]);
     p.ist(/auffüllen|kürzen/.test(planText),
       'Und bietet einen Knopf an, statt es nur festzustellen');
 
