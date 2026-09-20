@@ -47,6 +47,7 @@ function dayCard(day, week, equipment, tempo, profile, zyklus) {
 
   const totalSets = day.exercises.reduce((sum, p) => sum + forWeek(p, week).sets, 0);
   const spanne = sessionSpanne(day, profile, tempo, zyklus);
+  const technikMinuten = (profile.skills || []).length * MINUTES_PER_SKILL;
 
   return el('div', { class: 'card card-flush mt-16' },
     el('div', { class: 'dayhead' },
@@ -55,11 +56,19 @@ function dayCard(day, week, equipment, tempo, profile, zyklus) {
       // Die Dauer für **diese** Woche, nicht die Grundzahl. Daneben steht die
       // Satzzahl, und die war schon immer für die Woche gerechnet — zwei
       // Zahlen in einer Zeile, von denen eine aus einer anderen Woche kam.
+      // Die Dauer der ganzen Einheit, Technikarbeit eingeschlossen. Sie läuft
+      // an jedem Trainingstag, stand aber nie in dieser Zahl — wer Handstand
+      // und Klimmzug übt, las „23 Min" für eine Einheit von fünfunddreißig.
       el('span', { class: 'muted small tabular',
         text: `${totalSets} Sätze · rund ${sessionMinutes(
           day.exercises.map((x) => ({ ...x, sets: forWeek(x, week).sets })), tempo,
-        )} Min` })),
+        ) + technikMinuten} Min` })),
     ...rows,
+    technikMinuten
+      ? el('p', { class: 'hint',
+          text: `Davon ${spanne.kraft} Minuten Kraft und ${technikMinuten} Minuten Technik — `
+            + 'die Fähigkeiten laufen an jedem Trainingstag und sind hier mitgerechnet.' })
+      : null,
     spanne && spanne.laengste > spanne.kuerzeste
       ? el('p', { class: 'hint',
           text: `Über den Block: ${spanne.kuerzeste} Minuten in der Entlastungswoche, `
@@ -384,7 +393,19 @@ export async function render(container, ctx) {
           }).filter(Boolean)),
         el('p', { class: 'note mt-16',
           text: `Zusammen rund ${skillIds.length * MINUTES_PER_SKILL} Minuten je Einheit. `
-            + 'Diese Zeit ist vom Krafttraining abgezogen, damit die Einheit so lang bleibt wie angesagt.' }))
+            + 'Diese Zeit ist vom Krafttraining abgezogen, damit die Einheit so lang bleibt wie angesagt.' }),
+        // Was das konkret kostet. Bei dreißig Minuten und drei Fähigkeiten
+        // bleiben zwölf Minuten Kraft — das ist eine Entscheidung, keine
+        // Nebensache, und sie gehört in Zahlen statt in einen Halbsatz.
+        el('p', { class: 'small' },
+          el('strong', { text: `Von deinen ${profile.sessionLength} Minuten je Einheit ` }),
+          `gehen ${skillIds.length * MINUTES_PER_SKILL} in die Technik. Für Kraft bleiben `
+          + `${Math.max(0, profile.sessionLength - skillIds.length * MINUTES_PER_SKILL)}.`
+          + (profile.sessionLength - skillIds.length * MINUTES_PER_SKILL < 20
+            ? ' Das ist wenig. Wenn die Kraft wichtiger ist als die Technik, nimm eine '
+              + 'Fähigkeit heraus oder verlängere das Zeitfenster — Technikarbeit ist '
+              + 'Übung, kein Ersatz für Sätze.'
+            : '')))
     : null;
 
   const nutrition = el('div', null,

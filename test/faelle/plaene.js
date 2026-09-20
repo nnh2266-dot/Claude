@@ -21,7 +21,7 @@ export default async function laufen() {
   const p = neuerLauf('Pläne');
 
   const fehler = {
-    gebaut: [], leer: [], doppelt: [], zeit: [], saetze: [], leiter: [], stufe: [],
+    gebaut: [], leer: [], doppelt: [], zeit: [], saetze: [], kraft: [], leiter: [], stufe: [],
     zug: [], hinge: [], stange: [], volumen: [],
   };
   let gezaehlt = 0;
@@ -62,10 +62,20 @@ export default async function laufen() {
                     // neunundfünfzig Minuten — die Prüfung sah weg, weil der
                     // Tag nur vier Übungen hatte. Seit die Satzzahl mitkürzt,
                     // muss jeder Tag hineinpassen.
-                    const minuten = T.sessionMinutes(tag.exercises, 'normal');
+                    // Die Technikarbeit läuft an jedem Trainingstag und zählt
+                    // mit. Sie fehlte hier — und damit prüfte diese Zeile die
+                    // Dauer des Kraftteils, während die Einheit in Wirklichkeit
+                    // bis zu achtzehn Minuten länger war.
+                    const technik = skills.length * 6;
+                    const minuten = T.sessionMinutes(tag.exercises, 'normal') + technik;
                     const amBoden = tag.exercises.every((x) => x.sets <= T.SAETZE_MINDESTENS);
                     if (!amBoden && minuten > sessionLength + 1) {
-                      fehler.zeit.push(`${wer} · ${tag.name}: ${minuten} statt ${sessionLength} Min`);
+                      fehler.zeit.push(`${wer}/${skills.length}sk · ${tag.name}: ${minuten} statt ${sessionLength} Min`);
+                    }
+                    // Und dem Kraftteil muss etwas übrig bleiben: Technik ist
+                    // Übung, kein Ersatz für Sätze.
+                    if (tag.exercises.length < 3) {
+                      fehler.kraft.push(`${wer}/${skills.length}sk · ${tag.name}: nur ${tag.exercises.length} Übungen`);
                     }
                     // Und nie unter den Mindestreiz kürzen.
                     for (const x of tag.exercises) {
@@ -133,6 +143,7 @@ export default async function laufen() {
   p.leer(fehler.doppelt, 'Keine Übung zweimal am selben Tag');
   p.leer(fehler.zeit, 'Keine Einheit überzieht ihr Zeitbudget — auch nicht am Mindestumfang');
   p.leer(fehler.saetze, `Keine Übung unter ${T.SAETZE_MINDESTENS} Sätzen`);
+  p.leer(fehler.kraft, 'Die Technikarbeit frisst den Kraftteil nicht auf');
   p.leer(fehler.leiter, 'Keine ganze Leiter an einem Tag');
   p.leer(fehler.stufe, 'Keine Sprosse unter dem Einstieg der Erfahrungsstufe');
   p.leer(fehler.zug, 'Beide Zugrichtungen in jeder Woche');

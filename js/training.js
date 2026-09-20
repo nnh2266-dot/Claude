@@ -506,6 +506,13 @@ export const EINSTIEGSSPROSSE = { anfaenger: 0, fortgeschritten: 1, erfahren: 2 
  */
 export const SAETZE_MINDESTENS = 2;
 
+/**
+ * Wie viele Minuten dem Kraftteil mindestens bleiben, auch wenn die
+ * Technikarbeit das Zeitfenster fast ausfüllt. Drei Übungen zu zwei Sätzen
+ * sind ungefähr das.
+ */
+export const KRAFT_MINDESTENS = 12;
+
 const LEVELS = {
   anfaenger:       { compound: 3, isolation: 2, rir: 3 },
   fortgeschritten: { compound: 4, isolation: 3, rir: 2 },
@@ -753,7 +760,16 @@ export function buildPlan(profile, seed = 0, { stufen = null, rang = null, pause
   // Pausen und ließ eine Einheit ohne Gewichte kürzer ausfallen, als sie sein
   // dürfte. Genau eine Position der Vorlage fiel dadurch immer weg.
   const skillMinutes = (profile.skills || []).length * MINUTES_PER_SKILL;
-  const strengthMinutes = Math.max(20, profile.sessionLength - skillMinutes);
+  // Der Boden lag bei zwanzig Minuten. Damit schob die Technikarbeit die
+  // Einheit über das Zeitfenster hinaus, ohne dass jemand etwas davon sah:
+  // Bei dreißig Minuten Vorgabe und drei Fähigkeiten blieben zwanzig Minuten
+  // Kraft plus achtzehn Minuten Technik — achtunddreißig statt dreißig.
+  //
+  // Jetzt liegt er bei zwölf. Darunter lohnt sich der Kraftteil nicht mehr:
+  // drei Übungen zu zwei Sätzen sind ungefähr das. Reicht auch das nicht,
+  // sagt die Planansicht, dass die Technik das Fenster auffrisst — kürzen
+  // lässt sich das nicht mehr, entscheiden muss man es.
+  const strengthMinutes = Math.max(KRAFT_MINDESTENS, profile.sessionLength - skillMinutes);
   const ohneGewicht = profile.equipment === 'bw' || profile.equipment === 'band';
   const minutenProUebung = ohneGewicht ? 5.5 : 8;
   // Ohne Technik bleibt es bei mindestens vier Übungen. Mit Technik darf es eine
@@ -1370,24 +1386,34 @@ export function sessionSpanne(day, profile, tempo = 'normal', zyklus = 4) {
   const uebungen = day?.exercises || [];
   if (!uebungen.length) return null;
 
+  // Technikarbeit läuft an jedem Trainingstag und gehört deshalb in die Dauer.
+  // Sie fehlte hier, und damit stand im Plan die Dauer des Kraftteils, während
+  // daneben die Fähigkeiten aufgezählt waren, die noch dazukommen. Wer
+  // Handstand und Klimmzug übt, las „23 Minuten" für eine Einheit von
+  // fünfunddreißig.
+  const technik = (profile?.skills || []).length * MINUTES_PER_SKILL;
+
   // Ohne festen Rhythmus läuft dauerhaft die Aufbauwoche — dann gibt es keine
   // Spanne, sondern eine Dauer.
   const wochen = Number(zyklus) === 0 ? [2] : [1, 2, 3, 4];
   const dauern = wochen.map((w) => sessionMinutes(
     uebungen.map((x) => ({ ...x, sets: forWeek(x, w).sets })), tempo,
-  ));
+  ) + technik);
 
   const budget = Number(profile?.sessionLength) || 0;
   // Die Aufbauwoche ist der Normalfall und damit die Zahl, an der das
   // Zeitfenster zu messen ist.
-  const normal = sessionMinutes(
+  const kraft = sessionMinutes(
     uebungen.map((x) => ({ ...x, sets: forWeek(x, 2).sets })), tempo,
   );
+  const normal = kraft + technik;
 
   return {
     kuerzeste: Math.min(...dauern),
     laengste: Math.max(...dauern),
     normal,
+    kraft,
+    technik,
     budget,
     /**
      * Gemessen wird die **normale** Woche, nicht die längste.
