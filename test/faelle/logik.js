@@ -171,6 +171,46 @@ export default async function laufen() {
   p.ist(serieAus([10, 10, 10, 10], hantelVorgabe) >= L.STREAK_FOR_NEXT,
     'Leiter: mit Hantel steigt es, wenn wirklich alle Sätze oben sind');
 
+  /* ---------- Das Pausentempo muss beim Planbau ankommen ---------- */
+  // Der Fehler: Das Tempo wird über setSetting gespeichert und unter
+  // ctx.settings.pausen gelesen — buildPlan suchte es aber in profile.pausen,
+  // und dieses Feld gibt es im Trainingsprofil nicht. Der Plan rechnete also
+  // immer mit neunzig Sekunden Pause. Wer kurze Pausen macht, bekam dadurch
+  // weniger Übungen, als in sein Zeitfenster passen, und war früher fertig.
+  const tempoProfil = (minuten) => ({ ...PROFIL, equipment: 'bw', sessionLength: minuten });
+  const anzahlBei = (minuten, tempo) => {
+    const pr = tempoProfil(minuten);
+    const plan = T.buildPlan(L.profileForPlan(pr), 1, { rang: L.leiterRang, pausen: tempo });
+    return plan.days[0].exercises.length;
+  };
+
+  p.ist(anzahlBei(60, 'kurz') > anzahlBei(60, 'lang'),
+    'Pausen: kurze Pausen lassen mehr Übungen in dieselbe Zeit',
+    `kurz ${anzahlBei(60, 'kurz')}, normal ${anzahlBei(60, 'normal')}, lang ${anzahlBei(60, 'lang')}`);
+
+  // Und das Ergebnis muss mit genau dem Tempo gemessen wieder hineinpassen.
+  const passtNicht = [];
+  for (const minuten of [45, 60, 75, 90]) {
+    for (const tempo of ['kurz', 'normal', 'lang']) {
+      const pr = tempoProfil(minuten);
+      const plan = T.buildPlan(L.profileForPlan(pr), 1, { rang: L.leiterRang, pausen: tempo });
+      for (const tag of plan.days) {
+        // Tage am Mindestumfang dürfen überziehen — das sagt die App dann auch.
+        if (tag.exercises.length <= 4) continue;
+        const dauer = T.sessionMinutes(
+          tag.exercises.map((x) => ({ ...x, sets: T.forWeek(x, 2).sets })), tempo,
+        );
+        if (dauer > minuten + 1) passtNicht.push(`${minuten} min/${tempo}: ${dauer} min`);
+      }
+    }
+  }
+  p.leer(passtNicht, 'Pausen: der Plan passt in jedem Tempo in sein Zeitfenster');
+
+  // Ohne übergebenes Tempo bleibt es beim bisherigen Verhalten — sonst wären
+  // alle bestehenden Aufrufe stillschweigend andere Pläne.
+  p.gleich(anzahlBei(60, null), anzahlBei(60, 'normal'),
+    'Pausen: ohne Angabe wird wie bisher mit normalen Pausen gerechnet');
+
   /* ---------- Fassung ---------- */
   const { readFileSync } = await import('node:fs');
   const sw = readFileSync(new URL('../../sw.js', import.meta.url), 'utf8');

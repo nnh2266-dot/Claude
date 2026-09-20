@@ -103,6 +103,9 @@ export async function render(container, ctx) {
 
   const week = blockWeek(plan, localDateKey());
   const energy = energyPlan(profile, ctx.state.kcalAdjust);
+  // Weit oben, weil jeder Neubau weiter unten damit rechnet: Das Pausentempo
+  // entscheidet mit, wie viele Übungen in das Zeitfenster passen.
+  const tempo = ctx.settings.pausen || 'normal';
 
   const head = viewHead(plan.splitName,
     `${profile.days}× pro Woche · ${profile.sessionLength} Minuten · ${BLOCK_WEEKS[week].label}`,
@@ -145,7 +148,7 @@ export async function render(container, ctx) {
             onClick: async () => {
               if (String(plan.splitKey) === k) return;
               const neuesProfil = { ...profile, splitKey: k };
-              const next = buildPlan(profileForPlan(neuesProfil), plan.seed || 0, { stufen: rungsInPlan(plan), rang: leiterRang });
+              const next = buildPlan(profileForPlan(neuesProfil), plan.seed || 0, { stufen: rungsInPlan(plan), rang: leiterRang, pausen: tempo });
               next.createdAt = plan.createdAt;
               next.zyklus = plan.zyklus;
               await setTrainingProfile(neuesProfil);
@@ -195,7 +198,7 @@ export async function render(container, ctx) {
 
     // Derselbe Seed wie bisher und die erreichten Leitersprossen mitgegeben:
     // Hier sollen neue Übungen dazukommen, nicht alles neu gewürfelt werden.
-    const next = buildPlan(profileForPlan(profile), plan.seed || 0, { stufen: rungsInPlan(plan), rang: leiterRang });
+    const next = buildPlan(profileForPlan(profile), plan.seed || 0, { stufen: rungsInPlan(plan), rang: leiterRang, pausen: tempo });
     next.createdAt = plan.createdAt;
     next.zyklus = plan.zyklus;
     await setPlan(next);
@@ -251,7 +254,7 @@ export async function render(container, ctx) {
           // Gleicher Split, gleiche Blockwoche — nur andere Übungen. Die
           // Leitersprossen bleiben trotzdem stehen: „andere Übungen" heißt
           // Abwechslung, nicht Rückstufung.
-          const next = buildPlan(profileForPlan(profile), (plan.seed || 0) + 1, { stufen: rungsInPlan(plan), rang: leiterRang });
+          const next = buildPlan(profileForPlan(profile), (plan.seed || 0) + 1, { stufen: rungsInPlan(plan), rang: leiterRang, pausen: tempo });
           next.createdAt = plan.createdAt;
           await setPlan(next);
           await ctx.refreshTraining();
@@ -302,7 +305,6 @@ export async function render(container, ctx) {
         + 'auch wenn „Brust" darübersteht. „Rücken" ist dabei keine Muskelgruppe, sondern mehrere — '
         + 'die Zahl dort liest sich höher, als sie für den einzelnen Muskel ist.' }));
 
-  const tempo = ctx.settings.pausen || 'normal';
   const days = plan.days.map((day) => dayCard(day, week, profile.equipment, tempo, profile, plan.zyklus));
 
   // Fähigkeiten stehen über den Tagen: sie laufen an jedem Trainingstag,

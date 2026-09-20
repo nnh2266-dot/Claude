@@ -720,7 +720,7 @@ export function isAvailable(exercise, profile, { ignoriereSperren = false } = {}
  * beliebigen. Beide Auskünfte kommen von außen, weil das Leiterwissen in
  * ladders.js liegt und diese Datei es nicht importieren darf.
  */
-export function buildPlan(profile, seed = 0, { stufen = null, rang = null } = {}) {
+export function buildPlan(profile, seed = 0, { stufen = null, rang = null, pausen = null } = {}) {
   // Ausrüstung, Gerät, Beschwerden, Sperrliste und ausgewachsene Übungen
   // stecken alle in isAvailable.
   const usable = EXERCISES.filter((e) => isAvailable(e, profile));
@@ -922,8 +922,17 @@ export function buildPlan(profile, seed = 0, { stufen = null, rang = null } = {}
     // Deshalb hier die echte Schätzung, und wenn sie über dem Zeitbudget
     // liegt, fällt hinten eine Übung weg. Die erste bleibt immer stehen: Sie
     // hat einen Satz mehr und ist die Übung, für die man gekommen ist.
+    //
+    // Das Pausentempo kam bis hierher nie an. Es wird über `setSetting`
+    // gespeichert und unter `ctx.settings.pausen` gelesen — gesucht wurde es
+    // aber in `profile.pausen`, und dieses Feld gibt es im Trainingsprofil
+    // nicht. Der Plan rechnete also immer mit neunzig Sekunden Pause, auch bei
+    // eingestelltem „Kurz". Wer kurze Pausen macht, bekam dadurch weniger
+    // Übungen, als in sein Zeitfenster passen, und war entsprechend früher
+    // fertig. Jetzt wird das Tempo übergeben.
+    const tempo = pausen || profile.pausen || 'normal';
     while (exercises.length > fewest
-        && sessionMinutes(exercises, profile.pausen || 'normal') > strengthMinutes) {
+        && sessionMinutes(exercises, tempo) > strengthMinutes) {
       exercises.pop();
     }
 
