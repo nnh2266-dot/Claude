@@ -18,7 +18,7 @@ import {
   travelDay, restSeconds, sessionMinutes, REST_TEMPO,
   replaceExercise, setExercise, removeExercise, missedDays, SKIP_REASONS, deloadHinweis,
   isUnilateral, isTimed, repRange, setSides, GRUPPEN_BUENDEL, withoutBundles, spareDay, LIMIT_LABEL,
-  weeklyVolume,
+  weeklyVolume, sessionSpanne,
 } from '../training.js';
 import { schonungsKarte, activeLimits } from './schonung.js';
 import {
@@ -1601,7 +1601,24 @@ export async function render(container, ctx) {
 
       await ctx.refreshTraining();
       ctx.reload();
-      toast(`${richtung > 0 ? 'Eine Stufe höher' : 'Eine Stufe zurück'}: ${ziel.exercise.name}.`);
+
+      // Vier der Leitern wechseln unterwegs von beidseitig auf einseitig —
+      // Kniebeuge, Hüftstreckung, Hüfte beugen und das waagerechte Drücken.
+      // Eine einseitige Übung dauert doppelt so lang, und über Monate wächst
+      // die Einheit dadurch aus dem Zeitfenster heraus, ohne dass je jemand
+      // etwas gesagt hätte. Gekürzt wird trotzdem nicht: Eine Übung stillschweigend
+      // zu streichen, weil man gerade aufgestiegen ist, wäre die schlechtere
+      // Überraschung. Gesagt wird es.
+      const nachher = richtung > 0
+        ? sessionSpanne(dayForWeekday(plan, new Date(`${dateKey}T12:00:00`).getDay()),
+          profile, tempo, plan.zyklus)
+        : null;
+      const laenger = nachher && nachher.ueberzieht
+        ? ` Die Einheit dauert damit rund ${nachher.normal} Minuten statt der `
+          + `${nachher.budget}, die du eingestellt hast — ${ziel.exercise.name} wird je Seite `
+          + 'gemacht. Wenn das zu lang ist, hilft ein Trainingstag mehr in der Woche.'
+        : '';
+      toast(`${richtung > 0 ? 'Eine Stufe höher' : 'Eine Stufe zurück'}: ${ziel.exercise.name}.${laenger}`);
     };
 
     const blocks = day.exercises
@@ -1612,7 +1629,10 @@ export async function render(container, ctx) {
       }, tempo, profile))
       .filter(Boolean);
 
-    body.push(pausenKarte(ctx, tempo, day.exercises));
+    // Mit den Sätzen dieser Woche gerechnet — in der schweren Woche ist die
+    // Einheit rund ein Viertel länger, und das gehört an die Zahl, die man
+    // liest, bevor man anfängt.
+    body.push(pausenKarte(ctx, tempo, day.exercises.map((x) => ({ ...x, sets: forWeek(x, week).sets }))));
 
     // Vor die Übungsliste, nicht dahinter: Wer scrollt, um die erste Übung zu
     // sehen, hat den Hinweis sonst schon hinter sich.

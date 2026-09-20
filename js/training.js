@@ -1295,6 +1295,64 @@ export function forWeek(prescription, week) {
   return { sets, rir: Math.min(4, Math.max(1, prescription.rir + mod.rirDelta)) };
 }
 
+/**
+ * Wie lang eine Einheit über den Block hinweg wirklich wird.
+ *
+ * `sessionMinutes` rechnet mit den Grundsätzen einer Vorgabe. Die schwere
+ * Woche hat aber je Übung einen Satz mehr, die Entlastungswoche vierzig
+ * Prozent weniger — die wahre Dauer schwankt also über den Block, und die
+ * Grundzahl ist keine davon.
+ *
+ * Aufgefallen ist das in einem durchgerechneten halben Jahr: Bei einem
+ * Zeitfenster von sechzig Minuten stand im Plan „rund 57 Min", während die
+ * schwere Woche tatsächlich 73 Minuten dauerte. Danebengestanden hat die
+ * Satzzahl — die war für die Woche richtig gerechnet. Zwei Zahlen in einer
+ * Zeile, eine davon aus einer anderen Woche.
+ *
+ * Dass die schwere Woche länger ist, ist kein Fehler, sondern der Sinn der
+ * schweren Woche. Sie zu verschweigen ist der Fehler.
+ */
+export function sessionSpanne(day, profile, tempo = 'normal', zyklus = 4) {
+  const uebungen = day?.exercises || [];
+  if (!uebungen.length) return null;
+
+  // Ohne festen Rhythmus läuft dauerhaft die Aufbauwoche — dann gibt es keine
+  // Spanne, sondern eine Dauer.
+  const wochen = Number(zyklus) === 0 ? [2] : [1, 2, 3, 4];
+  const dauern = wochen.map((w) => sessionMinutes(
+    uebungen.map((x) => ({ ...x, sets: forWeek(x, w).sets })), tempo,
+  ));
+
+  const budget = Number(profile?.sessionLength) || 0;
+  // Die Aufbauwoche ist der Normalfall und damit die Zahl, an der das
+  // Zeitfenster zu messen ist.
+  const normal = sessionMinutes(
+    uebungen.map((x) => ({ ...x, sets: forWeek(x, 2).sets })), tempo,
+  );
+
+  return {
+    kuerzeste: Math.min(...dauern),
+    laengste: Math.max(...dauern),
+    normal,
+    budget,
+    /**
+     * Gemessen wird die **normale** Woche, nicht die längste.
+     *
+     * Die schwere Woche hat je Übung einen Satz mehr und ist dadurch immer
+     * etwa ein Viertel länger — das ist ihr Zweck, kein gebrochenes
+     * Versprechen. Nähme man sie als Maßstab, stünde bei jedem Zeitfenster
+     * „überzieht", und der Hinweis wäre nach einer Woche unsichtbar.
+     *
+     * Gebrochen ist das Versprechen erst, wenn schon der Normalfall nicht
+     * hineinpasst. Das passiert, weil der Plan nur bis zu einem Mindestumfang
+     * kürzt: Wer dreißig Minuten angibt, bekommt trotzdem die Übungen, ohne
+     * die ein Trainingstag keiner wäre — rund achtundvierzig Minuten. Das ist
+     * vertretbar, aber es muss dastehen.
+     */
+    ueberzieht: budget > 0 && normal > budget,
+  };
+}
+
 /** Gründe, aus denen eine Einheit ausfallen darf. */
 export const SKIP_REASONS = {
   reise:   { label: 'Gereist', text: 'unterwegs' },

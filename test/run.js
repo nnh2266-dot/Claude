@@ -22,6 +22,7 @@ const GRUPPEN = [
   ['daten', './faelle/daten.js'],
   ['auswertung', './faelle/auswertung.js'],
   ['verlauf', './faelle/verlauf.js'],
+  ['dauerlauf', './faelle/dauerlauf.js'],
 ];
 
 const gewaehlt = process.argv.slice(2);

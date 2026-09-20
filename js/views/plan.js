@@ -8,7 +8,7 @@ import { localDateKey } from '../nutrition.js';
 import { setPlan, clearTraining, setTrainingProfile } from '../store.js';
 import {
   exerciseById, GROUP_LABEL, EQUIPMENT_LABEL, GOAL_LABEL, LEVEL_LABEL,
-  blockWeek, forWeek, buildPlan, BLOCK_WEEKS, restSeconds, sessionMinutes,
+  blockWeek, forWeek, buildPlan, BLOCK_WEEKS, restSeconds, sessionMinutes, sessionSpanne,
   isTimed, repRange, isUnilateral, ZYKLUS_WAHL, weeklyPlannedSets, VOLUMEN_UNTEN, VOLUMEN_OBEN,
   EXERCISES,
 } from '../training.js';
@@ -18,7 +18,7 @@ import { skillById, currentLevel, levelIndex, MINUTES_PER_SKILL } from '../skill
 
 const WEEKDAY_SHORT = ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'];
 
-function dayCard(day, week, equipment, tempo) {
+function dayCard(day, week, equipment, tempo, profile, zyklus) {
   const rows = day.exercises.map((prescription) => {
     const exercise = exerciseById(prescription.id);
     if (!exercise) return null;
@@ -46,14 +46,34 @@ function dayCard(day, week, equipment, tempo) {
   }).filter(Boolean);
 
   const totalSets = day.exercises.reduce((sum, p) => sum + forWeek(p, week).sets, 0);
+  const spanne = sessionSpanne(day, profile, tempo, zyklus);
 
   return el('div', { class: 'card card-flush mt-16' },
     el('div', { class: 'dayhead' },
       el('span', { class: 'dayhead-wd', text: day.weekday != null ? WEEKDAY_SHORT[day.weekday] : '–' }),
       el('span', { class: 'dayhead-name grow', text: day.name }),
+      // Die Dauer für **diese** Woche, nicht die Grundzahl. Daneben steht die
+      // Satzzahl, und die war schon immer für die Woche gerechnet — zwei
+      // Zahlen in einer Zeile, von denen eine aus einer anderen Woche kam.
       el('span', { class: 'muted small tabular',
-        text: `${totalSets} Sätze · rund ${sessionMinutes(day.exercises, tempo)} Min` })),
+        text: `${totalSets} Sätze · rund ${sessionMinutes(
+          day.exercises.map((x) => ({ ...x, sets: forWeek(x, week).sets })), tempo,
+        )} Min` })),
     ...rows,
+    spanne && spanne.laengste > spanne.kuerzeste
+      ? el('p', { class: 'hint',
+          text: `Über den Block: ${spanne.kuerzeste} Minuten in der Entlastungswoche, `
+            + `${spanne.laengste} in der schweren. Der Unterschied ist der Satz mehr oder `
+            + 'weniger je Übung.' })
+      : null,
+    spanne && spanne.ueberzieht
+      ? el('p', { class: 'note note-inset' },
+          `Länger als dein Zeitfenster: Du hast ${spanne.budget} Minuten angegeben, eine normale `
+          + `Woche dauert hier rund ${spanne.normal}. Der Plan kürzt nur bis zu dem Umfang, ohne `
+          + 'den ein Trainingstag keiner mehr wäre — beide Zugrichtungen, Hüfte und Knie. '
+          + 'Willst du wirklich kürzer, nimm einen Tag mehr in der Woche: Dann verteilt sich '
+          + 'dasselbe auf kürzere Einheiten.')
+      : null,
     day.short
       ? el('p', { class: 'note note-inset' },
           `Kürzer als geplant: mit ${EQUIPMENT_LABEL[equipment]} und deinen Einschränkungen bleiben ` +
@@ -283,7 +303,7 @@ export async function render(container, ctx) {
         + 'die Zahl dort liest sich höher, als sie für den einzelnen Muskel ist.' }));
 
   const tempo = ctx.settings.pausen || 'normal';
-  const days = plan.days.map((day) => dayCard(day, week, profile.equipment, tempo));
+  const days = plan.days.map((day) => dayCard(day, week, profile.equipment, tempo, profile, plan.zyklus));
 
   // Fähigkeiten stehen über den Tagen: sie laufen an jedem Trainingstag,
   // nicht an einem bestimmten.
