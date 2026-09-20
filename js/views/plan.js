@@ -10,7 +10,7 @@ import {
   exerciseById, GROUP_LABEL, EQUIPMENT_LABEL, GOAL_LABEL, LEVEL_LABEL,
   blockWeek, forWeek, buildPlan, BLOCK_WEEKS, restSeconds, sessionMinutes, sessionSpanne,
   isTimed, repRange, isUnilateral, ZYKLUS_WAHL, weeklyPlannedSets, VOLUMEN_UNTEN, VOLUMEN_OBEN,
-  EXERCISES,
+  EXERCISES, REST_TEMPO,
 } from '../training.js';
 import { ladderFor, rungsInPlan, profileForPlan, leiterRang } from '../ladders.js';
 import { energyPlan, energyBreakdown, ACTIVITY_LABEL } from '../energy.js';
@@ -235,6 +235,50 @@ export async function render(container, ctx) {
             + 'gespeichert — die liegen in der Einheit, nicht im Plan.' }))
     : null;
 
+  /**
+   * Passt der Plan zu den Pausen, die du machst?
+   *
+   * Über die Hälfte der geschätzten Dauer sind Pausen — das Tempo entscheidet
+   * also mit, wie viele Übungen in dasselbe Zeitfenster passen. Die
+   * Einstellung allein baut den Plan aber nicht um, und so blieb sie
+   * folgenlos: Man stellte „Kurz" ein, die Einheit blieb kurz, und niemand
+   * sagte, dass da noch Platz gewesen wäre.
+   */
+  const passend = buildPlan(profileForPlan(profile), plan.seed || 0,
+    { stufen: rungsInPlan(plan), rang: leiterRang, pausen: tempo });
+  const jetztUebungen = plan.days.reduce((n, d) => n + d.exercises.length, 0);
+  const moeglichUebungen = passend.days.reduce((n, d) => n + d.exercises.length, 0);
+  const differenz = moeglichUebungen - jetztUebungen;
+
+  const pausenPassung = differenz !== 0
+    ? el('div', { class: 'card stack mt-16' },
+        el('div', { class: 'row-between' },
+          el('h3', { class: 'card-title', text: 'Passt nicht zu deinen Pausen' }),
+          el('span', { class: 'pill pill-kcal tabular',
+            text: `${differenz > 0 ? '+' : ''}${differenz} Übungen` })),
+        el('p', { class: 'small',
+          text: differenz > 0
+            ? `Du pausierst ${REST_TEMPO[tempo].label.toLowerCase()} — damit passen `
+              + `${differenz} ${differenz === 1 ? 'Übung' : 'Übungen'} mehr in deine `
+              + `${profile.sessionLength} Minuten, als jetzt im Plan stehen. Gebaut wurde er mit `
+              + 'längeren Pausen, und deshalb bist du früher fertig, als du wolltest.'
+            : `Du pausierst ${REST_TEMPO[tempo].label.toLowerCase()} — damit dauert dein Plan `
+              + `länger als die ${profile.sessionLength} Minuten, die du angegeben hast. `
+              + `${-differenz} ${-differenz === 1 ? 'Übung' : 'Übungen'} weniger würden passen.` }),
+        offeneSaetze
+          ? el('p', { class: 'note' },
+              el('strong', { text: 'Du trainierst gerade. ' }),
+              `${offeneSaetze} Sätze stehen heute schon — mach die Einheit lieber zu Ende.`)
+          : null,
+        el('button', {
+          class: 'btn btn-block', type: 'button', onClick: neuBauen,
+        }, differenz > 0 ? 'Plan auf deine Zeit auffüllen' : 'Plan auf deine Zeit kürzen'),
+        el('p', { class: 'hint',
+          text: 'Deine Leitersprossen bleiben stehen, eingetragene Sätze sowieso — die liegen '
+            + 'in der Einheit, nicht im Plan. Wenn du lieber die Pausen änderst statt des Plans: '
+            + 'Das Tempo steht beim Training unter „Pausen".' }))
+    : null;
+
   const summary = el('div', { class: 'card stack' },
     el('p', { class: 'small' },
       el('strong', { text: zyklus ? `${zyklus}-Wochen-Block. ` : 'Ohne festen Block. ' }),
@@ -425,5 +469,5 @@ export async function render(container, ctx) {
       },
     }, 'Training zurücksetzen'));
 
-  mount(container, head, summary, nachschub, volumenKarte, skillSection, ...days, leiterliste, sperrliste, nutrition, breakdown, reset);
+  mount(container, head, summary, nachschub, pausenPassung, volumenKarte, skillSection, ...days, leiterliste, sperrliste, nutrition, breakdown, reset);
 }

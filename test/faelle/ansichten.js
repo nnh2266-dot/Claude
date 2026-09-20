@@ -75,6 +75,9 @@ export default async function laufen() {
         }
       }
       await s.addKegelRun(heute, 1, 'kraft');
+      // Kurze Pausen eingestellt, Plan aber mit normalen gebaut — genau die
+      // Lage, in der jemand früher fertig ist, als er wollte.
+      await s.setSetting('pausen', 'kurz');
     });
     await seite.goto(`http://localhost:${PORT}/index.html`);
     await seite.waitForTimeout(1300);
@@ -112,6 +115,21 @@ export default async function laufen() {
     const wdh = einheiten.filter((t) => t.includes('Wdh.'));
     p.ist(halte.length + wdh.length === einheiten.length,
       'Jeder Übungsblock nennt entweder Wiederholungen oder Sekunden');
+
+    /* ---------- Der Plan sagt, wenn er nicht zu den Pausen passt ---------- */
+    // Im Bestand oben stehen kurze Pausen, der Plan wurde aber mit normalen
+    // gebaut. Dann liegt Zeit brach, und genau das muss dastehen — sonst
+    // bleibt die Einstellung folgenlos und man ist früher fertig, als man
+    // wollte, ohne den Grund zu erfahren.
+    await seite.evaluate(() => { window.location.hash = '#/plan'; });
+    await seite.waitForTimeout(1000);
+    const planText = await seite.evaluate(() => document.getElementById('view-plan').innerText);
+    p.enthaelt(planText, 'Passt nicht zu deinen Pausen',
+      'Der Plan meldet, dass er nicht zu den eingestellten Pausen passt');
+    p.ist(/Übungen? mehr in deine \d+ Minuten/.test(planText),
+      'Er sagt auch, wie viel Zeit brachliegt', planText.slice(0, 200));
+    p.ist(/auffüllen|kürzen/.test(planText),
+      'Und bietet einen Knopf an, statt es nur festzustellen');
 
     p.leer(ausnahmen, 'Keine Ausnahme und kein Konsolenfehler in allen Ansichten');
   } finally {
