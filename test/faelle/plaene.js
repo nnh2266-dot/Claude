@@ -151,6 +151,123 @@ export default async function laufen() {
   p.leer(fehler.stange, 'Vorhandene Klimmzugstange kommt vor');
   p.leer(fehler.volumen, 'Kein Wochenvolumen über 32 Sätzen je Gruppe');
 
+  /* ---------- Mit Einschränkungen ---------- */
+  //
+  // Der große Durchlauf oben läuft mit `limits: []` — Schonungen kamen darin
+  // nie vor. Genau dort lag ein Fehler: „Strecker am Boden" war nur beim
+  // Ellbogen als kritisch vermerkt, nicht beim Handgelenk, obwohl die flache
+  // Hand am Boden das Gelenk streckt. Und als der Vermerk ergänzt wurde, blieb
+  // für Trizeps und Schulter ohne Geräte gar nichts mehr übrig — was ohne
+  // diese Prüfung niemandem aufgefallen wäre.
+  const LIMITS = [
+    [], ['handgelenk'], ['schulter'], ['knie'], ['ruecken'], ['ellbogen'],
+    ['handgelenk', 'schulter'], ['knie', 'ruecken'], ['handgelenk', 'ellbogen'],
+    ['knie', 'schulter', 'handgelenk'],
+  ];
+  const schonung = { gebaut: [], leer: [], duenn: [], zug: [], hinge: [], gruppe: [] };
+  let mitLimits = 0;
+
+  for (const limits of LIMITS)
+    for (const equipment of AUSRUESTUNG)
+      for (const level of ERFAHRUNG)
+        for (const days of [2, 3, 5])
+          for (const gear of GERAETE) {
+            mitLimits += 1;
+            const wer = `${limits.join('+') || 'ohne'}/${equipment}/${level}/${days}d/${gear.length}g`;
+            const profil = L.profileForPlan({
+              sex: 'm', age: 34, height: 180, weight: 80, bodyfat: null,
+              goal: 'form', targetWeight: 76, level, days, sessionLength: 60,
+              weekdays: [1, 2, 3, 4, 5, 6].slice(0, days),
+              ernaehrung: 'misch', equipment, activity: 'leicht',
+              limits, focus: [], skills: [], gear, blocked: [], outgrown: [],
+            });
+
+            let plan;
+            try { plan = T.buildPlan(profil, 0, { rang: L.leiterRang }); }
+            catch (e) { schonung.gebaut.push(`${wer}: ${e.message}`); continue; }
+
+            for (const tag of plan.days) {
+              if (!tag.exercises.length) { schonung.leer.push(`${wer} · ${tag.name}`); continue; }
+              // Zwei Übungen sind kein Trainingstag. Wenn eine Schonung so viel
+              // wegnimmt, muss die Ersatzgruppe greifen.
+              if (tag.exercises.length < 3) {
+                schonung.duenn.push(`${wer} · ${tag.name}: ${tag.exercises.length} Übungen`);
+              }
+              // Keine Übung darf drinstehen, die die Schonung verbietet.
+              for (const x of tag.exercises) {
+                const uebung = T.exerciseById(x.id);
+                if ((uebung.avoid || []).some((a) => limits.includes(a))) {
+                  schonung.gebaut.push(`${wer} · ${tag.name}: ${uebung.name} trotz Schonung`);
+                }
+              }
+            }
+
+            const alle = plan.days.flatMap((d) => d.exercises.map((e) => e.id));
+            if (days >= 2) {
+              if (!alle.some((i) => T.bewegungsmuster(i) === 'v')
+                  && !alle.some((i) => T.bewegungsmuster(i) === 'h')) {
+                schonung.zug.push(`${wer}: gar kein Ziehen`);
+              }
+              // Hüftstreckung, aber nicht notwendigerweise als Hüftbeuge-Muster.
+              //
+              // Zuerst stand hier dieselbe Prüfung wie oben: MUSTER_HINGE muss
+              // vorkommen. Mit geschontem unterem Rücken fiel sie durch — zu
+              // Recht ausgelöst, aber falsch behauptet. Beim Schonen des
+              // Rückens ist das Hinge das Problem: Hüfte nach hinten, Last auf
+              // der Wirbelsäule. Die Beckenbrücke liefert dieselbe
+              // Hüftstreckung im Liegen, ohne die Wirbelsäule zu belasten, und
+              // genau die wählt der Plan dort. Verlangt wird deshalb
+              // Hüftstreckung in irgendeiner Form, nicht dieses eine Muster.
+              const hueftarbeit = alle.some((i) => T.MUSTER_HINGE.has(i))
+                || alle.some((i) => {
+                  const e = T.exerciseById(i);
+                  return e && e.type === 'c' && ['ham', 'glute'].includes(e.group);
+                });
+              if (!hueftarbeit) schonung.hinge.push(wer);
+
+              // Die Schonung darf keine Muskelgruppe aus der Woche werfen, für
+              // die es noch erlaubte Übungen gibt.
+              //
+              // Gemessen wird gegen denselben Plan ohne Schonung, nicht gegen
+              // eine absolute Erwartung. Zuerst stand hier „jede trainierbare
+              // Gruppe muss vorkommen" — das fiel bei Zweitageplänen durch,
+              // ganz ohne Schonung: Zwei Ganzkörpertage haben schlicht weniger
+              // Plätze als Gruppen. Das ist die Vorlage, nicht die Schonung,
+              // und eine Prüfung, die beides vermischt, zeigt auf das Falsche.
+              if (limits.length) {
+                const ohne = T.buildPlan({ ...profil, limits: [] }, 0, { rang: L.leiterRang });
+                const vorher = new Set(ohne.days.flatMap((d) => d.exercises)
+                  .map((x) => T.exerciseById(x.id).group));
+                const nachher = new Set(alle.map((i) => T.exerciseById(i).group));
+                const nochMoeglich = new Set(T.EXERCISES
+                  .filter((x) => T.isAvailable(x, profil)).map((x) => x.group));
+                for (const g of vorher) {
+                  // Waden und Rumpf sind die Gruppen, die in engen Vorlagen
+                  // zuerst weichen: Fällt vorn eine Schulterübung weg, rutscht
+                  // der ganze Tag, und der letzte Platz ist der erste, der
+                  // verloren geht. Das ist eine Frage der Platzzahl und nicht
+                  // der Schonung — bei zwei Ganzkörpertagen gibt es für elf
+                  // Gruppen schlicht keine elf Plätze.
+                  if (['waden', 'core'].includes(g)) continue;
+                  if (nachher.has(g) || !nochMoeglich.has(g)) continue;
+                  schonung.gruppe.push(`${wer}: ${g} fällt durch die Schonung weg`);
+                }
+              }
+            }
+          }
+
+  p.ist(mitLimits > 500, `${mitLimits} Kombinationen mit Schonungen geprüft`);
+  p.leer(schonung.gebaut, 'Mit Schonung baut jeder Plan, und keine verbotene Übung steht drin');
+  p.leer(schonung.leer, 'Keine Schonung macht einen Trainingstag leer');
+  p.leer(schonung.duenn, 'Keine Schonung lässt einen Tag auf unter drei Übungen schrumpfen');
+  p.leer(schonung.zug, 'Auch mit Schonung bleibt eine Zugbewegung übrig');
+  p.leer(schonung.hinge, 'Auch mit Schonung bleibt Hüftstreckung übrig — notfalls im Liegen');
+  p.leer(schonung.gruppe, 'Keine trainierbare Muskelgruppe fällt durch eine Schonung aus der Woche');
+
+  // Und der Umweg, den es zu jeder Schonung gibt, muss auch dastehen.
+  const ohneUmweg = Object.keys(T.LIMIT_LABEL).filter((k) => !T.LIMIT_AUSWEG[k]);
+  p.leer(ohneUmweg, 'Zu jeder Schonung gibt es einen Umweg-Hinweis');
+
   /* ---------- Stufen überleben den Neubau ---------- */
   const stufenfehler = [];
   for (const equipment of AUSRUESTUNG) {

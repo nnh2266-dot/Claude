@@ -95,7 +95,7 @@ const RAW = [
   ['ohp','Schulterdrücken Langhantel','schulter','c','g','schulter','Po und Bauch fest, Stange über die Mitte des Kopfes.'],
   ['dbohp','Schulterdrücken Kurzhantel','schulter','c','gd','schulter','Handflächen leicht zueinander drehen.'],
   ['arnold','Arnold Press','schulter','c','gd','schulter','Rotation langsam, kein Schwung.'],
-  ['pikepu','Pike Push-Ups','schulter','c','w','schulter','Hüfte hoch, Kopf Richtung Boden.'],
+  ['pikepu','Pike Push-Ups','schulter','c','w','schulter,handgelenk','Hüfte hoch, Kopf Richtung Boden. Auf Fäusten oder Liegestützgriffen bleibt das Handgelenk gerade.'],
   ['hspuneg','Negative Handstand-Liegestütze','schulter','c','w','schulter,handgelenk','Im Handstand an der Wand langsam ablassen, dann mit den Füßen abstoßen und neu ansetzen.'],
   ['hspu','Handstand-Liegestütze an der Wand','schulter','c','w','schulter,handgelenk','Bauch zur Wand, Ellbogen eng. Kopf setzt kurz auf, dann drücken.'],
   ['pikeele','Pike Push-Ups Füße erhöht','schulter','c','w','schulter,handgelenk','Füße auf einen Stuhl, Hüfte hoch. Der Kopf geht vor die Hände, nicht dazwischen.'],
@@ -123,7 +123,7 @@ const RAW = [
   ['benchdip','Bankdips','trizeps','i','w','schulter,handgelenk','Hüfte nah an der Bank.'],
   ['bpush','Band-Pushdown','trizeps','i','b','','Am Endpunkt den Trizeps fest anspannen.'],
   ['diapu','Diamant-Liegestütze','trizeps','c','w','handgelenk','Hände unter der Brust, Ellbogen eng.'],
-  ['bwskull','Strecker am Boden','trizeps','i','w','ellbogen','Im Kniestütz auf die Unterarme absenken, nur aus dem Trizeps zurückdrücken. Der Rumpf bleibt eine Linie.'],
+  ['bwskull','Strecker am Boden','trizeps','i','w','ellbogen,handgelenk','Im Kniestütz auf die Unterarme absenken, nur aus dem Trizeps zurückdrücken. Der Rumpf bleibt eine Linie. Auf Fäusten oder Liegestützgriffen bleibt das Handgelenk gerade.'],
   ['bohext','Band-Überkopf-Trizeps','trizeps','i','b','ellbogen','Band hinter dem Rücken, Oberarme senkrecht. Nur der Ellbogen bewegt sich.'],
   // Waden
   ['calf','Wadenheben stehend','waden','i','gd','','Volle Dehnung unten, oben eine Sekunde.'],
@@ -438,6 +438,11 @@ const FALLBACK_GROUP = {
   // Ohne Stange und Hanteln bleibt für die Arme nichts Eigenes übrig. Rudern
   // trainiert den Bizeps mit, Drücken den Trizeps — besser als ein leerer Slot.
   bizeps: 'ruecken', trizeps: 'brust',
+  // Und umgekehrt: Mit geschontem Handgelenk fällt ohne Geräte jedes Drücken
+  // über Kopf weg, weil die flache Hand am Boden das Gelenk streckt. Dann
+  // bleibt die seitliche Schulter — Seitheben gegen den eigenen Widerstand
+  // geht mit geradem Handgelenk. Besser als ein leerer Platz im Plan.
+  schulter: 'sdelt',
 };
 
 /* ---------------- Splits ---------------- */
