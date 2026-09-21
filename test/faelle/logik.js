@@ -398,6 +398,43 @@ export default async function laufen() {
   p.ist(laengsteFolge(krumm) === 1,
     'Tagewahl: und dann nicht zwei Tage nebeneinander', krumm.join(','));
 
+  /* ---------- Zu schwer erkennen, nicht nur zu leicht ---------- */
+  // „Zu leicht" erkannte die App von selbst und bot die nächste Sprosse an;
+  // „zu schwer" musste man selbst merken. Dabei sind die Folgen größer: Wer
+  // eine Stufe zu hoch steht, macht schlechte Wiederholungen, wird nicht
+  // stärker und hört im Zweifel ganz auf.
+  const schwerVorgabe = { id: 'pseudopu', sets: 4, reps: [10, 15], rir: 2, loadless: true };
+  const reihen = (liste) => liste.map((saetze, i) => ({
+    date: verschoben('2026-09-01', i * 3),
+    entries: { pseudopu: saetze.map((r) => ({ reps: r })) },
+  }));
+
+  p.ist(L.bottomOutStreak(reihen([[7, 6, 5], [7, 6, 5]]), schwerVorgabe, '2026-09-30')
+      >= L.STREAK_FOR_NEXT,
+    'Zu schwer: zweimal unter dem unteren Rand wird gemeldet');
+  p.gleich(L.bottomOutStreak(reihen([[12, 10, 9], [11, 10, 9]]), schwerVorgabe, '2026-09-30'), 0,
+    'Zu schwer: wer im Bereich liegt, wird nicht zurückgestuft');
+  p.gleich(L.bottomOutStreak(reihen([[7, 6, 5], [11, 10, 9]]), schwerVorgabe, '2026-09-30'), 0,
+    'Zu schwer: eine einzelne schwache Einheit löst nichts aus');
+
+  // Der beste Satz entscheidet. Müde Sätze am Ende sind normal und kein Grund,
+  // die Variante infrage zu stellen.
+  p.gleich(L.bottomOutStreak(reihen([[11, 6, 5], [11, 5, 4]]), schwerVorgabe, '2026-09-30'), 0,
+    'Zu schwer: der beste Satz zählt, nicht die müden danach');
+
+  // Mit Zusatzgewicht ist die Antwort weniger Gewicht, nicht eine leichtere
+  // Variante — die Leiter ist für Übungen ohne Hantel gedacht.
+  const mitGewicht = [{ date: '2026-09-01', entries: { pseudopu: [{ reps: 5, weight: 10 }, { reps: 4, weight: 10 }] } },
+    { date: '2026-09-04', entries: { pseudopu: [{ reps: 5, weight: 10 }, { reps: 4, weight: 10 }] } }];
+  p.gleich(L.bottomOutStreak(mitGewicht, schwerVorgabe, '2026-09-30'), 0,
+    'Zu schwer: bei Zusatzgewicht schweigt die Leiter — da hilft weniger Gewicht');
+
+  // Und die beiden Richtungen dürfen sich nicht widersprechen.
+  const guteReihe = reihen([[16, 15, 15], [16, 16, 15]]);
+  p.ist(L.topOutStreak(guteReihe, schwerVorgabe, '2026-09-30') >= L.STREAK_FOR_NEXT
+      && L.bottomOutStreak(guteReihe, schwerVorgabe, '2026-09-30') === 0,
+    'Leiter: dieselbe Reihe kann nicht gleichzeitig zu leicht und zu schwer sein');
+
   /* ---------- Fassung ---------- */
   const { readFileSync } = await import('node:fs');
   const sw = readFileSync(new URL('../../sw.js', import.meta.url), 'utf8');

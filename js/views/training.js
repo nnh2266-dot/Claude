@@ -22,7 +22,8 @@ import {
 } from '../training.js';
 import { schonungsKarte, activeLimits } from './schonung.js';
 import {
-  ladderFor, harderRung, easierRung, pickNearestRung, topOutStreak, STREAK_FOR_NEXT,
+  ladderFor, harderRung, easierRung, pickNearestRung, topOutStreak, bottomOutStreak,
+  STREAK_FOR_NEXT,
   sameLadderGroups, wiederholtBewegung,
 } from '../ladders.js';
 import { energyPlan, weightTrend } from '../energy.js';
@@ -1250,26 +1251,71 @@ function exerciseBlock(prescription, week, session, sessions, dateKey, onChange,
 }
 
 /**
- * Wo die Übung auf ihrer Leiter steht, und der Hinweis, wenn es Zeit für die
- * nächste Sprosse ist.
+ * Wo die Übung auf ihrer Leiter steht — und der Hinweis, wenn es Zeit ist,
+ * eine Sprosse zu wechseln. In beide Richtungen.
  *
- * Der Hinweis kommt erst nach zwei Einheiten in Folge am oberen Ende. Nach
- * einer einzelnen guten Einheit umzustellen wäre verfrüht — ein guter Tag ist
- * noch keine neue Stufe.
+ * Nach oben kam der Hinweis schon immer, nach unten lange nicht. Das war eine
+ * Schieflage mit Folgen: „Zu leicht" kostet ein paar verschenkte Wochen, „zu
+ * schwer" kostet die Technik und irgendwann die Lust. Wer eine Stufe zu hoch
+ * steht, macht schlechte Wiederholungen, wird nicht stärker und hört im
+ * Zweifel ganz auf — und die App sah dabei zu.
+ *
+ * Beide Hinweise kommen erst nach zwei Einheiten in Folge. Ein guter Tag ist
+ * noch keine neue Stufe, ein schlechter noch kein Rückschritt.
+ *
+ * Steht eine Übung ohne Leiter zu hoch, bleibt nur der Tausch — auch das wird
+ * jetzt gesagt, statt zu schweigen, weil zufällig keine Leiter danebensteht.
  */
 function leiterZeile(prescription, exercise, sessions, dateKey, profile, aktionen) {
   const stand = ladderFor(exercise.id);
-  if (!stand) return null;
+  const [unten, oben] = repRange(prescription);
+  const zeit = isTimed(prescription.id);
+  const einheit = zeit ? 'Sekunden' : 'Wiederholungen';
 
-  const serie = topOutStreak(sessions, prescription, dateKey);
-  const naechste = harderRung(exercise.id, profile);
+  const hoch = topOutStreak(sessions, prescription, dateKey);
+  const runter = bottomOutStreak(sessions, prescription, dateKey);
+  const naechste = stand ? harderRung(exercise.id, profile) : null;
+  const leichtere = stand ? easierRung(exercise.id, profile) : null;
+
+  // Zu schwer zuerst: Wer beides gleichzeitig auslöst, hat widersprüchliche
+  // Einheiten — dann ist die vorsichtigere Antwort die richtige.
+  if (runter >= STREAK_FOR_NEXT) {
+    const grund = `${runter}× hintereinander unter ${unten} ${einheit} — auf dieser Stufe `
+      + 'kommen keine sauberen Sätze mehr zustande.';
+    if (leichtere) {
+      return el('div', { class: 'leiter leiter-schwer' },
+        el('p', { class: 'leiter-titel' },
+          el('strong', { text: 'Diese Stufe ist zu schwer. ' }), grund
+          + ' Eine Stufe zurück ist kein Rückschritt: Die leichtere Variante mit sauberer '
+          + 'Ausführung bringt mehr als die schwerere mit halben Wiederholungen.'),
+        el('button', {
+          class: 'btn btn-primary btn-sm btn-block', type: 'button', onClick: aktionen.runter,
+        }, `Zurück zu: ${leichtere.exercise.name}`),
+        el('p', { class: 'leiter-pos',
+          text: `Stufe ${stand.index + 1} von ${stand.leiter.stufen.length} · ${stand.leiter.name}` }));
+    }
+    // Keine leichtere Sprosse da — dann hilft nur eine andere Übung.
+    return el('div', { class: 'leiter leiter-schwer' },
+      el('p', { class: 'leiter-titel' },
+        el('strong', { text: 'Diese Übung ist zu schwer. ' }), grund
+        + (stand
+          ? ' Leichter geht es auf dieser Leiter nicht — eine andere Übung für dieselbe '
+            + 'Muskelgruppe ist hier der Weg.'
+          : ' Für diese Übung gibt es keine leichtere Variante — eine andere für dieselbe '
+            + 'Muskelgruppe ist hier der Weg.')),
+      el('button', {
+        class: 'btn btn-primary btn-sm btn-block', type: 'button', onClick: aktionen.tauschen,
+      }, 'Andere Übung wählen'));
+  }
+
+  if (!stand) return null;
   const position = `Stufe ${stand.index + 1} von ${stand.leiter.stufen.length} · ${stand.leiter.name}`;
 
-  if (serie >= STREAK_FOR_NEXT && naechste) {
+  if (hoch >= STREAK_FOR_NEXT && naechste) {
     return el('div', { class: 'leiter leiter-reif' },
       el('p', { class: 'leiter-titel' },
         el('strong', { text: 'Zeit für die nächste Stufe. ' }),
-        `${serie}× hintereinander über ${repRange(prescription)[1]} Wiederholungen — `
+        `${hoch}× hintereinander über ${oben} ${einheit} — `
         + 'mehr Wiederholungen bringen jetzt weniger als eine schwerere Variante.'),
       el('button', {
         class: 'btn btn-primary btn-sm btn-block', type: 'button', onClick: aktionen.hoch,

@@ -1250,6 +1250,17 @@ input[type="range"] {
 .leiter-reif .leiter-titel { margin: 0 0 9px; font-size: 12.5px; line-height: 1.45; }
 .leiter-reif .leiter-pos { margin-top: 8px; color: var(--text-muted); }
 
+/* Eine Stufe zu hoch. Derselbe Bau wie „reif", andere Farbe — es ist kein
+   Fehler und keine Warnung, sondern eine Korrektur, die Zeit spart. */
+.leiter-schwer {
+  margin-top: 10px; padding: 11px 12px;
+  border-radius: var(--radius-sm);
+  background: var(--danger-soft);
+  border: 1px solid color-mix(in srgb, var(--danger) 35%, transparent);
+}
+.leiter-schwer .leiter-titel { margin: 0 0 9px; font-size: 12.5px; line-height: 1.45; }
+.leiter-schwer .leiter-pos { margin-top: 8px; color: var(--text-muted); }
+
 /* Zeile in der Liste offener Einheiten: Kopf plus aufklappbare Gründe */
 .nachholzeile {
   padding: 11px 14px;

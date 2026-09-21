@@ -331,3 +331,46 @@ export function topOutStreak(sessions, prescription, bisDatum) {
 
 /** Ab wann die App von sich aus die nächste Stufe vorschlägt. */
 export const STREAK_FOR_NEXT = 2;
+
+/**
+ * Wie oft zuletzt in Folge nicht einmal der untere Rand erreicht wurde.
+ *
+ * Das Gegenstück zu topOutStreak, und es hat lange gefehlt. „Zu leicht"
+ * erkannte die App von selbst und bot die nächste Sprosse an; „zu schwer"
+ * musste man selbst merken und selbst eingreifen. Dabei ist es dieselbe
+ * Information, nur andersherum — und die Folgen sind größer: Wer eine Stufe zu
+ * hoch steht, macht schlechte Wiederholungen, wird nicht stärker und hört im
+ * Zweifel ganz auf.
+ *
+ * Gezählt wird am **besten** Satz. Wenn nicht einmal der den unteren Rand des
+ * Bereichs erreicht, ist die Variante zu schwer — die müden Sätze danach
+ * machen es nicht besser. Bei einseitigen Übungen zählt die schwächere Seite,
+ * denn die begrenzt.
+ *
+ * Ausdrücklich nicht gemeldet wird bei Sätzen mit Zusatzgewicht: Da ist die
+ * Antwort weniger Gewicht, nicht eine leichtere Variante. Die Leiter ist für
+ * Übungen ohne Hantel gedacht, und ein Klimmzug mit Gürtel gehört nicht dazu.
+ */
+export function bottomOutStreak(sessions, prescription, bisDatum) {
+  const [untere] = repRange(prescription);
+
+  const relevante = [...(sessions || [])]
+    .filter((s) => s.date <= bisDatum && (s.entries || {})[prescription.id])
+    .sort((a, b) => (a.date < b.date ? 1 : -1));
+
+  let serie = 0;
+  for (const session of relevante) {
+    const saetze = (session.entries[prescription.id] || []).filter((s) => s && s.reps);
+    if (saetze.length < MIN_SAETZE) break;
+    // Mit Zusatzgewicht ist die Leiter nicht das Mittel der Wahl.
+    if (saetze.some((s) => Number(s.weight) > 0)) break;
+
+    const wert = (satz) => (isUnilateral(prescription.id)
+      ? (setSides(satz).schwaechste ?? satz.reps)
+      : satz.reps);
+    const bester = Math.max(...saetze.map((s) => Number(wert(s)) || 0));
+    if (bester >= untere) break;
+    serie += 1;
+  }
+  return serie;
+}

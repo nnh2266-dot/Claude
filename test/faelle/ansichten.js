@@ -75,6 +75,32 @@ export default async function laufen() {
         }
       }
       await s.addKegelRun(heute, 1, 'kraft');
+
+      // Eine Übung von heute, die auf einer Leiter steht, wird zweimal
+      // deutlich unter ihrem unteren Rand eingetragen. Damit muss die App von
+      // selbst „zu schwer" melden — das Gegenstück zu „Zeit für die nächste
+      // Stufe", das lange fehlte.
+      const heutePlan = plan.days[0];
+      const aufLeiter = heutePlan.exercises.find((x) => l.ladderFor(x.id) && !t.isTimed(x.id));
+      if (aufLeiter) {
+        const [unten] = t.repRange(aufLeiter);
+        // Über den localStorage, nicht über window: Der Bestand wird gleich
+        // durch ein Neuladen sichtbar gemacht, und window überlebt das nicht.
+        localStorage.setItem('__zuSchwer', JSON.stringify(
+          { id: aufLeiter.id, name: t.exerciseById(aufLeiter.id).name, unten },
+        ));
+        for (const zurueck of [3, 6]) {
+          const d = n.shiftDateKey(heute, -zurueck);
+          await s.saveSession({
+            date: d, dayName: heutePlan.name, template: heutePlan.template, done: true, skills: {},
+            entries: { [aufLeiter.id]: [
+              { weight: null, reps: Math.max(1, unten - 4) },
+              { weight: null, reps: Math.max(1, unten - 5) },
+              { weight: null, reps: Math.max(1, unten - 6) },
+            ] },
+          });
+        }
+      }
       // Kurze Pausen eingestellt, Plan aber mit normalen gebaut — genau die
       // Lage, in der jemand früher fertig ist, als er wollte.
       await s.setSetting('pausen', 'kurz');
@@ -105,6 +131,24 @@ export default async function laufen() {
     const trainingText = await seite.evaluate(() => document.getElementById('view-training').innerText);
     p.enthaeltNicht(trainingText, 'Wdh. halten', 'Halteübungen sagen nicht „Wdh."');
     p.enthaelt(trainingText, 'Pause', 'Der Übungsblock nennt die Pause');
+
+    /* ---------- Zu schwer wird von selbst gemeldet ---------- */
+    const zuSchwer = await seite.evaluate(() => {
+      let gesucht = null;
+      try { gesucht = JSON.parse(localStorage.getItem('__zuSchwer') || 'null'); } catch { /* egal */ }
+      if (!gesucht) return null;
+      const block = [...document.querySelectorAll('#view-training .exblock')]
+        .find((b) => b.innerText.includes(gesucht.name));
+      return block ? { name: gesucht.name, text: block.innerText, unten: gesucht.unten } : null;
+    });
+    p.ist(zuSchwer, 'Die zu schwer eingetragene Übung steht im Trainingstag');
+    p.enthaelt(zuSchwer ? zuSchwer.text : '', 'zu schwer',
+      'Die App meldet von selbst, dass die Stufe zu schwer ist');
+    p.ist(/Zurück zu:|Andere Übung wählen/.test(zuSchwer ? zuSchwer.text : ''),
+      'Und bietet einen Ausweg an, statt es nur festzustellen',
+      zuSchwer ? zuSchwer.text.slice(0, 220) : '');
+    p.enthaeltNicht(zuSchwer ? zuSchwer.text : '', 'Zeit für die nächste Stufe',
+      'Zu leicht und zu schwer werden nie gleichzeitig gemeldet');
 
     /* ---------- Beide Wege auf der Leiter ---------- */
     // „Zu schwer" gab es im Übungsblock nie. Die Funktion dahinter war
