@@ -106,6 +106,34 @@ export default async function laufen() {
     p.enthaeltNicht(trainingText, 'Wdh. halten', 'Halteübungen sagen nicht „Wdh."');
     p.enthaelt(trainingText, 'Pause', 'Der Übungsblock nennt die Pause');
 
+    /* ---------- Beide Wege auf der Leiter ---------- */
+    // „Zu schwer" gab es im Übungsblock nie. Die Funktion dahinter war
+    // vollständig geschrieben — nur der Knopf fehlte. Dazu hieß der
+    // Tauschknopf früher „Zu schwer — andere Übung"; nach dem Umbenennen stand
+    // das Wort nirgends mehr, und wer eine Übung nicht schaffte, fand nur noch
+    // das dauerhafte Aussortieren. Das sind zwei verschiedene Dinge.
+    const leiterKnoepfe = await seite.evaluate(() => {
+      const bloecke = [...document.querySelectorAll('#view-training .exblock')];
+      return bloecke.map((b) => {
+        const text = b.innerText;
+        return {
+          leiter: /Stufe \d+ von \d+/.test(text),
+          runter: text.includes('Zu schwer'),
+          hoch: text.includes('Zu leicht'),
+          aussortieren: text.includes('aussortieren'),
+        };
+      });
+    });
+    const mitLeiter = leiterKnoepfe.filter((x) => x.leiter);
+    p.ist(mitLeiter.length > 0, 'Es gibt Übungen mit einer Variantenleiter',
+      `${leiterKnoepfe.length} Blöcke, davon ${mitLeiter.length} mit Leiter`);
+    p.ist(mitLeiter.some((x) => x.runter),
+      'Auf der Leiter geht es auch abwärts — „Zu schwer" ist erreichbar');
+    p.ist(mitLeiter.every((x) => x.runter || x.hoch),
+      'Jede Leiterübung bietet mindestens eine Richtung an');
+    p.ist(leiterKnoepfe.every((x) => x.aussortieren),
+      'Aussortieren gibt es weiterhin bei jeder Übung — das ist etwas anderes');
+
     const einheiten = await seite.evaluate(() => {
       const raus = [];
       for (const el of document.querySelectorAll('#view-training .exblock-rx')) raus.push(el.innerText);

@@ -1208,6 +1208,36 @@ function exerciseBlock(prescription, week, session, sessions, dateKey, onChange,
       nextStep(prescription, last ? last.sets : null, adjusted.rir),
       el('span', { class: 'exblock-hint', text: exercise.cue })),
     leiterZeile(prescription, exercise, sessions, dateKey, profile, aktionen),
+    /**
+     * Die beiden Wege auf der Leiter — hoch und runter.
+     *
+     * „Runter" gab es hier nie. Die Funktion dahinter war vollständig
+     * geschrieben, `aktionen.runter` hing am Übungsblock, easierRung rechnete
+     * die leichtere Sprosse aus — nur der Knopf fehlte. Dazu kam, dass der
+     * Tauschknopf früher „Zu schwer — andere Übung" hieß; nach dem Umbenennen
+     * stand das Wort „schwer" nirgends mehr, und wer eine Übung nicht schaffte,
+     * fand nur noch das dauerhafte Aussortieren.
+     *
+     * Das sind aber zwei verschiedene Dinge. „Zu schwer" heißt: eine Stufe
+     * zurück, dieselbe Bewegung, leichtere Variante — und die verlassene Stufe
+     * darf wiederkommen, sobald sie wieder passt. „Aussortieren" heißt: diese
+     * Übung will ich nicht mehr sehen. Wer das eine meint und nur das andere
+     * findet, verliert eine Bewegung aus seinem Plan, weil er einen schlechten
+     * Tag hatte.
+     */
+    stand && (easierRung(prescription.id, profile) || harderRung(prescription.id, profile))
+      ? el('div', { class: 'stufenwahl' },
+          easierRung(prescription.id, profile)
+            ? el('button', {
+                class: 'btn btn-ghost btn-sm', type: 'button', onClick: aktionen.runter,
+              }, '← Zu schwer')
+            : null,
+          harderRung(prescription.id, profile)
+            ? el('button', {
+                class: 'btn btn-ghost btn-sm', type: 'button', onClick: aktionen.hoch,
+              }, 'Zu leicht →')
+            : null)
+      : null,
     el('div', { class: 'stufenwahl' },
       el('button', {
         class: 'btn btn-ghost btn-sm', type: 'button', onClick: aktionen.tauschen,
@@ -1216,12 +1246,7 @@ function exerciseBlock(prescription, week, session, sessions, dateKey, onChange,
       // schwer" — manche Übung mag man einfach nicht, und eine Übung, die man
       // nicht mag, macht man schlecht oder gar nicht. Der Knopf heißt jetzt,
       // was er tut.
-      }, 'Andere Übung — diese aussortieren'),
-      stand && harderRung(prescription.id, profile)
-        ? el('button', {
-            class: 'btn btn-ghost btn-sm', type: 'button', onClick: aktionen.hoch,
-          }, 'Zu leicht — härtere Stufe')
-        : null));
+      }, 'Andere Übung — diese aussortieren')));
 }
 
 /**
