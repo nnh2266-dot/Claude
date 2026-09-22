@@ -79,9 +79,15 @@ export const LADDERS = [
     id: 'bizeps',
     name: 'Ellbogen beugen',
     // Der Eigenwiderstand ist die unterste Sprosse: er geht überall, lässt sich
-    // aber nicht messen. Sobald eine Stange da ist, führt der Weg zum Klimmzug
-    // im Untergriff — dort zählt wieder eine Zahl.
-    stufen: ['selfcurl', 'towelcurl', 'chinup'],
+    // aber nicht messen. Darüber das Handtuch, und ganz oben das Rudern im
+    // Untergriff — dort hängt endlich ein echtes Gewicht dran, nämlich der
+    // eigene Körper, und die Wiederholungen bedeuten etwas.
+    //
+    // Hier stand der Klimmzug im Untergriff. Der ist eine Rückenübung, und
+    // eine Leiter, die mitten drin die Muskelgruppe wechselt, schiebt beim
+    // Aufsteigen eine Rückenübung auf den Bizepsplatz. Dieselbe Verwechslung
+    // zerriss auch die senkrechte Zugleiter.
+    stufen: ['selfcurl', 'towelcurl', 'invcurl'],
   },
 ];
 

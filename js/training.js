@@ -112,7 +112,16 @@ const RAW = [
   ['hamcurl','Hammer Curls','bizeps','i','gd','','Neutraler Griff, trainiert auch den Unterarm.'],
   ['ccurl','Kabel-Curls','bizeps','i','g','','Spannung auch unten halten.'],
   ['bcurl','Band-Curls','bizeps','i','b','','Langsam zurücklassen, etwa drei Sekunden.'],
-  ['chinup','Chin-Ups','bizeps','c','gw','','Untergriff, Brust zur Stange.'],
+  // Der Untergriff holt den Bizeps kräftig mit hinein, aber die Bewegung ist
+  // dieselbe wie beim Klimmzug: senkrecht ziehen, geführt vom breiten
+  // Rückenmuskel. Als „bizeps" eingetragen zerriss er die senkrechte
+  // Zugleiter — negpull und pullup stehen unter „ruecken", chinup lag
+  // dazwischen in einer anderen Gruppe. Der Rückenplatz im Plan nimmt nur
+  // Rückenübungen, also konnte chinup dort nie stehen: Wer die Sprosse
+  // erklommen hatte, verlor sie beim nächsten Neubau und landete direkt
+  // beim vollen Klimmzug. Den Bizepsanteil bildet MITARBEIT ab, dort zählt
+  // jede Rücken-Grundübung mit einem halben Satz auf den Bizeps.
+  ['chinup','Chin-Ups','ruecken','c','gw','','Untergriff, Brust zur Stange.'],
   ['towelcurl','Handtuch-Curl','bizeps','i','w','','Handtuch unter einen Fuß, beide Enden greifen und beugen. Das Bein hält dagegen — so schwer, wie du es machst.'],
   ['selfcurl','Curl mit Eigenwiderstand','bizeps','i','w','','Die freie Hand drückt von oben gegen das beugende Handgelenk. Langsam beugen, noch langsamer zurück.'],
   ['invcurl','Rudern im Untergriff unter dem Tisch','bizeps','c','w','','Untergriff an der Tischkante, Ellbogen eng am Körper. Je flacher der Körper, desto schwerer.'],

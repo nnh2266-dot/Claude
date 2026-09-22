@@ -476,6 +476,47 @@ export default async function laufen() {
   p.ist(punkteMit.bewertet.leistung && punkteMit.bewertet.leistung.date === '2026-09-01',
     'Einordnung: zu jedem Wert steht, aus welcher Einheit er stammt');
 
+  /* ---------- Eine Leiter bleibt in ihrer Muskelgruppe ---------- */
+  //
+  // Der Chin-Up stand als „bizeps" in der Tabelle, zwischen Negativ-Klimmzug
+  // und Klimmzug, die beide „ruecken" sind. Die senkrechte Zugleiter wechselte
+  // damit mitten drin die Gruppe — und der Rückenplatz im Plan nimmt nur
+  // Rückenübungen. Wer die Sprosse erklommen hatte, verlor sie beim nächsten
+  // Neubau und landete direkt beim vollen Klimmzug, also zwei Stufen höher,
+  // als er stand. Genau das fühlt sich an wie „vor und zurück".
+  const gemischt = L.LADDERS
+    .filter((l) => new Set(l.stufen.map((id) => T.exerciseById(id)?.group)).size > 1)
+    .map((l) => `${l.id}: ${l.stufen.map((id) => `${id}(${T.exerciseById(id)?.group})`).join(' → ')}`);
+  p.leer(gemischt, 'Leitern: keine wechselt zwischen den Muskelgruppen');
+
+  // Und dieselbe Prüfung für die Bewegung: Eine Leiter, die von senkrechtem
+  // auf waagerechtes Ziehen springt, wäre genauso falsch.
+  const musterWechsel = L.LADDERS
+    .filter((l) => {
+      const muster = [...new Set(l.stufen.map((id) => T.bewegungsmuster(id)).filter(Boolean))];
+      return muster.length > 1;
+    })
+    .map((l) => `${l.id}: ${l.stufen.map((id) => `${id}(${T.bewegungsmuster(id)})`).join(' → ')}`);
+  p.leer(musterWechsel, 'Leitern: keine wechselt das Bewegungsmuster');
+
+  // Der Nachweis am konkreten Fall: Die erklommene Sprosse muss einen Neubau
+  // überstehen, auch wenn sie in einem gruppengebundenen Platz steht.
+  const nachAufstieg = L.profileForPlan({
+    ...PROFIL, equipment: 'bw', level: 'anfaenger', days: 3, weekdays: [1, 3, 5],
+    gear: ['stange'], outgrown: ['negpull'],
+  });
+  const ersterPlan = T.buildPlan(nachAufstieg, 1, { rang: L.leiterRang });
+  const senkrecht = (plan) => [...new Set(plan.days.flatMap((d) => d.exercises)
+    .filter((x) => T.bewegungsmuster(x.id) === 'v').map((x) => x.id))];
+  const zugVorher = senkrecht(ersterPlan);
+  const zugNachher = senkrecht(T.buildPlan(nachAufstieg, 1,
+    { stufen: L.rungsInPlan(ersterPlan), rang: L.leiterRang }));
+  p.gleich(zugNachher, zugVorher,
+    'Leitern: die erklommene Zugsprosse überlebt den Neubau',
+    `vorher ${zugVorher.join(',')} — nachher ${zugNachher.join(',')}`);
+  p.ist(!zugNachher.includes('pullup') || zugVorher.includes('pullup'),
+    'Leitern: niemand wird beim Neubau auf den vollen Klimmzug hochgeschoben');
+
   /* ---------- Fassung ---------- */
   const { readFileSync } = await import('node:fs');
   const sw = readFileSync(new URL('../../sw.js', import.meta.url), 'utf8');
