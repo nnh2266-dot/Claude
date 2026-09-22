@@ -31,6 +31,9 @@ export default async function laufen() {
     }).observe(document.body, { childList: true, subtree: true });
     if (document.body) start(); else document.addEventListener('DOMContentLoaded', start);
   });
+  // Rückfragen bestätigen: confirmAction() nutzt window.confirm, und das
+  // blockiert im Browser ohne Antwort.
+  seite.on('dialog', (d) => d.accept());
   seite.on('pageerror', (e) => ausnahmen.push(`Ausnahme: ${e.message}`));
   seite.on('console', (m) => {
     if (m.type() === 'error' && !m.text().includes('404')) ausnahmen.push(`Konsole: ${m.text()}`);
@@ -175,6 +178,54 @@ export default async function laufen() {
       const s = await import('/js/store.js'); const n = await import('/js/nutrition.js');
       return (await s.getSession(n.localDateKey()))?.done === true;
     }), 'Die Einheit ist als erledigt vermerkt');
+
+    /* ---------- Einen falschen Satz wieder loswerden ---------- */
+    // Ein Satz mit falscher Ausführung setzt die Einordnung dauerhaft. Bis
+    // hierher gab es keinen Weg zurück: Die Trainingsansicht zeigt nur heute,
+    // und die Löschfunktion wurde nirgends aufgerufen.
+    await seite.evaluate(async () => {
+      const s = await import('/js/store.js');
+      const n = await import('/js/nutrition.js');
+      // Ein unrealistisch guter Liegestütz-Satz, zehn Tage alt.
+      await s.saveSession({
+        date: n.shiftDateKey(n.localDateKey(), -10), dayName: 'Ganzkörper', done: true, skills: {},
+        entries: { pushup: [{ weight: null, reps: 8 }, { weight: null, reps: 55 }] },
+      });
+    });
+    await seite.goto(`http://localhost:${PORT}/index.html`);
+    await seite.waitForTimeout(1300);
+    await seite.evaluate(() => { window.location.hash = '#/strength'; });
+    await seite.waitForTimeout(900);
+
+    const vorher = await seite.evaluate(() => {
+      const zeile = [...document.querySelectorAll('#view-strength .scorerow')]
+        .find((x) => x.innerText.includes('Liegestütze'));
+      return zeile ? zeile.innerText : null;
+    });
+    p.ist(vorher, 'Der übertriebene Satz taucht in der Einordnung auf');
+    p.enthaelt(vorher || '', 'bester Satz am',
+      'Zu jedem Wert steht, aus welcher Einheit er stammt');
+
+    const geklickt = await seite.evaluate(() => {
+      const zeile = [...document.querySelectorAll('#view-strength .scorerow')]
+        .find((x) => x.innerText.includes('Liegestütze'));
+      const knopf = zeile && [...zeile.querySelectorAll('button')]
+        .find((b) => b.textContent.includes('War nicht sauber'));
+      if (!knopf) return false;
+      knopf.click();
+      return true;
+    });
+    p.ist(geklickt, 'Es gibt einen Knopf, um den Satz zu verwerfen');
+    await seite.waitForTimeout(1200);
+
+    const weg = await seite.evaluate(async () => {
+      const s = await import('/js/store.js');
+      const n = await import('/js/nutrition.js');
+      const e = await s.getSession(n.shiftDateKey(n.localDateKey(), -10));
+      return (e?.entries?.pushup || []).map((x) => x.reps);
+    });
+    p.enthaeltNicht(JSON.stringify(weg), '55', 'Der verworfene Satz ist aus der Einheit heraus');
+    p.enthaelt(JSON.stringify(weg), '8', 'Die übrigen Sätze der Einheit bleiben stehen');
 
     p.leer(ausnahmen, 'Keine Ausnahme auf dem ganzen Weg');
   } finally {

@@ -7,13 +7,14 @@
  * dazu ein, sie für eine Messung zu halten; sie ist ein Anhaltspunkt.
  */
 
-import { el, mount, viewHead, iconButton, emptyState } from '../ui.js';
-import { localDateKey, shiftDateKey } from '../nutrition.js';
+import { el, mount, viewHead, iconButton, emptyState, toast, confirmAction } from '../ui.js';
+import { localDateKey, shiftDateKey, formatDateKey } from '../nutrition.js';
 import {
   groupStrength, balance, setsByGroup, neglected, niveauFor, sideImbalance,
-  rateableFor, RATED_COUNT, EXERCISE_COUNT,
+  rateableFor, RATED_COUNT, EXERCISE_COUNT, satzIndex,
 } from '../strength.js';
-import { isTimed } from '../training.js';
+import { isTimed, exerciseById } from '../training.js';
+import { getSession, saveSession } from '../store.js';
 
 /** Zeitraum für die zweite Zahl: „was du gerade bringst". */
 const AKTUELL_TAGE = 28;
@@ -44,7 +45,7 @@ function zielText(b) {
   return `Noch rund ${fehlt} kg bis „${b.zielNiveau.name}".`;
 }
 
-function gruppenZeile(g, jetzt, profile) {
+function gruppenZeile(g, jetzt, profile, ctx) {
   const b = g.bewertet;
 
   if (!b) {
@@ -74,6 +75,18 @@ function gruppenZeile(g, jetzt, profile) {
         ? el('span', { class: 'scorerow-jetzt tabular', text: `zuletzt ${jetzt}` })
         : null,
       el('div', { class: 'scorerow-num tabular', text: String(b.punkte) })),
+    // Woher die Zahl kommt — und der Weg, sie loszuwerden, wenn der Satz nicht
+    // sauber war. Ohne die Herkunft ist der Wert eine Behauptung; ohne den
+    // Knopf ist ein falscher Satz ein Urteil auf Lebenszeit.
+    b.leistung && b.leistung.date
+      ? el('div', { class: 'row-between scorerow-quelle' },
+          el('span', { class: 'muted small',
+            text: `bester Satz am ${formatDateKey(b.leistung.date)}` }),
+          el('button', {
+            class: 'btn btn-ghost btn-sm', type: 'button',
+            onClick: () => satzVerwerfen(ctx, b.id, b.leistung),
+          }, 'War nicht sauber'))
+      : null,
     // Bestwert blass in voller Länge, der aktuelle Stand kräftig darüber.
     el('div', { class: typeof jetzt === 'number' && jetzt < b.punkte ? 'scorebar mit-jetzt' : 'scorebar' },
       el('i', { style: { width: `${Math.max(2, b.punkte)}%` } }),
@@ -106,6 +119,51 @@ function verhaeltnisZeile(v) {
           text: `${v.schwaecher} hinkt hinterher. Dort bringt eine Übung mehr als überall `
             + 'sonst — und auf Dauer ist das die Stelle, an der es zwickt.' })
       : el('p', { class: 'hint', text: 'Beide Seiten liegen nah beieinander. So soll es sein.' }));
+}
+
+/**
+ * Einen Satz aus der Wertung nehmen, der so nie gezählt hätte.
+ *
+ * Die Einordnung einer Muskelgruppe hängt am besten je aufgezeichneten Satz —
+ * und zwar am besten überhaupt, nicht am besten der letzten Wochen. Das ist
+ * richtig so, solange die Sätze stimmen. Ein einziger Satz mit falscher
+ * Ausführung setzt den Wert aber dauerhaft, und bisher gab es keinen Weg
+ * zurück: Die Trainingsansicht zeigt nur den heutigen Tag, und die Funktion
+ * zum Löschen einer Einheit war zwar geschrieben, wurde aber nirgends
+ * aufgerufen. Was einmal drinstand, stand für immer drin.
+ *
+ * Gelöscht wird genau ein Satz, der genannte, aus der genannten Einheit. Der
+ * Rest der Einheit bleibt, wo er ist.
+ */
+async function satzVerwerfen(ctx, id, leistung) {
+  const session = await getSession(leistung.date);
+  const saetze = (session && session.entries && session.entries[id]) || [];
+
+  const stelle = satzIndex(saetze, id, leistung);
+
+  if (stelle < 0) {
+    toast('Dieser Satz ist nicht mehr da — vielleicht schon verworfen.');
+    return;
+  }
+
+  const name = exerciseById(id)?.name || id;
+  if (!confirmAction(`Diesen einen Satz aus der Wertung nehmen?\n\n${name}, `
+    + `${formatDateKey(leistung.date)}: ${leistungZeile(id, leistung)}\n\n`
+    + 'Der Satz wird aus der Einheit gelöscht und zählt danach nirgends mehr mit — '
+    + 'auch nicht im Volumen. Die übrigen Sätze dieser Einheit bleiben.')) return;
+
+  const rest = saetze.filter((_, i) => i !== stelle);
+  await saveSession({ ...session, entries: { ...session.entries, [id]: rest } });
+  await ctx.refreshTraining();
+  ctx.reload();
+  toast('Satz verworfen. Die Einordnung rechnet ohne ihn weiter.');
+}
+
+/** Der Satz in Worten, für die Rückfrage. */
+function leistungZeile(id, leistung) {
+  if (isTimed(id)) return `${leistung.reps} s`;
+  const kg = Number(leistung.weight) > 0 ? `${einsNach(leistung.weight)} kg × ` : '';
+  return `${kg}${leistung.reps} Wdh.`;
 }
 
 /* ---------------- Ansicht ---------------- */
@@ -166,7 +224,7 @@ export async function render(container, ctx) {
   /* Je Gruppe */
   body.push(el('h2', { class: 'section-title', text: 'Muskelgruppen' }));
   body.push(el('div', { class: 'card stack' },
-    ...gruppen.map((g) => gruppenZeile(g, aktuell.get(g.group), profile))));
+    ...gruppen.map((g) => gruppenZeile(g, aktuell.get(g.group), profile, ctx))));
   body.push(el('p', { class: 'hint mt-16',
     text: `Die große Zahl ist dein bester Satz überhaupt. Steht daneben eine zweite, `
       + `ist das derselbe Wert aus den letzten ${AKTUELL_TAGE} Tagen — nach einer Pause `

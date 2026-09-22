@@ -882,6 +882,9 @@ input[type="range"] {
 /* Der Rückgangshinweis steht direkt darunter und muss sich davon abheben, ohne
    zu schreien: Er verlangt eine Entscheidung (heute weniger), ist aber kein
    Fehler und keine Diagnose. Deshalb ein Rand statt einer Fläche. */
+.scorerow-quelle { margin-top: 8px; align-items: center; }
+.scorerow-quelle .btn { flex: 0 0 auto; }
+
 .exblock-rueckgang {
   margin-top: 8px;
   padding: 8px 10px;

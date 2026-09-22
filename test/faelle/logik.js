@@ -435,6 +435,47 @@ export default async function laufen() {
       && L.bottomOutStreak(guteReihe, schwerVorgabe, '2026-09-30') === 0,
     'Leiter: dieselbe Reihe kann nicht gleichzeitig zu leicht und zu schwer sein');
 
+  /* ---------- Einen falschen Satz wieder loswerden ---------- */
+  //
+  // Die Einordnung einer Muskelgruppe hängt am besten Satz überhaupt. Ein
+  // einziger mit falscher Ausführung setzt den Wert damit dauerhaft — und es
+  // gab keinen Weg zurück: Die Trainingsansicht zeigt nur den heutigen Tag,
+  // und die Löschfunktion war zwar geschrieben, wurde aber nirgends
+  // aufgerufen.
+  const saetze = [
+    { reps: 8, weight: 0 },
+    { reps: 22, weight: 0 },
+    { reps: 7, weight: 0 },
+  ];
+  p.gleich(S.satzIndex(saetze, 'pushup', { reps: 22, weight: 0 }), 1,
+    'Satz finden: der genannte Satz wird gefunden');
+  p.gleich(S.satzIndex(saetze, 'pushup', { reps: 99, weight: 0 }), -1,
+    'Satz finden: was nicht da ist, wird nicht gefunden');
+  p.gleich(S.satzIndex(saetze, 'pushup', { reps: 22, weight: 20 }), -1,
+    'Satz finden: das Gewicht muss auch stimmen');
+
+  // Die Tücke: Bei einseitigen Übungen merkt sich die Bestenliste die
+  // schwächere Seite. Wer 12 links und 9 rechts eingetragen hat, sucht nach
+  // einer 9 — im Satz steht sie als zweite Zahl. Ein Vergleich auf die erste
+  // fände nichts und ließe den falschen Wert stehen.
+  const zweiSeiten = [{ reps: 12, reps2: 9 }, { reps: 6, reps2: 6 }];
+  p.gleich(S.satzIndex(zweiSeiten, 'lunge', { reps: 9, weight: 0 }), 0,
+    'Satz finden: bei einseitigen Übungen zählt die schwächere Seite');
+
+  // Und der Effekt: Ohne den falschen Satz fällt die Einordnung zurück.
+  const mitFehler = [{ date: '2026-09-01', entries: { pushup: [{ reps: 8 }, { reps: 40 }] } }];
+  const ohneFehler = [{ date: '2026-09-01', entries: { pushup: [{ reps: 8 }] } }];
+  const punkteMit = S.groupStrength(mitFehler, PROFIL).find((g) => g.group === 'brust');
+  const punkteOhne = S.groupStrength(ohneFehler, PROFIL).find((g) => g.group === 'brust');
+  p.ist(punkteMit.bewertet.punkte > punkteOhne.bewertet.punkte,
+    'Einordnung: ein verworfener Satz senkt den Wert wieder',
+    `mit ${punkteMit.bewertet.punkte}, ohne ${punkteOhne.bewertet.punkte}`);
+
+  // Und die Herkunft muss mitgeliefert werden, sonst weiß niemand, welcher
+  // Satz gemeint ist.
+  p.ist(punkteMit.bewertet.leistung && punkteMit.bewertet.leistung.date === '2026-09-01',
+    'Einordnung: zu jedem Wert steht, aus welcher Einheit er stammt');
+
   /* ---------- Fassung ---------- */
   const { readFileSync } = await import('node:fs');
   const sw = readFileSync(new URL('../../sw.js', import.meta.url), 'utf8');

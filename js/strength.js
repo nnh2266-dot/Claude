@@ -278,6 +278,29 @@ export function groupStrength(sessions, profile, seit = null) {
   });
 }
 
+/**
+ * Welcher Satz einer Einheit ist der, der die Einordnung setzt?
+ *
+ * Gebraucht, um genau diesen einen Satz wieder herausnehmen zu können, wenn er
+ * nicht sauber war. Die Tücke liegt bei den einseitigen Übungen: bestPerExercise
+ * merkt sich dort die **schwächere Seite**, nicht die eingetragene Zahl. Wer
+ * 12 links und 9 rechts eingetragen hat, findet unter `reps` eine 9 — im Satz
+ * steht sie aber als `reps2`. Ein naiver Vergleich auf `satz.reps` fände
+ * nichts und ließe den falschen Wert stehen.
+ *
+ * @returns {number} Index im Satzfeld, oder -1
+ */
+export function satzIndex(saetze, id, leistung) {
+  if (!Array.isArray(saetze) || !leistung) return -1;
+  const wertVon = (satz) => (isUnilateral(id)
+    ? (setSides(satz).schwaechste ?? satz.reps)
+    : satz.reps);
+
+  return saetze.findIndex((satz) => satz
+    && Number(wertVon(satz)) === Number(leistung.reps)
+    && (Number(satz.weight) || 0) === (Number(leistung.weight) || 0));
+}
+
 /* ---------------- Verhältnisse ---------------- */
 
 /*
