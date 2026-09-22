@@ -227,6 +227,63 @@ export default async function laufen() {
     p.enthaeltNicht(JSON.stringify(weg), '55', 'Der verworfene Satz ist aus der Einheit heraus');
     p.enthaelt(JSON.stringify(weg), '8', 'Die übrigen Sätze der Einheit bleiben stehen');
 
+    /* ---------- Derselbe Fehler zweimal eingetragen ---------- */
+    //
+    // Wer denselben falschen Wert in zwei Einheiten stehen hat, sieht nach dem
+    // Drücken exakt dieselbe Zahl: Ein gleich guter Satz rückt nach. Der Knopf
+    // hat gewirkt, sah aber nach nichts aus — und „Satz verworfen" allein ist
+    // dann eine Lüge durch Auslassung.
+    await seite.evaluate(async () => {
+      const s = await import('/js/store.js');
+      const n = await import('/js/nutrition.js');
+      for (const zurueck of [20, 24]) {
+        await s.saveSession({
+          date: n.shiftDateKey(n.localDateKey(), -zurueck), dayName: 'Ganzkörper', done: true, skills: {},
+          entries: { pushup: [{ weight: null, reps: 9 }, { weight: null, reps: 48 }] },
+        });
+      }
+      window.__toasts = [];
+    });
+    await seite.goto(`http://localhost:${PORT}/index.html`);
+    await seite.waitForTimeout(1300);
+    await seite.evaluate(() => { window.location.hash = '#/strength'; });
+    await seite.waitForTimeout(900);
+
+    const druecken = async () => seite.evaluate(() => {
+      const zeile = [...document.querySelectorAll('#view-strength .scorerow')]
+        .find((x) => x.innerText.includes('Liegestütze'));
+      const knopf = zeile && [...zeile.querySelectorAll('button')]
+        .find((b) => b.textContent.includes('War nicht sauber'));
+      if (!knopf) return null;
+      const punkte = zeile.querySelector('.scorerow-num')?.textContent;
+      knopf.click();
+      return punkte;
+    });
+
+    const punkteVorher = await druecken();
+    await seite.waitForTimeout(1200);
+    const meldung = await seite.evaluate(() => (window.__toasts || []).join(' | '));
+    const punkteNachher = await seite.evaluate(() => {
+      const zeile = [...document.querySelectorAll('#view-strength .scorerow')]
+        .find((x) => x.innerText.includes('Liegestütze'));
+      return zeile ? zeile.querySelector('.scorerow-num')?.textContent : null;
+    });
+
+    p.gleich(punkteNachher, punkteVorher,
+      'Bei zwei gleichen Sätzen bleibt die Zahl nach dem ersten Verwerfen stehen');
+    p.enthaelt(meldung, 'der Wert bleibt',
+      'Und die App sagt, dass der Wert bleibt, statt „verworfen" zu melden und zu schweigen',
+      meldung);
+    p.enthaelt(meldung, 'drück noch einmal',
+      'Mit der Anweisung, was zu tun ist');
+
+    await seite.evaluate(() => { window.__toasts = []; });
+    await druecken();
+    await seite.waitForTimeout(1200);
+    const zweiteMeldung = await seite.evaluate(() => (window.__toasts || []).join(' | '));
+    p.enthaelt(zweiteMeldung, 'Punkte',
+      'Beim zweiten Mal fällt der Wert und die App nennt beide Zahlen', zweiteMeldung);
+
     p.leer(ausnahmen, 'Keine Ausnahme auf dem ganzen Weg');
   } finally {
     await browser.close();

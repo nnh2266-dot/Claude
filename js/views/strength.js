@@ -13,7 +13,7 @@ import {
   groupStrength, balance, setsByGroup, neglected, niveauFor, sideImbalance,
   rateableFor, RATED_COUNT, EXERCISE_COUNT, satzIndex,
 } from '../strength.js';
-import { isTimed, exerciseById } from '../training.js';
+import { isTimed, exerciseById, GROUP_LABEL } from '../training.js';
 import { getSession, saveSession } from '../store.js';
 
 /** Zeitraum für die zweite Zahl: „was du gerade bringst". */
@@ -152,11 +152,39 @@ async function satzVerwerfen(ctx, id, leistung) {
     + 'Der Satz wird aus der Einheit gelöscht und zählt danach nirgends mehr mit — '
     + 'auch nicht im Volumen. Die übrigen Sätze dieser Einheit bleiben.')) return;
 
+  const gruppe = exerciseById(id)?.group;
+  const punkteVon = () => {
+    const g = groupStrength(ctx.state.sessions || [], ctx.state.profile)
+      .find((x) => x.group === gruppe);
+    return g && g.bewertet ? g.bewertet : null;
+  };
+  const vorher = punkteVon();
+
   const rest = saetze.filter((_, i) => i !== stelle);
   await saveSession({ ...session, entries: { ...session.entries, [id]: rest } });
   await ctx.refreshTraining();
+  const nachher = punkteVon();
   ctx.reload();
-  toast('Satz verworfen. Die Einordnung rechnet ohne ihn weiter.');
+
+  /**
+   * Sagen, was der Knopf bewirkt hat — und wenn nichts, warum.
+   *
+   * „Satz verworfen" allein ist eine Lüge durch Auslassung. Wer denselben Wert
+   * mehrfach eingetragen hat, sieht nach dem Drücken exakt dieselbe Zahl und
+   * hält den Knopf für kaputt. Er hat aber funktioniert: Ein gleich guter Satz
+   * ist nachgerückt, und der muss beim Namen genannt werden, sonst drückt
+   * niemand ein zweites Mal.
+   */
+  const label = GROUP_LABEL[gruppe] || gruppe;
+  if (!nachher) {
+    toast(`Satz verworfen. Für ${label} ist jetzt kein bewerteter Satz mehr übrig.`);
+  } else if (vorher && nachher.punkte < vorher.punkte) {
+    toast(`Satz verworfen. ${label}: ${vorher.punkte} → ${nachher.punkte} Punkte.`);
+  } else {
+    toast(`Satz verworfen — der Wert bleibt bei ${nachher.punkte}. Es zählt jetzt `
+      + `${nachher.name} vom ${formatDateKey(nachher.leistung.date)}. War der auch nicht `
+      + 'sauber, drück noch einmal.');
+  }
 }
 
 /** Der Satz in Worten, für die Rückfrage. */
