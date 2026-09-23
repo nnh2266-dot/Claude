@@ -57,7 +57,7 @@ export default async function laufen() {
         blocked: [], outgrown: [],
       };
       await s.setTrainingProfile(profil);
-      const plan = t.buildPlan(l.profileForPlan(profil), 0, { rang: l.leiterRang });
+      const plan = t.buildPlan(l.profileForPlan(profil), 0, { rang: l.leiterRang, leiter: l.leiterId });
       await s.setPlan({ ...plan, days: plan.days.map((d, i) => ({ ...d, weekday: i === 0 ? wt : (wt + i + 2) % 7 })) });
       for (let i = 0; i < 14; i += 1) {
         const d = n.shiftDateKey(heute, -i);

@@ -125,7 +125,7 @@ function trainierender(tempo, saat = 7) {
  */
 function dauerlauf(tempo, { entlastung = 4, saat = 7 } = {}) {
   let profil = { ...PROFIL, outgrown: [] };
-  let plan = T.buildPlan(L.profileForPlan(profil), 1, { rang: L.leiterRang });
+  let plan = T.buildPlan(L.profileForPlan(profil), 1, { rang: L.leiterRang, leiter: L.leiterId });
   plan = { ...plan, createdAt: START, zyklus: entlastung };
 
   const mensch = trainierender(tempo, saat);
@@ -313,7 +313,7 @@ export default async function laufen() {
 
   // Ein frisch gebauter Plan muss das Zeitfenster einhalten — das ist die
   // Zusage, die buildPlan macht.
-  const frisch = T.buildPlan(L.profileForPlan(PROFIL), 1, { rang: L.leiterRang });
+  const frisch = T.buildPlan(L.profileForPlan(PROFIL), 1, { rang: L.leiterRang, leiter: L.leiterId });
   p.ist(T.sessionSpanne(frisch.days[0], PROFIL, 'normal', 4).normal <= PROFIL.sessionLength,
     `Zeit: ein frischer Plan passt in die angegebenen ${PROFIL.sessionLength} Minuten`,
     `${T.sessionSpanne(frisch.days[0], PROFIL, 'normal', 4).normal} min`);
@@ -336,7 +336,7 @@ export default async function laufen() {
   // Mindestumfang von vier Übungen und landete bei dreißig Minuten Vorgabe
   // trotzdem bei achtundvierzig.
   const engProfil = { ...PROFIL, sessionLength: 30 };
-  const engPlan = T.buildPlan(L.profileForPlan(engProfil), 1, { rang: L.leiterRang });
+  const engPlan = T.buildPlan(L.profileForPlan(engProfil), 1, { rang: L.leiterRang, leiter: L.leiterId });
   const engSpanne = T.sessionSpanne(engPlan.days[0], engProfil, 'normal', 4);
   p.ist(!engSpanne.ueberzieht,
     'Zeit: auch dreißig Minuten werden eingehalten, nicht überzogen',

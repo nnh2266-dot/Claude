@@ -129,7 +129,7 @@ export default async function laufen() {
   // nur auf, wenn man sich künstlich bremste — also genau dann, wenn es zu
   // leicht war.
   const bwProfil = { ...PROFIL, equipment: 'bw' };
-  const bwPlan = T.buildPlan(L.profileForPlan(bwProfil), 0, { rang: L.leiterRang });
+  const bwPlan = T.buildPlan(L.profileForPlan(bwProfil), 0, { rang: L.leiterRang, leiter: L.leiterId });
   const bwVorgaben = bwPlan.days.flatMap((d) => d.exercises)
     .filter((x) => x.loadless && !T.isTimed(x.id));
   p.ist(bwVorgaben.length > 0, 'Leiter: der Körpergewichtsplan hat Vorgaben ohne Gewicht');
@@ -180,7 +180,7 @@ export default async function laufen() {
   const tempoProfil = (minuten) => ({ ...PROFIL, equipment: 'bw', sessionLength: minuten });
   const anzahlBei = (minuten, tempo) => {
     const pr = tempoProfil(minuten);
-    const plan = T.buildPlan(L.profileForPlan(pr), 1, { rang: L.leiterRang, pausen: tempo });
+    const plan = T.buildPlan(L.profileForPlan(pr), 1, { rang: L.leiterRang, leiter: L.leiterId, pausen: tempo });
     return plan.days[0].exercises.length;
   };
 
@@ -193,7 +193,7 @@ export default async function laufen() {
   for (const minuten of [45, 60, 75, 90]) {
     for (const tempo of ['kurz', 'normal', 'lang']) {
       const pr = tempoProfil(minuten);
-      const plan = T.buildPlan(L.profileForPlan(pr), 1, { rang: L.leiterRang, pausen: tempo });
+      const plan = T.buildPlan(L.profileForPlan(pr), 1, { rang: L.leiterRang, leiter: L.leiterId, pausen: tempo });
       for (const tag of plan.days) {
         // Tage am Mindestumfang dürfen überziehen — das sagt die App dann auch.
         if (tag.exercises.length <= 4) continue;
@@ -214,7 +214,7 @@ export default async function laufen() {
   /* ---------- Die empfohlene Trainingszeit ---------- */
   const knapp = { ...PROFIL, equipment: 'bw', sessionLength: 30, days: 5,
     weekdays: [1, 2, 3, 4, 5], skills: ['handstand', 'pullup'] };
-  const empf = T.empfohleneZeit(knapp, { rang: L.leiterRang });
+  const empf = T.empfohleneZeit(knapp, { rang: L.leiterRang, leiter: L.leiterId });
 
   p.ist(empf && empf.minuten > knapp.sessionLength,
     'Zeitempfehlung: dreißig Minuten bei fünf Tagen sind zu knapp',
@@ -239,7 +239,7 @@ export default async function laufen() {
 
   // Wer schon gut liegt, bekommt keine Empfehlung — sonst ist sie Lärm.
   const passend = { ...knapp, sessionLength: empf.minuten };
-  p.ist(!T.empfohleneZeit(passend, { rang: L.leiterRang }).lohnt,
+  p.ist(!T.empfohleneZeit(passend, { rang: L.leiterRang, leiter: L.leiterId }).lohnt,
     'Zeitempfehlung: wer schon richtig liegt, wird nicht behelligt');
 
   // Die Empfehlung folgt dem Profil, auch wenn es sich über Monate ändert:
@@ -247,7 +247,7 @@ export default async function laufen() {
   // Varianten, und die dauern doppelt so lang.
   const gestiegen = L.profileForPlan({ ...knapp, sessionLength: 60,
     outgrown: ['pushup', 'pseudopu', 'bwsq', 'lunge', 'gbridge', 'bwgm'] });
-  const nachher = T.empfohleneZeit(gestiegen, { rang: L.leiterRang });
+  const nachher = T.empfohleneZeit(gestiegen, { rang: L.leiterRang, leiter: L.leiterId });
   p.ist(nachher && T.ZEIT_KANDIDATEN.includes(nachher.minuten),
     'Zeitempfehlung: auch nach Aufstiegen kommt eine gültige Empfehlung heraus',
     nachher ? `${nachher.minuten} min` : 'keine');
@@ -267,7 +267,7 @@ export default async function laufen() {
   // Gleichstand gewinnt das kürzeste. „Trainier zweimal dreißig Minuten" als
   // Antwort auf „was ist optimal" ist aber eine Zahl ohne Inhalt.
   const zweiTage = L.profileForPlan({ ...knapp, sessionLength: 45, days: 2, weekdays: [1, 4] });
-  const knappeTage = T.empfohleneZeit(zweiTage, { rang: L.leiterRang });
+  const knappeTage = T.empfohleneZeit(zweiTage, { rang: L.leiterRang, leiter: L.leiterId });
   p.ist(knappeTage.reichtNicht,
     'Zeitempfehlung: bei zwei Trainingstagen hilft keine Minutenzahl',
     `bestes Fenster erreicht ${knappeTage.gut} von ${knappeTage.gruppen} Gruppen`);
@@ -276,7 +276,7 @@ export default async function laufen() {
 
   // Und bei genug Tagen bleibt es bei einer Zeitangabe.
   const fuenfTage = L.profileForPlan({ ...knapp, sessionLength: 45, days: 5, weekdays: [1, 2, 3, 4, 5] });
-  p.ist(!T.empfohleneZeit(fuenfTage, { rang: L.leiterRang }).reichtNicht,
+  p.ist(!T.empfohleneZeit(fuenfTage, { rang: L.leiterRang, leiter: L.leiterId }).reichtNicht,
     'Zeitempfehlung: bei fünf Tagen ist die Zeit der richtige Hebel');
 
   // Gezählt wird gegen alle Muskelgruppen, die überhaupt vorkommen können —
@@ -289,7 +289,7 @@ export default async function laufen() {
   // abbekommt. Bei sechs Tagen kam so heraus: vierzig Minuten mit sechs von
   // zehn Gruppen schlug sechzig mit sieben von elf.
   const sechsTage = L.profileForPlan({ ...knapp, days: 6, weekdays: [1, 2, 3, 4, 5, 6] });
-  const sechs = T.empfohleneZeit(sechsTage, { rang: L.leiterRang });
+  const sechs = T.empfohleneZeit(sechsTage, { rang: L.leiterRang, leiter: L.leiterId });
   const nenner = new Set(sechs.stufen.map((x) => x.gruppen));
   p.gleich(nenner.size, 1,
     'Zeitempfehlung: alle Fenster werden gegen denselben Nenner gezählt',
@@ -303,7 +303,7 @@ export default async function laufen() {
     `empfohlen ${sechs.minuten} min mit ${sechs.gut}, bestes ${besteStufe.minuten} min mit ${besteStufe.gut}`);
 
   /* ---------- Trainingstage im Vergleich ---------- */
-  const tage = T.tageVergleich(L.profileForPlan(knapp), { rang: L.leiterRang });
+  const tage = T.tageVergleich(L.profileForPlan(knapp), { rang: L.leiterRang, leiter: L.leiterId });
   p.gleich(tage.length, T.TAGE_KANDIDATEN.length,
     'Tagevergleich: jede Tagezahl bekommt ein Ergebnis');
   p.ist(tage.every((x) => x.gruppen === tage[0].gruppen),
@@ -315,7 +315,7 @@ export default async function laufen() {
 
   // Der Tagevergleich muss auch eine Rangfolge hergeben, nicht nur Zeilen.
   const sechsTageVergleich = T.tageVergleich(
-    L.profileForPlan({ ...knapp, days: 6, weekdays: [1, 2, 3, 4, 5, 6] }), { rang: L.leiterRang },
+    L.profileForPlan({ ...knapp, days: 6, weekdays: [1, 2, 3, 4, 5, 6] }), { rang: L.leiterRang, leiter: L.leiterId },
   );
   const jetztSechs = sechsTageVergleich.find((x) => x.tage === 6);
   const besteVonAllen = [...sechsTageVergleich].sort((a, b) => a.daneben - b.daneben)[0];
@@ -339,7 +339,7 @@ export default async function laufen() {
   // festgelegt hat, will wissen, ob er es gut einsetzt, und nicht gefragt
   // werden, ob er nicht mehr geben möchte.
   const sechsTagePr = L.profileForPlan({ ...knapp, days: 6, weekdays: [1, 2, 3, 4, 5, 6] });
-  const tabelle = T.tageVergleich(sechsTagePr, { rang: L.leiterRang });
+  const tabelle = T.tageVergleich(sechsTagePr, { rang: L.leiterRang, leiter: L.leiterId });
   const meine = tabelle.find((x) => x.tage === 6);
   const budget = meine.stunden * 1.05;
   const drin = tabelle.filter((x) => x.stunden <= budget);
@@ -505,12 +505,12 @@ export default async function laufen() {
     ...PROFIL, equipment: 'bw', level: 'anfaenger', days: 3, weekdays: [1, 3, 5],
     gear: ['stange'], outgrown: ['negpull'],
   });
-  const ersterPlan = T.buildPlan(nachAufstieg, 1, { rang: L.leiterRang });
+  const ersterPlan = T.buildPlan(nachAufstieg, 1, { rang: L.leiterRang, leiter: L.leiterId });
   const senkrecht = (plan) => [...new Set(plan.days.flatMap((d) => d.exercises)
     .filter((x) => T.bewegungsmuster(x.id) === 'v').map((x) => x.id))];
   const zugVorher = senkrecht(ersterPlan);
   const zugNachher = senkrecht(T.buildPlan(nachAufstieg, 1,
-    { stufen: L.rungsInPlan(ersterPlan), rang: L.leiterRang }));
+    { stufen: L.rungsInPlan(ersterPlan), rang: L.leiterRang, leiter: L.leiterId }));
   p.gleich(zugNachher, zugVorher,
     'Leitern: die erklommene Zugsprosse überlebt den Neubau',
     `vorher ${zugVorher.join(',')} — nachher ${zugNachher.join(',')}`);

@@ -13,7 +13,7 @@ import {
   empfohleneZeit, tageVergleich, verteileTage,
   EXERCISES, REST_TEMPO,
 } from '../training.js';
-import { ladderFor, rungsInPlan, profileForPlan, leiterRang } from '../ladders.js';
+import { ladderFor, rungsInPlan, profileForPlan, leiterRang, leiterId } from '../ladders.js';
 import { energyPlan, energyBreakdown, ACTIVITY_LABEL } from '../energy.js';
 import { skillById, currentLevel, levelIndex, MINUTES_PER_SKILL } from '../skills.js';
 
@@ -167,7 +167,7 @@ export async function render(container, ctx) {
             onClick: async () => {
               if (String(plan.splitKey) === k) return;
               const neuesProfil = { ...profile, splitKey: k };
-              const next = buildPlan(profileForPlan(neuesProfil), plan.seed || 0, { stufen: rungsInPlan(plan), rang: leiterRang, pausen: tempo });
+              const next = buildPlan(profileForPlan(neuesProfil), plan.seed || 0, { stufen: rungsInPlan(plan), rang: leiterRang, leiter: leiterId, pausen: tempo });
               next.createdAt = plan.createdAt;
               next.zyklus = plan.zyklus;
               await setTrainingProfile(neuesProfil);
@@ -217,7 +217,7 @@ export async function render(container, ctx) {
 
     // Derselbe Seed wie bisher und die erreichten Leitersprossen mitgegeben:
     // Hier sollen neue Übungen dazukommen, nicht alles neu gewürfelt werden.
-    const next = buildPlan(profileForPlan(profile), plan.seed || 0, { stufen: rungsInPlan(plan), rang: leiterRang, pausen: tempo });
+    const next = buildPlan(profileForPlan(profile), plan.seed || 0, { stufen: rungsInPlan(plan), rang: leiterRang, leiter: leiterId, pausen: tempo });
     next.createdAt = plan.createdAt;
     next.zyklus = plan.zyklus;
     await setPlan(next);
@@ -266,7 +266,7 @@ export async function render(container, ctx) {
    * sagte, dass da noch Platz gewesen wäre.
    */
   const passend = buildPlan(profileForPlan(profile), plan.seed || 0,
-    { stufen: rungsInPlan(plan), rang: leiterRang, pausen: tempo });
+    { stufen: rungsInPlan(plan), rang: leiterRang, leiter: leiterId, pausen: tempo });
 
   // Verglichen wird die Dauer, nicht die Zahl der Übungen. Seit ein knappes
   // Zeitfenster auch über die Satzzahl eingehalten wird, können zwei Pläne
@@ -317,8 +317,8 @@ export async function render(container, ctx) {
   // bewertet die Empfehlung Pläne mit Sprossen, die längst hinter einem
   // liegen — und die sind beidseitig und damit schneller, also fiele die
   // empfohlene Zeit zu kurz aus.
-  const empfehlung = empfohleneZeit(profileForPlan(profile), { rang: leiterRang, pausen: tempo });
-  const tage = tageVergleich(profileForPlan(profile), { rang: leiterRang, pausen: tempo });
+  const empfehlung = empfohleneZeit(profileForPlan(profile), { rang: leiterRang, leiter: leiterId, pausen: tempo });
+  const tage = tageVergleich(profileForPlan(profile), { rang: leiterRang, leiter: leiterId, pausen: tempo });
 
   const tageEmpfehlung = empfehlung && empfehlung.reichtNicht
     ? el('div', { class: 'card stack mt-16' },
@@ -431,7 +431,7 @@ export async function render(container, ctx) {
               sessionLength: besteTage.minuten,
             };
             const next = buildPlan(profileForPlan(neuesProfil), plan.seed || 0,
-              { stufen: rungsInPlan(plan), rang: leiterRang, pausen: tempo });
+              { stufen: rungsInPlan(plan), rang: leiterRang, leiter: leiterId, pausen: tempo });
             next.createdAt = plan.createdAt;
             next.zyklus = plan.zyklus;
             await setTrainingProfile(neuesProfil);
@@ -480,7 +480,7 @@ export async function render(container, ctx) {
               + 'auch. Aussortierte Übungen bleiben aussortiert.')) return;
             const neuesProfil = { ...profile, sessionLength: empfehlung.minuten };
             const next = buildPlan(profileForPlan(neuesProfil), plan.seed || 0,
-              { stufen: rungsInPlan(plan), rang: leiterRang, pausen: tempo });
+              { stufen: rungsInPlan(plan), rang: leiterRang, leiter: leiterId, pausen: tempo });
             next.createdAt = plan.createdAt;
             next.zyklus = plan.zyklus;
             await setTrainingProfile(neuesProfil);
@@ -603,7 +603,7 @@ export async function render(container, ctx) {
           // Gleicher Split, gleiche Blockwoche — nur andere Übungen. Die
           // Leitersprossen bleiben trotzdem stehen: „andere Übungen" heißt
           // Abwechslung, nicht Rückstufung.
-          const next = buildPlan(profileForPlan(profile), (plan.seed || 0) + 1, { stufen: rungsInPlan(plan), rang: leiterRang, pausen: tempo });
+          const next = buildPlan(profileForPlan(profile), (plan.seed || 0) + 1, { stufen: rungsInPlan(plan), rang: leiterRang, leiter: leiterId, pausen: tempo });
           next.createdAt = plan.createdAt;
           await setPlan(next);
           await ctx.refreshTraining();

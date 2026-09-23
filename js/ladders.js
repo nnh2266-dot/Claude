@@ -175,6 +175,19 @@ export function outgrownMitUnterbau(outgrown) {
 }
 
 /**
+ * Auf welcher Leiter eine Übung steht, oder null.
+ *
+ * Wie leiterRang für buildPlan gedacht: Das Leiterwissen liegt hier, und
+ * training.js darf diese Datei nicht importieren, sonst drehen sich die
+ * beiden im Kreis. Gebraucht, damit der Planbau nicht zwei Sprossen derselben
+ * Leiter an einen Tag stellt.
+ */
+export function leiterId(id) {
+  const s = LEITER_VON.get(id);
+  return s ? s.leiter.id : null;
+}
+
+/**
  * Sprossennummer einer Übung, oder null. Für buildPlan gedacht: Das
  * Leiterwissen liegt hier, training.js soll es nicht importieren müssen.
  */

@@ -46,7 +46,7 @@ export default async function laufen() {
         limits: [], focus: [], skills: [], gear: ['stange'], blocked: [], outgrown: ['pushup'],
       };
       await s.setTrainingProfile(profil);
-      await s.setPlan(t.buildPlan(l.profileForPlan(profil), 0, { rang: l.leiterRang }));
+      await s.setPlan(t.buildPlan(l.profileForPlan(profil), 0, { rang: l.leiterRang, leiter: l.leiterId }));
       await s.saveMeal({ id: 'a', date: heute, timestamp: Date.now(), mealType: 'mittag',
         name: 'Linsen', items: [{ name: 'Linsen', grams: 300, kcal: 420, protein: 26, carbs: 60, fat: 6 }], note: 'Notiz' });
       await s.saveFavorite({ id: 'f1', name: 'Linsen', items: [{ name: 'Linsen', grams: 300, kcal: 420, protein: 26, carbs: 60, fat: 6 }] });
@@ -126,7 +126,7 @@ export default async function laufen() {
       const alt = await s.getPlan();
       const vorher = [...l.rungsInPlan(alt)].sort();
       const neu = t.buildPlan(l.profileForPlan(profil), (alt.seed || 0) + 3,
-        { stufen: l.rungsInPlan(alt), rang: l.leiterRang });
+        { stufen: l.rungsInPlan(alt), rang: l.leiterRang, leiter: l.leiterId });
       const nachher = [...l.rungsInPlan(neu)].sort();
       // Gemeinsame Leitern müssen dieselbe Sprosse haben.
       const abweichung = [];

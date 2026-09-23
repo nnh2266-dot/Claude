@@ -12,7 +12,7 @@ import {
 } from '../training.js';
 import { SKILLS, MINUTES_PER_SKILL, skillById } from '../skills.js';
 import { KOSTFORMEN } from '../suggest.js';
-import { profileForPlan, leiterRang } from '../ladders.js';
+import { profileForPlan, leiterRang, leiterId } from '../ladders.js';
 
 /** Zwischenstand des Fragebogens. Überlebt den Wechsel zwischen den Schritten. */
 let draft = null;
@@ -413,7 +413,7 @@ async function finish(ctx) {
 
   // Mit aufgefüllter Sperrliste: Wer den Fragebogen erneut ausfüllt, soll
   // nicht auf einer Sprosse landen, die er längst hinter sich hat.
-  const plan = buildPlan(profileForPlan(profile), 0, { rang: leiterRang });
+  const plan = buildPlan(profileForPlan(profile), 0, { rang: leiterRang, leiter: leiterId });
 
   await setTrainingProfile(profile);
   await setPlan(plan);

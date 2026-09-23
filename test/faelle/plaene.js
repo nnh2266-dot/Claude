@@ -21,7 +21,8 @@ export default async function laufen() {
   const p = neuerLauf('Pläne');
 
   const fehler = {
-    gebaut: [], leer: [], doppelt: [], zeit: [], saetze: [], kraft: [], leiter: [], stufe: [],
+    gebaut: [], leer: [], doppelt: [], zeit: [], saetze: [], kraft: [], leiter: [],
+    doppelleiter: [], stufe: [],
     zug: [], hinge: [], stange: [], volumen: [],
   };
   let gezaehlt = 0;
@@ -45,7 +46,7 @@ export default async function laufen() {
                   });
 
                   let plan;
-                  try { plan = T.buildPlan(profil, 0, { rang: L.leiterRang }); }
+                  try { plan = T.buildPlan(profil, 0, { rang: L.leiterRang, leiter: L.leiterId }); }
                   catch (e) { fehler.gebaut.push(`${wer}: ${e.message}`); continue; }
 
                   for (const tag of plan.days) {
@@ -87,6 +88,42 @@ export default async function laufen() {
                     for (const g of L.sameLadderGroups(ids)) {
                       if (g.stufen.length >= g.leiter.stufen.length) {
                         fehler.leiter.push(`${wer} · ${tag.name}: ${g.leiter.name}`);
+                      }
+                    }
+
+                    /*
+                     * Und schon zwei Sprossen derselben Leiter sind eine zu viel.
+                     *
+                     * Hier stand nur die Prüfung darüber — eine **ganze** Leiter
+                     * an einem Tag. Das ließ Kniebeuge neben Ausfallschritt und
+                     * Liegestütz neben Pseudo-Planche durchgehen: dieselbe
+                     * Bewegung, einmal schwerer und einmal leichter, und die
+                     * leichtere ist dann kein Satz mehr, sondern Aufwärmen.
+                     * Gemessen kam das in 648 Plänen 1944 mal vor.
+                     *
+                     * Erlaubt bleibt es, wenn es nicht anders geht: Zwei
+                     * Bizepsplätze und alle Körpergewichts-Curls auf einer
+                     * Leiter lassen keine andere Wahl. „Nicht anders" heißt
+                     * hier: In der Gruppe gibt es keine Übung von einer anderen
+                     * Leiter, die noch frei wäre.
+                     */
+                    for (const g of L.sameLadderGroups(ids)) {
+                      const vorbild = T.exerciseById(g.stufen[0].id);
+                      // Der Typ muss stimmen: In einen Platz für eine
+                      // Grundübung passt keine Isolationsübung, auch wenn sie
+                      // zur selben Gruppe gehört. Ohne diese Bedingung meldete
+                      // die Prüfung Alternativen, die der Plan nie hätte
+                      // einsetzen können — etwa am Zugtag ohne Geräte, wo alle
+                      // drei waagerechten Ruderübungen auf einer Leiter stehen
+                      // und der senkrechte Platz schon belegt ist.
+                      const ausweg = T.EXERCISES.some((e) => e.group === vorbild.group
+                        && e.type === vorbild.type
+                        && T.isAvailable(e, profil)
+                        && !ids.includes(e.id)
+                        && L.leiterId(e.id) !== g.leiter.id);
+                      if (ausweg) {
+                        fehler.doppelleiter.push(`${wer} · ${tag.name}: ${g.leiter.name} `
+                          + `(${g.stufen.map((x) => x.id).join('+')}) — es gäbe Alternativen`);
                       }
                     }
                     // Die höchste Sprosse einer Leiter im Tag muss mindestens am
@@ -145,6 +182,8 @@ export default async function laufen() {
   p.leer(fehler.saetze, `Keine Übung unter ${T.SAETZE_MINDESTENS} Sätzen`);
   p.leer(fehler.kraft, 'Die Technikarbeit frisst den Kraftteil nicht auf');
   p.leer(fehler.leiter, 'Keine ganze Leiter an einem Tag');
+  p.leer(fehler.doppelleiter,
+    'Keine zwei Sprossen derselben Leiter an einem Tag, solange es Alternativen gibt');
   p.leer(fehler.stufe, 'Keine Sprosse unter dem Einstieg der Erfahrungsstufe');
   p.leer(fehler.zug, 'Beide Zugrichtungen in jeder Woche');
   p.leer(fehler.hinge, 'Hüftstreckung in jeder Woche');
@@ -183,7 +222,7 @@ export default async function laufen() {
             });
 
             let plan;
-            try { plan = T.buildPlan(profil, 0, { rang: L.leiterRang }); }
+            try { plan = T.buildPlan(profil, 0, { rang: L.leiterRang, leiter: L.leiterId }); }
             catch (e) { schonung.gebaut.push(`${wer}: ${e.message}`); continue; }
 
             for (const tag of plan.days) {
@@ -235,7 +274,7 @@ export default async function laufen() {
               // Plätze als Gruppen. Das ist die Vorlage, nicht die Schonung,
               // und eine Prüfung, die beides vermischt, zeigt auf das Falsche.
               if (limits.length) {
-                const ohne = T.buildPlan({ ...profil, limits: [] }, 0, { rang: L.leiterRang });
+                const ohne = T.buildPlan({ ...profil, limits: [] }, 0, { rang: L.leiterRang, leiter: L.leiterId });
                 const vorher = new Set(ohne.days.flatMap((d) => d.exercises)
                   .map((x) => T.exerciseById(x.id).group));
                 const nachher = new Set(alle.map((i) => T.exerciseById(i).group));
@@ -277,10 +316,10 @@ export default async function laufen() {
       ernaehrung: 'misch', equipment, activity: 'leicht',
       limits: [], focus: [], skills: [], gear: ['stange', 'barren'], blocked: [], outgrown: [],
     });
-    const erst = T.buildPlan(profil, 0, { rang: L.leiterRang });
+    const erst = T.buildPlan(profil, 0, { rang: L.leiterRang, leiter: L.leiterId });
     const stand = L.rungsInPlan(erst);
     for (let seed = 1; seed <= 6; seed += 1) {
-      const neu = T.buildPlan(profil, seed, { stufen: stand, rang: L.leiterRang });
+      const neu = T.buildPlan(profil, seed, { stufen: stand, rang: L.leiterRang, leiter: L.leiterId });
       for (const id of L.rungsInPlan(neu)) {
         const leiterId = L.ladderFor(id).leiter.id;
         const vorher = [...stand].find((x) => L.ladderFor(x).leiter.id === leiterId);

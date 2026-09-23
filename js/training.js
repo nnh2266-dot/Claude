@@ -753,7 +753,8 @@ export function isAvailable(exercise, profile, { ignoriereSperren = false } = {}
  * beliebigen. Beide Auskünfte kommen von außen, weil das Leiterwissen in
  * ladders.js liegt und diese Datei es nicht importieren darf.
  */
-export function buildPlan(profile, seed = 0, { stufen = null, rang = null, pausen = null } = {}) {
+export function buildPlan(profile, seed = 0,
+  { stufen = null, rang = null, pausen = null, leiter = null } = {}) {
   // Ausrüstung, Gerät, Beschwerden, Sperrliste und ausgewachsene Übungen
   // stecken alle in isAvailable.
   const usable = EXERCISES.filter((e) => isAvailable(e, profile));
@@ -831,8 +832,41 @@ export function buildPlan(profile, seed = 0, { stufen = null, rang = null, pause
     if (!pool.length) pool = usable.filter((e) => e.group === group);
     if (!pool.length && FALLBACK_GROUP[group]) pool = usable.filter((e) => e.group === FALLBACK_GROUP[group]);
 
-    const free = pool.filter((e) => !usedToday.has(e.id));
+    let free = pool.filter((e) => !usedToday.has(e.id));
     if (!free.length) return null; // keine Übung zweimal am selben Tag
+
+    /**
+     * Nicht zweimal dieselbe Leiter an einem Tag.
+     *
+     * Zwei Sprossen derselben Leiter sind dieselbe Bewegung, einmal schwerer
+     * und einmal leichter — wenn die schwerere geht, ist die leichtere kein
+     * Satz mehr, sondern Aufwärmen. Kniebeuge neben Ausfallschritt, Liegestütz
+     * neben Pseudo-Planche: gemessen kam das in 648 durchgerechneten Plänen
+     * 1944 mal vor, im Schnitt dreimal je Plan.
+     *
+     * Das Wissen dafür gab es längst: sameLadderGroups warnt in der
+     * Trainingsansicht davor, und der manuelle Tausch meidet es. Nur der
+     * Planbau selbst wusste nichts davon — er kannte die Leitern gar nicht.
+     *
+     * Ganz vermeiden lässt es sich nicht. Ohne Ausrüstung stehen alle sechs
+     * Kniebeugevarianten auf einer Leiter, und ein Unterkörpertag hat zwei
+     * Kniebeugeplätze; dann gibt es nichts anderes. Deshalb ist das hier eine
+     * Bevorzugung und kein Verbot: Gibt es eine Übung von einer noch
+     * unbenutzten Leiter, kommt sie zuerst. Gibt es keine, bleibt es beim
+     * bisherigen Verhalten.
+     */
+    if (leiter) {
+      const belegt = new Set();
+      for (const id of usedToday) {
+        const l = leiter(id);
+        if (l) belegt.add(l);
+      }
+      const andere = free.filter((e) => {
+        const l = leiter(e.id);
+        return !l || !belegt.has(l);
+      });
+      if (andere.length) free = andere;
+    }
 
     // Steht für eine Leiter eine erreichte Sprosse fest, wird genau die
     // genommen — sofern sie überhaupt zur Wahl steht. Sonst würde der Neubau
@@ -1501,13 +1535,13 @@ export const ZEIT_KANDIDATEN = [30, 40, 45, 50, 55, 60, 70, 80];
  * wenn der Rest mitspielt. Die Zahl ist eine Obergrenze des Sinnvollen, kein
  * Soll.
  */
-export function empfohleneZeit(profile, { rang = null, pausen = null } = {}) {
+export function empfohleneZeit(profile, { rang = null, pausen = null, leiter = null } = {}) {
   if (!profile) return null;
 
   const bewerten = (minuten) => {
     const pr = { ...profile, sessionLength: minuten };
     let plan;
-    try { plan = buildPlan(pr, 0, { rang, pausen }); } catch { return null; }
+    try { plan = buildPlan(pr, 0, { rang, pausen, leiter }); } catch { return null; }
     const vol = weeklyPlannedSets(plan, 2);
     const tag = plan.days[0];
     return {
@@ -1679,7 +1713,7 @@ export const TAGE_KANDIDATEN = [2, 3, 4, 5, 6];
  * Zeitfenster, das dort am besten abschneidet — sonst vergliche man eine gute
  * Aufteilung bei schlechter Zeit mit einer schlechten bei guter.
  */
-export function tageVergleich(profile, { rang = null, pausen = null } = {}) {
+export function tageVergleich(profile, { rang = null, pausen = null, leiter = null } = {}) {
   if (!profile) return [];
 
   return TAGE_KANDIDATEN.map((tage) => {
@@ -1690,7 +1724,7 @@ export function tageVergleich(profile, { rang = null, pausen = null } = {}) {
       // Wochentagswahl hängt.
       weekdays: [1, 2, 3, 4, 5, 6].slice(0, tage),
     };
-    const e = empfohleneZeit(pr, { rang, pausen });
+    const e = empfohleneZeit(pr, { rang, pausen, leiter });
     if (!e) return null;
     return {
       tage,
