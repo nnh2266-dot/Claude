@@ -486,6 +486,48 @@ const SPLITS = {
   4: { name: 'Oberkörper / Unterkörper', days: [['Oberkörper A','upper'],['Unterkörper A','lower'],['Oberkörper B','upper'],['Unterkörper B','lower']] },
   5: { name: 'Push / Pull / Beine + OK / UK', days: [['Push','push'],['Pull','pull'],['Beine','legs'],['Oberkörper','upper'],['Unterkörper','lower']] },
   6: { name: 'Push / Pull / Beine 2×', days: [['Push A','push'],['Pull A','pull'],['Beine A','legs'],['Push B','push'],['Pull B','pull'],['Beine B','legs']] },
+  '6ul': { name: 'Oberkörper / Unterkörper 3×', days: [['Oberkörper A','upper'],['Unterkörper A','lower'],['Oberkörper B','upper'],['Unterkörper B','lower'],['Oberkörper C','upper'],['Unterkörper C','lower']] },
+  '6gk': { name: 'Ganzkörper 6×', days: [['Ganzkörper A','fbA'],['Ganzkörper B','fbB'],['Ganzkörper C','fbC'],['Ganzkörper D','fbA'],['Ganzkörper E','fbB'],['Ganzkörper F','fbC']] },
+  '6ul': { name: 'Oberkörper / Unterkörper 3×', days: [['Oberkörper A','upper'],['Unterkörper A','lower'],['Oberkörper B','upper'],['Unterkörper B','lower'],['Oberkörper C','upper'],['Unterkörper C','lower']] },
+  '6gk': { name: 'Ganzkörper 6×', days: [['Ganzkörper A','fbA'],['Ganzkörper B','fbB'],['Ganzkörper C','fbC'],['Ganzkörper D','fbA'],['Ganzkörper E','fbB'],['Ganzkörper F','fbC']] },
+};
+
+/**
+ * Welche Aufteilungen es je Tagezahl gibt — und was sie kosten.
+ *
+ * Die Zahl der Tage sagt noch nicht, wie sich das Volumen verteilt. Sechs Tage
+ * als Push/Pull/Beine zweimal treffen den Rücken an einem Tag mit bis zu
+ * sechzehn Sätzen; dieselben sechs Tage als Ganzkörper kommen auf fünf. Beides
+ * ergibt in der Woche ähnlich viel, fühlt sich aber völlig anders an — und die
+ * Übersichtsarbeiten legen nahe, dass jenseits von etwa elf Sätzen je Gruppe
+ * **in einer Einheit** ein weiterer Satz kaum noch etwas beiträgt.
+ *
+ * Deshalb steht die Wahl da, statt dass eine Aufteilung je Tagezahl fest
+ * verdrahtet ist. Der Hinweis nennt die Kehrseite, nicht nur den Vorteil.
+ */
+export const SPLIT_WAHL = {
+  3: [
+    { wert: '3', label: 'Ganzkörper 3×',
+      hint: 'Jede Gruppe dreimal die Woche, jeweils in kleineren Portionen. Bei gleichem '
+        + 'Wochenvolumen ist das die verträglichere Verteilung.' },
+    { wert: '3ppl', label: 'Push / Pull / Beine',
+      hint: 'Jede Gruppe einmal die Woche, dafür geballt: Auf dem Zugtag stehen 13 bis 16 Sätze '
+        + 'für den Rücken. Ab etwa elf Sätzen in einer Einheit trägt ein weiterer kaum noch bei.' },
+  ],
+  6: [
+    { wert: '6', label: 'Push / Pull / Beine 2×',
+      hint: 'Jede Gruppe zweimal die Woche, aber geballt: auf dem Zugtag bis zu sechzehn Sätze '
+        + 'für den Rücken. Dafür nur zwei Beintage — passend, wenn eine Sportart die Beine '
+        + 'ohnehin fordert.' },
+    { wert: '6ul', label: 'Oberkörper / Unterkörper 3×',
+      hint: 'Drei Oberkörper- und drei Beintage. Der Rücken kommt auf höchstens zehn Sätze je '
+        + 'Einheit statt sechzehn. Dafür dreimal Beine — viel, wenn daneben noch Sport mit '
+        + 'Beinbelastung steht.' },
+    { wert: '6gk', label: 'Ganzkörper 6×',
+      hint: 'Alles an jedem Tag, in kleinen Portionen: höchstens rund fünf Sätze je Gruppe und '
+        + 'Einheit. Die gleichmäßigste Verteilung — dafür fasst jede einzelne Einheit von jeder '
+        + 'Gruppe wenig an.' },
+  ],
 };
 
 /** Schwerpunkt → zusätzlicher Slot, und an welchen Tagen er sinnvoll ist. */
@@ -771,7 +813,15 @@ export function buildPlan(profile, seed = 0,
   // Ganzkörpertage verteilt wirkt mehr.
   //
   // Wer es trotzdem will, stellt es im Plan um; dafür steht splitKey im Profil.
-  if (profile.splitKey && SPLITS[profile.splitKey]) key = profile.splitKey;
+  //
+  // Geprüft wird dabei die Tagezahl. Ohne diese Bedingung behielt jemand, der
+  // von drei auf sechs Tage wechselte, seine Drei-Tage-Aufteilung: Der Plan
+  // hatte danach drei Tage, obwohl sechs eingestellt waren, und niemand sagte
+  // etwas dazu.
+  if (profile.splitKey && SPLITS[profile.splitKey]
+      && SPLITS[profile.splitKey].days.length === profile.days) {
+    key = profile.splitKey;
+  }
   const split = SPLITS[key] || SPLITS[3];
 
   // Die Übungszahl folgt der Zeit pro Einheit. Wie lange eine Übung dauert,

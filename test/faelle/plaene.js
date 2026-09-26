@@ -190,6 +190,63 @@ export default async function laufen() {
   p.leer(fehler.stange, 'Vorhandene Klimmzugstange kommt vor');
   p.leer(fehler.volumen, 'Kein Wochenvolumen über 32 Sätzen je Gruppe');
 
+  /* ---------- Aufteilungen ---------- */
+  //
+  // Die Tagezahl sagt noch nicht, wie sich das Volumen verteilt. Sechs Tage als
+  // Push/Pull/Beine zweimal treffen den Rücken an einem Tag mit bis zu sechzehn
+  // Sätzen, dieselben sechs Tage als Ganzkörper mit fünf. Jede angebotene Wahl
+  // muss deshalb bauen, die richtige Zahl Tage haben und keine Gruppe in einer
+  // einzelnen Einheit unsinnig überladen.
+  const splitFehler = { tage: [], gebaut: [], spitze: [] };
+  for (const [tage, wahlen] of Object.entries(T.SPLIT_WAHL)) {
+    for (const wahl of wahlen) {
+      for (const equipment of AUSRUESTUNG) {
+        const profil = L.profileForPlan({
+          sex: 'm', age: 34, height: 180, weight: 80, bodyfat: null,
+          goal: 'form', targetWeight: 76, level: 'fortgeschritten',
+          days: Number(tage), sessionLength: 60,
+          weekdays: [1, 2, 3, 4, 5, 6].slice(0, Number(tage)),
+          ernaehrung: 'misch', equipment, activity: 'leicht',
+          limits: [], focus: [], skills: [], gear: ['stange'], blocked: [], outgrown: [],
+          splitKey: wahl.wert,
+        });
+        let plan;
+        try { plan = T.buildPlan(profil, 0, { rang: L.leiterRang, leiter: L.leiterId }); }
+        catch (e) { splitFehler.gebaut.push(`${wahl.wert}/${equipment}: ${e.message}`); continue; }
+
+        if (plan.days.length !== Number(tage)) {
+          splitFehler.tage.push(`${wahl.wert}/${equipment}: ${plan.days.length} statt ${tage} Tage`);
+        }
+        // Mehr als achtzehn Sätze einer Gruppe in einer einzigen Einheit ist
+        // jenseits von allem, was ein weiterer Satz noch beiträgt.
+        for (const tag of plan.days) {
+          const je = {};
+          for (const x of tag.exercises) {
+            const g = T.exerciseById(x.id).group;
+            je[g] = (je[g] || 0) + T.forWeek(x, 3).sets;
+          }
+          for (const [g, n] of Object.entries(je)) {
+            if (n > 18) splitFehler.spitze.push(`${wahl.wert}/${equipment} · ${tag.name}: ${g} ${n}`);
+          }
+        }
+      }
+    }
+  }
+  p.leer(splitFehler.gebaut, 'Aufteilungen: jede angebotene Wahl lässt sich bauen');
+  p.leer(splitFehler.tage, 'Aufteilungen: jede hat genau so viele Tage wie angegeben');
+  p.leer(splitFehler.spitze, 'Aufteilungen: keine Gruppe über 18 Sätzen in einer Einheit');
+
+  // Und eine Aufteilung aus einer anderen Tagezahl darf nicht durchschlagen.
+  const falscheWahl = L.profileForPlan({
+    sex: 'm', age: 34, height: 180, weight: 80, goal: 'form', targetWeight: 76,
+    level: 'fortgeschritten', days: 6, sessionLength: 60, weekdays: [1, 2, 3, 4, 5, 6],
+    ernaehrung: 'misch', equipment: 'bw', activity: 'leicht',
+    limits: [], focus: [], skills: [], gear: ['stange'], blocked: [], outgrown: [],
+    splitKey: '3ppl',
+  });
+  p.gleich(T.buildPlan(falscheWahl, 0, { rang: L.leiterRang, leiter: L.leiterId }).days.length, 6,
+    'Aufteilungen: eine Drei-Tage-Aufteilung schlägt bei sechs Tagen nicht durch');
+
   /* ---------- Mit Einschränkungen ---------- */
   //
   // Der große Durchlauf oben läuft mit `limits: []` — Schonungen kamen darin

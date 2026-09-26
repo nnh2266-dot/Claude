@@ -228,6 +228,28 @@ export default async function laufen() {
     p.ist(/\d+ Tage à \d+ Minuten/.test(tabelle || ''),
       'Je Tagezahl steht das Zeitfenster dabei, das dort am besten abschneidet');
 
+    /* ---------- Die Volumenkarte gibt zu, was sie nicht weiß ---------- */
+    // Gezählt wird nur der Trainingsplan. Sportarten tragen einen MET-Wert für
+    // die Kalorien und sonst nichts — welche Muskeln sie belasten, weiß die App
+    // nicht. Wer dreimal die Woche spielt, liest sonst „Gesäß: darunter" und
+    // bekommt einen Rat, der an seiner Woche vorbeigeht. Im Bestand oben stehen
+    // vierzehn Tage Sport, also muss der Hinweis erscheinen.
+    await seite.evaluate(() => { window.location.hash = '#/plan'; });
+    await seite.waitForTimeout(900);
+    const planVol = await seite.evaluate(() => {
+      const karten = [...document.querySelectorAll('#view-plan .card')]
+        .find((x) => x.innerText.includes('Sätze je Woche'));
+      return karten ? karten.innerText : null;
+    });
+    p.ist(planVol, 'Der Plan zeigt die Sätze je Woche');
+    p.enthaelt(planVol || '', 'nicht mitgezählt',
+      'Und sagt, dass der eingetragene Sport darin nicht steckt');
+    p.ist(/\d+ Einheiten? im Kalender/.test(planVol || ''),
+      'Mit der Zahl der Sporteinheiten aus den letzten sieben Tagen',
+      (planVol || '').slice(0, 200));
+    p.enthaeltNicht(planVol || '', 'Sätze für den Quadrizeps',
+      'Aber ohne erfundene Satzzahlen für den Sport');
+
     p.leer(ausnahmen, 'Keine Ausnahme und kein Konsolenfehler in allen Ansichten');
   } finally {
     await browser.close();

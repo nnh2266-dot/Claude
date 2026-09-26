@@ -4,17 +4,19 @@
  */
 
 import { el, mount, viewHead, iconButton, toast, confirmAction } from '../ui.js';
-import { localDateKey } from '../nutrition.js';
+import { localDateKey, shiftDateKey } from '../nutrition.js';
 import { setPlan, clearTraining, setTrainingProfile } from '../store.js';
 import {
   exerciseById, GROUP_LABEL, EQUIPMENT_LABEL, GOAL_LABEL, LEVEL_LABEL,
   blockWeek, forWeek, buildPlan, BLOCK_WEEKS, restSeconds, sessionMinutes, sessionSpanne,
-  isTimed, repRange, isUnilateral, ZYKLUS_WAHL, weeklyPlannedSets, VOLUMEN_UNTEN, VOLUMEN_OBEN,
+  isTimed, repRange, isUnilateral, ZYKLUS_WAHL, SPLIT_WAHL, weeklyPlannedSets,
+  VOLUMEN_UNTEN, VOLUMEN_OBEN,
   empfohleneZeit, tageVergleich, verteileTage,
   EXERCISES, REST_TEMPO,
 } from '../training.js';
 import { ladderFor, rungsInPlan, profileForPlan, leiterRang, leiterId } from '../ladders.js';
 import { energyPlan, energyBreakdown, ACTIVITY_LABEL } from '../energy.js';
+import { activityById } from '../activities.js';
 import { skillById, currentLevel, levelIndex, MINUTES_PER_SKILL } from '../skills.js';
 
 const WEEKDAY_SHORT = ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'];
@@ -153,36 +155,38 @@ export async function render(container, ctx) {
       text: (ZYKLUS_WAHL.find((z) => z.wert === zyklus) || ZYKLUS_WAHL[0]).hint }));
 
   /**
-   * Bei drei Tagen gibt es zwei sinnvolle Aufteilungen, und sie
-   * unterscheiden sich in dem, was zählt: Ganzkörper verteilt das Volumen
-   * einer Gruppe auf drei Einheiten, Push/Pull/Beine packt alles in eine.
+   * Die Aufteilung wählen, wo es etwas zu wählen gibt.
+   *
+   * Stand nur für drei Tage da, mit zwei fest eingetippten Möglichkeiten. Die
+   * Tagezahl sagt aber noch nicht, wie sich das Volumen verteilt: Sechs Tage
+   * als Push/Pull/Beine zweimal treffen den Rücken an einem Tag mit bis zu
+   * sechzehn Sätzen, dieselben sechs Tage als Ganzkörper mit fünf. Die Liste
+   * steht jetzt in training.js, samt der Kehrseite jeder Wahl.
    */
-  const aufteilung = profile.days === 3
+  const wahlen = SPLIT_WAHL[profile.days] || [];
+  const aufteilung = wahlen.length > 1
     ? el('div', { class: 'stack-tight' },
         el('div', { class: 'suppzeit', text: 'Aufteilung' }),
         el('div', { class: 'row' },
-          ...[['3', 'Ganzkörper 3×'], ['3ppl', 'Push / Pull / Beine']].map(([k, label]) => el('button', {
+          ...wahlen.map((w) => el('button', {
             class: 'chip', type: 'button',
-            'aria-pressed': String(plan.splitKey) === k ? 'true' : 'false',
+            'aria-pressed': String(plan.splitKey) === w.wert ? 'true' : 'false',
             onClick: async () => {
-              if (String(plan.splitKey) === k) return;
-              const neuesProfil = { ...profile, splitKey: k };
-              const next = buildPlan(profileForPlan(neuesProfil), plan.seed || 0, { stufen: rungsInPlan(plan), rang: leiterRang, leiter: leiterId, pausen: tempo });
+              if (String(plan.splitKey) === w.wert) return;
+              const neuesProfil = { ...profile, splitKey: w.wert };
+              const next = buildPlan(profileForPlan(neuesProfil), plan.seed || 0,
+                { stufen: rungsInPlan(plan), rang: leiterRang, leiter: leiterId, pausen: tempo });
               next.createdAt = plan.createdAt;
               next.zyklus = plan.zyklus;
               await setTrainingProfile(neuesProfil);
               await setPlan(next);
               await ctx.refreshTraining();
               ctx.reload();
-              toast(`Aufteilung: ${label}.`);
+              toast(`Aufteilung: ${w.label}.`);
             },
-          }, label))),
+          }, w.label))),
         el('p', { class: 'muted small',
-          text: String(plan.splitKey) === '3ppl'
-            ? 'Jede Gruppe einmal die Woche, dafür geballt: Auf dem Zugtag stehen 13 bis 16 Sätze '
-              + 'für den Rücken. Ab etwa elf Sätzen in einer Einheit trägt ein weiterer kaum noch etwas bei.'
-            : 'Jede Gruppe dreimal die Woche, jeweils in kleineren Portionen. Bei gleichem '
-              + 'Wochenvolumen ist das die verlässlichere Variante.' }))
+          text: (wahlen.find((w) => w.wert === String(plan.splitKey)) || wahlen[0]).hint }))
     : null;
 
   /**
@@ -624,6 +628,10 @@ export async function render(container, ctx) {
    * zusammenzählen müsste. Hier steht sie einfach da.
    */
   const volumen = weeklyPlannedSets(plan);
+  const sieben = shiftDateKey(localDateKey(), -6);
+  const sportTage = (ctx.state.sportWoche || [])
+    .filter((a) => a && a.date >= sieben && (a.minutes || 0) > 0);
+  const sportNamen = [...new Set(sportTage.map((a) => activityById(a.type)?.name || a.type))].slice(0, 4);
   const volumenKarte = el('div', { class: 'card stack mt-16' },
     el('div', { class: 'row-between' },
       el('h3', { class: 'card-title', text: 'Sätze je Woche' }),
@@ -652,7 +660,34 @@ export async function render(container, ctx) {
       text: 'Gezählt wird wie in den Übersichtsarbeiten: Sätze, bei denen ein Muskel mitarbeitet, '
         + 'ohne das Ziel zu sein, gehen halb ein. Der Trizeps bekommt beim Bankdrücken etwas ab, '
         + 'auch wenn „Brust" darübersteht. „Rücken" ist dabei keine Muskelgruppe, sondern mehrere — '
-        + 'die Zahl dort liest sich höher, als sie für den einzelnen Muskel ist.' }));
+        + 'die Zahl dort liest sich höher, als sie für den einzelnen Muskel ist.' }),
+
+    /**
+     * Was hier nicht drinsteht — und das ist kein Detail.
+     *
+     * Gezählt wird nur der Trainingsplan. Sportarten tragen in dieser App
+     * einen MET-Wert für die Kalorien und sonst nichts; welche Muskeln sie
+     * belasten, weiß sie nicht. Wer dreimal die Woche Fußball spielt, liest
+     * hier „Gesäß: darunter" und bekommt einen Rat, der an seiner Woche
+     * vorbeigeht.
+     *
+     * Ausgerechnet wird das trotzdem nicht. Aus „90 Minuten Fußball" eine
+     * Satzzahl für den Quadrizeps zu machen wäre eine erfundene Zahl mit
+     * zwei Nachkommastellen — schlimmer als gar keine, weil sie nach
+     * Genauigkeit aussieht. Gesagt wird es.
+     */
+    sportTage.length
+      ? el('p', { class: 'note note-inset' },
+          el('strong', { text: 'Dein Sport ist hier nicht mitgezählt. ' }),
+          `In den letzten sieben Tagen stehen ${sportTage.length} `
+          + `${sportTage.length === 1 ? 'Einheit' : 'Einheiten'} im Kalender`
+          + `${sportNamen.length ? ` (${sportNamen.join(', ')})` : ''}. `
+          + 'Was davon auf welche Muskelgruppe geht, weiß die App nicht — und schätzt es auch '
+          + 'nicht, weil eine erfundene Satzzahl schlimmer wäre als keine. Lies die Zeilen oben '
+          + 'also mit deinem Sport im Kopf: Was dort belastet wird, braucht im Plan weniger.')
+      : el('p', { class: 'hint',
+          text: 'Gezählt ist nur der Trainingsplan. Sportarten, die du unter „Aktivität" '
+            + 'einträgst, gehen hier nicht ein — welche Muskeln sie belasten, weiß die App nicht.' }));
 
   const days = plan.days.map((day) => dayCard(day, week, profile.equipment, tempo, profile, plan.zyklus));
 
