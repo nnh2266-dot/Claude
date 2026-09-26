@@ -15,6 +15,59 @@
 export const MEASURE = { sec: 'Sekunden', reps: 'Wiederholungen' };
 
 /**
+ * Fassung der Stufenleitern. Steigt, sobald Stufen eingefügt oder entfernt
+ * werden, und gibt der Wanderung unten ihren Anlass.
+ */
+export const LEITER_FASSUNG = 2;
+
+/**
+ * Wie alte Stände auf neue Stufennummern umziehen.
+ *
+ * Der Fortschritt wird als **Zahl** gespeichert, nicht als Name der Stufe. Eine
+ * Stufe in die Mitte einer Leiter einzufügen verschiebt damit jeden, der
+ * darüber steht: Wer beim L-Sit auf Stufe 4 stand, stünde nach dem Einfügen
+ * plötzlich auf Stufe 3 und wäre ohne Vorwarnung eine Stufe zurückgesetzt.
+ *
+ * Deshalb steht hier für jede Fassung, welche alte Nummer welche neue wird.
+ * Angegeben ist die Abbildung als Liste: Der Wert an Stelle i ist die neue
+ * Nummer für den alten Stand i. Was nicht in der Tabelle steht, bleibt.
+ *
+ * Fassung 2 — zwei Lücken geschlossen, die beim Üben aufgefallen sind: „Die
+ * letzte Stufe zu einfach, die neue viel zu schwer." Beim Handstand fehlte das
+ * Ablösen von der Wand zwischen Wandstand und freiem Kick-up, beim L-Sit der
+ * Advanced Tuck und der gespreizte Sitz.
+ */
+export const LEITER_WANDERUNG = {
+  2: {
+    // alt:  0  1  2  3  4  5  6
+    handstand: [0, 1, 2, 3, 5, 7, 8],
+    // alt:  0  1  2  3  4  5
+    lsit: [0, 1, 3, 5, 6, 7],
+  },
+};
+
+/**
+ * Gespeicherte Stände auf die aktuelle Leiterfassung bringen.
+ * Gibt die gewanderten Stände zurück und dazu, ob sich etwas geändert hat.
+ */
+export function wandereStaende(levels, gespeicherteFassung = 0) {
+  const stand = { ...(levels || {}) };
+  let geaendert = false;
+
+  for (let f = Number(gespeicherteFassung) + 1; f <= LEITER_FASSUNG; f += 1) {
+    const tabelle = LEITER_WANDERUNG[f];
+    if (!tabelle) continue;
+    for (const [id, abbildung] of Object.entries(tabelle)) {
+      const alt = Number(stand[id]);
+      if (!Number.isFinite(alt) || alt <= 0) continue;
+      const neu = abbildung[alt];
+      if (neu !== undefined && neu !== alt) { stand[id] = neu; geaendert = true; }
+    }
+  }
+  return { stand, geaendert };
+}
+
+/**
  * Jede Stufe: was zu tun ist, wie viele Sätze, welches Ziel je Satz und wie
  * viele Sätze das Ziel erreichen müssen, damit die nächste Stufe aufgeht.
  */
@@ -35,8 +88,21 @@ const CATALOG = [
         cue: 'Nur die Fersen berühren die Wand. Schultern über den Händen, Po anspannen.' },
       { name: 'An der Wand, ein Bein lösen', measure: 'sec', target: 30, sets: 3,
         cue: 'Abwechselnd ein Bein von der Wand nehmen. Das Gewicht wandert auf die Finger.' },
+      // Die Brücke, die hier fehlte. Von „ein Bein an der Wand" direkt zum
+      // freien Kick-up ist der größte Sprung der ganzen Leiter: einmal trägt
+      // die Wand noch mit, einmal gar nichts mehr. Dazwischen liegt das
+      // Ablösen — beide Füße weg, ein paar Sekunden frei, wieder ankommen.
+      // Gezählt werden Versuche, nicht Sekunden: Es geht darum, das Gefühl für
+      // den Gleichgewichtspunkt zu bekommen, nicht ums Durchhalten.
+      { name: 'Von der Wand lösen, kurz frei', measure: 'reps', target: 8, sets: 4,
+        cue: 'Bauch zur Wand, beide Füße lösen, eine bis drei Sekunden frei halten, wieder ankommen. '
+          + 'Je Wiederholung ein Versuch. Korrigiert wird mit den Fingerkuppen.' },
       { name: 'Freier Kick-up mit Abfangen', measure: 'sec', target: 10, sets: 5,
         cue: 'Vorher das Herausdrehen üben: eine Hand loslassen, zur Seite abrollen. Dann traut man sich.' },
+      // Und noch eine: Dreißig Sekunden frei sind kurz nach dem ersten Kick-up
+      // unerreichbar. Zehn sind ein Ziel, das man in Wochen sieht.
+      { name: 'Freier Handstand, kurz', measure: 'sec', target: 10, sets: 5,
+        cue: 'Zehn Sekunden sind das Ziel. Kippt es, dreh ab statt zu fallen — das Abdrehen gehört dazu.' },
       { name: 'Freier Handstand', measure: 'sec', target: 30, sets: 3,
         cue: 'Korrigiert wird mit den Fingern, nicht mit der Hüfte.' },
       { name: 'Freier Handstand, lang', measure: 'sec', target: 60, sets: 3,
@@ -55,8 +121,20 @@ const CATALOG = [
         cue: 'Arme durchgestreckt, Schultern nach unten weg von den Ohren.' },
       { name: 'Tuck-Sit, Knie angezogen', measure: 'sec', target: 30, sets: 3,
         cue: 'Knie zur Brust, Po hebt ab. Rücken rund ist hier erlaubt.' },
+      // Zwischen angezogenen Knien und einem gestreckten Bein liegt das Öffnen
+      // der Hüfte. Das ist eine eigene Stufe und keine Kleinigkeit — hier
+      // entscheidet sich, ob der L-Sit je kommt.
+      { name: 'Advanced Tuck, Hüfte offen', measure: 'sec', target: 25, sets: 3,
+        cue: 'Aus dem Tuck-Sit die Hüfte weiter öffnen, die Knie bleiben gebeugt. '
+          + 'Die Oberschenkel gehen Richtung waagerecht, der Rücken darf rund bleiben.' },
       { name: 'Ein Bein gestreckt', measure: 'sec', target: 20, sets: 3,
         cue: 'Abwechselnd. Das gestreckte Bein bleibt waagerecht, nicht hängend.' },
+      // Und vor dem geschlossenen L-Sit die gespreizte Fassung. Der Hebel ist
+      // kürzer, die Bauchmuskeln müssen weniger halten — deshalb geht sie
+      // Wochen früher als der L-Sit mit geschlossenen Beinen.
+      { name: 'Straddle-Sit, Beine gespreizt', measure: 'sec', target: 15, sets: 3,
+        cue: 'Beide Beine gestreckt und weit gespreizt, Zehen ziehen. Je weiter gespreizt, '
+          + 'desto leichter — enger wird es von allein, wenn es hält.' },
       { name: 'L-Sit auf Erhöhung', measure: 'sec', target: 20, sets: 3,
         cue: 'Beide Beine gestreckt, Fersen auf Hüfthöhe. Blöcke geben Platz nach unten.' },
       { name: 'L-Sit am Boden', measure: 'sec', target: 20, sets: 3,

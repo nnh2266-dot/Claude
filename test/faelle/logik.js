@@ -517,6 +517,75 @@ export default async function laufen() {
   p.ist(!zugNachher.includes('pullup') || zugVorher.includes('pullup'),
     'Leitern: niemand wird beim Neubau auf den vollen Klimmzug hochgeschoben');
 
+  /* ---------- Stufenleitern der Fähigkeiten ---------- */
+  const SK = await import('../../js/skills.js');
+
+  // Gemeldet aus dem Gebrauch: „die letzte Stufe zu einfach, die neue viel zu
+  // schwer." Beim Handstand fehlte das Ablösen von der Wand zwischen Wandstand
+  // und freiem Kick-up, beim L-Sit der Advanced Tuck und der gespreizte Sitz.
+  const hs = SK.SKILLS.find((x) => x.id === 'handstand');
+  const ls = SK.SKILLS.find((x) => x.id === 'lsit');
+  p.ist(hs.levels.some((l) => /Wand lösen/.test(l.name)),
+    'Handstand: zwischen Wandstand und freiem Stand liegt das Ablösen');
+  p.ist(ls.levels.some((l) => /Advanced Tuck/.test(l.name)),
+    'L-Sit: zwischen Tuck und gestrecktem Bein liegt das Öffnen der Hüfte');
+  p.ist(ls.levels.some((l) => /Straddle/.test(l.name)),
+    'L-Sit: vor dem geschlossenen L-Sit liegt der gespreizte Sitz');
+
+  // Jede Leiter braucht genug Stufen, damit kein Sprung zu groß wird. Fünf ist
+  // das Minimum, das bei den ursprünglichen Leitern schon stand.
+  const kurz = SK.SKILLS.filter((x) => x.levels.length < 5)
+    .map((x) => `${x.name}: ${x.levels.length} Stufen`);
+  p.leer(kurz, 'Fähigkeiten: jede Leiter hat mindestens fünf Stufen');
+
+  // Und jede Stufe braucht Name, Ziel, Satzzahl, Maßeinheit und einen Hinweis
+  // zur Ausführung — eine Stufe ohne Ausführungshinweis ist eine Einladung,
+  // sie falsch zu machen.
+  const unvollstaendig = [];
+  for (const skill of SK.SKILLS) {
+    skill.levels.forEach((l, i) => {
+      if (!l.name || !l.cue || !l.target || !l.sets || !SK.MEASURE[l.measure]) {
+        unvollstaendig.push(`${skill.id} Stufe ${i + 1}`);
+      }
+    });
+  }
+  p.leer(unvollstaendig, 'Fähigkeiten: jede Stufe ist vollständig beschrieben');
+
+  /* ---------- Stände überleben das Einfügen von Stufen ---------- */
+  //
+  // Der Fortschritt wird als Zahl gespeichert, nicht als Name. Eine Stufe in
+  // die Mitte einzufügen verschiebt damit jeden, der darüber steht: Wer beim
+  // L-Sit auf Stufe 4 stand, stünde ohne Wanderung plötzlich auf Stufe 3 und
+  // wäre stillschweigend zurückgesetzt.
+  const ALT = {
+    handstand: ['Hollow Hold am Boden', 'Bauch zur Wand, Füße hochlaufen',
+      'Rücken zur Wand, saubere Linie', 'An der Wand, ein Bein lösen',
+      'Freier Kick-up mit Abfangen', 'Freier Handstand', 'Freier Handstand, lang'],
+    lsit: ['Stütz auf Blöcken, Füße am Boden', 'Tuck-Sit, Knie angezogen',
+      'Ein Bein gestreckt', 'L-Sit auf Erhöhung', 'L-Sit am Boden', 'L-Sit am Boden, lang'],
+  };
+  const verrutscht = [];
+  for (const [id, namen] of Object.entries(ALT)) {
+    const skill = SK.SKILLS.find((x) => x.id === id);
+    namen.forEach((name, alterStand) => {
+      const neu = SK.wandereStaende({ [id]: alterStand }, 1).stand[id];
+      const jetzt = skill.levels[neu];
+      if (!jetzt || jetzt.name !== name) {
+        verrutscht.push(`${id} ${alterStand} → ${neu}: „${jetzt?.name}" statt „${name}"`);
+      }
+    });
+  }
+  p.leer(verrutscht, 'Fähigkeiten: jeder alte Stand landet nach der Wanderung auf derselben Übung');
+
+  // Leitern ohne neue Stufen bleiben unberührt.
+  p.gleich(SK.wandereStaende({ pullup: 3, dip: 2 }, 1).stand, { pullup: 3, dip: 2 },
+    'Fähigkeiten: unveränderte Leitern wandern nicht');
+
+  // Und zweimal wandern darf nicht zweimal verschieben.
+  const einmal = SK.wandereStaende({ lsit: 3 }, 1).stand;
+  p.gleich(SK.wandereStaende(einmal, SK.LEITER_FASSUNG).stand, einmal,
+    'Fähigkeiten: eine bereits gewanderte Fassung wandert nicht erneut');
+
   /* ---------- Fassung ---------- */
   const { readFileSync } = await import('node:fs');
   const sw = readFileSync(new URL('../../sw.js', import.meta.url), 'utf8');

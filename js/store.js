@@ -19,6 +19,7 @@
  */
 
 import { DEFAULT_GOALS, sumItems, newId, localDateKey } from './nutrition.js';
+import { LEITER_FASSUNG, wandereStaende } from './skills.js';
 
 const DB_NAME = 'naehrwert';
 const DB_VERSION = 9;
@@ -302,9 +303,26 @@ export async function setPlan(plan) {
 }
 
 /** Erreichte Stufe je Fähigkeit: { handstand: 2, lsit: 0 }. */
+/**
+ * Stufenstände der Fähigkeiten — auf die aktuelle Leiterfassung gebracht.
+ *
+ * Gespeichert wird die Stufennummer. Wird eine Stufe in die Mitte einer Leiter
+ * eingefügt, zeigt dieselbe Nummer danach auf etwas anderes, und ein Stand
+ * wäre stillschweigend verschoben. Die Wanderung in skills.js rechnet das um;
+ * hier wird sie beim Lesen angewandt und das Ergebnis gleich zurückgeschrieben,
+ * damit sie nur einmal läuft.
+ */
 export async function getSkillLevels() {
   const row = await tx('settings', 'readonly', (s) => s.get('skillLevels'));
-  return (row && row.value) || {};
+  const gespeichert = (row && row.value) || {};
+  const fassungRow = await tx('settings', 'readonly', (s) => s.get('skillLevelsFassung'));
+  const fassung = Number(fassungRow ? fassungRow.value : 0) || 0;
+  if (fassung >= LEITER_FASSUNG) return gespeichert;
+
+  const { stand, geaendert } = wandereStaende(gespeichert, fassung);
+  if (geaendert) await setSetting('skillLevels', stand);
+  await setSetting('skillLevelsFassung', LEITER_FASSUNG);
+  return stand;
 }
 
 export async function setSkillLevel(skillId, index) {

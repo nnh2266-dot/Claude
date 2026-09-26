@@ -153,6 +153,33 @@ export default async function laufen() {
     p.gleich(geleert.mahlzeiten, 0, 'Einträge löschen entfernt die Mahlzeiten');
     p.ist(geleert.profilBleibt, 'Einträge löschen lässt das Profil stehen');
 
+    /* ---------- Stufenstände überleben das Einfügen von Stufen ---------- */
+    // Nicht nur die Rechnung muss stimmen, sondern auch der Weg durch den
+    // Speicher: Die Wanderung läuft beim Lesen und schreibt sich einmal fest.
+    const gewandert = await seite.evaluate(async () => {
+      const s = await import('/js/store.js');
+      // Einen Stand aus der alten Leiterfassung hinlegen, ohne Fassungsmarke.
+      await s.setSetting('skillLevels', { handstand: 4, lsit: 3 });
+      await s.setSetting('skillLevelsFassung', 1);
+      const erste = await s.getSkillLevels();
+      // Zweites Lesen darf nicht erneut verschieben.
+      const zweite = await s.getSkillLevels();
+      const sk = await import('/js/skills.js');
+      const name = (id, n) => sk.SKILLS.find((x) => x.id === id).levels[n].name;
+      return {
+        erste, zweite,
+        handstandName: name('handstand', erste.handstand),
+        lsitName: name('lsit', erste.lsit),
+      };
+    });
+    p.gleich(gewandert.erste.handstand, 5, 'Handstand-Stand wandert von 4 auf 5');
+    p.gleich(gewandert.handstandName, 'Freier Kick-up mit Abfangen',
+      'Und zeigt danach auf dieselbe Übung wie vorher');
+    p.gleich(gewandert.lsitName, 'L-Sit auf Erhöhung',
+      'Auch der L-Sit-Stand zeigt noch auf dieselbe Übung');
+    p.gleich(gewandert.zweite, gewandert.erste,
+      'Zweimal lesen wandert nicht zweimal');
+
     p.leer(ausnahmen, 'Keine Ausnahme beim Speichern und Laden');
   } finally {
     await browser.close();
