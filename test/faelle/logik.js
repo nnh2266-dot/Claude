@@ -586,6 +586,63 @@ export default async function laufen() {
   p.gleich(SK.wandereStaende(einmal, SK.LEITER_FASSUNG).stand, einmal,
     'Fähigkeiten: eine bereits gewanderte Fassung wandert nicht erneut');
 
+  /* ---------- Ein Aufstieg darf nichts doppeln ---------- */
+  //
+  // Stehen zwei Sprossen derselben Leiter an einem Tag — bei Trizeps und Bizeps
+  // ohne Geräte unvermeidlich, weil die ganze Gruppe eine Leiter ist —, dann
+  // landet der Aufstieg von der unteren genau auf der oberen, und die steht
+  // schon da. setExercise setzte stumpf ein: dieselbe Übung zweimal im Tag.
+  //
+  // Das zog einen zweiten Fehler hinter sich her. Wer die Dopplung sieht und
+  // bei einer der beiden „zu schwer" drückt, steigt wieder ab — und nimmt die
+  // verlassene Sprosse aus der Liste der erledigten Übungen heraus. So kam
+  // eine Übung zurück, die längst zu leicht war.
+  const dopplungen = [];
+  for (const level of ['anfaenger', 'fortgeschritten', 'erfahren']) {
+    for (const days of [1, 3, 5, 6]) {
+      for (const equipment of ['bw', 'band', 'home', 'studio']) {
+        const profil = L.profileForPlan({
+          ...PROFIL, equipment, level, days,
+          weekdays: [1, 2, 3, 4, 5, 6].slice(0, days), gear: ['stange'], outgrown: [],
+        });
+        const plan = T.buildPlan(profil, 0, { rang: L.leiterRang, leiter: L.leiterId });
+        plan.days.forEach((tag, di) => {
+          tag.exercises.forEach((vorgabe, i) => {
+            const ziel = L.harderRung(vorgabe.id, profil);
+            if (!ziel || !tag.exercises.some((x) => x.id === ziel.exercise.id)) return;
+            const np = { ...profil, outgrown: [...profil.outgrown, vorgabe.id] };
+            const neu = T.setExercise(plan, np, di, i, ziel.exercise.id);
+            const ids = neu.days[di].exercises.map((x) => x.id);
+            const doppelt = ids.filter((id, j) => ids.indexOf(id) !== j);
+            if (doppelt.length) {
+              dopplungen.push(`${equipment}/${level}/${days}d · ${tag.name}: ${doppelt.join(',')}`);
+            }
+          });
+        });
+      }
+    }
+  }
+  p.leer(dopplungen, 'Aufstieg: keine Übung steht danach zweimal am selben Tag');
+
+  // Und der aufgestiegene Platz muss wirklich die neue Sprosse tragen — nicht
+  // etwa der Ersatz an der falschen Stelle landen.
+  const lProfil = L.profileForPlan({ ...PROFIL, equipment: 'bw', level: 'anfaenger',
+    days: 5, weekdays: [1, 2, 3, 4, 5], gear: ['stange'], outgrown: [] });
+  const lPlan = T.buildPlan(lProfil, 0, { rang: L.leiterRang, leiter: L.leiterId });
+  let geprueft = 0;
+  for (const [di, tag] of lPlan.days.entries()) {
+    for (const [i, vorgabe] of tag.exercises.entries()) {
+      const ziel = L.harderRung(vorgabe.id, lProfil);
+      if (!ziel || !tag.exercises.some((x) => x.id === ziel.exercise.id)) continue;
+      const np = { ...lProfil, outgrown: [...lProfil.outgrown, vorgabe.id] };
+      const neu = T.setExercise(lPlan, np, di, i, ziel.exercise.id);
+      p.gleich(neu.days[di].exercises[i].id, ziel.exercise.id,
+        `Aufstieg: ${vorgabe.id} → ${ziel.exercise.id} steht an seinem Platz`);
+      geprueft += 1;
+    }
+  }
+  p.ist(geprueft > 0, 'Aufstieg: es gab überhaupt einen Fall mit Dopplungsgefahr zu prüfen');
+
   /* ---------- Fassung ---------- */
   const { readFileSync } = await import('node:fs');
   const sw = readFileSync(new URL('../../sw.js', import.meta.url), 'utf8');

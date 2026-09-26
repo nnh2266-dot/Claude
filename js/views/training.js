@@ -1661,7 +1661,14 @@ export async function render(container, ctx) {
       const neuesProfil = { ...profile, outgrown };
 
       if (!unterwegs) {
-        await setPlan(setExercise(plan, neuesProfil, dayIndex, exerciseIndex, ziel.exercise.id));
+        // Räumt der Aufstieg eine Dopplung auf, soll der Ersatz nicht gleich
+        // die nächste Bewegung wiederholen. Was heute schon dransteht, weiß
+        // nur die Ansicht — ladders.js kennt den Tag nicht.
+        const sonstImTag = day.exercises
+          .filter((_, i) => i !== exerciseIndex)
+          .map((x) => x.id);
+        await setPlan(setExercise(plan, neuesProfil, dayIndex, exerciseIndex, ziel.exercise.id,
+          { meide: (e) => wiederholtBewegung(e, sonstImTag) }));
       }
       await setTrainingProfile(neuesProfil);
 

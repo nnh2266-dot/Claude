@@ -1178,7 +1178,7 @@ export function removeExercise(plan, dayIndex, exerciseIndex) {
  * Anders als replaceExercise wird hier nicht gesucht, sondern gesetzt — die
  * Variantenleiter weiß schon, welche Sprosse als nächste kommt.
  */
-export function setExercise(plan, profile, dayIndex, exerciseIndex, neueId) {
+export function setExercise(plan, profile, dayIndex, exerciseIndex, neueId, { meide = null } = {}) {
   const uebung = exerciseById(neueId);
   const tag = plan.days[dayIndex];
   if (!uebung || !tag || !tag.exercises[exerciseIndex]) return plan;
@@ -1188,7 +1188,33 @@ export function setExercise(plan, profile, dayIndex, exerciseIndex, neueId) {
     ...d,
     exercises: d.exercises.map((e, j) => (j === exerciseIndex ? vorgabe : e)),
   }));
-  return { ...plan, days };
+  let neuerPlan = { ...plan, days };
+
+  /**
+   * Eine Sprosse höher darf nicht dieselbe Übung zweimal an einen Tag stellen.
+   *
+   * Hier wurde bisher stumpf eingesetzt. Stehen zwei Sprossen derselben Leiter
+   * an einem Tag — bei Trizeps und Bizeps ohne Geräte unvermeidlich, weil die
+   * ganze Gruppe eine Leiter ist — dann landet der Aufstieg von der unteren
+   * genau auf der oberen, und die steht schon da. Gemessen über alle
+   * Kombinationen: 54 Aufstiege, die so eine Dopplung erzeugen.
+   *
+   * Das zog einen zweiten Fehler hinter sich her. Wer die Dopplung sieht und
+   * bei einer der beiden „zu schwer" drückt, steigt wieder ab — und nimmt
+   * dabei die verlassene Sprosse aus der Liste der erledigten Übungen heraus.
+   * So kam eine Übung zurück, die längst zu leicht war.
+   *
+   * Aufgelöst wird nicht durch Verweigern: Der Aufstieg ist verdient. Der
+   * **andere** Platz bekommt etwas Neues aus derselben Muskelgruppe.
+   */
+  const doppelt = neuerPlan.days[dayIndex].exercises
+    .findIndex((e, j) => j !== exerciseIndex && e.id === neueId);
+  if (doppelt >= 0) {
+    const { plan: bereinigt } = replaceExercise(neuerPlan, profile, dayIndex, doppelt, { meide });
+    neuerPlan = bereinigt;
+  }
+
+  return neuerPlan;
 }
 
 /**
