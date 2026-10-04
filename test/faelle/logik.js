@@ -643,6 +643,46 @@ export default async function laufen() {
   }
   p.ist(geprueft > 0, 'Aufstieg: es gab überhaupt einen Fall mit Dopplungsgefahr zu prüfen');
 
+  /* ---------- Der Bizepsanteil des Chin-Ups ---------- */
+  //
+  // Gemeldet aus dem Gebrauch: „Spüre es deutlich mehr im Bizeps als im
+  // Rücken." Nachgesehen (Youdas u. a., J Strength Cond Res 2010): Beim
+  // Chin-Up erreicht der Bizeps 78 bis 96 Prozent seiner willkürlichen
+  // Maximalkraft, der breite Rückenmuskel 117 bis 130 — und der Bizeps ist beim
+  // Untergriff deutlich stärker beteiligt als beim Obergriff. Dass die
+  // Lat-Zahl höher ist, heißt nicht, dass der Rücken mehr Arbeit leistet: Die
+  // Werte sind je Muskel auf dessen eigenes Maximum bezogen und zwischen zwei
+  // Muskeln nicht vergleichbar.
+  //
+  // Die Gruppenregel „jede Rücken-Grundübung gibt dem Bizeps einen halben Satz"
+  // ist dafür zu grob. Ein Satz Chin-Ups zählt deshalb als voller Bizepssatz.
+  const einTag = (id, saetze) => ({
+    days: [{ name: 'Test', exercises: [{ id, sets: saetze, rir: 2, reps: [8, 12] }] }],
+  });
+  const anteil = (id, gruppe) => {
+    const g = T.weeklyPlannedSets(einTag(id, 4), 2).find((x) => x.gruppe === gruppe);
+    return g ? g.mit : 0;
+  };
+
+  p.gleich(anteil('chinup', 'bizeps'), 4,
+    'Chin-Up: vier Sätze geben dem Bizeps vier Sätze, nicht zwei');
+  p.gleich(anteil('pullup', 'bizeps'), 2,
+    'Klimmzug im Obergriff: vier Sätze geben dem Bizeps zwei — die Gruppenregel gilt weiter');
+  p.gleich(anteil('bbrow', 'bizeps'), 2,
+    'Rudern: auch dort bleibt es beim halben Satz');
+
+  // Die Einordnung selbst bleibt beim Rücken. Sonst wäre der Chin-Up wieder
+  // unplatzierbar: Der Rückenplatz nimmt nur Rückenübungen, der Bizepsplatz
+  // nur Isolationsübungen — gemessen stand er dann in 0 von 135 Plänen.
+  p.gleich(T.exerciseById('chinup').group, 'ruecken',
+    'Chin-Up: bleibt beim Rücken eingeordnet, damit er überhaupt im Plan steht');
+  p.gleich(L.leiterId('chinup'), 'ziehen-senkrecht',
+    'Chin-Up: bleibt auf der senkrechten Zugleiter');
+
+  // Und die Rückenwertung verliert dadurch nichts.
+  p.ist(T.weeklyPlannedSets(einTag('chinup', 4), 2).find((x) => x.gruppe === 'ruecken').direkt === 4,
+    'Chin-Up: der Rücken bekommt die Sätze weiterhin voll');
+
   /* ---------- Fassung ---------- */
   const { readFileSync } = await import('node:fs');
   const sw = readFileSync(new URL('../../sw.js', import.meta.url), 'utf8');

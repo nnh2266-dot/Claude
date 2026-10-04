@@ -1460,6 +1460,31 @@ export const VOLUMEN_OBEN = 20;
  * 0,4 oder 0,6 Sätze abbekommt, weiß niemand; dass er deutlich mehr als null
  * abbekommt, weiß jeder.
  */
+/**
+ * Einzelne Übungen, bei denen die Gruppenregel zu grob ist.
+ *
+ * `MITARBEIT` rechnet nach Gruppe und Art: jede Rücken-Grundübung gibt dem
+ * Bizeps einen halben Satz. Für ein Langhantelrudern passt das. Für den
+ * Klimmzug im Untergriff nicht — dort liegt der Bizeps in seiner stärksten
+ * Position und trägt einen großen Teil der Last.
+ *
+ * Die Messung dazu (Youdas u. a., J Strength Cond Res 2010): Beim Chin-Up
+ * erreicht der Bizeps 78 bis 96 Prozent seiner willkürlichen Maximalkraft, der
+ * breite Rückenmuskel 117 bis 130 — und der Bizeps ist beim Untergriff
+ * deutlich stärker beteiligt als beim Obergriff. Dass die Lat-Zahl höher ist,
+ * heißt dabei **nicht**, dass der Rücken mehr Arbeit leistet: Diese Werte sind
+ * je Muskel auf dessen eigenes Maximum bezogen und zwischen zwei Muskeln nicht
+ * vergleichbar. Belegt ist, dass beide stark beansprucht werden.
+ *
+ * Deshalb zählt ein Satz Chin-Ups hier als voller Bizepssatz, nicht als halber.
+ * Die Bewegung bleibt senkrechtes Ziehen und die Übung bleibt beim Rücken —
+ * sonst wäre sie wieder unplatzierbar, weil der Rückenplatz nur
+ * Rückenübungen nimmt und der Bizepsplatz nur Isolationsübungen.
+ */
+const MITARBEIT_UEBUNG = {
+  chinup: { bizeps: 1, rdelt: 0.5 },
+};
+
 const MITARBEIT = {
   'brust:c':    { trizeps: 0.5, sdelt: 0.5 },
   'schulter:c': { trizeps: 0.5, sdelt: 0.5 },
@@ -1493,7 +1518,7 @@ export function weeklyPlannedSets(plan, week = 2) {
       const saetze = forWeek(p, week).sets;
       hol(e.group).direkt += saetze;
       drin.add(e.group);
-      const mit = MITARBEIT[`${e.group}:${e.type}`];
+      const mit = MITARBEIT_UEBUNG[e.id] || MITARBEIT[`${e.group}:${e.type}`];
       if (mit) for (const [g, anteil] of Object.entries(mit)) hol(g).mit += saetze * anteil;
     }
     for (const g of drin) hol(g).tage += 1;
