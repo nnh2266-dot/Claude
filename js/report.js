@@ -1,0 +1,752 @@
+/**
+ * Tages- und Wochenbericht.
+ *
+ * Der Bericht soll ehrlich sein, und ehrlich heißt konkret. „Bleib dran!" ist
+ * keine Rückmeldung — „drei von vier Einheiten, die vom Donnerstag fehlt" ist
+ * eine. Deshalb entsteht hier kein Fließtext aus Textbausteinen, sondern eine
+ * Liste von Befunden mit einer Bewertung: gut, schlecht oder schlicht eine
+ * Tatsache. Was die App nicht weiß, sagt sie auch — eine Woche ohne
+ * eingetragene Gewichte ist ein Befund und keine Lücke zum Überspielen.
+ *
+ * Alles wird lokal gerechnet. Der Bericht funktioniert offline und kostet
+ * nichts, und er sagt jeden Tag dasselbe zu denselben Zahlen.
+ *
+ * Wie training.js ohne DOM-Zugriff.
+ */
+
+import { localDateKey, shiftDateKey } from './nutrition.js';
+import { targetsForDate, weightTrend, calorieAdvice, weeklyRateFor } from './energy.js';
+import {
+  exerciseById, dayForWeekday, blockWeek, BLOCK_WEEKS, SKIP_REASONS, isUnilateral, setSides,
+  isTimed, weeklyVolume,
+} from './training.js';
+import { skillById, levelIndex } from './skills.js';
+import { dayTotals, weekSummary, KRAFT_SCHWITZ } from './activities.js';
+import { dailyGoal as wasserZiel, formatMl, average as wasserSchnitt } from './water.js';
+import { resolve as suppsAufloesen, dayStatus as suppStand } from './supplements.js';
+import { dayPicture } from './mealscore.js';
+import {
+  duration as schlafDauer, formatDauer, rateDuration, lightTiming, isComplete as nachtVoll,
+  summarise as schlafSchnitt, SOLL_MIN, LICHT_MINUTEN,
+  regelmaessigkeit as schlafRegel, regelText as schlafRegelText, REGEL_FENSTER,
+} from './sleep.js';
+import { hasResults, dueAgain, overallScore, RETEST_DAYS } from './mobility.js';
+import { alleVerlaeufe, belastungsverlauf, belastungText } from './verlauf.js';
+
+/** Ein Befund. `art` steuert nur die Darstellung, nicht den Inhalt. */
+const gut = (text) => ({ art: 'gut', text });
+const schlecht = (text) => ({ art: 'schlecht', text });
+const fakt = (text) => ({ art: 'neutral', text });
+
+const einsNach = (n) => String(Math.round(n * 10) / 10).replace('.', ',');
+const prozent = (n) => `${n > 0 ? '+' : ''}${einsNach(n)} %`;
+
+const WOCHENTAG = ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'];
+
+/** Tagessumme der Mahlzeiten. */
+function tagesSumme(meals) {
+  return (meals || []).reduce((s, m) => ({
+    kcal: s.kcal + (m.totals?.kcal || 0),
+    protein: s.protein + (m.totals?.protein || 0),
+    carbs: s.carbs + (m.totals?.carbs || 0),
+    fat: s.fat + (m.totals?.fat || 0),
+  }), { kcal: 0, protein: 0, carbs: 0, fat: 0 });
+}
+
+/** Gezählte Sätze einer Einheit, und wie viele davon vollständig sind. */
+export function sessionSets(session) {
+  let geplant = 0;
+  let voll = 0;
+  for (const sets of Object.values(session?.entries || {})) {
+    for (const set of sets || []) {
+      geplant += 1;
+      if (set && set.reps) voll += 1;
+    }
+  }
+  return { geplant, voll };
+}
+
+/* ---------------- Tagesbericht ---------------- */
+
+/**
+ * Kurzer Bericht über einen einzelnen Tag.
+ *
+ * @param {object} data  profile, plan, sessions, weights, meals (nur dieser Tag),
+ *                       kcalAdjust, goals, dateKey
+ */
+export function dailyReport(data) {
+  const {
+    profile, plan, sessions = [], weights = [], meals = [],
+    kcalAdjust = 0, goals, dateKey = localDateKey(),
+  } = data;
+
+  const befunde = [];
+  const weekday = new Date(`${dateKey}T12:00:00`).getDay();
+  const tag = plan ? dayForWeekday(plan, weekday) : null;
+  const session = sessions.find((s) => s.date === dateKey) || null;
+
+  /* Training */
+  if (tag) {
+    const saetze = sessionSets(session);
+    if (session && session.done) {
+      befunde.push(gut(`${tag.name} abgeschlossen, ${saetze.voll} Sätze aufgezeichnet.`));
+    } else if (saetze.voll > 0) {
+      befunde.push(fakt(`${tag.name} angefangen: ${saetze.voll} ${saetze.voll === 1 ? 'Satz steht' : 'Sätze stehen'}, abgeschlossen ist die Einheit nicht.`));
+    } else if (session && session.skipped) {
+      const r = SKIP_REASONS[session.reason];
+      befunde.push(fakt(`${tag.name} heute ausgelassen${r ? `, ${r.text}` : ''}. Das ist in Ordnung.`));
+    } else {
+      befunde.push(schlecht(`${tag.name} steht heute an und ist noch nicht angefangen.`));
+    }
+  } else {
+    // Ruhetag: nur dann ein Lob, wenn davor auch trainiert wurde.
+    const gestern = sessions.find((s) => s.date === shiftDateKey(dateKey, -1));
+    befunde.push(gestern && gestern.done
+      ? fakt('Ruhetag nach einer Einheit — genau dafür ist er da.')
+      : fakt('Ruhetag.'));
+  }
+
+  /* Schlaf */
+  const nacht = (data.sleep || []).find((n) => n.date === dateKey) || null;
+  if (nacht && nachtVoll(nacht)) {
+    const dauer = schlafDauer(nacht);
+    const b = rateDuration(dauer);
+    befunde.push(b.art === 'gut'
+      ? gut(`${formatDauer(dauer)} im Bett — ${b.text}.`)
+      : (b.art === 'kurz' || b.art === 'knapp'
+          ? schlecht(`Nur ${formatDauer(dauer)} im Bett — ${b.text}.`)
+          : fakt(`${formatDauer(dauer)} im Bett — ${b.text}.`)));
+
+    const licht = lightTiming(nacht);
+    if (!nacht.licht || !nacht.licht.zeit) {
+      befunde.push(schlecht('Noch nicht draußen gewesen. In der ersten Stunde nach dem '
+        + 'Aufwachen stellt Tageslicht die innere Uhr.'));
+    } else if (licht && licht.imFenster && licht.langGenug) {
+      befunde.push(gut(`Morgenlicht ${nacht.licht.minuten} Minuten, `
+        + `${licht.minutenNachAufwachen} Minuten nach dem Aufwachen.`));
+    } else if (licht) {
+      befunde.push(fakt(`Morgenlicht ${nacht.licht.minuten} Minuten`
+        + (licht.imFenster ? '' : `, aber erst ${einsNach(licht.minutenNachAufwachen / 60)} Stunden nach dem Aufwachen`)
+        + (licht.langGenug ? '.' : ` — unter ${LICHT_MINUTEN} Minuten bringt wenig.`)));
+    }
+  } else if (nacht && nacht.zuBett) {
+    befunde.push(fakt('Zubettgehen steht, das Aufwachen fehlt noch.'));
+  } else {
+    befunde.push(fakt('Für heute Nacht ist nichts eingetragen.'));
+  }
+
+  /* Sport außer dem Training */
+  const aktiv = dayTotals(data.activities || [], profile?.weight);
+  if (aktiv.anzahl) {
+    befunde.push(gut(`${aktiv.anzahl} ${aktiv.anzahl === 1 ? 'Aktivität' : 'Aktivitäten'} `
+      + `eingetragen: ${aktiv.minuten} Minuten, rund ${aktiv.kcal} kcal.`));
+  }
+
+  /* Trinken */
+  const wZiel = wasserZiel(profile?.weight,
+    aktiv.schwitzen + (tag ? (profile?.sessionLength || 0) * KRAFT_SCHWITZ : 0));
+  const getrunken = (data.water || []).find((w) => w.date === dateKey)?.ml || 0;
+  if (wZiel) {
+    if (getrunken >= wZiel * 0.9) {
+      befunde.push(gut(`${formatMl(getrunken)} getrunken — Richtwert erreicht.`));
+    } else if (getrunken > 0) {
+      befunde.push(fakt(`${formatMl(getrunken)} von rund ${formatMl(wZiel)} getrunken.`));
+    } else {
+      befunde.push(fakt('Beim Trinken ist heute noch nichts eingetragen.'));
+    }
+  }
+
+  /* Nahrungsergänzung */
+  const suppListe = suppsAufloesen(data.suppListe || []);
+  if (suppListe.length) {
+    const stand = suppStand(suppListe, (data.supps || []).find((x) => x.date === dateKey));
+    befunde.push(stand.vollstaendig
+      ? gut(`Nahrungsergänzung vollständig (${stand.gesamt}).`)
+      : fakt(`Nahrungsergänzung ${stand.genommen} von ${stand.gesamt}`
+          + (stand.offen.length ? ` — offen: ${stand.offen.map((x) => x.name).join(', ')}.` : '.')));
+  }
+
+  /* Kalorien */
+  const ziele = targetsForDate(profile, plan, kcalAdjust, dateKey, goals, aktiv.anrechnung);
+  const summe = tagesSumme(meals);
+
+  if (!meals.length) {
+    befunde.push(schlecht('Heute noch nichts eingetragen. Ohne Mahlzeiten weiß die App nicht, ob die Kalorien stimmen.'));
+  } else {
+    const abw = summe.kcal - ziele.kcal;
+    const anteil = ziele.kcal ? Math.abs(abw) / ziele.kcal : 0;
+    const text = `${Math.round(summe.kcal)} von ${ziele.kcal} kcal (${abw > 0 ? '+' : ''}${Math.round(abw)}).`;
+    befunde.push(anteil <= 0.08 ? gut(text) : fakt(text));
+
+    const eiweiss = Math.round(summe.protein);
+    if (eiweiss < ziele.protein * 0.85) {
+      befunde.push(schlecht(`Eiweiß bei ${eiweiss} g statt ${ziele.protein} g. Daran hängt der Muskelerhalt.`));
+    } else {
+      befunde.push(gut(`Eiweiß bei ${eiweiss} g von ${ziele.protein} g.`));
+    }
+  }
+
+  /* Gewicht */
+  const heutigesGewicht = weights.find((w) => w.date === dateKey);
+  if (heutigesGewicht) {
+    befunde.push(fakt(`Gewicht heute: ${einsNach(heutigesGewicht.kg)} kg.`));
+  } else {
+    const luecke = weights.length
+      ? tageZwischen([...weights].sort((a, b) => (a.date < b.date ? -1 : 1)).pop().date, dateKey)
+      : null;
+    befunde.push(luecke === null || luecke > 2
+      ? schlecht(luecke === null
+          ? 'Noch kein Gewicht eingetragen. Ohne Gewichte kann die App die Kalorien nicht nachsteuern.'
+          : `Seit ${luecke} Tagen kein Gewicht eingetragen — die Kalorienkorrektur läuft blind.`)
+      : fakt('Heute noch kein Gewicht eingetragen.'));
+  }
+
+  return {
+    dateKey,
+    titel: `${WOCHENTAG[weekday]}, ${dateKey.slice(8)}.${dateKey.slice(5, 7)}.`,
+    trainingstag: Boolean(tag),
+    befunde,
+  };
+}
+
+function tageZwischen(von, bis) {
+  return Math.round((new Date(`${bis}T12:00:00`) - new Date(`${von}T12:00:00`)) / 86400000);
+}
+
+/* ---------------- Wochenbericht ---------------- */
+
+/** Montag der Woche, in der ein Datum liegt. */
+export function weekStart(dateKey) {
+  const d = new Date(`${dateKey}T12:00:00`);
+  d.setDate(d.getDate() - ((d.getDay() + 6) % 7));
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+
+/** Volumen einer Einheit in kg × Wiederholungen. */
+function sessionVolume(session, bodyweight) {
+  const angenommen = (bodyweight || 70) * 0.5;
+  let volumen = 0;
+  for (const [id, sets] of Object.entries(session?.entries || {})) {
+    // Wie in weeklyVolume: Bei Halteübungen stehen in `reps` Sekunden, und die
+    // gehören nicht in eine Rechnung aus Gewicht mal Wiederholungen.
+    if (isTimed(id)) continue;
+    for (const set of sets || []) {
+      if (!set || !set.reps) continue;
+      // Einseitige Übungen mit beiden Seiten — die Arbeit wurde zweimal gemacht.
+      const reps = isUnilateral(id) ? setSides(set).summe : set.reps;
+      volumen += (Number(set.weight) > 0 ? Number(set.weight) : angenommen) * reps;
+    }
+  }
+  return volumen;
+}
+
+/**
+ * Ausführlicher Bericht über eine Woche (Montag bis Sonntag).
+ *
+ * @param {object} data  profile, plan, sessions, weights, mealsByDate (Map),
+ *                       mobility, skillLevels, kcalAdjust, goals, dateKey
+ */
+export function weeklyReport(data) {
+  const {
+    profile, plan, sessions = [], weights = [], mealsByDate = {},
+    mobility = [], skillLevels = {}, kcalAdjust = 0, goals, dateKey = localDateKey(),
+  } = data;
+
+  const montag = weekStart(dateKey);
+  const tage = Array.from({ length: 7 }, (_, i) => shiftDateKey(montag, i));
+  const bisHeute = tage.filter((d) => d <= dateKey);
+  const vorMontag = shiftDateKey(montag, -7);
+  const vorTage = Array.from({ length: 7 }, (_, i) => shiftDateKey(vorMontag, i));
+
+  const abschnitte = [];
+
+  /* --- Training --- */
+  const geplant = tage.filter((d) => {
+    const wd = new Date(`${d}T12:00:00`).getDay();
+    return plan && dayForWeekday(plan, wd);
+  });
+  const geplantBisHeute = geplant.filter((d) => d <= dateKey);
+  const gemacht = bisHeute.filter((d) => sessions.some((s) => s.date === d && s.done));
+  const bewusst = bisHeute.filter((d) => sessions.some((s) => s.date === d && s.skipped && !s.done));
+  const angefangen = bisHeute.filter((d) =>
+    sessions.some((s) => s.date === d && !s.done && sessionSets(s).voll > 0));
+  const verpasst = geplantBisHeute.filter((d) => !gemacht.includes(d) && d < dateKey);
+
+  const vollstaendig = bisHeute.length === 7;
+  const offenNochDieseWoche = geplant.length - geplantBisHeute.length;
+
+  const training = [];
+  if (gemacht.length >= geplantBisHeute.length && geplantBisHeute.length > 0) {
+    training.push(gut(`${gemacht.length} von ${geplant.length} Einheiten abgeschlossen.`));
+  } else if (vollstaendig) {
+    training.push(fakt(`${gemacht.length} von ${geplant.length} geplanten Einheiten abgeschlossen.`));
+  } else {
+    // Mitten in der Woche ist „0 von 3" kein Befund, sondern eine Uhrzeit.
+    training.push(fakt(`${gemacht.length} von ${geplantBisHeute.length} bis heute fälligen Einheiten abgeschlossen`
+      + (offenNochDieseWoche
+          ? `, ${offenNochDieseWoche} ${offenNochDieseWoche === 1 ? 'steht' : 'stehen'} diese Woche noch an.`
+          : '.')));
+  }
+
+  // Bewusst ausgelassen ist etwas anderes als vergessen. Wer nach einer
+  // durchwachten Nacht nicht trainiert, trifft eine Entscheidung — und die
+  // gehört als Tatsache in den Bericht, nicht als Vorwurf.
+  const mitGrund = [];
+  const ohneGrund = [];
+  for (const d of verpasst) {
+    const s = sessions.find((x) => x.date === d);
+    if (s && s.movedTo) continue;                       // woanders nachgeholt
+    if (s && s.skipped) mitGrund.push({ d, grund: s.reason });
+    else ohneGrund.push(d);
+  }
+
+  if (mitGrund.length) {
+    const teile = mitGrund.map(({ d, grund }) => {
+      const name = WOCHENTAG[new Date(`${d}T12:00:00`).getDay()];
+      const r = SKIP_REASONS[grund];
+      return r ? `${name} (${r.text})` : name;
+    });
+    training.push(fakt(`Bewusst ausgelassen: ${teile.join(', ')}.`));
+  }
+  if (ohneGrund.length) {
+    const namen = ohneGrund.map((d) => WOCHENTAG[new Date(`${d}T12:00:00`).getDay()]);
+    training.push(schlecht(`Ausgefallen ohne Eintrag: ${namen.join(', ')}.`));
+  }
+
+  const nachgeholt = bisHeute.filter((d) => {
+    const s = sessions.find((x) => x.date === d);
+    return s && s.holtNach && s.done;
+  });
+  if (nachgeholt.length) {
+    training.push(gut(`${nachgeholt.length} ${nachgeholt.length === 1 ? 'Einheit' : 'Einheiten'} nachgeholt.`));
+  }
+  if (angefangen.length) {
+    training.push(schlecht(`${angefangen.length} Einheit${angefangen.length === 1 ? '' : 'en'} angefangen, aber nie abgeschlossen.`));
+  }
+
+  const volWoche = bisHeute.reduce((s, d) =>
+    s + sessionVolume(sessions.find((x) => x.date === d), profile?.weight), 0);
+  const volVor = vorTage.reduce((s, d) =>
+    s + sessionVolume(sessions.find((x) => x.date === d), profile?.weight), 0);
+
+  if (volWoche > 0 && volVor > 0) {
+    const delta = ((volWoche - volVor) / volVor) * 100;
+    const woche = plan ? blockWeek(plan, dateKey) : 0;
+    const deload = BLOCK_WEEKS[woche] && BLOCK_WEEKS[woche].factor < 1;
+    const einheitenVor = vorTage.filter((d) => sessions.some((x) => x.date === d && sessionSets(x).voll > 0)).length;
+    const einheitenJetzt = bisHeute.filter((d) => sessions.some((x) => x.date === d && sessionSets(x).voll > 0)).length;
+    const text = `Bewegte Last ${Math.round(volWoche).toLocaleString('de-DE')} kg gegenüber ${Math.round(volVor).toLocaleString('de-DE')} kg in der Vorwoche (${prozent(delta)}).`;
+
+    if (deload) {
+      training.push(fakt(`${text} Diese Woche ist die Entlastungswoche — weniger ist hier der Plan.`));
+    } else if (einheitenJetzt !== einheitenVor) {
+      // Ohne diesen Zusatz liest sich ein Sprung wie Fortschritt, obwohl er
+      // nur daher kommt, dass eine Einheit mehr oder weniger stattfand.
+      training.push(fakt(`${text} Der Vergleich hinkt: ${einheitenJetzt} Einheiten diese Woche gegenüber ${einheitenVor} in der Vorwoche.`));
+    } else {
+      training.push(delta >= -2 ? gut(text) : schlecht(text));
+    }
+  } else if (volWoche > 0) {
+    training.push(fakt(`Bewegte Last ${Math.round(volWoche).toLocaleString('de-DE')} kg. Ab der zweiten Woche gibt es einen Vergleich.`));
+  }
+
+  // Belastungsverlauf über die letzten Wochen. Kein Foster-Wert — die Rechnung
+  // dazu bräuchte nach jeder Einheit eine Zahl für die Anstrengung, und die
+  // fragt die App bewusst nicht ab. Übernommen ist nur der Kern: Abwechslung
+  // schützt. Deshalb steht hier das Muster, nicht ein Belastungsindex.
+  const belastung = belastungsverlauf(weeklyVolume(sessions, profile?.weight), montag);
+  const belastungsSatz = belastungText(belastung);
+  if (belastungsSatz) training.push(schlecht(belastungsSatz));
+
+  abschnitte.push({ titel: 'Training', befunde: training });
+
+  /* --- Übungen, die sich bewegt haben --- */
+  const bewegung = uebungsFortschritt(sessions, bisHeute, vorTage);
+
+  // Wer seit mehreren Einheiten unter seinem Bestwert **und** unter dem Anfang
+  // der Reihe liegt, geht wirklich zurück. Eine schlechte Einheit steht hier
+  // nicht — die ist Tagesform, keine Information.
+  const zurueck = alleVerlaeufe(sessions, { bis: dateKey })
+    .filter((x) => x.rueckgang.ja && x.rueckgang.lage === 'rueckgang');
+  for (const x of zurueck.slice(0, 3)) {
+    bewegung.push(schlecht(`${x.verlauf.name}: seit ${x.rueckgang.seit} Einheiten unter dem besten `
+      + `Wert, zuletzt ${x.rueckgang.prozent} Prozent darunter — und damit auch unter dem Anfang der Reihe.`));
+  }
+
+  if (bewegung.length) abschnitte.push({ titel: 'Einzelne Übungen', befunde: bewegung });
+
+  /* --- Ernährung --- */
+  const ernaehrung = [];
+  const tageMitEssen = bisHeute.filter((d) => (mealsByDate[d] || []).length);
+  const luecken = bisHeute.length - tageMitEssen.length;
+
+  if (!tageMitEssen.length) {
+    ernaehrung.push(schlecht('Diese Woche keine einzige Mahlzeit eingetragen.'));
+  } else {
+    let summeKcal = 0;
+    let summeProtein = 0;
+    let getroffen = 0;
+    let drueber = 0;
+    let drunter = 0;
+
+    for (const d of tageMitEssen) {
+      const s = tagesSumme(mealsByDate[d]);
+      const tagesSport = dayTotals(
+        (data.activities || []).filter((a) => a.date === d), profile?.weight
+      );
+      const z = targetsForDate(profile, plan, kcalAdjust, d, goals, tagesSport.anrechnung);
+      summeKcal += s.kcal;
+      summeProtein += s.protein;
+      const abw = s.kcal - z.kcal;
+      if (Math.abs(abw) <= z.kcal * 0.08) getroffen += 1;
+      else if (abw > 0) drueber += 1;
+      else drunter += 1;
+    }
+
+    const schnitt = Math.round(summeKcal / tageMitEssen.length);
+    ernaehrung.push(fakt(`Im Schnitt ${schnitt} kcal an ${tageMitEssen.length} erfassten Tagen.`));
+    ernaehrung.push(getroffen >= tageMitEssen.length / 2
+      ? gut(`${getroffen} Tage im Ziel, ${drueber} darüber, ${drunter} darunter.`)
+      : schlecht(`Nur ${getroffen} Tage im Ziel, ${drueber} darüber, ${drunter} darunter.`));
+
+    const proteinSchnitt = Math.round(summeProtein / tageMitEssen.length);
+    const proteinZiel = targetsForDate(profile, plan, kcalAdjust, dateKey, goals).protein;
+    ernaehrung.push(proteinSchnitt >= proteinZiel * 0.9
+      ? gut(`Eiweiß im Schnitt ${proteinSchnitt} g bei einem Ziel von ${proteinZiel} g.`)
+      : schlecht(`Eiweiß im Schnitt nur ${proteinSchnitt} g bei einem Ziel von ${proteinZiel} g.`));
+
+    // Der laufende Tag ist keine Lücke — der ist noch nicht vorbei.
+    const echteLuecken = bisHeute
+      .filter((d) => d < dateKey && !(mealsByDate[d] || []).length).length;
+    if (echteLuecken) {
+      ernaehrung.push(schlecht(`An ${echteLuecken} vergangenen Tag${echteLuecken === 1 ? '' : 'en'} nichts eingetragen. Der Schnitt oben gilt nur für die erfassten Tage und sieht dadurch besser aus, als die Woche war.`));
+    }
+  }
+  abschnitte.push({ titel: 'Ernährung', befunde: ernaehrung });
+
+  /* --- Schlaf --- */
+  const wochenNaechte = (data.sleep || []).filter((n) => bisHeute.includes(n.date));
+  if (wochenNaechte.length) {
+    const z = schlafSchnitt(wochenNaechte);
+    const schlaf = [];
+
+    if (z.naechte) {
+      schlaf.push(z.schnitt >= SOLL_MIN
+        ? gut(`Im Schnitt ${formatDauer(z.schnitt)} über ${z.naechte} vollständige Nächte.`)
+        : schlecht(`Im Schnitt nur ${formatDauer(z.schnitt)} über ${z.naechte} vollständige Nächte.`));
+      if (z.unterSoll) {
+        schlaf.push(z.unterSoll > z.naechte / 2
+          ? schlecht(`${z.unterSoll} von ${z.naechte} Nächten unter sieben Stunden.`)
+          : fakt(`${z.unterSoll} von ${z.naechte} Nächten unter sieben Stunden.`));
+      }
+      schlaf.push(fakt(`Kürzeste ${formatDauer(z.kuerzeste)}, längste ${formatDauer(z.laengste)}.`));
+    }
+    if (wochenNaechte.length < bisHeute.length) {
+      schlaf.push(fakt(`An ${bisHeute.length - wochenNaechte.length} Tagen nichts eingetragen.`));
+    }
+
+    // Regelmäßigkeit über vierzehn Tage, nicht über sieben: eine einzelne Woche
+    // mit einer späten Nacht sähe sonst aus wie ein Muster.
+    const reg = schlafRegel(data.sleep, bisHeute[bisHeute.length - 1], shiftDateKey, REGEL_FENSTER);
+    if (reg.genug) {
+      const satz = `Schlafmitte über ${reg.naechte} Nächte der letzten ${REGEL_FENSTER} Tage: `
+        + `± ${reg.mitteStreuung} Minuten.`;
+      schlaf.push(reg.stufe === 'fest' || reg.stufe === 'ordentlich'
+        ? gut(`${satz} ${schlafRegelText(reg.stufe)}`)
+        : schlecht(`${satz} ${schlafRegelText(reg.stufe)}`));
+    }
+
+    schlaf.push(z.lichtPuenktlich >= Math.ceil(bisHeute.length * 0.7)
+      ? gut(`An ${z.lichtPuenktlich} von ${bisHeute.length} Tagen früh genug und lange genug draußen.`)
+      : schlecht(`Nur an ${z.lichtPuenktlich} von ${bisHeute.length} Tagen früh und lange genug draußen`
+        + (z.lichtTage > z.lichtPuenktlich ? ` (an ${z.lichtTage} überhaupt).` : '.')));
+
+    // Der Zusammenhang, für den man überhaupt jeden Morgen etwas einträgt.
+    // Gerechnet über alle Einheiten, nicht nur diese Woche — sonst gäbe es nie
+    // genug Datenpunkte.
+    const zusammenhang = sleepVersusVolume(sessions, data.sleep, profile?.weight, dateKey);
+    if (zusammenhang) {
+      const d = zusammenhang.unterschied;
+      const text = `An den Tagen nach Nächten unter sieben Stunden lag dein Volumen im `
+        + `Schnitt ${Math.abs(d)} % ${d < 0 ? 'niedriger' : 'höher'} `
+        + `(${zusammenhang.kurz} gegen ${zusammenhang.lang} Einheiten).`;
+      schlaf.push(d <= -8 ? schlecht(text) : fakt(text));
+    }
+
+    abschnitte.push({ titel: 'Schlaf und Licht', befunde: schlaf });
+  }
+
+  /* --- Trinken und Nahrungsergänzung --- */
+  const alltag = [];
+
+  const wZielWoche = wasserZiel(profile?.weight, 0);
+  const wSchnitt = wasserSchnitt(data.water || [], bisHeute);
+  if (wZielWoche && wSchnitt) {
+    alltag.push(wSchnitt.schnitt >= wZielWoche * 0.9
+      ? gut(`Im Schnitt ${formatMl(wSchnitt.schnitt)} an ${wSchnitt.tage} Tagen — `
+          + `Richtwert liegt bei ${formatMl(wZielWoche)}.`)
+      : fakt(`Im Schnitt ${formatMl(wSchnitt.schnitt)} an ${wSchnitt.tage} Tagen, `
+          + `Richtwert ${formatMl(wZielWoche)}.`));
+    if (wSchnitt.tage < bisHeute.length) {
+      alltag.push(fakt(`An ${bisHeute.length - wSchnitt.tage} Tagen nichts eingetragen.`));
+    }
+  }
+
+  const wocheSupps = suppsAufloesen(data.suppListe || []);
+  if (wocheSupps.length) {
+    const voll = bisHeute.filter((t) =>
+      suppStand(wocheSupps, (data.supps || []).find((x) => x.date === t)).vollstaendig).length;
+    alltag.push(voll >= Math.ceil(bisHeute.length * 0.8)
+      ? gut(`An ${voll} von ${bisHeute.length} Tagen alles genommen.`)
+      : fakt(`An ${voll} von ${bisHeute.length} Tagen alles genommen.`));
+  }
+
+  if (alltag.length) abschnitte.push({ titel: 'Trinken und Ergänzung', befunde: alltag });
+
+  /* --- Wie die Mahlzeiten zusammengesetzt waren --- */
+  const eiweissBild = bisHeute
+    .map((t) => dayPicture(mealsByDate[t] || [], null))
+    .filter(Boolean);
+  if (eiweissBild.length >= 3) {
+    const einseitig = eiweissBild.filter((b) => b.einseitig).length;
+    const tragendeSchnitt = eiweissBild.reduce((sum, b) => sum + b.tragende, 0) / eiweissBild.length;
+    const zusammensetzung = [];
+    zusammensetzung.push(tragendeSchnitt >= 2.5
+      ? gut(`Im Schnitt ${einsNach(tragendeSchnitt)} Mahlzeiten am Tag mit mindestens 20 g `
+          + 'Eiweiß — gut verteilt.')
+      : fakt(`Im Schnitt nur ${einsNach(tragendeSchnitt)} Mahlzeiten am Tag mit mindestens 20 g `
+          + 'Eiweiß. Drei bis vier verteilte Portionen nutzt der Muskel besser als eine große.'));
+    if (einseitig >= 3) {
+      zusammensetzung.push(schlecht(`An ${einseitig} Tagen steckte mehr als die Hälfte des `
+        + 'Eiweißes in einer einzigen Mahlzeit.'));
+    }
+    abschnitte.push({ titel: 'Zusammensetzung', befunde: zusammensetzung });
+  }
+
+  /* --- Sport außer dem Training --- */
+  const wochenAktiv = (data.activities || []).filter((a) => bisHeute.includes(a.date));
+  if (wochenAktiv.length) {
+    const nachArt = weekSummary(wochenAktiv, profile?.weight);
+    const gesamt = nachArt.reduce((s, a) => ({
+      minuten: s.minuten + a.minuten, kcal: s.kcal + a.kcal,
+    }), { minuten: 0, kcal: 0 });
+
+    const sport = [fakt(`${einsNach(gesamt.minuten / 60)} Stunden Sport neben dem Training, `
+      + `rund ${gesamt.kcal} kcal.`)];
+    for (const a of nachArt) {
+      sport.push(fakt(`${a.name}: ${a.anzahl}×, ${a.minuten} Minuten`
+        + (a.km ? `, ${Math.round(a.km * 10) / 10} km` : '') + '.'));
+    }
+    abschnitte.push({ titel: 'Sport außer dem Training', befunde: sport });
+  }
+
+  /* --- Gewicht --- */
+  const gewicht = [];
+  const wochenGewichte = bisHeute.filter((d) => weights.some((w) => w.date === d));
+  // Vier Werte pro Woche sind das Ziel; mitten in der Woche gilt der anteilige
+  // Wert, sonst steht am Dienstag ein Versäumnis da, das noch keines ist.
+  const noetig = Math.max(1, Math.round((4 * bisHeute.length) / 7));
+  gewicht.push(wochenGewichte.length >= noetig
+    ? gut(`An ${wochenGewichte.length} von ${bisHeute.length} Tagen gewogen.`)
+    : schlecht(`Nur an ${wochenGewichte.length} von ${bisHeute.length} Tagen gewogen. Unter vier Werten pro Woche ist der Trend Zufall.`));
+
+  const trend = weightTrend(weights, dateKey);
+  if (trend && trend.ready) {
+    const ziel = weeklyRateFor(profile?.goal);
+    gewicht.push(fakt(`Sieben-Tage-Schnitt ${einsNach(trend.average7)} kg, das sind ${prozent(trend.percent)} gegenüber der Woche davor. Zielrate: ${prozent(ziel)}.`));
+
+    const rat = calorieAdvice(profile, weights, dateKey);
+    if (rat && rat.onTrack) gewicht.push(gut('Das liegt im Zielkorridor. Kalorien bleiben, wie sie sind.'));
+    else if (rat) {
+      gewicht.push(schlecht(`Abweichung von ${prozent(rat.deviation)} — die App schlägt ${rat.delta > 0 ? '+' : ''}${rat.delta} kcal pro Tag vor. Im Fortschritt lässt sich das übernehmen.`));
+    }
+  } else if (trend) {
+    gewicht.push(fakt('Für einen Trend fehlen noch Werte: es braucht zwei Wochen mit je mindestens zwei Messungen.'));
+  }
+  abschnitte.push({ titel: 'Gewicht', befunde: gewicht });
+
+  /* --- Fähigkeiten und Beweglichkeit --- */
+  const sonstiges = [];
+  for (const id of profile?.skills || []) {
+    const skill = skillById(id);
+    if (!skill) continue;
+    const stufe = levelIndex(skill, skillLevels);
+    const geuebt = bisHeute.filter((d) => {
+      const s = sessions.find((x) => x.date === d);
+      return s && s.skills && (s.skills[id] || []).some((v) => v);
+    }).length;
+    sonstiges.push(geuebt
+      ? fakt(`${skill.name}: an ${geuebt} Tag${geuebt === 1 ? '' : 'en'} geübt, Stufe ${stufe + 1} von ${skill.levels.length}.`)
+      : schlecht(`${skill.name}: diese Woche nicht geübt.`));
+  }
+
+  const letzteMessung = [...mobility].filter(hasResults).pop();
+  if (!letzteMessung) {
+    sonstiges.push(fakt('Beweglichkeit noch nie gemessen. Der Test dauert zehn Minuten und braucht nichts.'));
+  } else if (dueAgain(letzteMessung.date, dateKey)) {
+    sonstiges.push(schlecht(`Beweglichkeitstest ist fällig — die letzte Messung ist ${tageZwischen(letzteMessung.date, dateKey)} Tage her (empfohlen alle ${RETEST_DAYS}).`));
+  } else {
+    const punkte = overallScore(letzteMessung);
+    if (punkte) sonstiges.push(fakt(`Beweglichkeit zuletzt ${punkte.punkte} von 100 (${punkte.band.name}).`));
+  }
+  if (sonstiges.length) abschnitte.push({ titel: 'Fähigkeiten und Beweglichkeit', befunde: sonstiges });
+
+  /* --- Sicherung --- */
+  // Alles liegt in der Datenbank dieses einen Geräts. Der Export existiert,
+  // aber niemand denkt von selbst daran — und wer daran denkt, tut es einmal.
+  const gesichert = data.lastBackup || null;
+  const tageSeit = gesichert ? tageZwischen(gesichert, dateKey) : null;
+  if (tageSeit === null) {
+    abschnitte.push({ titel: 'Sicherung', befunde: [schlecht(
+      'Noch nie gesichert. Alles steht in der Datenbank dieses Geräts — ein gelöschter '
+      + 'Website-Speicher oder ein verlorenes Handy kostet alles. Unter „Mehr“ dauert es '
+      + 'zehn Sekunden.'
+    )] });
+  } else if (tageSeit > 28) {
+    abschnitte.push({ titel: 'Sicherung', befunde: [schlecht(
+      `Letzte Sicherung vor ${tageSeit} Tagen. Seitdem sind alle Einheiten, Gewichte und `
+      + 'Messungen nur auf diesem Gerät.'
+    )] });
+  }
+
+  /* --- Fazit --- */
+  const schlechte = abschnitte.flatMap((a) => a.befunde).filter((b) => b.art === 'schlecht').length;
+  const gute = abschnitte.flatMap((a) => a.befunde).filter((b) => b.art === 'gut').length;
+
+  return {
+    von: montag,
+    bis: shiftDateKey(montag, 6),
+    vollstaendig,
+    abschnitte,
+    fazit: fazitSatz(gute, schlechte, gemacht.length + bewusst.length, geplantBisHeute.length, vollstaendig),
+  };
+}
+
+/**
+ * Ein Satz, der nicht schönredet und nicht dramatisiert.
+ *
+ * `faellig` sind die bis heute fälligen Einheiten, nicht die der ganzen Woche —
+ * am Dienstag ist eine Einheit am Freitag nicht „versäumt".
+ */
+function fazitSatz(gute, schlechte, gemacht, faellig, vollstaendig) {
+  if (!gute && !schlechte) return 'Zu wenig eingetragen, um etwas darüber zu sagen.';
+
+  const fehlend = Math.max(0, faellig - gemacht);
+
+  if (fehlend > 0) {
+    const einheit = `${fehlend} Einheit${fehlend === 1 ? '' : 'en'}`;
+    return vollstaendig
+      ? `${einheit} fehlen. Das ist der Punkt, an dem sich die nächste Woche entscheidet — alles andere ist zweitrangig.`
+      : `${einheit} aus dieser Woche ${fehlend === 1 ? 'ist' : 'sind'} noch offen. Nachholen geht, solange die Woche läuft.`;
+  }
+
+  if (schlechte === 0) {
+    return vollstaendig
+      ? 'Eine Woche ohne Schwachstelle. Genau so weiter.'
+      : 'Bis hierher ohne Schwachstelle.';
+  }
+  if (schlechte <= 2) return 'Das Training steht. Die Punkte oben sind Feinschliff, keine Baustelle.';
+  if (schlechte > gute) return 'Mehr Baustellen als Erfolge. Nimm dir für nächste Woche einen einzigen Punkt vor, nicht alle.';
+  return 'Solide Woche mit ein paar offenen Punkten.';
+}
+
+/**
+ * Hängt die Leistung am Schlaf der Nacht davor?
+ *
+ * Verglichen wird das Volumen der Einheiten nach kurzen Nächten mit dem nach
+ * langen. Das ist keine Studie: es sind wenige Datenpunkte, und wer schlecht
+ * schläft, hat oft auch sonst eine anstrengende Woche. Deshalb kommt der Befund
+ * erst ab je zwei Einheiten auf beiden Seiten, und der Satz sagt „an den Tagen
+ * nach", nicht „wegen".
+ *
+ * @returns {{kurz:number, lang:number, kurzSchnitt:number, langSchnitt:number,
+ *            unterschied:number}|null}
+ */
+export function sleepVersusVolume(sessions, sleep, bodyweight, bisDatum) {
+  const nach = new Map((sleep || []).map((n) => [n.date, n]));
+  const kurz = [];
+  const lang = [];
+
+  for (const session of sessions || []) {
+    if (!session.done || session.date > bisDatum) continue;
+    const nacht = nach.get(session.date);
+    if (!nacht || !nachtVoll(nacht)) continue;
+
+    const dauer = schlafDauer(nacht);
+    const volumen = sessionVolume(session, bodyweight);
+    if (!volumen) continue;
+
+    (dauer < SOLL_MIN ? kurz : lang).push(volumen);
+  }
+
+  if (kurz.length < 2 || lang.length < 2) return null;
+
+  const mittel = (xs) => xs.reduce((a, b) => a + b, 0) / xs.length;
+  const kurzSchnitt = mittel(kurz);
+  const langSchnitt = mittel(lang);
+
+  return {
+    kurz: kurz.length,
+    lang: lang.length,
+    kurzSchnitt: Math.round(kurzSchnitt),
+    langSchnitt: Math.round(langSchnitt),
+    unterschied: Math.round(((kurzSchnitt - langSchnitt) / langSchnitt) * 100),
+  };
+}
+
+/**
+ * Übungen, die sich gegenüber der Vorwoche bewegt haben.
+ * Verglichen wird der beste Satz je Übung, nicht das Volumen — das reagiert
+ * sonst allein auf einen zusätzlichen Trainingstag.
+ */
+function uebungsFortschritt(sessions, wocheTage, vorTage) {
+  const bester = (tage) => {
+    const map = new Map();
+    for (const d of tage) {
+      const session = sessions.find((s) => s.date === d);
+      for (const [id, sets] of Object.entries(session?.entries || {})) {
+        for (const set of sets || []) {
+          if (!set || !set.reps) continue;
+          const w = Number(set.weight) || 0;
+          // Einseitig zählt die schwächere Seite — sonst meldet der Bericht
+          // einen Fortschritt, während die andere Seite abgebaut hat.
+          const seiten = isUnilateral(id) ? setSides(set) : null;
+          const reps = seiten ? (seiten.schwaechste ?? set.reps) : set.reps;
+          const score = w > 0 ? w * (1 + reps / 30) : reps;
+          if (!map.has(id) || score > map.get(id).score) {
+            map.set(id, { score, weight: w, reps, seiten });
+          }
+        }
+      }
+    }
+    return map;
+  };
+
+  const jetzt = bester(wocheTage);
+  const vorher = bester(vorTage);
+  const rauf = [];
+  const runter = [];
+
+  for (const [id, wert] of jetzt) {
+    const alt = vorher.get(id);
+    if (!alt) continue;
+    const name = exerciseById(id)?.name || id;
+    // Bei einseitigen Übungen stehen beide Seiten da: „12/9" sagt mehr als „9".
+    const wdh = (v) => (v.seiten && v.seiten.links !== null && v.seiten.rechts !== null
+      ? `${v.seiten.links}/${v.seiten.rechts}`
+      : String(v.reps));
+    const e = isTimed(id) ? 's' : 'Wdh.';
+    const wie = wert.weight > 0 ? `${einsNach(wert.weight)} kg × ${wdh(wert)}` : `${wdh(wert)} ${e}`;
+    const wieAlt = alt.weight > 0 ? `${einsNach(alt.weight)} kg × ${wdh(alt)}` : `${wdh(alt)} ${e}`;
+    if (wert.score > alt.score) rauf.push(`${name} ${wieAlt} → ${wie}`);
+    else if (wert.score < alt.score) runter.push(`${name} ${wieAlt} → ${wie}`);
+  }
+
+  const befunde = [];
+  if (rauf.length) befunde.push(gut(`Besser als letzte Woche: ${rauf.join('; ')}`));
+  if (runter.length) befunde.push(schlecht(`Schlechter als letzte Woche: ${runter.join('; ')}`));
+  if (!rauf.length && !runter.length && jetzt.size) {
+    befunde.push(fakt('Keine Übung hat sich gegenüber der Vorwoche verändert.'));
+  }
+  return befunde;
+}

@@ -1,0 +1,369 @@
+/**
+ * Tagesansicht: Kalorienring gegen das Tagesziel, Makrobalken und die
+ * Mahlzeiten des Tages, gruppiert nach Frühstück/Mittag/Abend/Snack.
+ */
+
+import { el, svg, mount, viewHead, iconButton, emptyState } from '../ui.js';
+import { getMealsByDate, getMealsInRange } from '../store.js';
+import { reportTeaser } from './report.js';
+import { startFromPending } from './capture.js';
+import { dayTotals } from '../activities.js';
+import { tagesleiste } from './tagesleiste.js';
+import { suggestSection } from './suggest.js';
+import { coachCard } from './coach.js';
+import { scoreMeal } from '../mealscore.js';
+import { energyPlan } from '../energy.js';
+import {
+  localDateKey, shiftDateKey, formatDateKey, formatTime,
+  sumMeals, groupByMealType, MEAL_TYPE_LABEL,
+} from '../nutrition.js';
+
+/** Object-URLs der Thumbnails, damit sie beim nächsten Rendern freigegeben werden. */
+let objectUrls = [];
+
+function releaseObjectUrls() {
+  for (const url of objectUrls) URL.revokeObjectURL(url);
+  objectUrls = [];
+}
+
+const RING_RADIUS = 56;
+const RING_CIRCUMFERENCE = 2 * Math.PI * RING_RADIUS;
+
+/** Kalorienring plus Makrobalken. */
+function progressCard(totals, goals, ctx) {
+  const goalKcal = Math.max(1, goals.kcal);
+  const ratio = totals.kcal / goalKcal;
+  const over = totals.kcal > goals.kcal;
+  const remaining = goals.kcal - totals.kcal;
+
+  const ring = el(
+    'div',
+    { class: `ring${over ? ' over' : ''}` },
+    svg(
+      'svg',
+      { viewBox: '0 0 128 128', 'aria-hidden': 'true' },
+      svg('circle', {
+        class: 'track', cx: 64, cy: 64, r: RING_RADIUS,
+        fill: 'none', 'stroke-width': 11,
+      }),
+      svg('circle', {
+        class: 'bar', cx: 64, cy: 64, r: RING_RADIUS,
+        fill: 'none', 'stroke-width': 11, 'stroke-linecap': 'round',
+        'stroke-dasharray': RING_CIRCUMFERENCE,
+        // Bei Überschreitung bleibt der Ring voll statt sich erneut zu füllen.
+        'stroke-dashoffset': RING_CIRCUMFERENCE * (1 - Math.min(1, Math.max(0, ratio))),
+      })
+    ),
+    el(
+      'div',
+      { class: 'ring-label' },
+      el('div', { class: 'ring-value', text: String(totals.kcal) }),
+      el('div', { class: 'ring-unit', text: `von ${goals.kcal} kcal` })
+    )
+  );
+
+  const macroBar = (cls, name, value, goal, unit = 'g') => {
+    const pct = goal > 0 ? Math.min(100, (value / goal) * 100) : 0;
+    return el(
+      'div',
+      { class: `macro ${cls}` },
+      el(
+        'div',
+        { class: 'macro-head' },
+        el('span', { class: 'macro-name', text: name }),
+        el('span', { class: 'macro-num tabular', text: `${Math.round(value)} / ${goal} ${unit}` })
+      ),
+      el('div', { class: 'macro-track' }, el('div', { class: 'macro-fill', style: { width: `${pct}%` } }))
+    );
+  };
+
+  // Woher das Ziel kommt, gehört sichtbar dazu: an Trainingstagen ist es höher.
+  const source = goals.kind === 'training'
+    ? el('button', {
+        class: 'daykind daykind-training', type: 'button',
+        title: 'Zum Trainingsplan',
+        onClick: () => ctx.go('training'),
+      }, `Trainingstag · ${goals.dayName}`)
+    : goals.kind === 'rest'
+      ? el('button', {
+          class: 'daykind', type: 'button', title: 'Zum Trainingsplan',
+          onClick: () => ctx.go('training'),
+        }, 'Ruhetag')
+      : null;
+
+  return el(
+    'div',
+    { class: 'card ring-card' },
+    ring,
+    el(
+      'div',
+      { class: 'ring-side' },
+      source,
+      el('p', {
+        class: `ring-remaining${over ? ' over' : ''}`,
+        text: over
+          ? `${Math.abs(remaining)} kcal über dem Ziel`
+          : `noch ${remaining} kcal übrig`,
+      }),
+      macroBar('macro-protein', 'Eiweiß', totals.protein, goals.protein),
+      macroBar('macro-carbs', 'Kohlenhydrate', totals.carbs, goals.carbs),
+      macroBar('macro-fat', 'Fett', totals.fat, goals.fat),
+      // Hier stand einmal der Trinkrichtwert. Er ist wieder weg: Die Kachel
+      // „Trinken" eine Handbreit darunter sagt dasselbe, nur besser — sie
+      // kennt den Sport des Tages und zeigt, was schon getrunken ist. Zwei
+      // Zahlen für dieselbe Sache lasen sich wie ein Fehler, und eine davon
+      // war auch einer.
+    )
+  );
+}
+
+/** Eine Zeile in der Mahlzeitenliste. */
+function mealRow(meal, ctx, wertung) {
+  let thumb;
+  if (meal.thumb instanceof Blob) {
+    const url = URL.createObjectURL(meal.thumb);
+    objectUrls.push(url);
+    thumb = el('img', { class: 'meal-thumb', src: url, alt: '', loading: 'lazy' });
+  } else {
+    thumb = el('div', { class: 'meal-thumb', 'aria-hidden': 'true', text: '🍽️' });
+  }
+
+  const parts = [formatTime(meal.timestamp)];
+  if (meal.items.length) {
+    parts.push(meal.items.map((i) => i.name).join(', '));
+  }
+
+  return el(
+    'button',
+    {
+      class: 'meal',
+      type: 'button',
+      onClick: () => ctx.openEditor({ mode: 'edit', meal, photoBlob: meal.photo, thumbBlob: meal.thumb }),
+    },
+    thumb,
+    el(
+      'div',
+      { class: 'meal-body' },
+      el('div', { class: 'meal-name', text: meal.name }),
+      el('div', { class: 'meal-sub', text: parts.join(' · ') }),
+      // Die Einordnung steht in der Zeile, nicht hinter einem Tippen: Sie ist
+      // eine Zeile lang und beantwortet die Frage, die man beim Draufschauen
+      // ohnehin hat.
+      wertung
+        ? el('div', { class: `mealwert wert-${wertung.stufe}` }, wertung.text)
+        : null
+    ),
+    el(
+      'div',
+      { class: 'meal-kcal tabular' },
+      String(meal.totals.kcal),
+      el('span', { text: 'kcal' })
+    )
+  );
+}
+
+/**
+ * Karte für Fotos, die ohne Verbindung aufgehoben wurden.
+ *
+ * Ausgewertet wird eines nach dem anderen über den normalen Editor — dann
+ * gelten dieselben Korrekturmöglichkeiten wie bei einem frischen Foto, statt
+ * dass ein Stapel ungeprüft in den Tag rutscht.
+ */
+function wartendeFotos(ctx) {
+  const warten = ctx.state.pending || [];
+  if (!warten.length) return null;
+
+  const offline = navigator.onLine === false;
+  const ohneKey = !ctx.settings.apiKey;
+  const naechstes = warten[0];
+
+  const grund = offline
+    ? 'Noch keine Verbindung.'
+    : ohneKey
+      ? 'Ohne API-Key geht die Auswertung nur über die Claude-App — den Weg findest du im Editor.'
+      : null;
+
+  return el('div', { class: 'card stack' },
+    el('div', { class: 'row-between' },
+      el('h3', { class: 'card-title',
+        text: warten.length === 1 ? 'Ein Foto wartet' : `${warten.length} Fotos warten` }),
+      el('span', { class: 'pill pill-kcal', text: 'offen' })),
+    el('div', { class: 'fotostreifen' },
+      ...warten.slice(0, 5).map((w) => el('img', {
+        class: 'fotomini', alt: '',
+        src: URL.createObjectURL(w.thumb || w.blob),
+      }))),
+    el('p', { class: 'hint',
+      text: 'Aufgehoben ohne Verbindung. Bis zur Auswertung zählen sie nirgends mit — '
+        + 'weder in der Tagessumme noch im Bericht.' }),
+    grund ? el('p', { class: 'hint', text: grund }) : null,
+    el('button', {
+      class: 'btn btn-primary btn-block', type: 'button', disabled: offline,
+      onClick: () => startFromPending(naechstes, ctx),
+    }, warten.length === 1 ? 'Jetzt auswerten' : `Nächstes auswerten (${warten.length} offen)`));
+}
+
+export async function render(container, ctx, param) {
+  releaseObjectUrls();
+
+  const dateKey = param || ctx.state.date || localDateKey();
+  ctx.state.date = dateKey;
+
+  const today = localDateKey();
+  const meals = await getMealsByDate(dateKey);
+  const totals = sumMeals(meals);
+
+  // Sport hebt das Tagesziel — die Aktivitäten müssen also vor den Zielen da sein.
+  const activities = await ctx.refreshActivities(dateKey);
+  const aktiv = dayTotals(activities, ctx.state.profile?.weight);
+  const goals = ctx.goalsFor(dateKey, aktiv.anrechnung);
+  const groups = groupByMealType(meals);
+
+  const head = viewHead(
+    formatDateKey(dateKey, today),
+    meals.length
+      ? `${meals.length} ${meals.length === 1 ? 'Eintrag' : 'Einträge'}`
+      : 'noch nichts eingetragen',
+    iconButton('prev', 'Vorheriger Tag', () => ctx.setDate(shiftDateKey(dateKey, -1))),
+    iconButton('next', 'Nächster Tag', () => ctx.setDate(shiftDateKey(dateKey, 1)), {
+      // Über den heutigen Tag hinaus gibt es nichts einzutragen.
+      disabled: dateKey >= today,
+    })
+  );
+
+  const body = [];
+
+  // Der Überblick steht über allem: Er ist die einzige Stelle, die alle
+  // Bereiche gleichzeitig sieht, und sagt in drei Zeilen, was heute zählt.
+  // Die drei Vortage kommen mit, damit er wiederkehrende Muster erkennt statt
+  // jeden Abend dieselbe Tageslücke zu melden.
+  const vortage = {};
+  if (dateKey === today) {
+    for (const m of await getMealsInRange(shiftDateKey(dateKey, -3), shiftDateKey(dateKey, -1))) {
+      (vortage[m.date] = vortage[m.date] || []).push(m);
+    }
+  }
+  /**
+   * Der erste Start.
+   *
+   * Ohne Profil zeigte „Heute" 2000 kcal und 125 g Eiweiß an — Platzhalter für
+   * einen Durchschnittsmenschen — und nirgends stand, dass da noch ein
+   * Fragebogen wartet. Wer den Reiter „Training" nicht von allein aufmacht,
+   * trägt seine Mahlzeiten wochenlang gegen eine erfundene Zahl.
+   */
+  if (!ctx.state.profile) {
+    body.push(el('div', { class: 'card stack' },
+      el('h3', { class: 'card-title', text: 'Erst ein paar Fragen' }),
+      el('p', { class: 'small',
+        text: 'Die Zahlen oben sind Platzhalter für einen Durchschnittsmenschen. Aus acht '
+          + 'Fragen — Größe, Gewicht, Ziel, wie viel Zeit du hast — rechnet die App deine '
+          + 'eigenen Kalorien und baut den Trainingsplan dazu. Dauert zwei Minuten.' }),
+      el('button', {
+        class: 'btn btn-primary btn-block', type: 'button',
+        onClick: () => ctx.startSetup(),
+      }, 'Fragebogen starten'),
+      el('p', { class: 'hint',
+        text: 'Geht auch später — dann bleiben die Platzhalter, bis du es machst.' })));
+  }
+
+  const ueberblick = coachCard(ctx, dateKey, meals, goals, vortage);
+  if (ueberblick) body.push(ueberblick);
+
+  body.push(el('div', { class: ueberblick ? 'mt-16' : '' }, progressCard(totals, goals, ctx)));
+
+  // Wartende Fotos direkt darunter: solange sie liegen, stimmt keine Zahl.
+  const warteschlange = wartendeFotos(ctx);
+  if (warteschlange) body.push(el('div', { class: 'mt-16' }, warteschlange));
+
+  // Schlaf, Sport, Trinken und Ergänzung als Leiste statt als vier Karten.
+  // Vier Zahlen, die man im Vorbeigehen prüft, brauchen keine vier
+  // Überschriften — und sie stehen direkt unter dem Ring, weil man sie im
+  // selben Blick abliest.
+  const leiste = tagesleiste(ctx, dateKey);
+  if (leiste) body.push(el('div', { class: 'mt-16' }, leiste));
+
+  // Vorschläge gehören zu den Kalorien: Sie beantworten den offenen Rest, der
+  // im Ring darüber steht.
+  const vorschlaege = suggestSection(ctx, dateKey, {
+    kcal: goals.kcal - totals.kcal,
+    protein: goals.protein - totals.protein,
+  });
+  if (vorschlaege) body.push(el('div', { class: 'mt-16', 'data-anker': 'suggest' }, vorschlaege));
+
+  // Der Tagesbericht sagt in weiten Teilen dasselbe wie der Überblick oben —
+  // solange der steht, reicht hier eine Zeile, die zum ganzen Bericht führt.
+  if (dateKey === today) {
+    const bericht = ueberblick ? null : reportTeaser(ctx, meals);
+    if (bericht) body.push(el('div', { class: 'mt-16' }, bericht));
+  }
+
+  if (!meals.length) {
+    body.push(
+      el(
+        'div',
+        { class: 'card mt-16' },
+        emptyState(
+          'Noch keine Mahlzeit',
+          'Tippe unten rechts auf die Kamera, um dein Essen zu fotografieren — oder beschreib '
+          + 'es mit Worten, das geht auch ohne Foto.'
+        )
+      )
+    );
+  } else {
+    for (const group of groups) {
+      body.push(
+        el(
+          'section',
+          { class: 'meal-group' },
+          el(
+            'div',
+            { class: 'meal-group-head' },
+            el('h2', { text: MEAL_TYPE_LABEL[group.id] }),
+            el('span', { class: 'kcal tabular', text: `${group.totals.kcal} kcal` })
+          ),
+          ...group.meals.map((m) => {
+            const s = scoreMeal(m);
+            return mealRow(m, ctx, s && s.satz
+              ? { stufe: s.punkte >= 70 ? 'gut' : s.punkte >= 40 ? 'ok' : 'schwach', text: s.satz }
+              : null);
+          })
+        )
+      );
+    }
+  }
+
+  body.push(
+    el(
+      'div',
+      { class: 'mt-24 stack-sm' },
+      el(
+        'button',
+        {
+          class: 'btn btn-block',
+          type: 'button',
+          onClick: () => ctx.openEditor({ mode: 'text', dateKey }),
+        },
+        'Mit Worten beschreiben'
+      ),
+      el(
+        'button',
+        {
+          class: 'btn btn-block',
+          type: 'button',
+          onClick: () => ctx.openEditor({ mode: 'manual', dateKey }),
+        },
+        'Von Hand eintragen'
+      ),
+      // Der ganze Bericht ist eine Zeile wert, keine Karte: Wer ihn will,
+      // sucht ihn — und wer nicht, hat oben schon alles Wichtige gelesen.
+      dateKey === today
+        ? el('button', {
+            class: 'btn btn-ghost btn-block', type: 'button',
+            onClick: () => ctx.go('report'),
+          }, 'Ganzer Bericht')
+        : null
+    )
+  );
+
+  mount(container, head, el('div', null, ...body));
+}
