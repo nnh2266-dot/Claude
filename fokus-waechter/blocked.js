@@ -73,7 +73,7 @@ async function init() {
   const status = all.find((s) => s.site === siteId);
 
   $('used').textContent = FW.formatMinutes(status.usedSeconds);
-  $('limit').textContent = FW.formatMinutes(status.limitSeconds);
+  $('limit').textContent = status.unlimited ? 'kein Limit' : FW.formatMinutes(status.limitSeconds);
   $('ideas').replaceChildren(...pickIdeas(3).map((text) => {
     const li = document.createElement('li');
     li.textContent = text;
@@ -85,7 +85,7 @@ async function init() {
     $('title').textContent = `${site.shortsName} sind gesperrt`;
     $('lead').textContent = `Endloses Wischen durch ${site.shortsName} frisst am meisten Zeit. `
       + 'Wenn du etwas Bestimmtes suchst, geh direkt dorthin.';
-    if (status.remainingSeconds > 0) {
+    if (status.unlimited || status.remainingSeconds > 0) {
       $('back').hidden = false;
       $('back').textContent = `Zur ${site.name}-Startseite`;
       $('back').addEventListener('click', () => location.replace(site.home));
@@ -93,7 +93,7 @@ async function init() {
     return;
   }
 
-  if (status.remainingSeconds > 0) {
+  if (status.unlimited || status.remainingSeconds > 0) {
     // Limit wurde inzwischen erhöht oder verlängert.
     location.replace(safeReturnUrl());
     return;

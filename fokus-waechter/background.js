@@ -53,7 +53,7 @@ async function check(msg, sender, counting) {
 
   let reason = null;
   if (settings.blockShorts && FW.isShortsUrl(siteId, msg.url)) reason = 'shorts';
-  else if (status.remainingSeconds <= 0) reason = 'limit';
+  else if (!status.unlimited && status.remainingSeconds <= 0) reason = 'limit';
 
   if (reason && tabId != null) {
     delete lastTick[siteId];
@@ -67,6 +67,7 @@ async function extend(siteId) {
   const usage = await FW.getUsage();
   const key = FW.dayKey();
   const day = FW.dayEntry(usage, siteId, key);
+  if (settings.limits[siteId] == null) return { ok: false, error: 'Für diese Seite gibt es kein Limit.' };
   if (day.extensions >= settings.extensionsPerDay) {
     return { ok: false, error: 'Für heute sind keine Verlängerungen mehr übrig.' };
   }
@@ -110,7 +111,11 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
 
 chrome.runtime.onInstalled.addListener(async ({ reason }) => {
   if (reason === 'install') {
-    await chrome.storage.local.set({ settings: FW.DEFAULT_SETTINGS });
+    // Beim ersten Einrichten sind die Einstellungen eine Weile ohne Test änderbar.
+    await chrome.storage.local.set({
+      settings: FW.DEFAULT_SETTINGS,
+      unlockedUntil: Date.now() + FW.FIRST_SETUP_SECONDS * 1000,
+    });
     chrome.runtime.openOptionsPage();
   }
 });

@@ -13,19 +13,43 @@
     header h1 { font-size: 24px; }
     h2 { font-size: 17px; margin-bottom: 4px; }
     .card > p.muted { margin: 0 0 16px; font-size: 14px; }
+
+    /* Sperre */
+    #lock h2 { display: flex; align-items: center; gap: 8px; }
+    #lock p { margin: 6px 0 14px; font-size: 14px; }
+    #lock.unlocked { border-color: var(--accent); }
+    .clock { font-size: 44px; font-weight: 700; font-variant-numeric: tabular-nums; margin: 4px 0 10px; }
+    .clock.paused { color: var(--muted); }
+    #lock .bar { margin-bottom: 14px; }
+    .sentence {
+      font-size: 15px; font-weight: 600; padding: 12px 14px; border-radius: 10px;
+      background: var(--bg); border: 1px dashed var(--border); margin: 0 0 10px;
+      user-select: none; -webkit-user-select: none;
+    }
+    textarea {
+      width: 100%; min-height: 70px; font: inherit; padding: 10px 12px; resize: vertical;
+      border-radius: 10px; border: 1px solid var(--border); background: var(--bg); color: var(--text);
+      margin-bottom: 10px;
+    }
+    .error { color: var(--danger); font-size: 14px; min-height: 1.4em; margin: 0 0 8px; }
+    .btns { display: flex; gap: 10px; flex-wrap: wrap; }
+
+    /* Formular */
+    fieldset { border: 0; padding: 0; margin: 0; min-width: 0; }
+    fieldset:disabled .field { opacity: .55; }
     .field { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 10px 0; border-top: 1px solid var(--border); }
     .field:first-of-type { border-top: 0; }
     .field label { flex: 1; }
     .field small { display: block; color: var(--muted); font-size: 13px; }
     input[type=number] {
-      width: 90px; font: inherit; padding: 8px 10px; text-align: right;
+      width: 110px; font: inherit; padding: 8px 10px; text-align: right;
       border-radius: 8px; border: 1px solid var(--border); background: var(--bg); color: var(--text);
     }
     input[type=checkbox] { width: 20px; height: 20px; accent-color: var(--accent); }
     .save-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 16px; }
     #status { font-size: 14px; }
-    #confirm { margin-top: 16px; padding: 14px; border-radius: 10px; border: 1px solid var(--warn); }
-    #confirm p { margin: 0 0 10px; font-size: 14px; }
+
+    /* Statistik */
     .chart { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; align-items: end; height: 160px; margin-top: 8px; }
     .col { display: flex; flex-direction: column; align-items: center; gap: 6px; height: 100%; justify-content: flex-end; }
     .stack { width: 100%; max-width: 40px; display: flex; flex-direction: column-reverse; border-radius: 6px; overflow: hidden; background: var(--track); min-height: 4px; }
@@ -47,51 +71,83 @@
       </div>
     </header>
 
+    <section class="card" id="lock">
+      <div id="lockedView">
+        <h2>🔒 Deine Regeln sind gesperrt</h2>
+        <p class="muted">Damit du sie nicht aus einer Laune heraus änderst, musst du erst einen Test bestehen:
+          10 Minuten auf dieser Seite bleiben und danach einen Satz von Hand abtippen.
+          Wechselst du den Tab oder das Fenster, bleibt die Zeit stehen. Lädst du die Seite neu, beginnt der Test von vorn.</p>
+        <button class="primary" id="startTest">Test starten (10 Minuten)</button>
+      </div>
+
+      <div id="waitView" hidden>
+        <h2>⏳ Test läuft</h2>
+        <div class="clock" id="clock">10:00</div>
+        <div class="bar"><span id="waitBar" style="width:0%"></span></div>
+        <p class="muted" id="waitNote">Bleib auf dieser Seite. Willst du das wirklich ändern – oder nur gerade scrollen?</p>
+        <button id="cancelTest">Abbrechen</button>
+      </div>
+
+      <div id="typeView" hidden>
+        <h2>✍️ Letzter Schritt</h2>
+        <p class="muted">Tippe diesen Satz genau ab (Einfügen ist gesperrt):</p>
+        <p class="sentence" id="sentence"></p>
+        <textarea id="typed" autocomplete="off" spellcheck="false"></textarea>
+        <p class="error" id="typeError"></p>
+        <div class="btns">
+          <button class="primary" id="checkSentence">Entsperren</button>
+          <button id="cancelType">Abbrechen</button>
+        </div>
+      </div>
+
+      <div id="unlockedView" hidden>
+        <h2>🔓 Entsperrt</h2>
+        <p class="muted">Du kannst deine Regeln jetzt ändern. Noch <strong class="num" id="unlockLeft"></strong>,
+          danach wird wieder gesperrt. Beim Speichern wird sofort wieder gesperrt.</p>
+      </div>
+    </section>
+
+    <form class="card" id="form">
+      <fieldset id="fields" disabled>
+        <h2>Regeln</h2>
+        <div class="field">
+          <label for="blockShorts">YouTube Shorts &amp; Instagram Reels sperren<small>Sperrt die Seiten und blendet Shorts/Reels in den Feeds aus.</small></label>
+          <input type="checkbox" id="blockShorts">
+        </div>
+        <div class="field">
+          <label for="showBadge">Zeitanzeige auf der Seite einblenden</label>
+          <input type="checkbox" id="showBadge">
+        </div>
+
+        <h2 style="margin-top:20px">Tageslimits (optional)</h2>
+        <p class="muted" style="font-size:14px;margin:0 0 8px">Leer lassen = kein Limit. 0 = Seite komplett gesperrt. Gezählt wird nur, solange der Tab sichtbar und das Fenster aktiv ist.</p>
+        <div id="limits"></div>
+        <div class="field">
+          <label for="extensionMinutes">Länge einer Verlängerung (Minuten)</label>
+          <input type="number" id="extensionMinutes" min="1" max="60" required>
+        </div>
+        <div class="field">
+          <label for="extensionsPerDay">Verlängerungen pro Tag und Seite<small>0 = keine Verlängerung möglich</small></label>
+          <input type="number" id="extensionsPerDay" min="0" max="10" required>
+        </div>
+        <div class="field">
+          <label for="extensionWaitSeconds">Wartezeit vor einer Verlängerung (Sekunden)</label>
+          <input type="number" id="extensionWaitSeconds" min="0" max="600" required>
+        </div>
+
+        <div class="save-row">
+          <button type="submit" class="primary">Speichern &amp; sperren</button>
+          <span id="status" class="muted"></span>
+        </div>
+      </fieldset>
+    </form>
+
     <section class="card">
       <h2>Letzte 7 Tage</h2>
       <div class="chart" id="chart"></div>
       <div class="legend" id="legend"></div>
       <p class="summary muted" id="summary"></p>
     </section>
-
-    <form class="card" id="form">
-      <h2>Tageslimits</h2>
-      <p class="muted">Gezählt wird nur, solange der Tab sichtbar und das Fenster aktiv ist. 0 Minuten = Seite komplett gesperrt.</p>
-      <div id="limits"></div>
-
-      <h2 style="margin-top:20px">Regeln</h2>
-      <div class="field">
-        <label for="blockShorts">YouTube Shorts &amp; Instagram Reels sperren<small>Das endlose Wischen ist meist der größte Zeitfresser.</small></label>
-        <input type="checkbox" id="blockShorts">
-      </div>
-      <div class="field">
-        <label for="extensionMinutes">Länge einer Verlängerung (Minuten)</label>
-        <input type="number" id="extensionMinutes" min="1" max="60" required>
-      </div>
-      <div class="field">
-        <label for="extensionsPerDay">Verlängerungen pro Tag und Seite<small>0 = keine Verlängerung möglich</small></label>
-        <input type="number" id="extensionsPerDay" min="0" max="10" required>
-      </div>
-      <div class="field">
-        <label for="extensionWaitSeconds">Wartezeit vor einer Verlängerung (Sekunden)</label>
-        <input type="number" id="extensionWaitSeconds" min="0" max="600" required>
-      </div>
-      <div class="field">
-        <label for="showBadge">Restzeit auf der Seite anzeigen</label>
-        <input type="checkbox" id="showBadge">
-      </div>
-
-      <div id="confirm" hidden>
-        <p>Du lockerst gerade deine Regeln. Ist das eine bewusste Entscheidung – oder willst du nur gerade weiterschauen?</p>
-        <button type="button" id="confirmBtn" disabled></button>
-        <button type="button" id="cancelBtn">Abbrechen</button>
-      </div>
-
-      <div class="save-row">
-        <button type="submit" class="primary" id="saveBtn">Speichern</button>
-        <span id="status" class="muted"></span>
-      </div>
-    </form>
   </main>
   <script src="shared.js"></script>
   <script src="options.js"></script>

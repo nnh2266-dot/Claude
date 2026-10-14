@@ -4,13 +4,11 @@ Chrome-Erweiterung gegen zu viel YouTube und Instagram. Ein bisschen ist okay, z
 
 ## Was sie macht
 
-- **Tageslimit pro Seite** (Standard: YouTube 30 Min, Instagram 15 Min). Gezählt wird nur, solange der Tab sichtbar und das Chrome-Fenster aktiv ist. Um Mitternacht beginnt ein neuer Tag.
-- **Restzeit-Anzeige** unten rechts auf der Seite. Hinweise kommen bei 5 und bei 1 Minute Restzeit. Ein Klick klappt die Anzeige ein.
-- **Sperrseite**, sobald die Zeit um ist, mit Vorschlägen, was du stattdessen tun kannst.
-- **Verlängerung um 5 Minuten**: einmal pro Tag und Seite, und erst nach 30 Sekunden Wartezeit.
-- **Shorts und Reels gesperrt** (abschaltbar), weil das endlose Wischen meist der größte Zeitfresser ist.
-- **Bremse beim Lockern**: Wer Limits erhöht oder Regeln abschwächt, muss vor dem Speichern 20 Sekunden warten.
-- **Statistik** der letzten 7 Tage in den Einstellungen. Alle Daten bleiben lokal in deinem Browser.
+- **YouTube Shorts und Instagram Reels sind gesperrt.** Wer eine Shorts- oder Reels-Adresse öffnet, landet auf einer Sperrseite. Zusätzlich werden Shorts-Regale und Reels-Links auf den Seiten ausgeblendet.
+- **Normales YouTube und Instagram bleiben erlaubt.** Die Zeit wird nur gezählt und unten rechts angezeigt.
+- **Einstellungen sind gesperrt.** Zum Ändern gibt es einen Test: 10 Minuten auf der Einstellungsseite bleiben, und die Zeit läuft nur, solange die Seite im Vordergrund ist. Danach einen Satz von Hand abtippen, Einfügen ist gesperrt. Dann sind die Einstellungen 5 Minuten offen, und mit dem Speichern wird sofort wieder gesperrt. Direkt nach der Installation sind die Einstellungen 15 Minuten ohne Test offen.
+- **Optionale Tageslimits** pro Seite mit Sperrseite und einer verzögerten Verlängerung um 5 Minuten. Ein leeres Feld bedeutet kein Limit.
+- **Statistik** der letzten 7 Tage. Alle Daten bleiben lokal in deinem Browser.
 
 ## Installation (ca. 2 Minuten)
 
@@ -26,6 +24,6 @@ Funktioniert genauso in Edge, Brave, Opera und anderen Chromium-Browsern.
 
 ## Ehrlich gesagt
 
-Die Erweiterung lässt sich unter `chrome://extensions` jederzeit ausschalten. Sie soll dich bremsen, nicht einsperren. Für mehr Härte kannst du die Verlängerungen auf 0 stellen. Ein Limit von 0 Minuten sperrt eine Seite komplett.
+Die Erweiterung lässt sich unter `chrome://extensions` jederzeit ausschalten. Das kann keine Erweiterung verhindern. Sie soll dich bremsen, nicht einsperren. Reels, die direkt im Instagram-Feed abgespielt werden, erkennt sie nicht. Sie sperrt aber den Reels-Bereich und jede Reel-Seite. YouTube und Instagram ändern ihre Seiten öfter, deshalb kann das Ausblenden einzelner Shorts-Elemente irgendwann nicht mehr greifen. Die Sperrseite für Shorts- und Reels-Adressen funktioniert davon unabhängig.
 
 Auf dem Handy wirkt sie nicht. Dafür eignen sich die Bildschirmzeit (iPhone) bzw. das Digital Wellbeing (Android).

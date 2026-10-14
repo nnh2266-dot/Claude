@@ -1,8 +1,102 @@
-const LOOSEN_WAIT_SECONDS = 20;
 const SITE_COLORS = { youtube: '#d9534f', instagram: '#8e5cc4' };
 const $ = (id) => document.getElementById(id);
 
 let current;
+let unlockedUntil = 0;
+
+// ---------- Sperre & Test ----------
+
+let testTimer = null;
+let waited = 0;
+
+function showLockView(name) {
+  for (const v of ['lockedView', 'waitView', 'typeView', 'unlockedView']) $(v).hidden = v !== name;
+  $('lock').classList.toggle('unlocked', name === 'unlockedView');
+}
+
+function isUnlocked() {
+  return Date.now() < unlockedUntil;
+}
+
+function stopTest() {
+  clearInterval(testTimer);
+  testTimer = null;
+  waited = 0;
+}
+
+function startTest() {
+  stopTest();
+  showLockView('waitView');
+  const total = FW.UNLOCK_WAIT_SECONDS;
+  const update = (active) => {
+    $('clock').textContent = FW.formatClock(total - waited);
+    $('clock').classList.toggle('paused', !active);
+    $('waitBar').style.width = `${(waited / total) * 100}%`;
+    $('waitNote').textContent = active
+      ? 'Bleib auf dieser Seite. Willst du das wirklich ändern – oder nur gerade scrollen?'
+      : 'Pausiert – die Zeit läuft nur, solange diese Seite im Vordergrund ist.';
+  };
+  update(true);
+  testTimer = setInterval(() => {
+    const active = document.visibilityState === 'visible' && document.hasFocus();
+    if (active) waited += 1;
+    update(active);
+    if (waited >= total) {
+      stopTest();
+      showLockView('typeView');
+      $('typed').value = '';
+      $('typeError').textContent = '';
+      $('typed').focus();
+    }
+  }, 1000);
+}
+
+function normalize(text) {
+  return text.trim().replace(/\s+/g, ' ');
+}
+
+async function checkSentence() {
+  if (normalize($('typed').value) !== FW.UNLOCK_SENTENCE) {
+    $('typeError').textContent = 'Stimmt noch nicht genau. Achte auf jedes Zeichen.';
+    return;
+  }
+  unlockedUntil = Date.now() + FW.UNLOCK_WINDOW_SECONDS * 1000;
+  await chrome.storage.local.set({ unlockedUntil });
+  renderLock();
+}
+
+function renderLock() {
+  const unlocked = isUnlocked();
+  $('fields').disabled = !unlocked;
+  if (unlocked) {
+    showLockView('unlockedView');
+    $('unlockLeft').textContent = FW.formatClock((unlockedUntil - Date.now()) / 1000);
+  } else if (!$('unlockedView').hidden) {
+    // Zeitfenster abgelaufen: ungespeicherte Änderungen verwerfen.
+    fillForm(current);
+    showLockView('lockedView');
+  }
+}
+
+$('sentence').textContent = FW.UNLOCK_SENTENCE;
+$('startTest').addEventListener('click', startTest);
+$('cancelTest').addEventListener('click', () => { stopTest(); showLockView('lockedView'); });
+$('cancelType').addEventListener('click', () => showLockView('lockedView'));
+$('checkSentence').addEventListener('click', checkSentence);
+for (const ev of ['paste', 'drop']) {
+  $('typed').addEventListener(ev, (e) => {
+    e.preventDefault();
+    $('typeError').textContent = 'Einfügen geht hier nicht – bitte selbst tippen.';
+  });
+}
+// Ein Satz, der auf einmal hereinkommt (z. B. per Autovervollständigung), zählt nicht.
+$('typed').addEventListener('beforeinput', (e) => {
+  if (e.inputType === 'insertFromPaste' || e.inputType === 'insertFromDrop' || (e.data && e.data.length > 3)) {
+    e.preventDefault();
+  }
+});
+
+// ---------- Formular ----------
 
 function buildLimitFields() {
   const wrap = $('limits');
@@ -10,14 +104,14 @@ function buildLimitFields() {
     const field = document.createElement('div');
     field.className = 'field';
     field.innerHTML = `<label for="limit-${id}"></label>
-      <input type="number" id="limit-${id}" min="0" max="1440" required>`;
+      <input type="number" id="limit-${id}" min="0" max="1440" placeholder="kein Limit">`;
     field.querySelector('label').textContent = `${site.name} (Minuten pro Tag)`;
     wrap.appendChild(field);
   }
 }
 
 function fillForm(s) {
-  for (const id of Object.keys(FW.SITES)) $(`limit-${id}`).value = s.limits[id];
+  for (const id of Object.keys(FW.SITES)) $(`limit-${id}`).value = s.limits[id] == null ? '' : s.limits[id];
   $('blockShorts').checked = s.blockShorts;
   $('extensionMinutes').value = s.extensionMinutes;
   $('extensionsPerDay').value = s.extensionsPerDay;
@@ -27,7 +121,10 @@ function fillForm(s) {
 
 function readForm() {
   const limits = {};
-  for (const id of Object.keys(FW.SITES)) limits[id] = Math.max(0, parseInt($(`limit-${id}`).value, 10) || 0);
+  for (const id of Object.keys(FW.SITES)) {
+    const raw = $(`limit-${id}`).value.trim();
+    limits[id] = raw === '' ? null : Math.max(0, parseInt(raw, 10) || 0);
+  }
   return {
     limits,
     blockShorts: $('blockShorts').checked,
@@ -38,60 +135,19 @@ function readForm() {
   };
 }
 
-// Lockert die neue Einstellung irgendeine Regel?
-function isLoosening(oldS, newS) {
-  return Object.keys(FW.SITES).some((id) => newS.limits[id] > oldS.limits[id])
-    || (oldS.blockShorts && !newS.blockShorts)
-    || newS.extensionMinutes > oldS.extensionMinutes
-    || newS.extensionsPerDay > oldS.extensionsPerDay
-    || newS.extensionWaitSeconds < oldS.extensionWaitSeconds;
-}
-
-async function save(next) {
-  await chrome.storage.local.set({ settings: next });
-  current = next;
-  $('confirm').hidden = true;
-  $('saveBtn').disabled = false;
-  $('status').textContent = 'Gespeichert.';
-  setTimeout(() => { $('status').textContent = ''; }, 2500);
-}
-
-let confirmTimer = null;
-function askConfirm(next) {
-  const btn = $('confirmBtn');
-  $('confirm').hidden = false;
-  $('saveBtn').disabled = true;
-  btn.disabled = true;
-  let left = LOOSEN_WAIT_SECONDS;
-  btn.textContent = `Trotzdem speichern (${left} s)`;
-  clearInterval(confirmTimer);
-  confirmTimer = setInterval(() => {
-    if (document.visibilityState !== 'visible') return;
-    left -= 1;
-    if (left > 0) {
-      btn.textContent = `Trotzdem speichern (${left} s)`;
-    } else {
-      clearInterval(confirmTimer);
-      btn.disabled = false;
-      btn.textContent = 'Trotzdem speichern';
-    }
-  }, 1000);
-  btn.onclick = () => save(next);
-}
-
-$('cancelBtn').addEventListener('click', () => {
-  clearInterval(confirmTimer);
-  $('confirm').hidden = true;
-  $('saveBtn').disabled = false;
-  fillForm(current);
-});
-
-$('form').addEventListener('submit', (e) => {
+$('form').addEventListener('submit', async (e) => {
   e.preventDefault();
-  const next = readForm();
-  if (isLoosening(current, next)) askConfirm(next);
-  else save(next);
+  if (!isUnlocked()) return;
+  current = readForm();
+  unlockedUntil = 0;
+  await chrome.storage.local.set({ settings: current, unlockedUntil });
+  fillForm(current);
+  renderLock();
+  $('status').textContent = 'Gespeichert und wieder gesperrt.';
+  setTimeout(() => { $('status').textContent = ''; }, 4000);
 });
+
+// ---------- Statistik ----------
 
 async function renderChart() {
   const usage = await FW.getUsage();
@@ -143,7 +199,11 @@ async function renderChart() {
 (async () => {
   buildLimitFields();
   current = await FW.getSettings();
+  ({ unlockedUntil = 0 } = await chrome.storage.local.get('unlockedUntil'));
   fillForm(current);
+  if (isUnlocked()) showLockView('unlockedView');
+  renderLock();
+  setInterval(renderLock, 1000);
   renderChart();
   setInterval(renderChart, 30000);
 })();

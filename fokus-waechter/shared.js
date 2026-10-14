@@ -7,6 +7,22 @@ const FW = (() => {
       home: 'https://www.youtube.com/',
       shorts: [/^\/shorts(\/|$)/],
       shortsName: 'Shorts',
+      // Shorts-Regale, -Kacheln und den Menüeintrag ausblenden
+      hideCss: `
+        ytd-reel-shelf-renderer,
+        ytd-rich-shelf-renderer[is-shorts],
+        ytd-rich-section-renderer:has(ytd-rich-shelf-renderer[is-shorts]),
+        ytd-rich-section-renderer:has(a[href^="/shorts"]),
+        ytd-rich-item-renderer:has(a[href^="/shorts"]),
+        ytd-video-renderer:has(a[href^="/shorts"]),
+        ytd-grid-video-renderer:has(a[href^="/shorts"]),
+        grid-shelf-view-model:has(a[href^="/shorts"]),
+        ytd-guide-entry-renderer:has(a[title="Shorts"]),
+        ytd-mini-guide-entry-renderer[aria-label="Shorts"],
+        yt-tab-shape[tab-title="Shorts"],
+        ytm-reel-shelf-renderer,
+        ytm-pivot-bar-item-renderer:has(.pivot-shorts)
+        { display: none !important; }`,
     },
     instagram: {
       name: 'Instagram',
@@ -14,11 +30,15 @@ const FW = (() => {
       home: 'https://www.instagram.com/',
       shorts: [/^\/reels?(\/|$)/],
       shortsName: 'Reels',
+      // Reels-Link in der Navigation ausblenden
+      hideCss: `
+        a[href="/reels/"], a[href^="/reels/"]
+        { display: none !important; }`,
     },
   };
 
   const DEFAULT_SETTINGS = {
-    limits: { youtube: 30, instagram: 15 }, // Minuten pro Tag, 0 = komplett gesperrt
+    limits: { youtube: null, instagram: null }, // Minuten pro Tag, null = kein Limit, 0 = komplett gesperrt
     blockShorts: true,
     extensionMinutes: 5,
     extensionsPerDay: 1,
@@ -27,6 +47,12 @@ const FW = (() => {
   };
 
   const HISTORY_DAYS = 30;
+
+  // Hürde, bevor die Einstellungen geändert werden können.
+  const UNLOCK_WAIT_SECONDS = 10 * 60;
+  const UNLOCK_WINDOW_SECONDS = 5 * 60;
+  const FIRST_SETUP_SECONDS = 15 * 60;
+  const UNLOCK_SENTENCE = 'Ich ändere meine Regeln bewusst und nicht, weil ich gerade scrollen will.';
 
   function siteForHost(hostname) {
     for (const [id, site] of Object.entries(SITES)) {
@@ -76,13 +102,16 @@ const FW = (() => {
   // Berechnet den heutigen Stand einer Seite.
   function computeStatus(settings, usage, siteId) {
     const day = dayEntry(usage, siteId);
-    const limitSeconds = settings.limits[siteId] * 60 + day.bonusSeconds;
+    const limit = settings.limits[siteId];
+    const unlimited = limit == null;
+    const limitSeconds = unlimited ? null : limit * 60 + day.bonusSeconds;
     return {
       site: siteId,
       name: SITES[siteId].name,
+      unlimited,
       usedSeconds: Math.floor(day.seconds),
       limitSeconds,
-      remainingSeconds: Math.max(0, Math.floor(limitSeconds - day.seconds)),
+      remainingSeconds: unlimited ? null : Math.max(0, Math.floor(limitSeconds - day.seconds)),
       extensionsLeft: Math.max(0, settings.extensionsPerDay - day.extensions),
       extensionMinutes: settings.extensionMinutes,
       extensionWaitSeconds: settings.extensionWaitSeconds,
@@ -112,6 +141,10 @@ const FW = (() => {
     SITES,
     DEFAULT_SETTINGS,
     HISTORY_DAYS,
+    UNLOCK_WAIT_SECONDS,
+    UNLOCK_WINDOW_SECONDS,
+    FIRST_SETUP_SECONDS,
+    UNLOCK_SENTENCE,
     siteForHost,
     isShortsUrl,
     dayKey,

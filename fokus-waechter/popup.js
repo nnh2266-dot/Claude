@@ -1,6 +1,13 @@
 function siteRow(s) {
   const el = document.createElement('div');
   el.className = 'site';
+  if (s.unlimited) {
+    el.innerHTML = `<div class="row"><strong></strong><span class="muted num"></span></div>
+      <div class="sub muted">Kein Zeitlimit</div>`;
+    el.querySelector('strong').textContent = s.name;
+    el.querySelector('.row span').textContent = `${FW.formatMinutes(s.usedSeconds)} heute`;
+    return el;
+  }
   const ratio = s.limitSeconds ? Math.min(1, s.usedSeconds / s.limitSeconds) : 1;
   const barClass = s.remainingSeconds === 0 ? 'over' : s.remainingSeconds <= 300 ? 'low' : '';
   const right = s.limitSeconds === 0
@@ -24,6 +31,10 @@ function siteRow(s) {
 async function render() {
   const all = await chrome.runtime.sendMessage({ type: 'allStatus' });
   document.getElementById('sites').replaceChildren(...all.map(siteRow));
+  const settings = await FW.getSettings();
+  document.getElementById('rules').textContent = settings.blockShorts
+    ? '🚫 YouTube Shorts & Instagram Reels gesperrt'
+    : 'Shorts & Reels sind erlaubt';
 }
 
 document.getElementById('options').addEventListener('click', () => {

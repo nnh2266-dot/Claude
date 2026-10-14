@@ -8,6 +8,18 @@
   let badge = null;
   let collapsed = false;
   let stopped = false;
+  let hideStyle = null;
+
+  function applyHideCss(enabled) {
+    if (enabled && !hideStyle) {
+      hideStyle = document.createElement('style');
+      hideStyle.textContent = FW.SITES[siteId].hideCss || '';
+    }
+    if (enabled && hideStyle && !hideStyle.isConnected && document.documentElement) {
+      document.documentElement.appendChild(hideStyle);
+    }
+    if (!enabled && hideStyle) hideStyle.remove();
+  }
 
   async function send(msg) {
     try {
@@ -90,12 +102,18 @@
     if (!badge.host.isConnected && document.documentElement) {
       document.documentElement.appendChild(badge.host);
     }
+    badge.pill.classList.toggle('paused', !active);
+    if (status.unlimited) {
+      badge.label.textContent = `${status.name} · heute`;
+      badge.time.textContent = FW.formatClock(status.usedSeconds);
+      badge.pill.classList.remove('low', 'crit');
+      return;
+    }
     const left = status.remainingSeconds;
     badge.label.textContent = active ? `${status.name} · übrig` : `${status.name} · pausiert`;
     badge.time.textContent = FW.formatClock(left);
     badge.pill.classList.toggle('low', left <= 300 && left > 60);
     badge.pill.classList.toggle('crit', left <= 60);
-    badge.pill.classList.toggle('paused', !active);
 
     for (const t of WARN_AT) {
       if (left <= t && left > 0 && !warned.has(t) && status.limitSeconds > t) {
@@ -111,7 +129,9 @@
     if (stopped) return;
     const active = isActive();
     const status = await send({ type: active ? 'tick' : 'status', site: siteId, url: location.href });
-    if (status && !status.error && !status.blocked) render(status, active);
+    if (!status || status.error || status.blocked) return;
+    applyHideCss(status.blockShorts);
+    render(status, active);
   }
 
   loop();

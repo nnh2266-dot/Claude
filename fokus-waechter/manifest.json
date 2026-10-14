@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "Fokus-Wächter",
-  "version": "1.0.0",
-  "description": "Tageslimit für YouTube und Instagram – mit Timer, Sperrbildschirm und Shorts/Reels-Blocker.",
+  "version": "1.1.0",
+  "description": "Sperrt YouTube Shorts und Instagram Reels – mit Zeitanzeige, optionalen Limits und gesperrten Einstellungen.",
   "permissions": [
     "storage"
   ],
