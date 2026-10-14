@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Fokus-Wächter</title>
+  <link rel="stylesheet" href="ui.css">
+  <style>
+    body { padding: 32px 16px 64px; }
+    main { max-width: 640px; margin: 0 auto; display: grid; gap: 20px; }
+    header { display: flex; align-items: center; gap: 14px; }
+    header img { width: 44px; height: 44px; }
+    header h1 { font-size: 24px; }
+    h2 { font-size: 17px; margin-bottom: 4px; }
+    .card > p.muted { margin: 0 0 16px; font-size: 14px; }
+    .field { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 10px 0; border-top: 1px solid var(--border); }
+    .field:first-of-type { border-top: 0; }
+    .field label { flex: 1; }
+    .field small { display: block; color: var(--muted); font-size: 13px; }
+    input[type=number] {
+      width: 90px; font: inherit; padding: 8px 10px; text-align: right;
+      border-radius: 8px; border: 1px solid var(--border); background: var(--bg); color: var(--text);
+    }
+    input[type=checkbox] { width: 20px; height: 20px; accent-color: var(--accent); }
+    .save-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 16px; }
+    #status { font-size: 14px; }
+    #confirm { margin-top: 16px; padding: 14px; border-radius: 10px; border: 1px solid var(--warn); }
+    #confirm p { margin: 0 0 10px; font-size: 14px; }
+    .chart { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; align-items: end; height: 160px; margin-top: 8px; }
+    .col { display: flex; flex-direction: column; align-items: center; gap: 6px; height: 100%; justify-content: flex-end; }
+    .stack { width: 100%; max-width: 40px; display: flex; flex-direction: column-reverse; border-radius: 6px; overflow: hidden; background: var(--track); min-height: 4px; }
+    .stack span { display: block; }
+    .col small { font-size: 12px; color: var(--muted); }
+    .col .total { font-size: 11px; color: var(--muted); }
+    .legend { display: flex; gap: 16px; font-size: 13px; margin-top: 12px; color: var(--muted); }
+    .legend i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
+    .summary { font-size: 14px; margin-top: 8px; }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <img src="icons/icon128.png" alt="">
+      <div>
+        <h1>Fokus-Wächter</h1>
+        <span class="muted">Ein bisschen ist okay – zu viel nicht.</span>
+      </div>
+    </header>
+
+    <section class="card">
+      <h2>Letzte 7 Tage</h2>
+      <div class="chart" id="chart"></div>
+      <div class="legend" id="legend"></div>
+      <p class="summary muted" id="summary"></p>
+    </section>
+
+    <form class="card" id="form">
+      <h2>Tageslimits</h2>
+      <p class="muted">Gezählt wird nur, solange der Tab sichtbar und das Fenster aktiv ist. 0 Minuten = Seite komplett gesperrt.</p>
+      <div id="limits"></div>
+
+      <h2 style="margin-top:20px">Regeln</h2>
+      <div class="field">
+        <label for="blockShorts">YouTube Shorts &amp; Instagram Reels sperren<small>Das endlose Wischen ist meist der größte Zeitfresser.</small></label>
+        <input type="checkbox" id="blockShorts">
+      </div>
+      <div class="field">
+        <label for="extensionMinutes">Länge einer Verlängerung (Minuten)</label>
+        <input type="number" id="extensionMinutes" min="1" max="60" required>
+      </div>
+      <div class="field">
+        <label for="extensionsPerDay">Verlängerungen pro Tag und Seite<small>0 = keine Verlängerung möglich</small></label>
+        <input type="number" id="extensionsPerDay" min="0" max="10" required>
+      </div>
+      <div class="field">
+        <label for="extensionWaitSeconds">Wartezeit vor einer Verlängerung (Sekunden)</label>
+        <input type="number" id="extensionWaitSeconds" min="0" max="600" required>
+      </div>
+      <div class="field">
+        <label for="showBadge">Restzeit auf der Seite anzeigen</label>
+        <input type="checkbox" id="showBadge">
+      </div>
+
+      <div id="confirm" hidden>
+        <p>Du lockerst gerade deine Regeln. Ist das eine bewusste Entscheidung – oder willst du nur gerade weiterschauen?</p>
+        <button type="button" id="confirmBtn" disabled></button>
+        <button type="button" id="cancelBtn">Abbrechen</button>
+      </div>
+
+      <div class="save-row">
+        <button type="submit" class="primary" id="saveBtn">Speichern</button>
+        <span id="status" class="muted"></span>
+      </div>
+    </form>
+  </main>
+  <script src="shared.js"></script>
+  <script src="options.js"></script>
+</body>
+</html>

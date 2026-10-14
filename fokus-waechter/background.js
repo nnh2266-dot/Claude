@@ -1,5 +1,5 @@
 // Zählt die aktive Zeit pro Seite und leitet bei erreichtem Limit auf die Sperrseite um.
-if (typeof importScripts === 'function') importScripts('shared.js');
+importScripts('shared.js');
 
 const MAX_TICK_SECONDS = 3; // Lücken (z. B. schlafender Service Worker) nicht voll anrechnen
 const lastTick = {}; // siteId -> Zeitstempel in ms

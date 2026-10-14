@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <title>Fokus-Wächter</title>
+  <link rel="stylesheet" href="ui.css">
+  <style>
+    body { width: 300px; padding: 16px; }
+    header { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+    header img { width: 28px; height: 28px; }
+    header h1 { font-size: 16px; }
+    .site { margin-bottom: 14px; }
+    .row { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px; }
+    .row strong { font-size: 14px; }
+    .row span { font-size: 13px; }
+    .sub { font-size: 12px; margin-top: 4px; }
+    footer { border-top: 1px solid var(--border); padding-top: 12px; margin-top: 4px; }
+    footer button { width: 100%; }
+  </style>
+</head>
+<body>
+  <header>
+    <img src="icons/icon48.png" alt="">
+    <h1>Heute</h1>
+  </header>
+  <section id="sites"></section>
+  <footer>
+    <button id="options">Einstellungen &amp; Statistik</button>
+  </footer>
+  <script src="shared.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>

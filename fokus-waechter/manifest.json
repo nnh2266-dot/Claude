@@ -3,15 +3,22 @@
   "name": "Fokus-Wächter",
   "version": "1.0.0",
   "description": "Tageslimit für YouTube und Instagram – mit Timer, Sperrbildschirm und Shorts/Reels-Blocker.",
-  "permissions": ["storage"],
+  "permissions": [
+    "storage"
+  ],
   "background": {
-    "service_worker": "background.js",
-    "scripts": ["shared.js", "background.js"]
+    "service_worker": "background.js"
   },
   "content_scripts": [
     {
-      "matches": ["*://*.youtube.com/*", "*://*.instagram.com/*"],
-      "js": ["shared.js", "content.js"],
+      "matches": [
+        "*://*.youtube.com/*",
+        "*://*.instagram.com/*"
+      ],
+      "js": [
+        "shared.js",
+        "content.js"
+      ],
       "run_at": "document_start"
     }
   ],
@@ -34,11 +41,5 @@
     "32": "icons/icon32.png",
     "48": "icons/icon48.png",
     "128": "icons/icon128.png"
-  },
-  "browser_specific_settings": {
-    "gecko": {
-      "id": "fokus-waechter@local",
-      "strict_min_version": "121.0"
-    }
   }
 }
