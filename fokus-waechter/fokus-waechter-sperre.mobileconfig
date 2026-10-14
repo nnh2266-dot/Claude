@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>PayloadContent</key>
+	<array>
+		<dict>
+			<key>PayloadContent</key>
+			<dict>
+				<key>com.google.Chrome</key>
+				<dict>
+					<key>Forced</key>
+					<array>
+						<dict>
+							<key>mcx_preference_settings</key>
+							<dict>
+								<key>BrowserAddPersonEnabled</key>
+								<false/>
+								<key>BrowserGuestModeEnabled</key>
+								<false/>
+								<key>IncognitoModeAvailability</key>
+								<integer>1</integer>
+								<key>URLBlocklist</key>
+								<array>
+									<string>youtube.com/shorts</string>
+									<string>instagram.com/reels</string>
+									<string>instagram.com/reel</string>
+									<string>chrome://extensions</string>
+								</array>
+							</dict>
+						</dict>
+					</array>
+				</dict>
+			</dict>
+			<key>PayloadDisplayName</key>
+			<string>Google Chrome Regeln</string>
+			<key>PayloadIdentifier</key>
+			<string>local.fokus-waechter.sperre.chrome</string>
+			<key>PayloadType</key>
+			<string>com.apple.ManagedClient.preferences</string>
+			<key>PayloadUUID</key>
+			<string>5B2D36EA-831E-4399-A38F-6A795DF8FE7E</string>
+			<key>PayloadVersion</key>
+			<integer>1</integer>
+		</dict>
+	</array>
+	<key>PayloadDescription</key>
+	<string>Sperrt in Chrome YouTube Shorts, Instagram Reels, die Erweiterungsseite, Inkognito, Gastmodus und neue Chrome-Profile.</string>
+	<key>PayloadDisplayName</key>
+	<string>Fokus-Wächter Sperre</string>
+	<key>PayloadIdentifier</key>
+	<string>local.fokus-waechter.sperre</string>
+	<key>PayloadOrganization</key>
+	<string>Fokus-Wächter</string>
+	<key>PayloadScope</key>
+	<string>System</string>
+	<key>PayloadType</key>
+	<string>Configuration</string>
+	<key>PayloadUUID</key>
+	<string>0CB7BF5A-E788-4EF9-A342-2159FE78D148</string>
+	<key>PayloadVersion</key>
+	<integer>1</integer>
+</dict>
+</plist>
